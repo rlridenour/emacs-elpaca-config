@@ -209,7 +209,7 @@
 (defun goto-shell-init ()
 (interactive)
 "Find Emacs literate init file."
-(find-file "~/.config/fish/functions/")))
+(find-file "~/.config/fish/functions/"))
 
 (defun delete-window-balance ()
   "Delete window and rebalance the remaining ones."

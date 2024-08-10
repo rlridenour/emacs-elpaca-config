@@ -554,7 +554,7 @@ Kills all open buffers except scratch, dashboard and messages. From https://gith
 (defun goto-shell-init ()
 (interactive)
 "Find Emacs literate init file."
-(find-file "~/.config/fish/functions/")))
+(find-file "~/.config/fish/functions/"))
 #+end_src
 
 
