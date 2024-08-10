@@ -1,0 +1,1869 @@
+;;; init.el --- Personal Emacs configuration file -*- lexical-binding: t; -*-
+;; NOTE: init.el is generated from README.org.  Please edit that file instead
+
+;;; init.el --- Personal Emacs configuration file -*- lexical-binding: t; -*-
+;; NOTE: init.el is generated from README.org.  Please edit that file instead
+
+(defconst rr-emacs-dir (expand-file-name user-emacs-directory)
+  "The path to the emacs.d directory.")
+
+;; set load path
+(add-to-list 'load-path (concat user-emacs-directory "elisp"))
+
+(defconst rr-cache-dir "~/.cache/emacs/"
+  "The directory for Emacs activity files.")
+
+(defconst rr-backup-dir (concat rr-cache-dir "backup/")
+  "The directory for Emacs backup files.")
+
+(defconst rr-org-dir "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/"
+  "The directory for my org files.")
+
+(defconst rr-agenda-dir "/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/"
+  "The directory for RR-Emacs note storage.")
+
+(defconst rr-notes-dir "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/Documents/notes/"
+  "The directory for RR-Emacs note storage.")
+
+;;;; Create directories if non-existing
+(dolist (dir (list rr-cache-dir
+		   rr-backup-dir))
+  (unless (file-directory-p dir)
+    (make-directory dir t)))
+
+(defvar elpaca-installer-version 0.7)
+(defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
+(defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
+(defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
+(defvar elpaca-order '(elpaca :repo "https://github.com/progfolio/elpaca.git"
+			      :ref nil :depth 1
+			      :files (:defaults "elpaca-test.el" (:exclude "extensions"))
+			      :build (:not elpaca--activate-package)))
+(let* ((repo  (expand-file-name "elpaca/" elpaca-repos-directory))
+       (build (expand-file-name "elpaca/" elpaca-builds-directory))
+       (order (cdr elpaca-order))
+       (default-directory repo))
+  (add-to-list 'load-path (if (file-exists-p build) build repo))
+  (unless (file-exists-p repo)
+    (make-directory repo t)
+    (when (< emacs-major-version 28) (require 'subr-x))
+    (condition-case-unless-debug err
+	(if-let ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
+		 ((zerop (apply #'call-process `("git" nil ,buffer t "clone"
+						 ,@(when-let ((depth (plist-get order :depth)))
+						     (list (format "--depth=%d" depth) "--no-single-branch"))
+						 ,(plist-get order :repo) ,repo))))
+		 ((zerop (call-process "git" nil buffer t "checkout"
+				       (or (plist-get order :ref) "--"))))
+		 (emacs (concat invocation-directory invocation-name))
+		 ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
+				       "--eval" "(byte-recompile-directory \".\" 0 'force)")))
+		 ((require 'elpaca))
+		 ((elpaca-generate-autoloads "elpaca" repo)))
+	    (progn (message "%s" (buffer-string)) (kill-buffer buffer))
+	  (error "%s" (with-current-buffer buffer (buffer-string))))
+      ((error) (warn "%s" err) (delete-directory repo 'recursive))))
+  (unless (require 'elpaca-autoloads nil t)
+    (require 'elpaca)
+    (elpaca-generate-autoloads "elpaca" repo)
+    (load "./elpaca-autoloads")))
+(add-hook 'after-init-hook #'elpaca-process-queues)
+(elpaca `(,@elpaca-order))
+
+(elpaca (org :wait t))
+
+(elpaca elpaca-use-package
+  (require 'elpaca-use-package)
+  (elpaca-use-package-mode)
+  (setq use-package-always-ensure t))
+
+(defmacro use-feature (name &rest args)
+  "Like `use-package' but accounting for asynchronous installation.
+  NAME and ARGS are in `use-package'."
+  (declare (indent defun))
+  `(use-package ,name
+     :ensure nil
+     ,@args))
+
+(defmacro with-after-elpaca-init (&rest body)
+  "Adds BODY to `elpaca-after-init-hook`"
+  `(add-hook 'elpaca-after-init-hook (lambda () ,@body)))
+
+(set-language-environment "UTF-8")
+(set-default-coding-systems 'utf-8)
+
+(setq insert-directory-program "gls")
+
+(setq message-kill-buffer-on-exit t)
+
+(setf use-short-answers t)
+
+(setq ns-function-modifier 'hyper)
+
+(setq enable-recursive-minibuffers t)
+(minibuffer-depth-indicate-mode 1)
+
+(setq browse-url-browser-function 'browse-url-default-macosx-browser)
+
+(setq world-clock-list
+      '(
+	("America/Chicago" "Oklahoma City")
+	("America/Los_Angeles" "Seattle")
+	("Pacific/Honolulu" "Honolulu")
+	("America/New_York" "New York")
+	("Etc/UTC" "UTC")))
+
+(setq world-clock-time-format "%a, %d %b %R %Z")
+
+(define-key key-translation-map (kbd "ESC") (kbd "C-g"))
+
+(line-number-mode)
+(column-number-mode)
+(global-visual-line-mode 1)
+(global-hl-line-mode)
+(setq hl-line-sticky-flag nil)
+(setq global-hl-line-sticky-flag nil)
+
+(when (memq system-type '(darwin))
+  (set-fontset-font t nil "SF Pro Display" nil 'append))
+
+;; Where to save to backup file - in the backup dir
+(setq backup-directory-alist (list (cons "."  rr-backup-dir)))
+;; Always backup by copying
+(setq backup-by-copying t)
+;; Delete old backup files
+(setq delete-old-versions t)
+;; Keep 5 backup files
+(setq kept-new-versions 5)
+;; Make numeric backup versions
+(setq version-control t)
+;; Do not automatically save
+(setq auto-save-default nil)
+
+;;;;; = saveplace - last position in file
+;; Save point position in files between sessions.
+
+;; Where to save the saveplaces file - in the .cache
+(setq save-place-file (expand-file-name "saveplaces" rr-cache-dir))
+(save-place-mode)
+
+(setq delete-by-moving-to-trash t
+      trash-directory "~/.Trash/emacs")
+
+(require 'uniquify)
+
+(global-auto-revert-mode 1)
+(setq global-auto-revert-non-file-buffers t
+      dired-auto-revert-buffer t
+      auto-revert-verbose nil)
+
+(setq ibuffer-expert t)
+
+(add-hook 'ibuffer-mode-hook
+	  #'(lambda ()
+	      (ibuffer-auto-mode 1)
+	      (ibuffer-switch-to-saved-filter-groups "home")))
+
+;;;;; = savehist - last commands used
+;; Persist emacs minibuffer history
+;; Where to save the savehsit file - in the .cache
+(setq savehist-file (expand-file-name "savehist" rr-cache-dir))
+(savehist-mode)
+
+(setq large-file-warning-threshold nil)
+
+(add-hook 'before-save-hook 'time-stamp)
+
+(defadvice save-buffers-kill-emacs (around no-query-kill-emacs activate)
+  (cl-flet ((process-list ())) ad-do-it))
+
+(add-to-list 'display-buffer-alist
+	     (cons "\\*Async Shell Command\\*.*" (cons #'display-buffer-no-window nil)))
+
+(defun make-parent-directory ()
+  "Make sure the directory of `buffer-file-name' exists."
+  (make-directory (file-name-directory buffer-file-name) t))
+(add-hook 'find-file-not-found-functions #'make-parent-directory)
+
+(defun nuke-all-buffers ()
+    "Kill all the open buffers except the current one.
+	Leave *scratch*, *dashboard* and *Messages* alone too."
+    (interactive)
+    (mapc
+     (lambda (buffer)
+       (unless (or
+		(string= (buffer-name buffer) "*scratch*")
+		(string= (buffer-name buffer) "*Org Agenda*")
+		(string= (buffer-name buffer) "*Messages*"))
+	 (kill-buffer buffer)))
+     (buffer-list))
+    (delete-other-windows)
+(goto-dashboard)
+    )
+
+(defun goto-emacs-init ()
+(interactive)
+"Find Emacs literate init file."
+(find-file (concat rr-emacs-dir "/init.org")))
+
+(defun goto-shell-init ()
+(interactive)
+"Find Emacs literate init file."
+(find-file "~/.config/fish/functions/")))
+
+(defun delete-window-balance ()
+  "Delete window and rebalance the remaining ones."
+  (interactive)
+  (delete-window)
+  (balance-windows))
+
+(defun split-window-below-focus ()
+  "Split window horizontally and move focus to other window."
+  (interactive)
+  (split-window-below)
+  (balance-windows)
+  (other-window 1))
+
+(defun split-window-right-focus ()
+  "Split window vertically and move focus to other window."
+  (interactive)
+  (split-window-right)
+  (balance-windows)
+  (other-window 1))
+
+(defun rlr/find-file-right ()
+  "Split window vertically and select recent file."
+  (interactive)
+  (split-window-right-focus)
+  (consult-buffer))
+
+(defun rlr/find-file-below ()
+  "Split window horizontally and select recent file."
+  (interactive)
+  (split-window-below-focus)
+  (consult-buffer))
+
+(defun transpose-windows ()
+  "Transpose two windows.  If more or less than two windows are visible, error."
+  (interactive)
+  (unless (= 2 (count-windows))
+    (error "There are not 2 windows."))
+  (let* ((windows (window-list))
+	 (w1 (car windows))
+	 (w2 (nth 1 windows))
+	 (w1b (window-buffer w1))
+	 (w2b (window-buffer w2)))
+    (set-window-buffer w1 w2b)
+    (set-window-buffer w2 w1b)))
+
+(defun toggle-window-split ()
+  (interactive)
+  (if (= (count-windows) 2)
+      (let* ((this-win-buffer (window-buffer))
+	     (next-win-buffer (window-buffer (next-window)))
+	     (this-win-edges (window-edges (selected-window)))
+	     (next-win-edges (window-edges (next-window)))
+	     (this-win-2nd (not (and (<= (car this-win-edges)
+					 (car next-win-edges))
+				     (<= (cadr this-win-edges)
+					 (cadr next-win-edges)))))
+	     (splitter
+	      (if (= (car this-win-edges)
+		     (car (window-edges (next-window))))
+		  'split-window-horizontally
+		'split-window-vertically)))
+	(delete-other-windows)
+	(let ((first-win (selected-window)))
+	  (funcall splitter)
+	  (if this-win-2nd (other-window 1))
+	  (set-window-buffer (selected-window) this-win-buffer)
+	  (set-window-buffer (next-window) next-win-buffer)
+	  (select-window first-win)
+	  (if this-win-2nd (other-window 1))))))
+
+(defun toggle-frame-maximized-undecorated () (interactive) (let* ((frame (selected-frame)) (on? (and (frame-parameter frame 'undecorated) (eq (frame-parameter frame 'fullscreen) 'maximized))) (geom (frame-monitor-attribute 'geometry)) (x (nth 0 geom)) (y (nth 1 geom)) (display-height (nth 3 geom)) (display-width (nth 2 geom)) (cut (if on? (if ns-auto-hide-menu-bar 26 50) (if ns-auto-hide-menu-bar 4 26)))) (set-frame-position frame x y) (set-frame-parameter frame 'fullscreen-restore 'maximized) (set-frame-parameter nil 'fullscreen 'maximized) (set-frame-parameter frame 'undecorated (not on?)) (set-frame-height frame (- display-height cut) nil t) (set-frame-width frame (- display-width 20) nil t) (set-frame-position frame x y)))
+
+;; Main typeface
+(set-face-attribute 'default nil :family "SF Mono" :height 160 :weight 'medium)
+
+;; Proportionately spaced typeface
+(set-face-attribute 'variable-pitch nil :family "SF Pro" :height 1.0 :weight 'medium)
+
+;; Monospaced typeface
+(set-face-attribute 'fixed-pitch nil :family "SF Mono" :height 1.0 :weight 'medium)
+
+(setq-default line-spacing 0.25)
+
+(set-face-attribute 'mode-line nil
+		    :foreground "black" :background "wheat3" :box '(:line-width 1 :color "black"))
+
+(setq display-time-24hr-format t)
+(display-time-mode)
+
+(setq ring-bell-function 'ignore)
+
+(electric-pair-mode 1)
+
+(show-paren-mode)
+(setq show-paren-delay 0)
+
+(setq async-shell-command-buffer "new-buffer")
+
+(defun async-shell-command-no-window
+    (command)
+  (interactive)
+  (let
+      ((display-buffer-alist
+	(list
+	 (cons
+	  "\\*Async Shell Command\\*.*"
+	  (cons #'display-buffer-no-window nil)))))
+    (async-shell-command
+     command)))
+
+(defun iterm-goto-filedir-or-home ()
+  "Go to present working dir and focus iterm"
+  (interactive)
+  (do-applescript
+   (concat
+    " tell application \"iTerm2\"\n"
+    "   tell the current session of current window\n"
+    (format "     write text \"cd %s\" \n"
+	    ;; string escaping madness for applescript
+	    (replace-regexp-in-string "\\\\" "\\\\\\\\"
+				      (shell-quote-argument (or default-directory "~"))))
+    "   end tell\n"
+    " end tell\n"
+    " do shell script \"open -a iTerm\"\n"
+    ))
+  )
+
+(setq eshell-scroll-to-bottom-on-input "this")
+
+(use-package general
+  :ensure (:wait t)
+  :demand t
+  :config
+  (general-override-mode)
+  (general-auto-unbind-keys)
+(general-unbind
+  "C-z"
+  "s-p"
+  "s-q"
+  "s-w"
+  "s-m"
+  "s-n"
+  "s-h"))
+
+(use-feature abbrev
+:config
+  (load "~/Dropbox/emacs/my-emacs-abbrev"))
+
+(use-package ace-link
+:defer 2
+    :init
+    (ace-link-setup-default))
+
+(use-package ace-window
+  :defer 2)
+
+(use-package aggressive-indent
+  :config
+  (global-aggressive-indent-mode 1))
+
+(use-package avy
+  :defer 2
+  :config
+  (avy-setup-default)
+  :general
+  ("s-/" #'avy-goto-char-timer)
+  ("C-c C-j" #'avy-resume))
+
+(use-feature bookmark
+  :config
+  (require 'bookmark)
+  (bookmark-bmenu-list)
+  (setq bookmark-save-flag 1))
+
+(use-package citar
+  :bind (("C-c C-b" . citar-insert-citation)
+	 :map minibuffer-local-map
+	 ("M-b" . citar-insert-preset))
+  :custom
+  (org-cite-global-bibliography '("~/Dropbox/bibtex/rlr.bib"))
+  (citar-bibliography '("~/Dropbox/bibtex/rlr.bib"))
+  (org-cite-csl-styles-dir "/usr/local/texlive/2023/texmf-dist/tex/latex/citation-style-language/styles")
+  (org-cite-export-processors
+   '((md . (csl "chicago-author-date.csl"))
+     (latex biblatex)
+     (odt . (csl "chicago-author-date.csl"))
+     (t . (csl "chicago-author-date.csl")))))
+
+(use-package consult
+  :demand t
+  :general
+  ("C-x b" #'consult-buffer))
+
+(use-package crux
+  :demand t)
+
+(use-package dashboard
+  :demand t
+  :config
+  (dashboard-setup-startup-hook)
+  (setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
+  (setq dashboard-week-agenda nil)
+  (setq dashboard-startup-banner "/Users/rlridenour/.config/emacs/logo-emacs.png")
+  (setq dashboard-center-content t)
+  (setq dashboard-set-footer nil)
+  (setq dashboard-banner-logo-title nil)
+  (setq dashboard-set-heading-icons t)
+  (setq dashboard-set-file-icons nil)
+  (setq dashboard-set-navigator nil)
+  (setq dashboard-projects-backend 'project-el)
+  (setq dashboard-items '((agenda . 5)
+			  (recents  . 5)
+			  (bookmarks . 10)
+			  (projects . 5)))
+  (setq dashboard-startupify-list '(dashboard-insert-banner
+				    dashboard-insert-newline
+				    dashboard-insert-banner-title
+				    dashboard-insert-newline
+				    dashboard-insert-navigator
+				    dashboard-insert-newline
+				    dashboard-insert-init-info
+				    dashboard-insert-items
+				    dashboard-insert-newline)))
+
+(defun dashboard-insert-agenda (&rest _)
+  "Insert a copy of org-agenda buffer."
+  (insert (save-window-excursion
+	    (org-agenda nil "d")
+	    (prog1 (buffer-string)
+	      (kill-buffer)))))
+
+(defun goto-dashboard ()
+  "this sends you to the dashboard buffer"
+  (interactive)
+  (let ((goto-dashboard-buffer (get-buffer "*dashboard*")))
+    (switch-to-buffer goto-dashboard-buffer))
+  (dashboard-refresh-buffer))
+
+(general-define-key
+ "s-d" #'goto-dashboard)
+
+(use-package deadgrep)
+
+(use-package denote
+  :config
+  (setq denote-directory "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/Documents/notes/denote/")
+  (setq denote-infer-keywords t)
+  (setq denote-sort-keywords t)
+  (setq denote-prompts '(title keywords))
+  (setq denote-date-format nil)
+  (require 'denote-journal-extras))
+
+(use-package consult-notes
+  :config
+  (consult-notes-denote-mode))
+
+(use-package citar-denote
+  :after citar denote
+  :config
+  (citar-denote-mode)
+  (setq citar-open-always-create-notes t))
+
+(use-package denote-menu
+  :after denote)
+
+(use-package xeft
+  :commands (xeft)
+  :config
+  (custom-set-faces '(xeft-excerpt-title ((t (:weight bold)))))
+  (custom-set-faces '(xeft-excerpt-body ((t (:height 150)))))
+  :custom
+  ;; Default extension for files created with xeft
+  (xeft-default-extension "org")
+  ;; Where is my search source
+  (xeft-directory rr-notes-dir)
+  ;; Only parse the root directory
+  (xeft-recursive nil))
+
+(use-package dired-x
+  :ensure nil
+  :config
+  (progn
+    (setq dired-omit-verbose nil)
+    ;; toggle `dired-omit-mode' with C-x M-o
+    (add-hook 'dired-mode-hook #'dired-omit-mode)
+    (setq dired-omit-files
+	  (concat dired-omit-files "\\|^.DS_STORE$\\|^.projectile$\\|^\\..+$"))
+    (setq-default dired-omit-extensions '(".fdb_latexmk" ".aux" ".bbl" ".blg" ".fls" ".glo" ".idx" ".ilg" ".ind" ".ist" ".log" ".out" ".gz" ".DS_Store" ".xml" ".bcf" ".nav" ".snm" ".toc"))))
+
+(setq dired-dwim-target t)
+
+(general-define-key
+ :keymaps 'dired-mode-map
+ "M-<RET>" #'crux-open-with
+ "s-j" #'dired-goto-file)
+
+(use-package doom-modeline
+  :demand t
+  :init (doom-modeline-mode 1)
+  :config
+  (setq doom-modeline-enable-word-count t)
+  (setq doom-modeline-continuous-word-count-modes '(markdown-mode gfm-mode org-mode))
+  (setq display-time-day-and-date t)
+  )
+
+(use-package eat
+  :ensure
+  (:host codeberg
+	 :repo "akib/emacs-eat"
+	 :files ("*.el" ("term" "term/*.el") "*.texi"
+		 "*.ti" ("terminfo/e" "terminfo/e/*")
+		 ("terminfo/65" "terminfo/65/*")
+		 ("integration" "integration/*")
+		 (:exclude ".dir-locals.el" "*-tests.el"))))
+
+(use-package ebib
+  :defer 2
+  :config
+  (setq ebib-bibtex-dialect 'biblatex)
+  ;;(evil-set-initial-state 'ebib-index-mode 'emacs)
+  ;;(evil-set-initial-state 'ebib-entry-mode 'emacs)
+  ;;(evil-set-initial-state 'ebib-log-mode 'emacs)
+  :custom
+  (ebib-preload-bib-files '("~/Dropbox/bibtex/rlr.bib")))
+
+(use-package term-toggle
+  :ensure
+  (:host github :repo "amno1/emacs-term-toggle")
+  :after eat
+  :config
+  (setq term-toggle-no-confirm-exit t)
+  (defun term-toggle-eat ()
+    "Toggle `term'."
+    (interactive) (term-toggle 'eat))
+  :general
+  ("<f2>" #'term-toggle-eat
+   "<S-f2>" #'term-toggle-eshell
+   "C-`" #'iterm-goto-filedir-or-home)
+  )
+
+(use-package evil-nerd-commenter
+  :general
+  ("M-;" #'evilnc-comment-or-uncomment-lines))
+
+(use-feature eww
+:config
+  (defun my/eww-toggle-images ()
+    "Toggle whether images are loaded and reload the current page from cache."
+    (interactive)
+    (setq-local shr-inhibit-images (not shr-inhibit-images))
+    (eww-reload t)
+    (message "Images are now %s"
+	     (if shr-inhibit-images "off" "on")))
+
+  (define-key eww-mode-map (kbd "I") #'my/eww-toggle-images)
+  (define-key eww-link-keymap (kbd "I") #'my/eww-toggle-images)
+
+  ;; minimal rendering by default
+  (setq-default shr-inhibit-images t)   ; toggle with `I`
+  (setq-default shr-use-fonts nil)      ; toggle with `F`
+  (defun rrnet ()
+    (interactive)
+    (eww-browse-url "randyridenour.net")
+    )
+
+  (defun sep ()
+    (interactive)
+    (eww-browse-url "plato.stanford.edu")
+    ))
+
+(with-after-elpaca-init
+  (defun jao-eww-to-org (&optional dest)
+    "Render the current eww buffer using org markup.
+  If DEST, a buffer, is provided, insert the markup there."
+    (interactive)
+    (unless (org-region-active-p)
+      (let ((shr-width 80)) (eww-readable)))
+    (let* ((start (if (org-region-active-p) (region-beginning) (point-min)))
+	   (end (if (org-region-active-p) (region-end) (point-max)))
+	   (buff (or dest (generate-new-buffer "*eww-to-org*")))
+	   (link (eww-current-url))
+	   (title (or (plist-get eww-data :title) "")))
+      (with-current-buffer buff
+	(insert "#+title: " title "\n#+link: " link "\n\n")
+	(org-mode))
+      (save-excursion
+	(goto-char start)
+	(while (< (point) end)
+	  (let* ((p (point))
+		 (props (text-properties-at p))
+		 (k (seq-find (lambda (x) (plist-get props x))
+			      '(shr-url image-url outline-level face)))
+		 (prop (and k (list k (plist-get props k))))
+		 (next (if prop
+			   (next-single-property-change p (car prop) nil end)
+			 (next-property-change p nil end)))
+		 (txt (buffer-substring (point) next))
+		 (txt (replace-regexp-in-string "\\*" "·" txt)))
+	    (with-current-buffer buff
+	      (insert
+	       (pcase prop
+		 ((and (or `(shr-url ,url) `(image-url ,url))
+		       (guard (string-match-p "^http" url)))
+		  (let ((tt (replace-regexp-in-string "\n\\([^$]\\)" " \\1" txt)))
+		    (org-link-make-string url tt)))
+		 (`(outline-level ,n)
+		  (concat (make-string (- (* 2 n) 1) ?*) " " txt "\n"))
+		 ('(face italic) (format "/%s/ " (string-trim txt)))
+		 ('(face bold) (format "*%s* " (string-trim txt)))
+		 (_ txt))))
+	    (goto-char next))))
+      (pop-to-buffer buff)
+      (goto-char (point-min)))))
+
+(use-package exec-path-from-shell
+  :demand t
+  :config (exec-path-from-shell-initialize))
+
+(use-feature savehist
+  :defer 1
+  :config
+  (savehist-mode 1))
+
+(defun hugo-timestamp ()
+  "Update existing date: timestamp on a Hugo post."
+  (interactive)
+  (save-excursion (
+		   goto-char 1)
+		  (re-search-forward "^#\\+date:")
+		  (let ((beg (point)))
+		    (end-of-line)
+		    (delete-region beg (point)))
+		  (insert (concat " " (format-time-string "%Y-%m-%dT%H:%M:%S")))))
+
+(defvar hugo-directory "~/Sites/blog/" "Path to Hugo blog.")
+(defvar hugo-posts-dir "content/posts/" "Relative path to posts directory.")
+(defvar hugo-post-ext ".org"  "File extension of Hugo posts.")
+(defvar hugo-post-template "#+TITLE: \%s\n#+draft: true\n#+tags[]: \n#+date: \n#+lastmod: \n#+mathjax: \n\n"
+  "Default template for Hugo posts. %s will be replace by the post title.")
+
+(defun hugo-make-slug (s) "Turn a string into a slug."
+       (replace-regexp-in-string " " "-"  (downcase (replace-regexp-in-string "[^A-Za-z0-9 ]" "" s))))
+
+(defun hugo-yaml-escape (s) "Escape a string for YAML."
+       (if (or (string-match ":" s) (string-match "\"" s)) (concat "\"" (replace-regexp-in-string "\"" "\\\\\"" s) "\"") s))
+
+(defun hugo-draft-post (title) "Create a new Hugo blog post."
+       (interactive "sPost Title: ")
+       (let ((draft-file (concat hugo-directory hugo-posts-dir
+				 (format-time-string "%Y-%m-%d-")
+				 (hugo-make-slug title)
+				 hugo-post-ext)))
+	 (if (file-exists-p draft-file)
+	     (find-file draft-file)
+	   (find-file draft-file)
+	   (insert (format hugo-post-template (hugo-yaml-escape title)))
+	   (hugo-timestamp))))
+
+(defun hugo-publish-post ()
+  "Set draft to false, update the timestamp, and save."
+  (interactive)
+  (save-excursion
+    (goto-char 1)
+    (re-search-forward "^#\\+draft:")
+    (let ((beg (point)))
+      (end-of-line)
+      (delete-region beg (point)))
+    (insert " false")
+    (hugo-timestamp))
+  (save-buffer))
+
+(defmacro with-dir (DIR &rest FORMS)
+  "Execute FORMS in DIR."
+  (let ((orig-dir (gensym)))
+    `(progn (setq ,orig-dir default-directory)
+	    (cd ,DIR) ,@FORMS (cd ,orig-dir))))
+
+(defun hugo-update-lastmod ()
+  "Update the `lastmod' value for a hugo org-mode buffer."
+  (interactive)
+  (save-excursion
+    (goto-char 1)
+    (re-search-forward "^#\\+lastmod:")
+    (let ((beg (point)))
+      (end-of-line)
+      (delete-region beg (point)))
+    (insert (concat " " (format-time-string "%Y-%m-%dT%H:%M:%S"))))
+  (save-buffer))
+
+(defun hugo-deploy ()
+  "Push changes upstream."
+  (interactive)
+  (with-dir hugo-directory
+	    (shell-command "git add .")
+	    (--> (current-time-string)
+		 (concat "git commit -m \"" it "\"")
+		 (shell-command it))
+	    (magit-push-current-to-upstream nil)))
+
+(defun hugo-org-deploy ()
+  "Push changes upstream."
+  (interactive)
+  (hugo-update-lastmod)
+  (save-buffer)
+  (with-dir hugo-directory
+	    (shell-command "git add .")
+	    (--> (current-time-string)
+		 (concat "git commit -m \"" it "\"")
+		 (shell-command it))
+	    (magit-push-current-to-upstream nil)))
+
+(defun hugo-select-tags ()
+  "Select tags from the hugo org files in the current dir.
+  Note that it only extracts tags from lines like the below:
+  #+tags[]: Emacs Org-mode"
+  (interactive)
+  ;; Move to end of tag line.
+  (save-excursion
+    (goto-char 1)
+    (re-search-forward "^#\\+tags")
+    (end-of-line)
+    (let ((files (directory-files-recursively default-directory "\\.org$")))
+      (let ((source (with-temp-buffer
+		      (while files
+			(when (file-exists-p (car files))
+			  (insert-file-contents (car files)))
+			(pop files))
+		      (buffer-string))))
+	(save-match-data
+	  (let ((pos 0)
+		matches)
+	    (while (string-match "^#\\+[Tt]ags\\[\\]: \\(.+?\\)$" source pos)
+	      (push (match-string 1 source) matches)
+	      (setq pos (match-end 0)))
+	    (insert
+	     (completing-read
+	      "Insert a tag: "
+	      (sort
+	       (delete-dups
+		(delete "" (split-string
+			    (replace-regexp-in-string "[\"\']" " "
+						      (replace-regexp-in-string
+						       "[,()]" ""
+						       (format "%s" matches)))
+			    " ")))
+	       (lambda (a b)
+		 (string< (downcase a) (downcase b))))))))))
+    (insert " ")))
+
+(defun w/hugo--collect-tags ()
+  "Collect hugo tags from the org files in the current dir.
+
+  Note that it only extracts tags from lines like the below:
+  #+tags[]: Emacs Org-mode"
+  (interactive)
+  (let ((files (directory-files-recursively default-directory "\\.org$")))
+    (let ((source (with-temp-buffer
+		    (while files
+		      (when (file-exists-p (car files))
+			(insert-file-contents (car files)))
+		      (pop files))
+		    (buffer-string))))
+      (save-match-data
+	(let ((pos 0)
+	      matches)
+	  (while (string-match "^#\\+[Tt]ags\\[\\]: \\(.+?\\)$" source pos)
+	    (push (match-string 1 source) matches)
+	    (setq pos (match-end 0)))
+	  (sort
+	   (delete-dups
+	    (delete "" (split-string
+			(replace-regexp-in-string "[\"\']" " "
+						  (replace-regexp-in-string
+						   "[,()]" ""
+						   (format "%s" matches)))
+			" ")))
+	   (lambda (a b)
+	     (string< (downcase a) (downcase b)))))))))
+
+(defun w/hugo-select-tags ()
+  "Select tags for the current hugo post."
+  (interactive)
+  (ivy-read "Insert tags: "
+	    (w/hugo--collect-tags)
+	    :action
+	    (lambda (tag)
+	      (insert (if (char-equal (preceding-char) 32)
+			  ""
+			" ")
+		      tag))))
+
+(use-package hungry-delete
+  :config
+  (global-hungry-delete-mode))
+
+(defun my/insert-unicode (unicode-name)
+  "Same as C-x 8 enter UNICODE-NAME."
+  (insert-char (gethash unicode-name (ucs-names))))
+
+(use-package major-mode-hydra
+  :demand t
+  :commands (pretty-hydra-define)
+  :general
+  ("s-m" #'major-mode-hydra))
+
+(with-after-elpaca-init
+   (progn
+     (pretty-hydra-define hydra-toggle
+       (:color teal :quit-key "q" :title "Toggle")
+       (" "
+	(("a" abbrev-mode "abbrev" :toggle t)
+	 ("d" toggle-debug-on-error "debug" (default value 'debug-on-error))
+	 ("e" meow-global-mode "meow" :toggle t)
+	 ("i" aggressive-indent-mode "indent" :toggle t)
+	 ("f" auto-fill-mode "fill" :toggle t)
+	 ("l" display-line-numbers-mode "linum" :toggle t)
+	 ("m" mixed-pitch-mode "mixed-pitch" :toggle t)
+	 ("p" electric-pair-mode "electric-pair" :toggle t)
+	 ("t" toggle-truncate-lines "truncate" :toggle t)
+	 ("s" whitespace-mode "whitespace" :toggle t))
+	" "
+	(("c" cdlatex-mode "cdlatex" :toggle t)
+	 ("w" writeroom-mode "writeroom" :toggle t)
+	 ("r" read-only-mode "read-only" :toggle t)
+	 ("v" view-mode "view" :toggle t)
+	 ("W" wc-mode "word-count" :toggle t)
+	 ("S" auto-save-visited-mode "auto-save" :toggle t)
+	 ("C" cua-selection-mode "rectangle" :toggle t))))
+     (pretty-hydra-define hydra-buffer
+       (:color teal :quit-key "q" :title "Buffers and Files")
+       ("Open"
+	(("b" ibuffer "ibuffer")
+	 ("m" consult-bookmark "bookmark")
+	 ("w" consult-buffer-other-window "other window")
+	 ("f" consult-buffer-other-frame "other frame")
+	 ("d" crux-recentf-find-directory "recent directory")
+	 ("a" crux-open-with "open in default app"))
+	"Actions"
+	(("D" crux-delete-file-and-buffer "delete file")
+	 ("R" crux-rename-file-and-buffer "rename file")
+	 ("K" crux-kill-other-buffers "kill other buffers")
+	 ("N" nuke-all-buffers "Kill all buffers")
+	 ("c" crux-cleanup-buffer-or-region "fix indentation"))
+	"Misc"
+	(("t" crux-visit-term-buffer "ansi-term")
+	 ("T" iterm-goto-filedir-or-home "iTerm2")
+	 ("i" crux-find-user-init-file "init.el")
+	 ("s" crux-find-shell-init-file "fish config"))
+	))
+     (pretty-hydra-define hydra-locate
+       (:color teal :quit-key "q" title: "Search")
+       ("Buffer"
+	(("c" pulsar-highlight-dwim "find cursor")
+("h" consult-org-heading "org heading")
+	 ("l" consult-goto-line "goto-line")
+	 ("i" consult-imenu "imenu")
+	 ("m" consult-mark "mark")
+	 ("o" consult-outline "outline"))
+	"Global"
+	(("M" consult-global-mark "global-mark")
+	 ("n" consult-notes "notes")
+	 ("r" consult-ripgrep "ripgrep")
+	 ("d" rlr/consult-rg "rg from dir")
+	 ("f" rlr/consult-fd "find from dir"))
+"Files"
+(("e" goto-emacs-init "Emacs init")
+("s" goto-shell-init "Fish functions"))
+	))
+     (pretty-hydra-define hydra-window
+       (:color teal :quit-key "q" title: "Windows")
+       ("Windows"
+	(("w" other-window "cycle windows" :exit nil)
+	 ("a" ace-window "ace window")
+	 ("m" minimize-window "minimize window")
+	 ("s" transpose-windows "swap windows")
+	 ("S" shrink-window-if-larger-than-buffer "shrink to fit")
+	 ("b" balance-windows "balance windows")
+	 ("t" toggle-window-split "toggle split")
+	 ("T" enlarge-window" grow taller" :exit nil)
+	 ("G" enlarge-window-horizontally "grow wider" :exit nil)
+	 ("o" delete-other-windows "kill other windows"))
+	"Frames"
+	(("M" iconify-frame "minimize frame")
+	 ("d" delete-other-frames "delete other frames")
+	 ("D" delete-frame "delete this frame")
+	 ("i" make-frame-invisible "invisible frame")
+	 ("f" toggle-frame-fullscreen "fullscreen")
+	 ("n" make-frame-command "new frame"))
+	"Writeroom"
+	(("W" writeroom-mode "toggle writeroom")
+	 ("M" writeroom-toggle-mode-line "toggle modeline"))))
+     (pretty-hydra-define hydra-new
+       (:color teal :quit-key "q" title: "New")
+       ("Denote"
+	(("c" org-capture "capture")
+	 ("n" denote "note")
+	 ("v" denote-menu-list-notes "view notes")
+	 ("j" denote-journal-extras-new-or-existing-entry "journal"))
+	"Writing"
+	(("b" hugo-draft-post "blog post")
+	 ("a" new-article "article"))
+	"Teaching"
+	(("l" new-lecture "lecture")
+	 ("h" new-handout "handout")
+	 ("s" new-syllabus "syllabus"))
+	))
+     (pretty-hydra-define hydra-logic
+       (:color pink :quit-key "0" :title "Logic")
+       ("Operators"
+	(("1" (my/insert-unicode "NOT SIGN") "¬")
+	 ("2" (my/insert-unicode "AMPERSAND") "&")
+	 ("3" (my/insert-unicode "LOGICAL OR") "v")
+	 ("4" (my/insert-unicode "SUPERSET OF") "⊃")
+	 ;; ("4" (my/insert-unicode "RIGHTWARDS ARROW") "→")
+	 ("5" (my/insert-unicode "IDENTICAL TO") "≡")
+	 ;; ("5" (my/insert-unicode "LEFT RIGHT ARROW") "↔")
+	 ("6" (my/insert-unicode "THERE EXISTS") "∃")
+	 ("7" (my/insert-unicode "FOR ALL") "∀")
+	 ("8" (my/insert-unicode "WHITE MEDIUM SQUARE") "□")
+	 ("9" (my/insert-unicode "LOZENGE") "◊")
+	 ("`" (my/insert-unicode "NOT EQUAL TO") "≠"))
+	"Space"
+	(("?" (my/insert-unicode "MEDIUM MATHEMATICAL SPACE") "Narrow space"))
+	"Quit"
+	(("0" quit-window "quit" :color blue))
+	))
+     (pretty-hydra-define hydra-math
+       (:color pink :quit-key "?" :title "Math")
+       ("Operators"
+	(("1" (my/insert-unicode "NOT SIGN") "¬")
+	 ("2" (my/insert-unicode "AMPERSAND") "&")
+	 ("3" (my/insert-unicode "LOGICAL OR") "v")
+	 ("4" (my/insert-unicode "RIGHTWARDS ARROW") "→")
+	 ("5" (my/insert-unicode "LEFT RIGHT ARROW") "↔")
+	 ("6" (my/insert-unicode "THERE EXISTS") "∃")
+	 ("7" (my/insert-unicode "FOR ALL") "∀")
+	 ("8" (my/insert-unicode "WHITE MEDIUM SQUARE") "□")
+	 ("9" (my/insert-unicode "LOZENGE") "◊"))
+	"Sets"
+	(("R" (my/insert-unicode "DOUBLE-STRUCK CAPITAL R") "ℝ real")
+	 ("N" (my/insert-unicode "DOUBLE-STRUCK CAPITAL N") "ℕ natural")
+	 ("Z" (my/insert-unicode "DOUBLE-STRUCK CAPITAL Z") "ℤ integer")
+	 ("Q" (my/insert-unicode "DOUBLE-STRUCK CAPITAL Q") "ℚ rational")
+	 ("Q" (my/insert-unicode "DOUBLE-STRUCK CAPITAL Q") "ℚ rational")
+	 ("Q" (my/insert-unicode "DOUBLE-STRUCK CAPITAL Q") "ℚ rational")
+	 )
+	"Space"
+	(("?" (my/insert-unicode "MEDIUM MATHEMATICAL SPACE") "Narrow space"))
+	"Quit"
+	(("?" quit-window "quit" :color blue))
+	))
+     (pretty-hydra-define hydra-hugo
+       (:color teal :quit-key "q" :title "Hugo")
+       ("Blog"
+	(("n" hugo-draft-post "New draft")
+	 ("p" hugo-publish-post "Publish")
+	 ("t" hugo-timestamp "Update timestamp")
+	 ("e" org-hugo-auto-export-mode "Auto export")
+	 ("d" hugo-deploy "Deploy"))
+	))
+     (pretty-hydra-define hydra-hydras
+       (:color teal :quit-key "q" :title "Hydras")
+       ("System"
+	(("t" hydra-toggle/body)
+	 ("b" hydra-buffer/body)
+	 ("h" hydra-hugo/body)
+	 ("p" powerthesaurus-hydra/body))
+	"Unicode"
+	(("l" hydra-logic/body "logic")
+	 ("m" hydra-math/body))))
+     ))
+  ;; (global-set-key (kbd "s-t") 'hydra-toggle/body)
+
+(with-after-elpaca-init
+ (progn
+   (major-mode-hydra-define dashboard-mode
+     (:quit-key "q")
+     ("Open"
+      (("m" consult-bookmark "bookmarks")
+       ("a" consult-org-agenda "consult-agenda")
+       ("t" (find-file "/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/tasks.org") "open tasks")
+       ("b" (find-file "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/bookmarks.org") "web bookmarks")
+       )))
+
+
+
+
+
+
+   (major-mode-hydra-define org-agenda-mode
+     (:quit-key "q")
+     ("Open"
+      (("m" consult-bookmark "bookmarks")
+       ("a" consult-org-agenda "consult-agenda")
+       ("t" (find-file "/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/tasks.org") "open tasks")
+       ("b" (find-file "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/bookmarks.org") "web bookmarks")
+       )))
+
+
+
+
+   (major-mode-hydra-define eww-mode
+     (:quit-key "q")
+     ("A"
+      (
+       ;; ("G" eww "Eww Open Browser")
+       ("g" eww-reload "Eww Reload")
+       ("6" eww-open-in-new-buffer "Open in new buffer")
+       ("l" eww-back-url "Back Url")
+       ("r" eww-forward-url "Forward Url")
+       ("N" eww-next-url "Next Url")
+       ("P" eww-previous-url "Previous Url")
+       ("u" eww-up-url "Up Url")
+       ("&" eww-browse-with-external-browser "Open in External Browser")
+       ("d" eww-download "Download")
+       ("w" eww-copy-page-url "Copy Url Page")
+       );end theme
+      "B"
+      (
+       ("T" endless/toggle-image-display "Toggle Image Display")
+       (">" shr-next-link "Shr Next Link")
+       ("<" shr-previous-link "Shr Previous Link")
+       ("n" scroll-down-command "Scroll Down")
+       ("C" url-cookie-list "Url Cookie List")
+       ("v" eww-view-source "View Source")
+       ("R" eww-readable "Make Readable")
+       ("H" eww-list-histories "List History")
+       ("E" eww-set-character-encoding "Character Encoding")
+       ("s" eww-switch-to-buffer "Switch to Buffer")
+       ("S" eww-list-buffers "List Buffers")
+       );end highlighting
+
+      "C"
+      (
+
+       ("1" rrnet "randyridenour.net")
+       ("2" sep "SEP")
+       ("F" eww-toggle-fonts "Toggle Fonts")
+       ("D" eww-toggle-paragraph-direction "Toggle Paragraph Direction")
+       ("c" eww-toggle-colors "Toggle Colors")
+       ("b" eww-add-bookmark "Add Bookmark")
+       ("B" eww-list-bookmarks "List Bookmarks")
+       ("=" eww-next-bookmark "Next Bookmark")
+       ("-" eww-previous-bookmark "Previous Bookmark")
+       ("O" jao-eww-to-org "Make Org Version")
+       ("<SPC>" nil "Quit" :color pink)
+       );end other
+      ))
+
+
+
+
+
+   (major-mode-hydra-define markdown-mode
+     (:quit-key "q")
+     ("Format"
+      (("h" markdown-insert-header-dwim "header")
+       ("l" markdown-insert-link "link")
+       ("u" markdown-insert-uri "url")
+       ("f" markdown-insert-footnote "footnote")
+       ("w" markdown-insert-wiki-link "wiki")
+       ("r" markdown-insert-reference-link-dwim "r-link")
+       ("n" markdown-cleanup-list-numbers "clean-lists")
+       ("c" markdown-complete-buffer "complete"))))
+
+
+
+   (major-mode-hydra-define LaTeX-mode
+     (:quit-key "q")
+     ("Bibtex"
+      (("r" citar-insert-citation "citation"))
+      "LaTeXmk"
+      (("m" rlr/tex-mkpdf "PDFLaTeX")
+       ("l" rlr/tex-mklua "LuaLaTeX")
+       ("w" rlr/tex-mktc "watch PDFLaTeX")
+       ("L" rlr/tex-mklua "watch LuaLaTeX")
+       ("c" tex-clean "clean aux")
+       ("C" tex-clean-all "clean all")
+       ("n" latex-word-count "word count"))))
+
+
+
+
+
+   (major-mode-hydra-define org-mode
+     (:quit-key "q")
+     ("Export"
+      (
+       ("m" rlr/org-mkpdf "Make PDF with PDFLaTeX")
+       ("p" rlr/org-open-pdf "View PDF")
+       ("l" rlr/org-mklua "Make PDF with LuaLaTeX")
+       ("el" org-latex-export-to-latex "Org to LaTeX")
+       ("eb" org-beamer-export-to-pdf "Org to Beamer-PDF")
+       ("eB" org-beamer-export-to-latex "Org to Beamer-LaTeX")
+       ("s" lecture-slides "Lecture slides")
+       ("n" lecture-notes "Lecture notes")
+       ("ep" present "Present slides")
+       ("ec" canvas-copy "Copy HTML for Canvas")
+       ("es" canvas-notes "HTML Canvas notes")
+       ("eS" make-syllabus "Syllabus")
+       ("eh" make-handout "Handout")
+       ("c" tex-clean "clean aux")
+       ("C" tex-clean-all "clean all")
+       )
+      "Edit"
+      (
+       ("dd" org-deadline "deadline")
+       ("ds" org-schedule "schedule")
+       ("r" org-refile "refile")
+       ("du" rlr/org-date "update date stamp")
+       ;; ("fn" org-footnote-new "insert footnote")
+       ("ff" org-footnote-action "edit footnote")
+       ("fc" citar-insert-citation "citation")
+       ("b" org-cycle-list-bullet "cycle bullets" :exit nil)
+       ("il" org-mac-link-safari-insert-frontmost-url "insert safari link")
+       ("y" yankpad-set-category "set yankpad")
+       )
+      "View"
+      (
+       ("vi" consult-org-heading "iMenu")
+       ("vu" org-toggle-pretty-entities "org-pretty")
+       ("vI" org-toggle-inline-images "Inline images")
+       )
+      "Blog"
+      (("hn" hugo-draft-post "New draft")
+       ("hp" hugo-publish-post "Publish")
+       ("ht" hugo-timestamp "Update timestamp")
+       ("hd" hugo-org-deploy "Deploy")
+       ("he" org-hugo-auto-export-mode "Auto export"))
+      "Notes"
+      (("1" denote-link "link to note"))
+      ))
+
+
+
+   (major-mode-hydra-define dired-mode
+     (:quit-key "q")
+     ("New"
+      (("a" new-article "article")
+       ("l" new-lecture "lecture")
+       ("h" new-handout "handout")
+       ("s" new-syllabus "syllabus"))
+      "Tools"
+      (("d" crux-open-with "Open in default program")
+       ("h" dired-omit-mode "Show hidden files")
+       ("p" diredp-copy-abs-filenames-as-kill "Copy filename and path")
+       ("n" dired-toggle-read-only "edit Filenames"))))
+
+
+
+   (major-mode-hydra-define denote-menu-mode
+     (:quit-key "q")
+     ("Tools"
+      (("f" denote-menu-filter "Filter by regex")
+       ("k" denote-menu-filter-by-keyword "Filter by keyword")
+       ("c" denote-menu-clear-filters "Clear filters")
+       ("d" denote-menu-export-to-dired "Dired")
+       )))))
+
+(general-define-key
+ "s-h" #'hydra-hydras/body
+ "s-n" #'hydra-new/body
+ "s-t" #'hydra-toggle/body
+ "s-w" #'hydra-window/body
+ ;; "s-b" #'hydra-buffer/body
+ "C-x 9" #'hydra-logic/body)
+
+(use-package jinx
+  :init
+  (setenv "PKG_CONFIG_PATH" (concat "/opt/homebrew/opt/glib/lib/pkgconfig/:" (getenv "PKG_CONFIG_PATH")))
+  :config
+  (defun jinx-correct-all ()
+    (interactive)
+    (let ((current-prefix-arg '(4)))
+      (call-interactively #'jinx-correct)))
+  :hook (emacs-startup . global-jinx-mode)
+  :general
+  ([remap ispell-word] #'jinx-correct
+   "<f7>" #'jinx-correct
+   "S-<f7>" #'jinx-correct-all))
+
+;; (defun jinx-correct-all ()
+;;   (interactive)
+;;   (let ((current-prefix-arg '(4)))
+;;     (call-interactively #'jinx-correct)))
+
+;; (general-define-key
+;;  "<f7>" #'jinx-correct
+;;  "S-<f7>" #'jinx-correct-all)
+
+(with-after-elpaca-init
+ (add-to-list 'vertico-multiform-categories
+	      '(jinx grid (vertico-grid-annotate . 20))))
+
+(use-package auctex
+  :ensure (auctex :pre-build (("./autogen.sh")
+			      ("./configure"
+			       "--without-texmf-dir"
+			       "--with-packagelispdir=./"
+			       "--with-packagedatadir=./")
+			      ("make"))
+		  :build (:not elpaca--compile-info) ;; Make will take care of this step
+		  :files ("*.el" "doc/*.info*" "etc" "images" "latex" "style")
+		  :version (lambda (_) (require 'tex-site) AUCTeX-version))
+  :mode ("\\.tex\\'" . LaTeX-mode)
+  :init
+  (setq TeX-parse-self t
+      TeX-auto-save t
+      TeX-electric-math nil
+      LaTeX-electric-left-right-brace nil
+      TeX-electric-sub-and-superscript nil
+      LaTeX-item-indent 0
+      TeX-quote-after-quote nil
+      TeX-clean-confirm nil
+      TeX-source-correlate-mode t
+      TeX-source-correlate-method 'synctex
+      TeX-view-program-selection '((output-pdf "PDF Viewer"))
+      TeX-view-program-list
+      '(("PDF Viewer" "/Applications/Skim.app/Contents/SharedSupport/displayline -b -g %n %o %b"))))
+
+(defun raise-emacs-on-aqua()
+  (shell-command "osascript -e 'tell application \"Emacs\" to activate' "))
+(add-hook 'server-switch-hook 'raise-emacs-on-aqua)
+(defun tex-clean ()
+  (interactive)
+  (shell-command "latexmk -c"))
+
+(defun tex-clean-all ()
+  (interactive)
+  (shell-command "latexmk -C"))
+
+(defun arara-all ()
+  (interactive)
+  (async-shell-command "mkall"))
+
+(defun rlr/tex-mkpdf ()
+  "Compile with pdf latexmk."
+  (interactive)
+  (save-buffer)
+  (async-shell-command-no-window (concat "mkpdf " (shell-quote-argument(file-name-nondirectory buffer-file-name))))
+  (TeX-view))
+
+(defun rlr/tex-mktc ()
+  "Compile continuously with pdf latexmk."
+  (interactive)
+  (async-shell-command-no-window (concat "mkpdfc " (shell-quote-argument(file-name-nondirectory buffer-file-name)))))
+
+(defun rlr/tex-mklua ()
+  "Compile with lua latexmk."
+  (interactive)
+  (save-buffer)
+  (async-shell-command-no-window (concat "mklua " (shell-quote-argument(file-name-nondirectory buffer-file-name))))
+  (TeX-view))
+
+(defun rlr/tex-mkluac ()
+  "Compile continuously with lua latexmk."
+  (interactive)
+  (async-shell-command-no-window (concat "mkluac " (shell-quote-argument(file-name-nondirectory buffer-file-name)))))
+
+(defun latex-word-count ()
+  (interactive)
+  (let* ((this-file (buffer-file-name))
+       (word-count
+	  (with-output-to-string
+	    (with-current-buffer standard-output
+	      (call-process "texcount" nil t nil "-brief" this-file)))))
+    (string-match "\n$" word-count)
+    (message (replace-match "" nil nil word-count))))
+
+(use-package latex-change-env
+  :after latex
+  :bind
+  (:map LaTeX-mode-map ("C-c r" . latex-change-env)))
+
+(use-package math-delimiters
+  :ensure
+  (:type git :host github :repo "oantolin/math-delimiters")
+  :after (:any org latex)
+  :commands (math-delimiters-no-dollars math-delimiters-mode)
+  :hook ((LaTeX-mode . math-delimiters-mode)
+       (org-mode . math-delimiters-mode))
+  :config (progn
+	    (setq math-delimiters-compressed-display-math nil)
+	    (define-minor-mode math-delimiters-mode
+	      "Math Delimeters"
+	      :init-value nil
+	      :lighter " MD"
+	      :keymap (let ((map (make-sparse-keymap)))
+		      (define-key map (kbd "$")  #'math-delimiters-insert)
+		      map))))
+
+(use-package magit
+  :defer 2
+  :config
+  (global-auto-revert-mode)
+  (setq magit-refresh-status-buffer nil
+	magit-diff-highlight-indentation nil
+	magit-diff-highlight-trailing nil
+	magit-diff-paint-whitespace nil
+	magit-diff-highlight-hunk-body nil
+	magit-diff-refine-hunk nil
+	magit-revision-insert-related-refs nil)
+  :commands
+  (magit-after-save-refresh-status)
+  :hook
+  (after-save . magit-after-save-refresh-status)
+  :custom
+  (transient-history-file
+   (expand-file-name "transient/history.el" rr-cache-dir))
+  (transient-levels-file
+   (expand-file-name "transient/levels.el" rr-cache-dir))
+  (transient-values-file
+   (expand-file-name "transient/values.el" rr-cache-dir)))
+
+(use-package marginalia
+  :defer 2
+  :config (marginalia-mode))
+
+(use-package markdown-mode
+  :defer 2
+  :mode (("README\\.md\\'" . gfm-mode)
+	 ("\\.md\\'" . markdown-mode)
+	 ("\\.Rmd\\'" . markdown-mode)
+	 ("\\.markdown\\'" . markdown-mode))
+  :config
+  (setq markdown-indent-on-enter 'indent-and-new-item)
+  (setq markdown-asymmetric-header t))
+
+;; Convert markdown files to org format.
+(fset 'convert-markdown-to-org
+      [?\M-< ?\M-% ?* return ?- return ?! ?\M-< ?\C-\M-% ?# ?* backspace backspace ?  ?# ?* ?$ return return ?! ?\M-< ?\M-% ?# return ?* return ?!])
+
+(fset 'copy-beamer-note
+      (kmacro-lambda-form [?\C-r ?: ?E ?N ?D return down ?\C-  ?\C-s ?* ?* ?  ?N ?o ?t ?e ?s return up ?\M-w ?\C-s ?: ?E ?N ?D return down return ?\s-v return] 0 "%d"))
+
+(use-package modus-themes
+  :demand t
+  :config
+  ;; Add all your customizations prior to loading the themes
+  (setq modus-themes-italic-constructs t
+	modus-themes-bold-constructs t)
+
+  ;; Maybe define some palette overrides, such as by using our presets
+  (setq modus-themes-common-palette-overrides
+	modus-themes-preset-overrides-faint)
+
+  ;; Load the theme of your choice.
+  (load-theme 'modus-operandi t)
+  :general
+  ("<f9>" #'modus-themes-toggle))
+
+(use-package orderless
+  :defer 1
+  :custom
+  (completion-styles '(orderless basic))
+  (completion-category-overrides '((file (styles partial-completion)))))
+
+(use-package org
+  :ensure nil
+  :init
+  ;; (setq org-directory "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/")
+  (setq org-directory "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/")
+  :config
+  (setq org-list-allow-alphabetical t)
+  (setq org-highlight-latex-and-related '(latex script entities))
+  ;; (setq org-startup-indented t)
+  (setq org-adapt-indentation nil)
+  ;; (setq org-hide-leading-stars nil)
+  (setq org-hide-emphasis-markers nil)
+  (setq org-support-shift-select t)
+  ;; (setq org-footnote-section nil)
+  (setq org-html-validation-link nil)
+  (setq org-time-stamp-rounding-minutes '(0 15))
+  (setq org-todo-keyword-faces
+	'(("DONE" . "green4") ("TODO" . org-warning)))
+  (setq org-agenda-files '("/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/"))
+  )
+
+(require 'ox-beamer)
+(with-eval-after-load 'ox-latex
+  (add-to-list 'org-latex-classes
+	       '("org-article"
+	       "\\documentclass{article}
+			    [NO-DEFAULT-PACKAGES]
+			    [NO-PACKAGES]"
+	       ("\\section{%s}" . "\\section*{%s}")
+	       ("\\subsection{%s}" . "\\subsection*{%s}")
+	       ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+	       ("\\paragraph{%s}" . "\\paragraph*{%s}")
+	       ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+  (add-to-list 'org-latex-classes
+	       '("org-handout"
+	       "\\documentclass{pdfhandout}
+			    [NO-DEFAULT-PACKAGES]
+			    [NO-PACKAGES]"
+	       ("\\section{%s}" . "\\section*{%s}")
+	       ("\\subsection{%s}" . "\\subsection*{%s}")
+	       ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+	       ("\\paragraph{%s}" . "\\paragraph*{%s}")
+	       ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+  (add-to-list 'org-latex-classes
+	       '("org-beamer"
+	       "\\documentclass{beamer}
+			    [NO-DEFAULT-PACKAGES]
+			    [NO-PACKAGES]"
+	       ("\\section{%s}" . "\\section*{%s}")
+	       ("\\subsection{%s}" . "\\subsection*{%s}")
+	       ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+	       ("\\paragraph{%s}" . "\\paragraph*{%s}")
+	       ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))))
+(setq org-export-with-smart-quotes t)
+(with-eval-after-load 'ox-latex
+  (add-to-list 'org-export-smart-quotes-alist
+	       '("en-us"
+	       (primary-opening   :utf-8 "“" :html "&ldquo;" :latex "\\enquote{"  :texinfo "``")
+	       (primary-closing   :utf-8 "”" :html "&rdquo;" :latex "}"           :texinfo "''")
+	       (secondary-opening :utf-8 "‘" :html "&lsquo;" :latex "\\enquote*{" :texinfo "`")
+	       (secondary-closing :utf-8 "’" :html "&rsquo;" :latex "}"           :texinfo "'")
+	       (apostrophe        :utf-8 "’" :html "&rsquo;"))))
+
+;; (setq org-latex-pdf-process '("arara %f"))
+(setq org-latex-pdf-process '("mkpdf %f"))
+
+(defun rlr/org-mkpdf ()
+  "Make PDF with pdf latexmk."
+  (interactive)
+  (save-buffer)
+  (org-latex-export-to-latex)
+  (async-shell-command-no-window (concat "mkpdf " (shell-quote-argument(file-name-nondirectory (file-name-with-extension buffer-file-name "tex"))))))
+
+(defun rlr/org-open-pdf ()
+  "Open PDF in background with default viewer."
+  (interactive)
+  (async-shell-command-no-window (concat "open -g " (shell-quote-argument(file-name-nondirectory (file-name-with-extension buffer-file-name "pdf"))))))
+
+(defun rlr/org-mklua ()
+  "Make PDF with lua latexmk."
+  (interactive)
+  (save-buffer)
+  (org-latex-export-to-latex)
+  (async-shell-command-no-window (concat "mklua " (shell-quote-argument(file-name-nondirectory (file-name-with-extension buffer-file-name "tex"))))))
+
+
+(defun rlr/org-arara ()
+  "Make PDF with Arara."
+  (interactive)
+  (save-buffer)
+  (org-arara-export-to-latex)
+  (async-shell-command-no-window (concat "mkarara " (shell-quote-argument(file-name-sans-extension (buffer-file-name)))".tex")))
+
+(defun rlr/org-date ()
+  "Update existing date: timestamp on a Hugo post."
+  (interactive)
+  (save-excursion (
+		 goto-char 1)
+		(re-search-forward "^#\\+date:")
+		(let ((beg (point)))
+		    (end-of-line)
+		    (delete-region beg (point)))
+		(insert (concat " " (format-time-string "%B %e, %Y")))))
+
+(use-package rlr-teaching
+:demand t
+    :ensure
+    (:host github :repo "rlridenour/rlr-teaching"))
+
+(use-package org-auto-tangle
+  :hook (org-mode . org-auto-tangle-mode))
+
+;; Org-capture
+(setq org-capture-templates
+      '(
+      ("t" "Todo" entry (file+headline "/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/tasks.org" "Inbox")
+       "** TODO %?\n  %i\n  %a")
+      ("e" "Event" entry (file+headline "/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/events.org" "Future")
+       "** %? %T")
+      ("b" "Bookmark" entry (file+headline "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/bookmarks.org" "Bookmarks")
+       "* %?\n:PROPERTIES:\n:CREATED: %U\n:END:\n\n" :empty-lines 1)
+      ("c" "Quick note" entry (file+headline "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/Documents/notes/quick-notes.org" "Notes")
+       "* %?\n:PROPERTIES:\n:CREATED: %U\n:END:\n\n" :empty-lines 1)
+      )
+      )
+
+(with-eval-after-load 'org-capture
+  (add-to-list 'org-capture-templates
+	       '("n" "New note (with Denote)" plain
+	       (file denote-last-path)
+	       #'denote-org-capture
+	       :no-save t
+	       :immediate-finish nil
+	       :kill-buffer t
+	       :jump-to-captured t)))
+
+
+(setq org-refile-targets '((org-agenda-files :maxlevel . 1)))
+
+(define-key global-map "\C-cc" 'org-capture)
+
+(use-package org-super-agenda
+  :after org-agenda
+  :init
+  (setq org-agenda-skip-scheduled-if-done t
+	org-agenda-skip-deadline-if-done t
+	org-agenda-include-deadlines t
+	org-agenda-block-separator nil
+	org-agenda-compact-blocks t
+	org-agenda-start-day nil ;; i.e. today
+	org-agenda-span 1
+	org-agenda-window-setup "current-window"
+	org-agenda-include-diary nil
+	org-agenda-start-on-weekday nil)
+  (setq org-agenda-time-grid
+	'((daily today require-timed remove-match)
+	  ()
+	  "......"
+	  ""))
+
+  (setq org-agenda-custom-commands
+	'(("c" "Super view"
+	   ((agenda "" ((org-agenda-overriding-header "")
+			(org-super-agenda-groups
+			 '((:name "Today"
+				  :time-grid t
+				  :date today
+				  :order 1)))))
+	    (alltodo "" ((org-agenda-overriding-header "")
+			 (org-super-agenda-groups
+			  '((:log t)
+			    (:name "Important"
+				   :priority "A"
+				   :order 4)
+			    (:name "Today's tasks"
+				   :file-path "journal/")
+			    (:name "Due Today"
+				   :deadline today
+				   :order 2)
+			    (:name "Overdue"
+				   :deadline past
+				   :order 3)
+			    (:discard (:not (:todo "TODO")))))))))))
+  :config
+  (org-super-agenda-mode)
+  (setq org-agenda-span 7)
+  (setq org-agenda-custom-commands
+	'(("d" "Agenda for today" agenda ""
+	   ((org-agenda-overriding-header "Today's agenda")
+	    (org-agenda-span 'day)
+	    ))))
+  (defun today-agenda ()
+    "Display today's agenda"
+    (interactive)
+    (org-agenda nil "d")
+    )
+  (today-agenda)
+  )
+
+(setq appt-time-msg-list nil)    ;; clear existing appt list
+;; (setq appt-message-warning-time '15)  ;; send first warning 15 minutes before appointment
+(org-agenda-to-appt) ;; generate the appt list from org agenda files on emacs launch
+(run-at-time "24:01" 3600 'org-agenda-to-appt) ;; update appt list hourly
+(add-hook 'org-finalize-agenda-hook 'org-agenda-to-appt) ;; update appt list on agenda view
+
+(use-package org-bulletproof
+  :config
+  (setq org-bulletproof-default-ordered-bullet "1.")
+  (global-org-bulletproof-mode +1))
+
+(use-package org-contrib
+  :config
+  (require 'ox-extra)
+  (ox-extras-activate '(ignore-headlines))
+  (require 'org-tempo))
+
+(use-package orgonomic
+  :ensure
+  (:host github :repo "aaronjensen/emacs-orgonomic")
+  :hook (org-mode . orgonomic-mode))
+
+(defun my/org-toggle-emphasis (type)
+  "Toggle org emphasis TYPE (a character) at point."
+  (cl-labels ((in-emph (re)
+		"See if in org emphasis given by RE."
+		(and (org-in-regexp re 2)
+		     (>= (point) (match-beginning 3))
+		     (<= (point) (match-end 4))))
+	      (de-emphasize ()
+		"Remove most recently matched org emphasis markers."
+		(save-excursion
+		  (replace-match "" nil nil nil 3)
+		  (delete-region (match-end 4) (1+ (match-end 4))))))
+    (let* ((res (vector org-emph-re org-verbatim-re))
+	   (idx (cl-case type (?/ 0) (?* 0) (?_ 0) (?+ 0) (?= 1) (?~ 1)))
+	   (re (aref res idx))
+	   (other-re (aref res (- 1 idx)))
+	   (type-re (string-replace (if (= idx 1) "=~" "*/_+")
+				    (char-to-string type) re))
+	   add-bounds offset is-word)
+      (save-match-data
+	(if (region-active-p)
+	    (if (in-emph type-re) (de-emphasize) (org-emphasize type))
+	  (if (eq (char-before) type) (backward-char))
+	  (if (in-emph type-re)       ;nothing marked, in emph text?
+	      (de-emphasize)
+	    (setq add-bounds          ; check other flavors
+		  (if (or (in-emph re) (in-emph other-re))
+		      (cons (match-beginning 4) (match-end 4))
+		    (setq is-word t)
+		    (bounds-of-thing-at-point 'symbol))))
+	  (if add-bounds
+	      (let ((off (- (point) (car add-bounds)))
+		    (at-end (= (point) (cdr add-bounds))))
+		(set-mark (car add-bounds))
+		(goto-char (cdr add-bounds))
+		(org-emphasize type)  ;deletes marked region!
+		(unless is-word       ; delete extra spaces
+		  (goto-char (car add-bounds))
+		  (when (eq (char-after) ?\s) (delete-char 1))
+		  (goto-char (+ 2 (cdr add-bounds)))
+		  (when (eq (char-after) ?\s) (delete-char 1)))
+		(goto-char (+ (car add-bounds) off
+			      (cond ((= off 0) 0) (at-end 2) (t 1)))))
+	    (if is-word (org-emphasize type))))))))
+
+(general-define-key
+ :keymaps 'org-mode-map
+ "s-i" (lambda () (interactive) (my/org-toggle-emphasis ?/))
+ "s-b" (lambda () (interactive) (my/org-toggle-emphasis ?*))
+ "s-e" (lambda () (interactive) (my/org-toggle-emphasis ?~))
+ "s-=" (lambda () (interactive) (my/org-toggle-emphasis ?=))
+ "s-_" (lambda () (interactive) (my/org-toggle-emphasis ?_))
+ "s-+" (lambda () (interactive) (my/org-toggle-emphasis ?+)))
+
+(use-package org-mac-link
+  :defer 2)
+
+(defun unkillable-scratch-buffer ()
+  (if (equal (buffer-name (current-buffer)) "*scratch*")
+      (progn
+	(delete-region (point-min) (point-max))
+	nil)
+    t))
+(add-hook 'kill-buffer-query-functions 'unkillable-scratch-buffer)
+
+(defun goto-scratch ()
+  "this sends you to the scratch buffer"
+  (interactive)
+  (let ((goto-scratch-buffer (get-buffer-create "*scratch*")))
+    (switch-to-buffer goto-scratch-buffer)
+    (org-mode)))
+
+(use-package persistent-scratch
+  :demand t
+  :config
+  (persistent-scratch-setup-default))
+
+(use-feature recentf
+  :defer 1
+  :config (recentf-mode)
+  :custom
+  (recentf-max-menu-items 1000 "Offer more recent files in menu")
+  (recentf-max-saved-items 1000 "Save more recent files"))
+
+(use-package reveal-in-osx-finder
+:defer 2)
+
+(use-package shrink-whitespace)
+
+(use-package super-save
+  :config
+  (setq super-save-auto-save-when-idle t)
+  (super-save-mode +1))
+
+(use-package titlecase
+  :defer 2
+  :config
+  (setq titlecase-style "chicago"))
+
+(use-package vertico
+  :demand t
+  :custom (vertico-cycle t)
+  :config
+  (setf (car vertico-multiline) "\n") ;; don't replace newlines
+  (vertico-mode)
+  (vertico-multiform-mode)
+  (define-key vertico-map (kbd "C-h") #'+minibuffer-up-dir))
+
+(use-package vundo
+  :defer 2
+  :custom
+  (vundo-glyph-alist vundo-unicode-symbols)
+  :bind
+  ("C-x u" . vundo))
+
+(use-package which-key
+  :demand t
+  :init
+  (setq which-key-enable-extended-define-key t)
+  :config
+  (which-key-mode)
+  :custom
+  (which-key-side-window-location 'bottom)
+  (which-key-sort-order 'which-key-key-order-alpha)
+  (which-key-side-window-max-width 0.33)
+  (which-key-idle-delay 0.2))
+
+(use-package yankpad
+  :defer 2
+  :init
+  (setq yankpad-file "~/Library/Mobile Documents/com~apple~CloudDocs/org/yankpad.org")
+  :general
+  ( "<f6>" #'yankpad-insert))
+
+(use-package yasnippet
+  :demand t
+  :config
+  (yas-global-mode)
+  :custom
+  (yas-snippet-dirs '("~/.config/emacs/snippets")))
+
+(general-define-key
+ "C-+" #'text-scale-increase
+ "C--" #'text-scale-decrease)
+
+(global-set-key (kbd "<pinch>") 'ignore)
+(global-set-key (kbd "<C-wheel-up>") 'ignore)
+(global-set-key (kbd "<C-wheel-down>") 'ignore)
+
+(general-define-key
+ "C-x c" #'save-buffers-kill-emacs
+ "C-x C-b" #'ibuffer
+ "C-`" #'iterm-goto-filedir-or-home
+ "s-o" #'find-file
+ "s-k" #'kill-this-buffer
+ "M-s-k" #'kill-buffer-and-window
+ "s-K" #'nuke-all-buffers
+ "s-r" #'consult-buffer
+ "M-s-r" #'consult-buffer-other-window
+ "C-S-a" #'embark-act)
+
+(general-define-key
+ ;; "C-1" #'delete-other-windows
+ ;; "C-2" #'split-window-below-focus
+ ;; "C-3" #'split-window-right-focus
+ "s-6" #'toggle-window-split
+ "S-C-<left>" #'shrink-window-horizontally
+ "S-C-<right>" #'enlarge-window-horizontally
+ "S-C-<down>" #'shrink-window
+ "S-C-<up>" #'enlarge-window
+ "C-x w" #'delete-frame
+ "M-o" #'crux-other-window-or-switch-buffer)
+
+(general-define-key
+ "s-l" #'hydra-locate/body
+ "s-f" #'consult-line
+ "<f5>" #'deadgrep
+ ;; "C-s" #'consult-isearch
+ ;; "C-r" #'consult-isearch-reverse
+ )
+
+(general-define-key
+ "<s-up>" #'beginning-of-buffer
+ "<s-down>" #'end-of-buffer
+ "<s-right>" #'end-of-visual-line
+ "<s-left>" #'beginning-of-visual-line
+ "<M-down>" #'forward-paragraph
+ "<M-up>" #'backward-paragraph
+ "M-u" #'upcase-dwim
+ "M-l" #'downcase-dwim
+ "M-c" #'capitalize-dwim
+ "RET" #'newline-and-indent
+ "M-/" #'hippie-expand
+ "<s-backspace>" #'kill-whole-line
+ "s-j" #'crux-top-join-line
+ "<S-return>" #'crux-smart-open-line
+ "<C-S-return>" #'crux-smart-open-line-above
+ "<C-d d>" #'insert-standard-date
+
+ "M-y" #'consult-yank-pop
+
+ "M-q" #'reformat-paragraph
+ "M-#" #'dictionary-lookup-definition
+ "M-=" #'shrink-whitespace
+ "s-l" #'hydra-locate/body
+ "s-f" #'consult-line
+ "<f5>" #'deadgrep)
+
+(general-define-key
+ ;; Editing
+ ;; "s-/" #'avy-goto-char-timer
+ "C-x 4 b" #'consult-buffer-other-window
+ "C-x 5 b" #'consult-buffer-other-frame
+ "C-x r x" #'consult-register
+ "M-s m" #'consult-multi-occur
+ )
+
+(defun open-emacs-config ()
+  (interactive)
+  (find-file "~/.config/emacs/README.org"))
+
+(defun open-fish-functions ()
+  (interactive)
+  (dired "~/.config/fish/functions"))
+
+(general-define-key
+ :prefix "C-c"
+ ;; bind "C-c a" to #'org-agenda
+ "f f" #'find-file
+ "f k" #'crux-kill-other-buffers
+ "f r" #'consult-buffer
+ "f R" #'crux-rename-file-and-buffer
+ "f P" #'open-emacs-config
+ "f S" #'open-fish-functions
+ ;; Helpful
+ "H c" #'helpful-command
+ "H F" #'helpful-callable
+ "H h" #'helpful-at-point
+ "H f" #'helpful-function
+ "H v" #'helpful-variable
+ "H k" #'helpful-key
+ ;; Projects
+ "p f" #'consult-project-buffer
+ "p d" #'project-find-dired
+ "t a" #'centaur-tabs-ace-jump
+ "t f" #'centaur-tabs-forward-group
+ "t k" #'centaur-tabs-kill-unmodified-buffers-in-current-group
+ "t K" #'centaur-tabs-kill-other-buffers-in-current-group
+ "a" #'org-agenda
+ "2" #'rlr/find-file-below
+ "3" #'rlr/find-file-right
+ "b" #'consult-bookmark
+ "c" #'org-capture
+ "d s" #'insert-date-string
+ "d d" #'insert-standard-date
+ "D" #'crux-delete-file-and-buffer
+ ;; "h" #'consult-history
+ "k" #'crux-kill-other-buffers
+ "l" #'dictionary-search
+ "m" #'consult-mark
+ "n b" #'hugo-draft-post
+ "o" #'consult-outline
+ "r" #'crux-rename-file-and-buffer
+ "s" #'goto-scratch
+ "S" #'crux-cleanup-buffer-or-region
+ ;; "t" #'crux-visit-term-buffer
+ "u" #'unfill-paragraph
+ "w" #'ace-window
+ "z" #'reveal-in-osx-finder
+ "g l" #'avy-goto-line
+ "g w" #'avy-goto-word-1
+ "C-g" #'pdf-sync-forward-search)
+
+;; Local Variables:
+;; no-byte-compile: t
+;; no-native-compile: t
+;; no-update-autoloads: t
+;; End:

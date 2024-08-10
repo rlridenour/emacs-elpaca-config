@@ -9,3 +9,10 @@
 
 # Undo-tree save-files
 *.~undo-tree
+
+elpaca/
+eshell/
+eln-cache/
+custom.el
+recentf
+.persistent-scratch

@@ -1,0 +1,58 @@
+# -*- mode: snippet -*-
+# contributor: Randy Ridenour <rlridenour@gmail.com>
+# key: exam
+# group: skeleton
+# name: \documentclass{exam} ...
+# --
+% arara: pdflatex: { interaction: nonstopmode, synctex: yes }
+
+\documentclass{examdesign}
+\Fullpages
+\NumberOfVersions{1}
+\class{${1:Course Name}}
+\examname{${2:Exam Name}}
+
+\usepackage{enumitem}
+\setlist{nosep}
+\usepackage{libertinus-type1}
+\usepackage{libertinust1math}
+\usepackage[T1]{fontenc}
+
+\begin{document}
+
+\begin{examtop}
+\noindent \textbf{\classdata} \hfill  \textbf{Name:} \rule{2.5in}{.4pt}\\\
+    \textbf{\examtype,  Version \Alph{version}} \\\
+\textbf{Oklahoma Baptist University} \\\
+ \textbf{Dr. Ridenour}\hfill \textbf{Date:} \rule{2.5in}{.4pt} \\\
+\bigskip
+\end{examtop}
+
+
+
+\begin{truefalse}[title={True or False (2 points each)},resetcounter=yes]
+	Write \`\`\textbf{T}'' or \`\`\textbf{F}'' in the blank provided.
+
+
+
+\end{truefalse}
+
+\begin{multiplechoice}[title={Multiple Choice (2 points each)},resetcounter=yes]
+	Circle the correct answer.
+
+
+
+\end{multiplechoice}
+
+% \pagebreak
+
+\begin{shortanswer}[title={Short Answer (10 pts each)}]
+
+
+
+
+\end{shortanswer}
+
+
+
+\end{document}

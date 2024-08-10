@@ -1,0 +1,21 @@
+# -*- mode: snippet -*-
+# name: rlr-myletter
+# key: myletter
+# --
+#+LaTeX_CLASS: rlr-personal-letter
+#+OPTIONS: toc:nil
+#+OPTIONS: title:nil
+#+TITLE: ${1:Title}
+#+AUTHOR: Randy Ridenour
+#+DATE: `(format-time-string "%B %e, %Y")` 
+
+
+\renewcommand{\toName}{${2:Recipient}}
+\renewcommand{\toAddress}{${4:Street Address}\\\\${5:City}, ${6:State} ${7:ZIP}}
+
+\heading
+
+$0
+
+
+\signature
