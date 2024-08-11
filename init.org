@@ -2057,9 +2057,8 @@ Display suggestions in grid.
 
 ** Magit
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package magit
-    :defer 2
     :config
     (global-auto-revert-mode)
     (setq magit-refresh-status-buffer nil

@@ -1302,29 +1302,6 @@
 		      (define-key map (kbd "$")  #'math-delimiters-insert)
 		      map))))
 
-(use-package magit
-  :defer 2
-  :config
-  (global-auto-revert-mode)
-  (setq magit-refresh-status-buffer nil
-	magit-diff-highlight-indentation nil
-	magit-diff-highlight-trailing nil
-	magit-diff-paint-whitespace nil
-	magit-diff-highlight-hunk-body nil
-	magit-diff-refine-hunk nil
-	magit-revision-insert-related-refs nil)
-  :commands
-  (magit-after-save-refresh-status)
-  :hook
-  (after-save . magit-after-save-refresh-status)
-  :custom
-  (transient-history-file
-   (expand-file-name "transient/history.el" rr-cache-dir))
-  (transient-levels-file
-   (expand-file-name "transient/levels.el" rr-cache-dir))
-  (transient-values-file
-   (expand-file-name "transient/values.el" rr-cache-dir)))
-
 (use-package marginalia
   :defer 2
   :config (marginalia-mode))
