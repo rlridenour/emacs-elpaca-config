@@ -1302,6 +1302,19 @@
 		      (define-key map (kbd "$")  #'math-delimiters-insert)
 		      map))))
 
+(use-package transient)
+(use-package hl-todo
+  :ensure (:depth nil))
+
+(use-package magit
+:init
+(require 'transient)
+  :custom
+  (magit-repository-directories (list (cons elpaca-repos-directory 1)))
+  (magit-diff-refine-hunk 'all)
+  :config
+  (transient-bind-q-to-quit))
+
 (use-package marginalia
   :defer 2
   :config (marginalia-mode))

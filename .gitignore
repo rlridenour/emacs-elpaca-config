@@ -16,3 +16,4 @@ eln-cache/
 custom.el
 recentf
 .persistent-scratch
+/transient
