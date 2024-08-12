@@ -2887,6 +2887,18 @@ Open fish functions directory.
    "C-g" #'pdf-sync-forward-search)
 #+end_src
 
+* Finish
+:PROPERTIES:
+:header-args: :tangle init.el
+:END:
+
+Set default directory.
+
+#+begin_src emacs-lisp
+  (setq default-directory "~/")
+#+end_src
+
+
 
 * Footer
 :PROPERTIES:

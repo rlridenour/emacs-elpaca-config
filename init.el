@@ -1856,6 +1856,8 @@
  "g w" #'avy-goto-word-1
  "C-g" #'pdf-sync-forward-search)
 
+(setq default-directory "~/")
+
 ;; Local Variables:
 ;; no-byte-compile: t
 ;; no-native-compile: t
