@@ -75,7 +75,8 @@
 (elpaca elpaca-use-package
   (require 'elpaca-use-package)
   (elpaca-use-package-mode)
-  (setq use-package-always-ensure t))
+  (setq use-package-always-ensure t)
+  (setq use-package-always-defer t))
 
 (defmacro use-feature (name &rest args)
   "Like `use-package' but accounting for asynchronous installation.
@@ -404,8 +405,7 @@
   :general
   ("C-x b" #'consult-buffer))
 
-(use-package crux
-  :demand t)
+(use-package crux)
 
 (use-package dashboard
   :demand t
@@ -495,10 +495,12 @@
   (progn
     (setq dired-omit-verbose nil)
     ;; toggle `dired-omit-mode' with C-x M-o
-    (add-hook 'dired-mode-hook #'dired-omit-mode)
-    (setq dired-omit-files
+          (setq dired-omit-files
 	  (concat dired-omit-files "\\|^.DS_STORE$\\|^.projectile$\\|^\\..+$"))
     (setq-default dired-omit-extensions '(".fdb_latexmk" ".aux" ".bbl" ".blg" ".fls" ".glo" ".idx" ".ilg" ".ind" ".ist" ".log" ".out" ".gz" ".DS_Store" ".xml" ".bcf" ".nav" ".snm" ".toc"))))
+
+(with-after-elpaca-init 
+(add-hook 'dired-mode-hook #'dired-omit-mode))
 
 (setq dired-dwim-target t)
 
@@ -508,13 +510,13 @@
  "s-j" #'dired-goto-file)
 
 (use-package doom-modeline
-  :demand t
-  :init (doom-modeline-mode 1)
-  :config
-  (setq doom-modeline-enable-word-count t)
-  (setq doom-modeline-continuous-word-count-modes '(markdown-mode gfm-mode org-mode))
-  (setq display-time-day-and-date t)
-  )
+    :config
+    (setq doom-modeline-enable-word-count t)
+    (setq doom-modeline-continuous-word-count-modes '(markdown-mode gfm-mode org-mode))
+    (setq display-time-day-and-date t)
+:hook
+(elpaca-after-init . doom-modeline-mode)
+    )
 
 (use-package eat
   :ensure
@@ -626,8 +628,8 @@
       (goto-char (point-min)))))
 
 (use-package exec-path-from-shell
-  :demand t
-  :config (exec-path-from-shell-initialize))
+  :config
+  (exec-path-from-shell-initialize))
 
 (use-package fish-mode
 :defer)
@@ -814,7 +816,6 @@
   (insert-char (gethash unicode-name (ucs-names))))
 
 (use-package major-mode-hydra
-  :demand t
   :commands (pretty-hydra-define)
   :general
   ("s-m" #'major-mode-hydra))
@@ -1466,9 +1467,10 @@
 		(insert (concat " " (format-time-string "%B %e, %Y")))))
 
 (use-package rlr-teaching
-:demand t
-    :ensure
-    (:host github :repo "rlridenour/rlr-teaching"))
+  :demand t
+  :ensure
+  (:host github :repo "rlridenour/rlr-teaching")
+  )
 
 (use-package org-auto-tangle
   :hook (org-mode . org-auto-tangle-mode))
@@ -1655,7 +1657,6 @@
     (org-mode)))
 
 (use-package persistent-scratch
-  :demand t
   :config
   (persistent-scratch-setup-default))
 
@@ -1717,11 +1718,11 @@
   ( "<f6>" #'yankpad-insert))
 
 (use-package yasnippet
-  :demand t
   :config
-  (yas-global-mode)
   :custom
-  (yas-snippet-dirs '("~/.config/emacs/snippets")))
+  (yas-snippet-dirs '("~/.config/emacs/snippets"))
+  :hook
+  (elpaca-after-init . yas-global-mode))
 
 (general-define-key
  "C-+" #'text-scale-increase

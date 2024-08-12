@@ -297,7 +297,8 @@ Load org first to avoid version mismatch.
   (elpaca elpaca-use-package
     (require 'elpaca-use-package)
     (elpaca-use-package-mode)
-    (setq use-package-always-ensure t))
+    (setq use-package-always-ensure t)
+    (setq use-package-always-defer t))
 #+end_src
 
 
@@ -915,8 +916,7 @@ Load general before the remaining packages so they can make use of the ~:general
 ** Crux
 
 #+begin_src emacs-lisp
-  (use-package crux
-    :demand t)
+  (use-package crux)
 #+end_src
 
 ** Dashboard
@@ -1034,11 +1034,22 @@ Search notes with the xapian syntax (+word -word AND NOT etc), <tab> to preview,
     (progn
       (setq dired-omit-verbose nil)
       ;; toggle `dired-omit-mode' with C-x M-o
-      (add-hook 'dired-mode-hook #'dired-omit-mode)
-      (setq dired-omit-files
+            (setq dired-omit-files
 	    (concat dired-omit-files "\\|^.DS_STORE$\\|^.projectile$\\|^\\..+$"))
       (setq-default dired-omit-extensions '(".fdb_latexmk" ".aux" ".bbl" ".blg" ".fls" ".glo" ".idx" ".ilg" ".ind" ".ist" ".log" ".out" ".gz" ".DS_Store" ".xml" ".bcf" ".nav" ".snm" ".toc"))))
 #+end_src
+
+For some reason, adding the dired-omit-mode hook in the use-package declaration isn't working. This sets it after Emacs starts.
+
+#+begin_src emacs-lisp
+(with-after-elpaca-init 
+(add-hook 'dired-mode-hook #'dired-omit-mode))
+#+end_src
+
+
+
+
+
 
 Make copying and moving files easier.
 
@@ -1058,12 +1069,12 @@ Make copying and moving files easier.
 
 #+begin_src emacs-lisp
   (use-package doom-modeline
-    :demand t
-    :init (doom-modeline-mode 1)
     :config
     (setq doom-modeline-enable-word-count t)
     (setq doom-modeline-continuous-word-count-modes '(markdown-mode gfm-mode org-mode))
     (setq display-time-day-and-date t)
+:hook
+(elpaca-after-init . doom-modeline-mode)
     )
 #+end_src
 
@@ -1231,8 +1242,8 @@ Use Term-Toggle with Eat
 
 #+begin_src emacs-lisp
   (use-package exec-path-from-shell
-    :demand t
-    :config (exec-path-from-shell-initialize))
+    :config
+    (exec-path-from-shell-initialize))
 #+end_src
 
 
@@ -1509,7 +1520,6 @@ Insert internal links using C-c C-l. From [[https://lucidmanager.org/productivit
 
 #+begin_src emacs-lisp
   (use-package major-mode-hydra
-    :demand t
     :commands (pretty-hydra-define)
     :general
     ("s-m" #'major-mode-hydra))
@@ -2301,9 +2311,10 @@ Enrich existing commands with completion annotations
 
 #+begin_src emacs-lisp
   (use-package rlr-teaching
-:demand t
+    :demand t
     :ensure
-    (:host github :repo "rlridenour/rlr-teaching"))
+    (:host github :repo "rlridenour/rlr-teaching")
+    )
 #+end_src
 
 
@@ -2559,7 +2570,6 @@ Use ~persistent-scratch~ to save scratch file between sessions.
 
 #+begin_src emacs-lisp
   (use-package persistent-scratch
-    :demand t
     :config
     (persistent-scratch-setup-default))
 #+end_src
@@ -2681,11 +2691,11 @@ https://github.com/joaotavora/yasnippet
 
 #+begin_src emacs-lisp :lexical t
   (use-package yasnippet
-    :demand t
     :config
-    (yas-global-mode)
     :custom
-    (yas-snippet-dirs '("~/.config/emacs/snippets")))
+    (yas-snippet-dirs '("~/.config/emacs/snippets"))
+    :hook
+    (elpaca-after-init . yas-global-mode))
 #+end_src
 
 
