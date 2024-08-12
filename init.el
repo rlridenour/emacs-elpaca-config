@@ -629,6 +629,9 @@
   :demand t
   :config (exec-path-from-shell-initialize))
 
+(use-package fish-mode
+:defer)
+
 (use-feature savehist
   :defer 1
   :config

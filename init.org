@@ -1235,6 +1235,15 @@ Use Term-Toggle with Eat
     :config (exec-path-from-shell-initialize))
 #+end_src
 
+
+** Fish
+
+#+begin_src emacs-lisp
+(use-package fish-mode
+:defer)
+#+end_src
+
+
 ** History
 
 #+begin_src emacs-lisp
