@@ -730,6 +730,16 @@ Make output scroll to bottom in Eshell.
   (setq eshell-scroll-to-bottom-on-input "this")
 #+end_src
 
+** Help
+
+Make help buffers active when created, so pressing "q" will immediately close them.
+
+#+begin_src emacs-lisp
+  (setq help-window-select t)
+  (setq Man-notify-method 'aggressive)
+#+end_src
+
+
 
 
 * Packages
@@ -1227,6 +1237,13 @@ Use Term-Toggle with Eat
 #+begin_src emacs-lisp
 (use-package fish-mode
 :defer)
+#+end_src
+
+
+** Helpful
+
+#+begin_src emacs-lisp
+  (use-package helpful)
 #+end_src
 
 
@@ -2643,6 +2660,13 @@ https://github.com/justbur/emacs-which-key
     (which-key-side-window-max-width 0.33)
     (which-key-idle-delay 0.2))
 #+end_src
+
+** Writeroom
+
+#+begin_src emacs-lisp
+(use-package writeroom-mode)
+#+end_src
+
 
 
 ** Yankpad

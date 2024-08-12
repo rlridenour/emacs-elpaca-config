@@ -337,6 +337,9 @@
 
 (setq eshell-scroll-to-bottom-on-input "this")
 
+(setq help-window-select t)
+(setq Man-notify-method 'aggressive)
+
 (use-package general
   :ensure (:wait t)
   :demand t
@@ -629,6 +632,8 @@
 
 (use-package fish-mode
 :defer)
+
+(use-package helpful)
 
 (use-feature savehist
   :defer 1
@@ -1705,6 +1710,8 @@
   (which-key-sort-order 'which-key-key-order-alpha)
   (which-key-side-window-max-width 0.33)
   (which-key-idle-delay 0.2))
+
+(use-package writeroom-mode)
 
 (use-package yankpad
   :defer 2
