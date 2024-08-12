@@ -1,14 +1,7 @@
 ;;; init.el --- Personal Emacs configuration file -*- lexical-binding: t; -*-
-;; NOTE: init.el is generated from README.org.  Please edit that file instead
-
-;;; init.el --- Personal Emacs configuration file -*- lexical-binding: t; -*-
-;; NOTE: init.el is generated from README.org.  Please edit that file instead
 
 (defconst rr-emacs-dir (expand-file-name user-emacs-directory)
   "The path to the emacs.d directory.")
-
-;; set load path
-(add-to-list 'load-path (concat user-emacs-directory "elisp"))
 
 (defconst rr-cache-dir "~/.cache/emacs/"
   "The directory for Emacs activity files.")
@@ -30,6 +23,9 @@
 		   rr-backup-dir))
   (unless (file-directory-p dir)
     (make-directory dir t)))
+
+;; set load path
+(add-to-list 'load-path (concat rr-emacs-dir "elisp"))
 
 (defvar elpaca-installer-version 0.7)
 (defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))

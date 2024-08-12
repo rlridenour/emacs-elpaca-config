@@ -168,57 +168,25 @@ Increase font size.
 
 #+begin_src emacs-lisp
     ;;; init.el --- Personal Emacs configuration file -*- lexical-binding: t; -*-
-  ;; NOTE: init.el is generated from README.org.  Please edit that file instead
 #+end_src
 
-#+begin_src emacs-lisp
-    ;;; init.el --- Personal Emacs configuration file -*- lexical-binding: t; -*-
-  ;; NOTE: init.el is generated from README.org.  Please edit that file instead
-#+end_src
 
 #+begin_src emacs-lisp
   (defconst rr-emacs-dir (expand-file-name user-emacs-directory)
     "The path to the emacs.d directory.")
-#+end_src
 
-Add elisp directory to load path.
-
-#+begin_src emacs-lisp
-  ;; set load path
-  (add-to-list 'load-path (concat user-emacs-directory "elisp"))
-#+end_src
-
-Set directory for Emacs activity files.
-
-#+begin_src emacs-lisp
   (defconst rr-cache-dir "~/.cache/emacs/"
     "The directory for Emacs activity files.")
-#+end_src
 
-Set directory for backup files.
-
-#+begin_src emacs-lisp
   (defconst rr-backup-dir (concat rr-cache-dir "backup/")
     "The directory for Emacs backup files.")
-#+end_src
 
-Set directory for org files.
-
-#+begin_src emacs-lisp
   (defconst rr-org-dir "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/"
     "The directory for my org files.")
-#+end_src
 
-Set directory for agenda files.
-
-#+begin_src emacs-lisp
   (defconst rr-agenda-dir "/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/"
     "The directory for RR-Emacs note storage.")
-#+end_src
 
-Set directory for notes.
-
-#+begin_src emacs-lisp
   (defconst rr-notes-dir "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/Documents/notes/"
     "The directory for RR-Emacs note storage.")
 #+end_src
@@ -231,6 +199,13 @@ Create cache and backup directories.
 		     rr-backup-dir))
     (unless (file-directory-p dir)
       (make-directory dir t)))
+#+end_src
+
+Add elisp directory to load path.
+
+#+begin_src emacs-lisp
+  ;; set load path
+  (add-to-list 'load-path (concat rr-emacs-dir "elisp"))
 #+end_src
 
 * Package Management
