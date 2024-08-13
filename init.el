@@ -412,6 +412,7 @@
   (dashboard-setup-startup-hook)
   (setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
   (setq dashboard-week-agenda nil)
+  (setq dashboard-agenda-time-string-format "%Y-%m-%d %H:%M")
   (setq dashboard-startup-banner "/Users/rlridenour/.config/emacs/logo-emacs.png")
   (setq dashboard-center-content t)
   (setq dashboard-set-footer nil)
@@ -421,25 +422,25 @@
   (setq dashboard-set-navigator nil)
   (setq dashboard-projects-backend 'project-el)
   (setq dashboard-items '((agenda . 5)
-			  (recents  . 5)
-			  (bookmarks . 10)
-			  (projects . 5)))
+			(recents  . 5)
+			(bookmarks . 10)
+			(projects . 5)))
   (setq dashboard-startupify-list '(dashboard-insert-banner
-				    dashboard-insert-newline
-				    dashboard-insert-banner-title
-				    dashboard-insert-newline
-				    dashboard-insert-navigator
-				    dashboard-insert-newline
-				    dashboard-insert-init-info
-				    dashboard-insert-items
-				    dashboard-insert-newline)))
+				  dashboard-insert-newline
+				  dashboard-insert-banner-title
+				  dashboard-insert-newline
+				  dashboard-insert-navigator
+				  dashboard-insert-newline
+				  dashboard-insert-init-info
+				  dashboard-insert-items
+				  dashboard-insert-newline)))
 
 (defun dashboard-insert-agenda (&rest _)
   "Insert a copy of org-agenda buffer."
   (insert (save-window-excursion
-	    (org-agenda nil "d")
-	    (prog1 (buffer-string)
-	      (kill-buffer)))))
+	  (org-agenda nil "d")
+	  (prog1 (buffer-string)
+	    (kill-buffer)))))
 
 (defun goto-dashboard ()
   "this sends you to the dashboard buffer"
@@ -494,11 +495,11 @@
   (progn
     (setq dired-omit-verbose nil)
     ;; toggle `dired-omit-mode' with C-x M-o
-          (setq dired-omit-files
+	  (setq dired-omit-files
 	  (concat dired-omit-files "\\|^.DS_STORE$\\|^.projectile$\\|^\\..+$"))
     (setq-default dired-omit-extensions '(".fdb_latexmk" ".aux" ".bbl" ".blg" ".fls" ".glo" ".idx" ".ilg" ".ind" ".ist" ".log" ".out" ".gz" ".DS_Store" ".xml" ".bcf" ".nav" ".snm" ".toc"))))
 
-(with-after-elpaca-init 
+(with-after-elpaca-init
 (add-hook 'dired-mode-hook #'dired-omit-mode))
 
 (setq dired-dwim-target t)
