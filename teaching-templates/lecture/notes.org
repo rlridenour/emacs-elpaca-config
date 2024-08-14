@@ -21,6 +21,7 @@
 #+LaTeX_HEADER: \usepackage{libertinus-type1}
 #+LaTeX_HEADER: \usepackage{libertinust1math}          
 #+LaTeX_HEADER: \usepackage[T1]{fontenc}          
+#+LATEX_HEADER: \mode<article>{\setbeamertemplate{alerted text begin}{\bfseries\upshape} \setbeamertemplate{alerted text end}{}}
 #+LaTeX_HEADER:\usepackage{hyperref}
 #+LATEX_COMPILER: pdflatex
 #+OPTIONS: toc:nil

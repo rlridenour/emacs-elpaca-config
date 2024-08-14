@@ -21,7 +21,6 @@ Set the header and prevent package initialization.
   (setq inhibit-default-init nil)
 #+end_src
 
-
 ** Performance
 
 *** Garbage Collection
@@ -67,7 +66,6 @@ Improve execution speed.
   (setq native-comp-async-report-warnings-errors nil)
 #+end_src
 
-
 *** File-Name-Handler-Alist
 
 Skipping a bunch of regular expression searching in the =file-name-handler-alist= should improve start time.
@@ -82,7 +80,6 @@ Set my name and email.
   (setq user-full-name "Randy Ridenour"
 	user-mail-address "rlridenour@fastmail.com")
 #+end_src
-
 
 ** UI
 
@@ -102,7 +99,6 @@ Remove unnecessary GUI elements.
   (setq use-dialog-box nil)
 #+end_src
 
-
 *** Initial Frame
 
 Set initial frame size to fullheight.
@@ -121,7 +117,6 @@ Set the frame title format.
 		frame-title-format '("%f [%m]"))
 #+end_src
 
-
 Focus new frames
 
 #+begin_src emacs-lisp
@@ -131,7 +126,6 @@ Focus new frames
   (add-hook 'server-after-make-frame-hook #'my/focus-new-client-frame)
 #+end_src
 
-
 ** Initial Mode
 
 Set initial mode to org-mode.
@@ -140,7 +134,6 @@ Set initial mode to org-mode.
   (setq initial-major-mode 'org-mode)
 #+end_src
 
-
 ** Font size
 
 Increase font size.
@@ -148,7 +141,6 @@ Increase font size.
 #+begin_src emacs-lisp
   (set-face-attribute 'default nil :height 160)
 #+end_src
-
 
 ** Footer
 
@@ -160,16 +152,14 @@ Increase font size.
   ;; End:
 #+end_src
 
-
 * Variables
 :PROPERTIES:
 :header-args: :tangle init.el
 :END:
 
 #+begin_src emacs-lisp
-    ;;; init.el --- Personal Emacs configuration file -*- lexical-binding: t; -*-
+  ;;; init.el --- Personal Emacs configuration file -*- lexical-binding: t; -*-
 #+end_src
-
 
 #+begin_src emacs-lisp
   (defconst rr-emacs-dir (expand-file-name user-emacs-directory)
@@ -256,10 +246,6 @@ Add elisp directory to load path.
   (elpaca `(,@elpaca-order))
 #+end_src
 
-
-
-
-
 ** Elpaca Use-Package Support
 
 Load org first to avoid version mismatch.
@@ -275,7 +261,6 @@ Load org first to avoid version mismatch.
     (setq use-package-always-ensure t)
     (setq use-package-always-defer t))
 #+end_src
-
 
 #+begin_src emacs-lisp :lexical t
   (defmacro use-feature (name &rest args)
@@ -295,7 +280,6 @@ Use this macro for code that needs to run after Elpaca.
     `(add-hook 'elpaca-after-init-hook (lambda () ,@body)))
 #+end_src
 
-
 * Defaults
 :PROPERTIES:
 :header-args: :tangle init.el
@@ -309,7 +293,6 @@ UTF-8 as default.
 #+end_src
 
 Use GNU ls to avoid "Listing directory failed but 'access-file' worked" error.
-
 
 #+begin_src emacs-lisp
   (setq insert-directory-program "gls")
@@ -332,7 +315,6 @@ Set Mac fn key as Emacs hyper key. The fn key with A, D, F, H, E, C, N, M, and Q
 #+begin_src emacs-lisp
   (setq ns-function-modifier 'hyper)
 #+end_src
-
 
 Allow entering a command when the minibuffer is active.
 
@@ -361,7 +343,6 @@ World clock settings.
   (setq world-clock-time-format "%a, %d %b %R %Z")
 #+end_src
 
-
 #+begin_src emacs-lisp
   (define-key key-translation-map (kbd "ESC") (kbd "C-g"))
 #+end_src
@@ -381,7 +362,6 @@ Use MacOS SF Symbols
   (when (memq system-type '(darwin))
     (set-fontset-font t nil "SF Pro Display" nil 'append))
 #+end_src
-
 
 ** Files and Buffers
 
@@ -420,7 +400,6 @@ Send deleted files to an Emacs folder in system trash.
 	trash-directory "~/.Trash/emacs")
 #+end_src
 
-
 Give buffers uniquely numbered names.
 
 #+begin_src emacs-lisp
@@ -451,7 +430,6 @@ Auto-update ibuffer list.
 		(ibuffer-switch-to-saved-filter-groups "home")))
 #+end_src
 
-
 Save minibuffer history in the cache directory.
 
 #+begin_src emacs-lisp
@@ -481,8 +459,6 @@ Don't ask for confirmation to kill processes when exiting Emacs. Credit to [[htt
     (cl-flet ((process-list ())) ad-do-it))
 #+end_src
 
-
-
 Don't display async shell command process buffers
 
 #+begin_src emacs-lisp
@@ -498,13 +474,12 @@ Don't display async shell command process buffers
   (add-hook 'find-file-not-found-functions #'make-parent-directory)
 #+end_src
 
-
 Kills all open buffers except scratch, dashboard and messages. From https://github.com/ocodo/.emacs.d/blob/master/custom/handy-functions.el
 
 #+begin_src emacs-lisp
   (defun nuke-all-buffers ()
     "Kill all the open buffers except the current one.
-	Leave *scratch*, *dashboard* and *Messages* alone too."
+	  Leave *scratch*, *dashboard* and *Messages* alone too."
     (interactive)
     (mapc
      (lambda (buffer)
@@ -515,26 +490,23 @@ Kills all open buffers except scratch, dashboard and messages. From https://gith
 	 (kill-buffer buffer)))
      (buffer-list))
     (delete-other-windows)
-(goto-dashboard)
+    (goto-dashboard)
     )
 #+end_src
 
 #+begin_src emacs-lisp
-(defun goto-emacs-init ()
-(interactive)
-"Find Emacs literate init file."
-(find-file (concat rr-emacs-dir "/init.org")))
+  (defun goto-emacs-init ()
+    (interactive)
+    "Find Emacs literate init file."
+    (find-file (concat rr-emacs-dir "/init.org")))
 #+end_src
 
 #+begin_src emacs-lisp
-(defun goto-shell-init ()
-(interactive)
-"Find Emacs literate init file."
-(find-file "~/.config/fish/functions/"))
+  (defun goto-shell-init ()
+    (interactive)
+    "Find Emacs literate init file."
+    (find-file "~/.config/fish/functions/"))
 #+end_src
-
-
-
 
 ** Windows
 
@@ -622,11 +594,9 @@ Kills all open buffers except scratch, dashboard and messages. From https://gith
 	    (if this-win-2nd (other-window 1))))))
 #+end_src
 
-
 #+begin_src emacs-lisp
   (defun toggle-frame-maximized-undecorated () (interactive) (let* ((frame (selected-frame)) (on? (and (frame-parameter frame 'undecorated) (eq (frame-parameter frame 'fullscreen) 'maximized))) (geom (frame-monitor-attribute 'geometry)) (x (nth 0 geom)) (y (nth 1 geom)) (display-height (nth 3 geom)) (display-width (nth 2 geom)) (cut (if on? (if ns-auto-hide-menu-bar 26 50) (if ns-auto-hide-menu-bar 4 26)))) (set-frame-position frame x y) (set-frame-parameter frame 'fullscreen-restore 'maximized) (set-frame-parameter nil 'fullscreen 'maximized) (set-frame-parameter frame 'undecorated (not on?)) (set-frame-height frame (- display-height cut) nil t) (set-frame-width frame (- display-width 20) nil t) (set-frame-position frame x y)))
 #+end_src
-
 
 Set font
 
@@ -665,7 +635,7 @@ Change color for active window.
 
 Auto insert close bracket.
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (electric-pair-mode 1)
 #+end_src
 
@@ -675,7 +645,6 @@ Immediately highlight matching pairs of parentheses and quotes.
   (show-paren-mode)
   (setq show-paren-delay 0)
 #+end_src
-
 
 ** Shells
 
@@ -719,10 +688,7 @@ Run async shell command without creating a window.
       ))
     )
 
-
 #+end_src
-
-
 
 Make output scroll to bottom in Eshell.
 
@@ -738,9 +704,6 @@ Make help buffers active when created, so pressing "q" will immediately close th
   (setq help-window-select t)
   (setq Man-notify-method 'aggressive)
 #+end_src
-
-
-
 
 * Packages
 :PROPERTIES:
@@ -758,36 +721,32 @@ Load general before the remaining packages so they can make use of the ~:general
     :config
     (general-override-mode)
     (general-auto-unbind-keys)
-  (general-unbind
-    "C-z"
-    "s-p"
-    "s-q"
-    "s-w"
-    "s-m"
-    "s-n"
-    "s-h"))
+    (general-unbind
+      "C-z"
+      "s-p"
+      "s-q"
+      "s-w"
+      "s-m"
+      "s-n"
+      "s-h"))
 #+end_src
-
 
 ** Abbrev
 
 #+begin_src emacs-lisp
-(use-feature abbrev
-:config
-  (load "~/Dropbox/emacs/my-emacs-abbrev"))
+  (use-feature abbrev
+    :config
+    (load "~/Dropbox/emacs/my-emacs-abbrev"))
 #+end_src
-
-
 
 ** Ace Link
 
 #+begin_src emacs-lisp
   (use-package ace-link
-:defer 2
+    :defer 2
     :init
     (ace-link-setup-default))
 #+end_src
-
 
 ** Ace Window
 
@@ -795,7 +754,6 @@ Load general before the remaining packages so they can make use of the ~:general
   (use-package ace-window
     :defer 2)
 #+end_src
-
 
 ** Aggressive Indent
 
@@ -806,7 +764,6 @@ Load general before the remaining packages so they can make use of the ~:general
     :config
     (global-aggressive-indent-mode 1))
 #+end_src
-
 
 ** Avy
 
@@ -820,9 +777,6 @@ Load general before the remaining packages so they can make use of the ~:general
     ("C-c C-j" #'avy-resume))
 #+end_src
 
-
-
-
 ** Bookmarks
 
 #+begin_src emacs-lisp
@@ -833,15 +787,13 @@ Load general before the remaining packages so they can make use of the ~:general
     (setq bookmark-save-flag 1))
 #+end_src
 
-
 ** Casual Suite
-
 
 #+begin_src emacs-lisp :tangle no
   (use-package casual-suite
     :defer 2
-:init
-(require 'transient)
+    :init
+    (require 'transient)
     :config
     (require 're-builder)
     (setq reb-re-syntax 'string)
@@ -852,7 +804,7 @@ Load general before the remaining packages so they can make use of the ~:general
 	      "s-." #'casual-info-tmenu)
     (:keymaps 'dired-mode-map
 	      "s-." #'casual-dired-tmenu
-	    "M-g a"  #'casual-avy-tmenu)
+	      "M-g a"  #'casual-avy-tmenu)
     (:keymaps 'isearch-mode-map
 	      "<f8>" #'casual-isearch-tmenu)
     (:keymaps 'ibuffer-mode-map
@@ -864,9 +816,6 @@ Load general before the remaining packages so they can make use of the ~:general
     (:keymaps 'bookmark-bmenu-mode-map
 	      "s-." #'casual-bookmarks-tmenu))
 #+end_src
-
-
-
 
 ** Citar
 
@@ -886,8 +835,6 @@ Load general before the remaining packages so they can make use of the ~:general
        (t . (csl "chicago-author-date.csl")))))
 #+end_src
 
-
-
 ** Consult
 
 #+begin_src emacs-lisp
@@ -896,7 +843,6 @@ Load general before the remaining packages so they can make use of the ~:general
     :general
     ("C-x b" #'consult-buffer))
 #+end_src
-
 
 ** Crux
 
@@ -912,7 +858,7 @@ Load general before the remaining packages so they can make use of the ~:general
     :config
     (dashboard-setup-startup-hook)
     (setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
-    (setq dashboard-week-agenda nil)
+    ;; (setq dashboard-week-agenda nil)
     (setq dashboard-agenda-time-string-format "%Y-%m-%d %H:%M")
     (setq dashboard-startup-banner "/Users/rlridenour/.config/emacs/logo-emacs.png")
     (setq dashboard-center-content t)
@@ -923,25 +869,25 @@ Load general before the remaining packages so they can make use of the ~:general
     (setq dashboard-set-navigator nil)
     (setq dashboard-projects-backend 'project-el)
     (setq dashboard-items '((agenda . 5)
-			  (recents  . 5)
-			  (bookmarks . 10)
-			  (projects . 5)))
+			    (recents  . 5)
+			    (bookmarks . 10)
+			    (projects . 5)))
     (setq dashboard-startupify-list '(dashboard-insert-banner
-				    dashboard-insert-newline
-				    dashboard-insert-banner-title
-				    dashboard-insert-newline
-				    dashboard-insert-navigator
-				    dashboard-insert-newline
-				    dashboard-insert-init-info
-				    dashboard-insert-items
-				    dashboard-insert-newline)))
+				      dashboard-insert-newline
+				      dashboard-insert-banner-title
+				      dashboard-insert-newline
+				      dashboard-insert-navigator
+				      dashboard-insert-newline
+				      dashboard-insert-init-info
+				      dashboard-insert-items
+				      dashboard-insert-newline))
 
   (defun dashboard-insert-agenda (&rest _)
     "Insert a copy of org-agenda buffer."
     (insert (save-window-excursion
-	    (org-agenda nil "d")
-	    (prog1 (buffer-string)
-	      (kill-buffer)))))
+	      (org-agenda nil "d")
+	      (prog1 (buffer-string)
+		(kill-buffer))))))
 
   (defun goto-dashboard ()
     "this sends you to the dashboard buffer"
@@ -952,14 +898,13 @@ Load general before the remaining packages so they can make use of the ~:general
 
   (general-define-key
    "s-d" #'goto-dashboard)
-#+end_src
+    #+end_src
 
 ** Deadgrep
 
 #+begin_src emacs-lisp
   (use-package deadgrep)
 #+end_src
-
 
 ** Denote
 
@@ -1010,7 +955,6 @@ Search notes with the xapian syntax (+word -word AND NOT etc), <tab> to preview,
     (xeft-recursive nil))
 #+end_src
 
-
 ** Dired
 
 #+begin_src emacs-lisp
@@ -1020,7 +964,7 @@ Search notes with the xapian syntax (+word -word AND NOT etc), <tab> to preview,
     (progn
       (setq dired-omit-verbose nil)
       ;; toggle `dired-omit-mode' with C-x M-o
-	    (setq dired-omit-files
+      (setq dired-omit-files
 	    (concat dired-omit-files "\\|^.DS_STORE$\\|^.projectile$\\|^\\..+$"))
       (setq-default dired-omit-extensions '(".fdb_latexmk" ".aux" ".bbl" ".blg" ".fls" ".glo" ".idx" ".ilg" ".ind" ".ist" ".log" ".out" ".gz" ".DS_Store" ".xml" ".bcf" ".nav" ".snm" ".toc"))))
 #+end_src
@@ -1028,14 +972,9 @@ Search notes with the xapian syntax (+word -word AND NOT etc), <tab> to preview,
 For some reason, adding the dired-omit-mode hook in the use-package declaration isn't working. This sets it after Emacs starts.
 
 #+begin_src emacs-lisp
-(with-after-elpaca-init
-(add-hook 'dired-mode-hook #'dired-omit-mode))
+  (with-after-elpaca-init
+   (add-hook 'dired-mode-hook #'dired-omit-mode))
 #+end_src
-
-
-
-
-
 
 Make copying and moving files easier.
 
@@ -1050,7 +989,6 @@ Make copying and moving files easier.
    "s-j" #'dired-goto-file)
 #+end_src
 
-
 ** Doom Modeline
 
 #+begin_src emacs-lisp
@@ -1059,11 +997,10 @@ Make copying and moving files easier.
     (setq doom-modeline-enable-word-count t)
     (setq doom-modeline-continuous-word-count-modes '(markdown-mode gfm-mode org-mode))
     (setq display-time-day-and-date t)
-:hook
-(elpaca-after-init . doom-modeline-mode)
+    :hook
+    (elpaca-after-init . doom-modeline-mode)
     )
 #+end_src
-
 
 ** Eat
 
@@ -1081,7 +1018,6 @@ Make copying and moving files easier.
 		   (:exclude ".dir-locals.el" "*-tests.el"))))
 #+end_src
 
-
 ** Ebib
 
 #+begin_src emacs-lisp
@@ -1095,8 +1031,6 @@ Make copying and moving files easier.
     :custom
     (ebib-preload-bib-files '("~/Dropbox/bibtex/rlr.bib")))
 #+end_src
-
-
 
 ** Emacs-Term-Toggle
 https://github.com/amno1/emacs-term-toggle
@@ -1133,8 +1067,6 @@ Use Term-Toggle with Eat
    "C-`" #'iterm-goto-filedir-or-home)
 #+end_src
 
-
-
 ** Evil Nerd Commenter
 
 #+begin_src emacs-lisp
@@ -1143,86 +1075,81 @@ Use Term-Toggle with Eat
     ("M-;" #'evilnc-comment-or-uncomment-lines))
 #+end_src
 
-
-
 ** EWW
 
 #+begin_src emacs-lisp
-(use-feature eww
-:config
-  (defun my/eww-toggle-images ()
-    "Toggle whether images are loaded and reload the current page from cache."
-    (interactive)
-    (setq-local shr-inhibit-images (not shr-inhibit-images))
-    (eww-reload t)
-    (message "Images are now %s"
-	     (if shr-inhibit-images "off" "on")))
+  (use-feature eww
+    :config
+    (defun my/eww-toggle-images ()
+      "Toggle whether images are loaded and reload the current page from cache."
+      (interactive)
+      (setq-local shr-inhibit-images (not shr-inhibit-images))
+      (eww-reload t)
+      (message "Images are now %s"
+	       (if shr-inhibit-images "off" "on")))
 
-  (define-key eww-mode-map (kbd "I") #'my/eww-toggle-images)
-  (define-key eww-link-keymap (kbd "I") #'my/eww-toggle-images)
+    (define-key eww-mode-map (kbd "I") #'my/eww-toggle-images)
+    (define-key eww-link-keymap (kbd "I") #'my/eww-toggle-images)
 
-  ;; minimal rendering by default
-  (setq-default shr-inhibit-images t)   ; toggle with `I`
-  (setq-default shr-use-fonts nil)      ; toggle with `F`
-  (defun rrnet ()
-    (interactive)
-    (eww-browse-url "randyridenour.net")
-    )
+    ;; minimal rendering by default
+    (setq-default shr-inhibit-images t)   ; toggle with `I`
+    (setq-default shr-use-fonts nil)      ; toggle with `F`
+    (defun rrnet ()
+      (interactive)
+      (eww-browse-url "randyridenour.net")
+      )
 
-  (defun sep ()
-    (interactive)
-    (eww-browse-url "plato.stanford.edu")
-    ))
+    (defun sep ()
+      (interactive)
+      (eww-browse-url "plato.stanford.edu")
+      ))
 #+end_src
 
 #+begin_src emacs-lisp
-(with-after-elpaca-init
-  (defun jao-eww-to-org (&optional dest)
-    "Render the current eww buffer using org markup.
-  If DEST, a buffer, is provided, insert the markup there."
-    (interactive)
-    (unless (org-region-active-p)
-      (let ((shr-width 80)) (eww-readable)))
-    (let* ((start (if (org-region-active-p) (region-beginning) (point-min)))
-	   (end (if (org-region-active-p) (region-end) (point-max)))
-	   (buff (or dest (generate-new-buffer "*eww-to-org*")))
-	   (link (eww-current-url))
-	   (title (or (plist-get eww-data :title) "")))
-      (with-current-buffer buff
-	(insert "#+title: " title "\n#+link: " link "\n\n")
-	(org-mode))
-      (save-excursion
-	(goto-char start)
-	(while (< (point) end)
-	  (let* ((p (point))
-		 (props (text-properties-at p))
-		 (k (seq-find (lambda (x) (plist-get props x))
-			      '(shr-url image-url outline-level face)))
-		 (prop (and k (list k (plist-get props k))))
-		 (next (if prop
-			   (next-single-property-change p (car prop) nil end)
-			 (next-property-change p nil end)))
-		 (txt (buffer-substring (point) next))
-		 (txt (replace-regexp-in-string "\\*" "·" txt)))
-	    (with-current-buffer buff
-	      (insert
-	       (pcase prop
-		 ((and (or `(shr-url ,url) `(image-url ,url))
-		       (guard (string-match-p "^http" url)))
-		  (let ((tt (replace-regexp-in-string "\n\\([^$]\\)" " \\1" txt)))
-		    (org-link-make-string url tt)))
-		 (`(outline-level ,n)
-		  (concat (make-string (- (* 2 n) 1) ?*) " " txt "\n"))
-		 ('(face italic) (format "/%s/ " (string-trim txt)))
-		 ('(face bold) (format "*%s* " (string-trim txt)))
-		 (_ txt))))
-	    (goto-char next))))
-      (pop-to-buffer buff)
-      (goto-char (point-min)))))
+  (with-after-elpaca-init
+   (defun jao-eww-to-org (&optional dest)
+     "Render the current eww buffer using org markup.
+    If DEST, a buffer, is provided, insert the markup there."
+     (interactive)
+     (unless (org-region-active-p)
+       (let ((shr-width 80)) (eww-readable)))
+     (let* ((start (if (org-region-active-p) (region-beginning) (point-min)))
+	    (end (if (org-region-active-p) (region-end) (point-max)))
+	    (buff (or dest (generate-new-buffer "*eww-to-org*")))
+	    (link (eww-current-url))
+	    (title (or (plist-get eww-data :title) "")))
+       (with-current-buffer buff
+	 (insert "#+title: " title "\n#+link: " link "\n\n")
+	 (org-mode))
+       (save-excursion
+	 (goto-char start)
+	 (while (< (point) end)
+	   (let* ((p (point))
+		  (props (text-properties-at p))
+		  (k (seq-find (lambda (x) (plist-get props x))
+			       '(shr-url image-url outline-level face)))
+		  (prop (and k (list k (plist-get props k))))
+		  (next (if prop
+			    (next-single-property-change p (car prop) nil end)
+			  (next-property-change p nil end)))
+		  (txt (buffer-substring (point) next))
+		  (txt (replace-regexp-in-string "\\*" "·" txt)))
+	     (with-current-buffer buff
+	       (insert
+		(pcase prop
+		  ((and (or `(shr-url ,url) `(image-url ,url))
+			(guard (string-match-p "^http" url)))
+		   (let ((tt (replace-regexp-in-string "\n\\([^$]\\)" " \\1" txt)))
+		     (org-link-make-string url tt)))
+		  (`(outline-level ,n)
+		   (concat (make-string (- (* 2 n) 1) ?*) " " txt "\n"))
+		  ('(face italic) (format "/%s/ " (string-trim txt)))
+		  ('(face bold) (format "*%s* " (string-trim txt)))
+		  (_ txt))))
+	     (goto-char next))))
+       (pop-to-buffer buff)
+       (goto-char (point-min)))))
 #+end_src
-
-
-
 
 ** Exec-Path-From-Shell
 
@@ -1232,21 +1159,18 @@ Use Term-Toggle with Eat
     (exec-path-from-shell-initialize))
 #+end_src
 
-
 ** Fish
 
 #+begin_src emacs-lisp
-(use-package fish-mode
-:defer)
+  (use-package fish-mode
+    :defer)
 #+end_src
-
 
 ** Helpful
 
 #+begin_src emacs-lisp
   (use-package helpful)
 #+end_src
-
 
 ** History
 
@@ -1257,239 +1181,14 @@ Use Term-Toggle with Eat
     (savehist-mode 1))
 #+end_src
 
-
 ** Hugo
 
 #+begin_src emacs-lisp
-  (defun hugo-timestamp ()
-    "Update existing date: timestamp on a Hugo post."
-    (interactive)
-    (save-excursion (
-		     goto-char 1)
-		    (re-search-forward "^#\\+date:")
-		    (let ((beg (point)))
-		      (end-of-line)
-		      (delete-region beg (point)))
-		    (insert (concat " " (format-time-string "%Y-%m-%dT%H:%M:%S")))))
+    (use-package rlr-hugo
+    :demand t
+    :ensure
+    (:host github :repo "rlridenour/rlr-hugo"))
 #+end_src
-
-Set a few variables and some utility functions that are used later.
-
-#+begin_src emacs-lisp
-  (defvar hugo-directory "~/Sites/blog/" "Path to Hugo blog.")
-  (defvar hugo-posts-dir "content/posts/" "Relative path to posts directory.")
-  (defvar hugo-post-ext ".org"  "File extension of Hugo posts.")
-  (defvar hugo-post-template "#+TITLE: \%s\n#+draft: true\n#+tags[]: \n#+date: \n#+lastmod: \n#+mathjax: \n\n"
-    "Default template for Hugo posts. %s will be replace by the post title.")
-
-  (defun hugo-make-slug (s) "Turn a string into a slug."
-	 (replace-regexp-in-string " " "-"  (downcase (replace-regexp-in-string "[^A-Za-z0-9 ]" "" s))))
-#+end_src
-
-#+begin_src emacs-lisp
-  (defun hugo-yaml-escape (s) "Escape a string for YAML."
-	 (if (or (string-match ":" s) (string-match "\"" s)) (concat "\"" (replace-regexp-in-string "\"" "\\\\\"" s) "\"") s))
-#+end_src
-
-" (To avoid unmatched expression warning in Org created by the escaped quotes in hugo-yaml-escape.)
-
-Create new blog post.
-
-#+begin_src emacs-lisp
-  (defun hugo-draft-post (title) "Create a new Hugo blog post."
-	 (interactive "sPost Title: ")
-	 (let ((draft-file (concat hugo-directory hugo-posts-dir
-				   (format-time-string "%Y-%m-%d-")
-				   (hugo-make-slug title)
-				   hugo-post-ext)))
-	   (if (file-exists-p draft-file)
-	       (find-file draft-file)
-	     (find-file draft-file)
-	     (insert (format hugo-post-template (hugo-yaml-escape title)))
-	     (hugo-timestamp))))
-#+end_src
-
-
-This sets the draft tag to false, updates the timestamp, and saves the buffer
-
-#+begin_src emacs-lisp
-  (defun hugo-publish-post ()
-    "Set draft to false, update the timestamp, and save."
-    (interactive)
-    (save-excursion
-      (goto-char 1)
-      (re-search-forward "^#\\+draft:")
-      (let ((beg (point)))
-	(end-of-line)
-	(delete-region beg (point)))
-      (insert " false")
-      (hugo-timestamp))
-    (save-buffer))
-
-  (defmacro with-dir (DIR &rest FORMS)
-    "Execute FORMS in DIR."
-    (let ((orig-dir (gensym)))
-      `(progn (setq ,orig-dir default-directory)
-	      (cd ,DIR) ,@FORMS (cd ,orig-dir))))
-#+end_src
-
-Update last modified date.
-
-#+begin_src emacs-lisp
-  (defun hugo-update-lastmod ()
-    "Update the `lastmod' value for a hugo org-mode buffer."
-    (interactive)
-    (save-excursion
-      (goto-char 1)
-      (re-search-forward "^#\\+lastmod:")
-      (let ((beg (point)))
-	(end-of-line)
-	(delete-region beg (point)))
-      (insert (concat " " (format-time-string "%Y-%m-%dT%H:%M:%S"))))
-    (save-buffer))
-#+end_src
-
-Deploy blog.
-
-#+begin_src emacs-lisp
-  (defun hugo-deploy ()
-    "Push changes upstream."
-    (interactive)
-    (with-dir hugo-directory
-	      (shell-command "git add .")
-	      (--> (current-time-string)
-		   (concat "git commit -m \"" it "\"")
-		   (shell-command it))
-	      (magit-push-current-to-upstream nil)))
-#+end_src
-
-
-Update the last modified date of a post, save the buffer, and deploy.
-
-#+begin_src emacs-lisp
-  (defun hugo-org-deploy ()
-    "Push changes upstream."
-    (interactive)
-    (hugo-update-lastmod)
-    (save-buffer)
-    (with-dir hugo-directory
-	      (shell-command "git add .")
-	      (--> (current-time-string)
-		   (concat "git commit -m \"" it "\"")
-		   (shell-command it))
-	      (magit-push-current-to-upstream nil)))
-#+end_src
-
-
-Insert a tag into a Hugo post. From [[https://whatacold.io/blog/2022-10-10-emacs-hugo-blogging/][Hugo Blogging in Emacs - whatacold's space]]
-
-#+begin_src emacs-lisp
-  (defun hugo-select-tags ()
-    "Select tags from the hugo org files in the current dir.
-    Note that it only extracts tags from lines like the below:
-    ,#+tags[]: Emacs Org-mode"
-    (interactive)
-    ;; Move to end of tag line.
-    (save-excursion
-      (goto-char 1)
-      (re-search-forward "^#\\+tags")
-      (end-of-line)
-      (let ((files (directory-files-recursively default-directory "\\.org$")))
-	(let ((source (with-temp-buffer
-			(while files
-			  (when (file-exists-p (car files))
-			    (insert-file-contents (car files)))
-			  (pop files))
-			(buffer-string))))
-	  (save-match-data
-	    (let ((pos 0)
-		  matches)
-	      (while (string-match "^#\\+[Tt]ags\\[\\]: \\(.+?\\)$" source pos)
-		(push (match-string 1 source) matches)
-		(setq pos (match-end 0)))
-	      (insert
-	       (completing-read
-		"Insert a tag: "
-		(sort
-		 (delete-dups
-		  (delete "" (split-string
-			      (replace-regexp-in-string "[\"\']" " "
-							(replace-regexp-in-string
-							 "[,()]" ""
-							 (format "%s" matches)))
-			      " ")))
-		 (lambda (a b)
-		   (string< (downcase a) (downcase b))))))))))
-      (insert " ")))
-#+end_src
-
-Add multiple tags to a Hugo post. I need to try to make it work with consult--read.
-
-#+begin_src emacs-lisp
-  (defun w/hugo--collect-tags ()
-    "Collect hugo tags from the org files in the current dir.
-
-    Note that it only extracts tags from lines like the below:
-    ,#+tags[]: Emacs Org-mode"
-    (interactive)
-    (let ((files (directory-files-recursively default-directory "\\.org$")))
-      (let ((source (with-temp-buffer
-		      (while files
-			(when (file-exists-p (car files))
-			  (insert-file-contents (car files)))
-			(pop files))
-		      (buffer-string))))
-	(save-match-data
-	  (let ((pos 0)
-		matches)
-	    (while (string-match "^#\\+[Tt]ags\\[\\]: \\(.+?\\)$" source pos)
-	      (push (match-string 1 source) matches)
-	      (setq pos (match-end 0)))
-	    (sort
-	     (delete-dups
-	      (delete "" (split-string
-			  (replace-regexp-in-string "[\"\']" " "
-						    (replace-regexp-in-string
-						     "[,()]" ""
-						     (format "%s" matches)))
-			  " ")))
-	     (lambda (a b)
-	       (string< (downcase a) (downcase b)))))))))
-
-  (defun w/hugo-select-tags ()
-    "Select tags for the current hugo post."
-    (interactive)
-    (ivy-read "Insert tags: "
-	      (w/hugo--collect-tags)
-	      :action
-	      (lambda (tag)
-		(insert (if (char-equal (preceding-char) 32)
-			    ""
-			  " ")
-			tag))))
-#+end_src
-
-Insert internal links using C-c C-l. From [[https://lucidmanager.org/productivity/create-websites-with-org-mode-and-hugo/][Create Websites with Emacs: Blogging with Org mode and Hugo]]
-
-#+begin_src emacs-lisp :tangle no
-  ;; Follow Hugo links
-  (defun org-hugo-follow (link)
-    "Follow Hugo link shortcodes"
-    (org-link-open-as-file
-     (string-trim "{{< ref test.org >}}" "{{< ref " ">}}")))
-
-  ;; New link type for Org-Hugo internal links
-  (with-after-elpaca-init
-   (org-link-set-parameters
-    "hugo"
-    :complete (lambda ()
-		(concat "{{< ref "
-			(file-name-nondirectory
-			 (read-file-name "File: "))
-			" >}}"))
-    :follow #'org-hugo-follow))
-#+end_src
-
 
 ** Hungry Delete
 
@@ -1499,9 +1198,6 @@ Insert internal links using C-c C-l. From [[https://lucidmanager.org/productivit
     (global-hungry-delete-mode))
 #+end_src
 
-
-
-
 ** Hydras
 
 #+begin_src emacs-lisp
@@ -1510,15 +1206,12 @@ Insert internal links using C-c C-l. From [[https://lucidmanager.org/productivit
     (insert-char (gethash unicode-name (ucs-names))))
 #+end_src
 
-
 #+begin_src emacs-lisp
   (use-package major-mode-hydra
     :commands (pretty-hydra-define)
     :general
     ("s-m" #'major-mode-hydra))
 #+end_src
-
-
 
 #+begin_src emacs-lisp
   (with-after-elpaca-init
@@ -1569,7 +1262,7 @@ Insert internal links using C-c C-l. From [[https://lucidmanager.org/productivit
        (:color teal :quit-key "q" title: "Search")
        ("Buffer"
 	(("c" pulsar-highlight-dwim "find cursor")
-("h" consult-org-heading "org heading")
+	 ("h" consult-org-heading "org heading")
 	 ("l" consult-goto-line "goto-line")
 	 ("i" consult-imenu "imenu")
 	 ("m" consult-mark "mark")
@@ -1580,9 +1273,9 @@ Insert internal links using C-c C-l. From [[https://lucidmanager.org/productivit
 	 ("r" consult-ripgrep "ripgrep")
 	 ("d" rlr/consult-rg "rg from dir")
 	 ("f" rlr/consult-fd "find from dir"))
-"Files"
-(("e" goto-emacs-init "Emacs init")
-("s" goto-shell-init "Fish functions"))
+	"Files"
+	(("e" goto-emacs-init "Emacs init")
+	 ("s" goto-shell-init "Fish functions"))
 	))
      (pretty-hydra-define hydra-window
        (:color teal :quit-key "q" title: "Windows")
@@ -1690,9 +1383,7 @@ Insert internal links using C-c C-l. From [[https://lucidmanager.org/productivit
   ;; (global-set-key (kbd "s-t") 'hydra-toggle/body)
 #+end_src
 
-
 *** Major Mode Hydras
-
 
 #+begin_src emacs-lisp
   (with-after-elpaca-init
@@ -1706,11 +1397,6 @@ Insert internal links using C-c C-l. From [[https://lucidmanager.org/productivit
 	 ("b" (find-file "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/bookmarks.org") "web bookmarks")
 	 )))
 
-
-
-
-
-
      (major-mode-hydra-define org-agenda-mode
        (:quit-key "q")
        ("Open"
@@ -1719,9 +1405,6 @@ Insert internal links using C-c C-l. From [[https://lucidmanager.org/productivit
 	 ("t" (find-file "/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/tasks.org") "open tasks")
 	 ("b" (find-file "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/bookmarks.org") "web bookmarks")
 	 )))
-
-
-
 
      (major-mode-hydra-define eww-mode
        (:quit-key "q")
@@ -1771,10 +1454,6 @@ Insert internal links using C-c C-l. From [[https://lucidmanager.org/productivit
 	 );end other
 	))
 
-
-
-
-
      (major-mode-hydra-define markdown-mode
        (:quit-key "q")
        ("Format"
@@ -1786,8 +1465,6 @@ Insert internal links using C-c C-l. From [[https://lucidmanager.org/productivit
 	 ("r" markdown-insert-reference-link-dwim "r-link")
 	 ("n" markdown-cleanup-list-numbers "clean-lists")
 	 ("c" markdown-complete-buffer "complete"))))
-
-
 
      (major-mode-hydra-define LaTeX-mode
        (:quit-key "q")
@@ -1801,10 +1478,6 @@ Insert internal links using C-c C-l. From [[https://lucidmanager.org/productivit
 	 ("c" tex-clean "clean aux")
 	 ("C" tex-clean-all "clean all")
 	 ("n" latex-word-count "word count"))))
-
-
-
-
 
      (major-mode-hydra-define org-mode
        (:quit-key "q")
@@ -1855,8 +1528,6 @@ Insert internal links using C-c C-l. From [[https://lucidmanager.org/productivit
 	(("1" denote-link "link to note"))
 	))
 
-
-
      (major-mode-hydra-define dired-mode
        (:quit-key "q")
        ("New"
@@ -1870,8 +1541,6 @@ Insert internal links using C-c C-l. From [[https://lucidmanager.org/productivit
 	 ("p" diredp-copy-abs-filenames-as-kill "Copy filename and path")
 	 ("n" dired-toggle-read-only "edit Filenames"))))
 
-
-
      (major-mode-hydra-define denote-menu-mode
        (:quit-key "q")
        ("Tools"
@@ -1882,16 +1551,12 @@ Insert internal links using C-c C-l. From [[https://lucidmanager.org/productivit
 	 )))))
 #+end_src
 
-
-
-
 #+begin_src emacs-lisp :tangle no
   (defhydra hydra-org (:color teal)
     ("a" org-agenda "agenda")
     ("l" org-store-link "store-link")
     ("q" nil))
 #+end_src
-
 
 #+begin_src emacs-lisp
   (general-define-key
@@ -1902,8 +1567,6 @@ Insert internal links using C-c C-l. From [[https://lucidmanager.org/productivit
    ;; "s-b" #'hydra-buffer/body
    "C-x 9" #'hydra-logic/body)
 #+end_src
-
-
 
 ** Jinx
 
@@ -1942,7 +1605,6 @@ Display suggestions in grid.
 		'(jinx grid (vertico-grid-annotate . 20))))
 #+end_src
 
-
 ** LaTeX
 
 #+begin_src emacs-lisp
@@ -1972,7 +1634,6 @@ Display suggestions in grid.
 	TeX-view-program-list
 	'(("PDF Viewer" "/Applications/Skim.app/Contents/SharedSupport/displayline -b -g %n %o %b"))))
 #+end_src
-
 
 *** LaTeX Build Functions
 
@@ -2027,13 +1688,6 @@ Display suggestions in grid.
       (message (replace-match "" nil nil word-count))))
 #+end_src
 
-
-
-
-
-
-
-
 *** LaTeX Change Environment
 
 #+begin_src emacs-lisp
@@ -2064,9 +1718,6 @@ Display suggestions in grid.
 			map))))
 #+end_src
 
-
-
-
 ** Magit
 
 #+begin_src emacs-lisp :tangle no
@@ -2094,39 +1745,31 @@ Display suggestions in grid.
 #+end_src
 
 #+begin_src emacs-lisp
-(use-package transient)
-(use-package hl-todo
-  :ensure (:depth nil))
+  (use-package transient)
+  (use-package hl-todo
+    :ensure (:depth nil))
 #+end_src
-
-
-
-
 
 #+begin_src emacs-lisp
-(use-package magit
-:init
-(require 'transient)
-  :custom
-  (magit-repository-directories (list (cons elpaca-repos-directory 1)))
-  (magit-diff-refine-hunk 'all)
-  :config
-  (transient-bind-q-to-quit))
+  (use-package magit
+    :init
+    (require 'transient)
+    :custom
+    (magit-repository-directories (list (cons elpaca-repos-directory 1)))
+    (magit-diff-refine-hunk 'all)
+    :config
+    (transient-bind-q-to-quit))
 #+end_src
-
-
 
 ** Marginalia
 
 Enrich existing commands with completion annotations
-
 
 #+begin_src emacs-lisp :lexical t
   (use-package marginalia
     :defer 2
     :config (marginalia-mode))
 #+end_src
-
 
 ** Markdown Mode
 
@@ -2148,7 +1791,6 @@ Enrich existing commands with completion annotations
   (fset 'copy-beamer-note
 	(kmacro-lambda-form [?\C-r ?: ?E ?N ?D return down ?\C-  ?\C-s ?* ?* ?  ?N ?o ?t ?e ?s return up ?\M-w ?\C-s ?: ?E ?N ?D return down return ?\s-v return] 0 "%d"))
 #+end_src
-
 
 ** Modus Themes
 
@@ -2180,7 +1822,6 @@ Enrich existing commands with completion annotations
     (completion-category-overrides '((file (styles partial-completion)))))
 #+end_src
 
-
 ** Org
 
 #+begin_src emacs-lisp
@@ -2203,6 +1844,8 @@ Enrich existing commands with completion annotations
     (setq org-todo-keyword-faces
 	  '(("DONE" . "green4") ("TODO" . org-warning)))
     (setq org-agenda-files '("/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/"))
+    :config
+    (require 'org-tempo)
     )
 #+end_src
 
@@ -2252,7 +1895,6 @@ Enrich existing commands with completion annotations
 		 (apostrophe        :utf-8 "’" :html "&rsquo;"))))
 #+end_src
 
-
 #+begin_src emacs-lisp
   ;; (setq org-latex-pdf-process '("arara %f"))
   (setq org-latex-pdf-process '("mkpdf %f"))
@@ -2276,7 +1918,6 @@ Enrich existing commands with completion annotations
     (org-latex-export-to-latex)
     (async-shell-command-no-window (concat "mklua " (shell-quote-argument(file-name-nondirectory (file-name-with-extension buffer-file-name "tex"))))))
 
-
   (defun rlr/org-arara ()
     "Make PDF with Arara."
     (interactive)
@@ -2288,17 +1929,14 @@ Enrich existing commands with completion annotations
     "Update existing date: timestamp on a Hugo post."
     (interactive)
     (save-excursion (
-		   goto-char 1)
-		  (re-search-forward "^#\\+date:")
-		  (let ((beg (point)))
+		     goto-char 1)
+		    (re-search-forward "^#\\+date:")
+		    (let ((beg (point)))
 		      (end-of-line)
 		      (delete-region beg (point)))
-		  (insert (concat " " (format-time-string "%B %e, %Y")))))
+		    (insert (concat " " (format-time-string "%B %e, %Y")))))
 
 #+end_src
-
-
-
 
 *** Org Teaching Functions
 
@@ -2306,11 +1944,8 @@ Enrich existing commands with completion annotations
   (use-package rlr-teaching
     :demand t
     :ensure
-    (:host github :repo "rlridenour/rlr-teaching")
-    )
+    (:host github :repo "rlridenour/rlr-teaching"))
 #+end_src
-
-
 
 *** Org Auto Tangle
 
@@ -2348,19 +1983,96 @@ Use ~org-auto-tangle~ to generate ~early-init.el~ and ~init.el~ whenever ~README
 		 :kill-buffer t
 		 :jump-to-captured t)))
 
-
   (setq org-refile-targets '((org-agenda-files :maxlevel . 1)))
 
   (define-key global-map "\C-cc" 'org-capture)
 #+end_src
 
-
 *** Org Agenda
 
 #+begin_src emacs-lisp
   (use-package org-super-agenda
-    :after org-agenda
-    :init
+    :after org
+    :ensure t
+    :config
+    (setq org-agenda-skip-scheduled-if-done t
+	  org-agenda-skip-deadline-if-done t
+	  org-agenda-include-deadlines t
+	  org-agenda-block-separator nil
+	  org-agenda-compact-blocks t
+	  org-agenda-start-day nil ;; i.e. today
+	  org-agenda-span 1
+	  org-agenda-window-setup "current-window"
+	  org-agenda-include-diary nil
+	  org-agenda-start-on-weekday nil)
+    (setq org-agenda-time-grid
+	  '((daily today require-timed remove-match)
+	    ()
+	    "......"
+	    ""))
+
+    (org-super-agenda-mode))
+#+end_src
+
+#+begin_src emacs-lisp
+  (setq org-agenda-custom-commands
+	'(("d" "Agenda for today" agenda ""
+	   ((org-agenda-overriding-header "Today's agenda")
+	    (org-agenda-span 'day)
+	    ))))
+#+end_src
+
+#+begin_src emacs-lisp
+  (defun today-agenda ()
+    "Display today's agenda"
+    (interactive)
+    (org-agenda nil "d")
+    )
+  (today-agenda)
+#+end_src
+
+#+begin_src emacs-lisp
+(with-eval-after-load 'org
+  (add-to-list
+   'org-agenda-custom-commands
+   `("c" "Today - Full View"
+     ((agenda ""
+	      ((org-agenda-entry-types '(:timestamp :sexp))
+	       (org-agenda-overriding-header
+		(concat "CALENDAR Today "
+			(format-time-string "%a %d" (current-time))))
+	       (org-agenda-span 'day)))
+      (tags-todo "LEVEL=1+inbox"
+		 ((org-agenda-overriding-header "INBOX (Unscheduled)")))
+      (tags-todo "DEADLINE<\"<+1d>\"+DEADLINE>\"<-1d>\""
+		 ((org-agenda-overriding-header "DUE TODAY")
+		  (org-agenda-skip-function
+		   '(org-agenda-skip-entry-if 'notdeadline))
+		  (org-agenda-sorting-strategy '(priority-down))))
+      (tags-todo "DEADLINE<\"<today>\""
+		 ((org-agenda-overriding-header "OVERDUE")
+		  (org-agenda-skip-function
+		   '(org-agenda-skip-entry-if 'notdeadline))
+		  (org-agenda-sorting-strategy '(priority-down))))
+      (agenda ""
+	      ((org-agenda-entry-types '(:scheduled))
+	       (org-agenda-overriding-header "SCHEDULED")
+	       (org-agenda-skip-function
+		'(org-agenda-skip-entry-if 'todo 'done))
+	       (org-agenda-sorting-strategy
+		'(priority-down time-down))
+	       (org-agenda-span 'day)
+	       (org-agenda-start-on-weekday nil)))
+      (todo "DONE"
+	    ((org-agenda-overriding-header "COMPLETED"))))
+     ((org-agenda-format-date "")
+      (org-agenda-start-with-clockreport-mode nil))) t))
+#+end_src
+
+#+begin_src emacs-lisp :tangle no
+  (use-package org-super-agenda
+    :after org
+    :config
     (setq org-agenda-skip-scheduled-if-done t
 	  org-agenda-skip-deadline-if-done t
 	  org-agenda-include-deadlines t
@@ -2400,7 +2112,6 @@ Use ~org-auto-tangle~ to generate ~early-init.el~ and ~init.el~ whenever ~README
 				     :deadline past
 				     :order 3)
 			      (:discard (:not (:todo "TODO")))))))))))
-    :config
     (org-super-agenda-mode)
     (setq org-agenda-span 7)
     (setq org-agenda-custom-commands
@@ -2417,7 +2128,6 @@ Use ~org-auto-tangle~ to generate ~early-init.el~ and ~init.el~ whenever ~README
     )
 #+end_src
 
-
 Use Emacs appointment system for notifications.
 
 #+begin_src emacs-lisp
@@ -2428,17 +2138,15 @@ Use Emacs appointment system for notifications.
   (add-hook 'org-finalize-agenda-hook 'org-agenda-to-appt) ;; update appt list on agenda view
 #+end_src
 
-
 *** Org Bulletproof
 
 #+begin_src emacs-lisp
   (use-package org-bulletproof
+    :after org
     :config
     (setq org-bulletproof-default-ordered-bullet "1.")
     (global-org-bulletproof-mode +1))
 #+end_src
-
-
 
 *** Org Contrib
 
@@ -2449,7 +2157,6 @@ Use Emacs appointment system for notifications.
     (ox-extras-activate '(ignore-headlines))
     (require 'org-tempo))
 #+end_src
-
 
 *** Orgonomic
 
@@ -2520,16 +2227,12 @@ org-toggle-emphasis: easily toggle emphasis markers: =~*/_+]]
    "s-+" (lambda () (interactive) (my/org-toggle-emphasis ?+)))
 #+end_src
 
-
-
 *** Org Mac Link
 
 #+begin_src emacs-lisp
   (use-package org-mac-link
     :defer 2)
 #+end_src
-
-
 
 ** Persistent Scratch
 
@@ -2546,7 +2249,6 @@ Kill the contents of scratch buffer, not the buffer itself. From [[http://emacsw
       t))
   (add-hook 'kill-buffer-query-functions 'unkillable-scratch-buffer)
 #+end_src
-
 
 Create a new scratch buffer after saving.
 
@@ -2567,7 +2269,6 @@ Use ~persistent-scratch~ to save scratch file between sessions.
     (persistent-scratch-setup-default))
 #+end_src
 
-
 ** Recentf
 
 Increase number of recent files shown.
@@ -2581,14 +2282,12 @@ Increase number of recent files shown.
     (recentf-max-saved-items 1000 "Save more recent files"))
 #+end_src
 
-
 ** Reveal in Finder
 
 #+begin_src emacs-lisp
   (use-package reveal-in-osx-finder
-:defer 2)
+    :defer 2)
 #+end_src
-
 
 ** Shrink Whitespace
 
@@ -2596,6 +2295,15 @@ Increase number of recent files shown.
   (use-package shrink-whitespace)
 #+end_src
 
+** Smartparens
+
+#+begin_src emacs-lisp
+(use-package smartparens
+  :hook (prog-mode text-mode markdown-mode) ;; add `smartparens-mode` to these hooks
+  :config
+  ;; load default config
+  (require 'smartparens-config))
+#+end_src
 
 ** Super Save
 
@@ -2606,7 +2314,6 @@ Increase number of recent files shown.
     (super-save-mode +1))
 #+end_src
 
-
 ** Titlecase
 
 #+begin_src emacs-lisp
@@ -2615,7 +2322,6 @@ Increase number of recent files shown.
     :config
     (setq titlecase-style "chicago"))
 #+end_src
-
 
 ** Vertico
 
@@ -2629,7 +2335,6 @@ Increase number of recent files shown.
     (vertico-multiform-mode)
     (define-key vertico-map (kbd "C-h") #'+minibuffer-up-dir))
 #+end_src
-
 
 ** Vundo
 
@@ -2665,10 +2370,8 @@ https://github.com/justbur/emacs-which-key
 ** Writeroom
 
 #+begin_src emacs-lisp
-(use-package writeroom-mode)
+  (use-package writeroom-mode)
 #+end_src
-
-
 
 ** Yankpad
 
@@ -2681,13 +2384,11 @@ https://github.com/justbur/emacs-which-key
     ( "<f6>" #'yankpad-insert))
 #+end_src
 
-
 ** Yasnippet
 
 YASnippet is a template system for Emacs.
 
 https://github.com/joaotavora/yasnippet
-
 
 #+begin_src emacs-lisp :lexical t
   (use-package yasnippet
@@ -2697,7 +2398,6 @@ https://github.com/joaotavora/yasnippet
     :hook
     (elpaca-after-init . yas-global-mode))
 #+end_src
-
 
 * Keybindings
 :PROPERTIES:
@@ -2766,7 +2466,6 @@ Keybindings for files and buffers.
    )
 #+end_src
 
-
 ** Editing Keybindings
 
 #+begin_src emacs-lisp
@@ -2798,7 +2497,6 @@ Keybindings for files and buffers.
    "<f5>" #'deadgrep)
 #+end_src
 
-
 ** Other Keybindings
 
 #+begin_src emacs-lisp
@@ -2811,8 +2509,6 @@ Keybindings for files and buffers.
    "M-s m" #'consult-multi-occur
    )
 #+end_src
-
-
 
 ** Prefix Keybindings
 
@@ -2833,9 +2529,6 @@ Open fish functions directory.
     (interactive)
     (dired "~/.config/fish/functions"))
 #+end_src
-
-
-
 
 #+begin_src emacs-lisp
   (general-define-key
@@ -2898,13 +2591,10 @@ Set default directory.
   (setq default-directory "~/")
 #+end_src
 
-
-
 * Footer
 :PROPERTIES:
 :header-args: :tangle init.el
 :END:
-
 
 #+begin_src emacs-lisp
   ;; Local Variables:
