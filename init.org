@@ -292,6 +292,12 @@ UTF-8 as default.
   (set-default-coding-systems 'utf-8)
 #+end_src
 
+Use single space after sentences.
+
+#+begin_src emacs-lisp
+  (setq sentence-end-double-space nil)
+#+end_src
+
 Use GNU ls to avoid "Listing directory failed but 'access-file' worked" error.
 
 #+begin_src emacs-lisp

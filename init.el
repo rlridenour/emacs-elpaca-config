@@ -89,6 +89,8 @@
 (set-language-environment "UTF-8")
 (set-default-coding-systems 'utf-8)
 
+(setq sentence-end-double-space nil)
+
 (setq insert-directory-program "gls")
 
 (setq message-kill-buffer-on-exit t)
