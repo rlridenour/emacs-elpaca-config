@@ -324,9 +324,9 @@
     " tell application \"iTerm2\"\n"
     "   tell the current session of current window\n"
     (format "     write text \"cd %s\" \n"
-	    ;; string escaping madness for applescript
-	    (replace-regexp-in-string "\\\\" "\\\\\\\\"
-				      (shell-quote-argument (or default-directory "~"))))
+	  ;; string escaping madness for applescript
+	  (replace-regexp-in-string "\\\\" "\\\\\\\\"
+				    (shell-quote-argument (or default-directory "~"))))
     "   end tell\n"
     " end tell\n"
     " do shell script \"open -a iTerm\"\n"
@@ -433,11 +433,11 @@
 				    dashboard-insert-items
 				    dashboard-insert-newline))
 
-(defun dashboard-insert-agenda (&rest _)
-  "Insert a copy of org-agenda buffer."
-  (insert (save-window-excursion
-	    (org-agenda nil "d")
-	    (prog1 (buffer-string)
+  (defun dashboard-insert-agenda (&rest _)
+    "Insert a copy of org-agenda buffer."
+    (insert (save-window-excursion
+	      (org-agenda nil "d")
+	      (prog1 (buffer-string)
 	      (kill-buffer))))))
 
 (defun goto-dashboard ()
@@ -517,14 +517,15 @@
   )
 
 (use-package eat
+  :demand t
   :ensure
   (:host codeberg
-	 :repo "akib/emacs-eat"
-	 :files ("*.el" ("term" "term/*.el") "*.texi"
-		 "*.ti" ("terminfo/e" "terminfo/e/*")
-		 ("terminfo/65" "terminfo/65/*")
-		 ("integration" "integration/*")
-		 (:exclude ".dir-locals.el" "*-tests.el"))))
+       :repo "akib/emacs-eat"
+       :files ("*.el" ("term" "term/*.el") "*.texi"
+	       "*.ti" ("terminfo/e" "terminfo/e/*")
+	       ("terminfo/65" "terminfo/65/*")
+	       ("integration" "integration/*")
+	       (:exclude ".dir-locals.el" "*-tests.el"))))
 
 (use-package ebib
   :defer 2
@@ -535,21 +536,6 @@
   ;;(evil-set-initial-state 'ebib-log-mode 'emacs)
   :custom
   (ebib-preload-bib-files '("~/Dropbox/bibtex/rlr.bib")))
-
-(use-package term-toggle
-  :ensure
-  (:host github :repo "amno1/emacs-term-toggle")
-  :after eat
-  :config
-  (setq term-toggle-no-confirm-exit t)
-  (defun term-toggle-eat ()
-    "Toggle `term'."
-    (interactive) (term-toggle 'eat))
-  :general
-  ("<f2>" #'term-toggle-eat
-   "<S-f2>" #'term-toggle-eshell
-   "C-`" #'iterm-goto-filedir-or-home)
-  )
 
 (use-package evil-nerd-commenter
   :general
@@ -1515,6 +1501,15 @@
   :defer 2
   :config
   (setq titlecase-style "chicago"))
+
+(use-package toggle-term
+:demand t
+  :config
+    (setq toggle-term-size 25)
+    (setq toggle-term-switch-upon-toggle t)
+:general
+("<f2>" #'toggle-term-eat)
+)
 
 (use-package vertico
   :demand t
