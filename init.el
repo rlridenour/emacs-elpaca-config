@@ -1180,8 +1180,9 @@
   (setq org-html-validation-link nil)
   (setq org-time-stamp-rounding-minutes '(0 15))
   (setq org-todo-keyword-faces
-	'(("DONE" . "green4") ("TODO" . org-warning)))
+      '(("DONE" . "green4") ("TODO" . org-warning)))
   (setq org-agenda-files '("/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/"))
+  (setq org-agenda-start-on-weekday nil)
   :config
   (require 'org-tempo)
   )
@@ -1507,8 +1508,9 @@
   :config
     (setq toggle-term-size 25)
     (setq toggle-term-switch-upon-toggle t)
+(setq toggle-term-init-toggle '("my-terminal" . "eat"))
 :general
-("<f2>" #'toggle-term-eat)
+("<f2>" #'toggle-term-toggle)
 )
 
 (use-package vertico
