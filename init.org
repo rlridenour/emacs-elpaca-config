@@ -2295,14 +2295,18 @@ Increase number of recent files shown.
     (super-save-mode +1))
 #+end_src
 
-** Titlecase
+** Terminal Here
 
 #+begin_src emacs-lisp
-  (use-package titlecase
-    :defer 2
-    :config
-    (setq titlecase-style "chicago"))
+(use-package terminal-here
+:config
+(setq terminal-here-mac-terminal-command 'kitty)
+:general
+("C-`" #'terminal-here-launch)
+)
 #+end_src
+
+
 
 
 ** Term Toggle
@@ -2320,10 +2324,19 @@ https://github.com/amno1/emacs-term-toggle
     (interactive) (term-toggle 'eat))
 :general
    ("<f2>" #'term-toggle-eat
-   "<S-f2>" #'term-toggle-eshell
-   "C-`" #'iterm-goto-filedir-or-home)
+   "<S-f2>" #'term-toggle-eshell)
     )
 #+end_src
+
+** Titlecase
+
+#+begin_src emacs-lisp
+  (use-package titlecase
+    :defer 2
+    :config
+    (setq titlecase-style "chicago"))
+#+end_src
+
 
 ** Vertico
 
@@ -2430,7 +2443,6 @@ Keybindings for files and buffers.
   (general-define-key
    "C-x c" #'save-buffers-kill-emacs
    "C-x C-b" #'ibuffer
-   "C-`" #'iterm-goto-filedir-or-home
    "s-o" #'find-file
    "s-k" #'kill-this-buffer
    "M-s-k" #'kill-buffer-and-window
