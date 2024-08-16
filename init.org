@@ -292,6 +292,12 @@ UTF-8 as default.
   (set-default-coding-systems 'utf-8)
 #+end_src
 
+Use single space after sentences.
+
+#+begin_src emacs-lisp
+  (setq sentence-end-double-space nil)
+#+end_src
+
 Use GNU ls to avoid "Listing directory failed but 'access-file' worked" error.
 
 #+begin_src emacs-lisp
@@ -458,6 +464,14 @@ Don't ask for confirmation to kill processes when exiting Emacs. Credit to [[htt
   (defadvice save-buffers-kill-emacs (around no-query-kill-emacs activate)
     (cl-flet ((process-list ())) ad-do-it))
 #+end_src
+
+Don't ask for confirmation when killing process buffers.
+
+#+begin_src emacs-lisp
+(setq kill-buffer-query-functions nil)
+#+end_src
+
+
 
 Don't display async shell command process buffers
 
@@ -2281,6 +2295,39 @@ Increase number of recent files shown.
     (super-save-mode +1))
 #+end_src
 
+** Terminal Here
+
+#+begin_src emacs-lisp
+(use-package terminal-here
+:config
+(setq terminal-here-mac-terminal-command 'kitty)
+:general
+("C-`" #'terminal-here-launch)
+)
+#+end_src
+
+
+
+
+** Term Toggle
+https://github.com/amno1/emacs-term-toggle
+
+#+begin_src emacs-lisp
+  (use-package term-toggle
+:demand t
+:ensure
+    (:host github :repo "amno1/emacs-term-toggle")
+    :config
+    (setq term-toggle-no-confirm-exit t)
+  (defun term-toggle-eat ()
+    "Toggle `term'."
+    (interactive) (term-toggle 'eat))
+:general
+   ("<f2>" #'term-toggle-eat
+   "<S-f2>" #'term-toggle-eshell)
+    )
+#+end_src
+
 ** Titlecase
 
 #+begin_src emacs-lisp
@@ -2289,22 +2336,6 @@ Increase number of recent files shown.
     :config
     (setq titlecase-style "chicago"))
 #+end_src
-
-
-** Toggle Term
-
-#+begin_src emacs-lisp
-(use-package toggle-term
-:demand t
-  :config
-    (setq toggle-term-size 25)
-    (setq toggle-term-switch-upon-toggle t)
-(setq toggle-term-init-toggle '("my-terminal" . "eat"))
-:general
-("<f2>" #'toggle-term-toggle)
-)
-#+end_src
-
 
 
 ** Vertico
@@ -2412,7 +2443,6 @@ Keybindings for files and buffers.
   (general-define-key
    "C-x c" #'save-buffers-kill-emacs
    "C-x C-b" #'ibuffer
-   "C-`" #'iterm-goto-filedir-or-home
    "s-o" #'find-file
    "s-k" #'kill-this-buffer
    "M-s-k" #'kill-buffer-and-window
