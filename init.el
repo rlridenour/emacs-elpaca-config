@@ -176,6 +176,8 @@
 (defadvice save-buffers-kill-emacs (around no-query-kill-emacs activate)
   (cl-flet ((process-list ())) ad-do-it))
 
+(setq kill-buffer-query-functions nil)
+
 (add-to-list 'display-buffer-alist
 	     (cons "\\*Async Shell Command\\*.*" (cons #'display-buffer-no-window nil)))
 
@@ -1505,15 +1507,20 @@
   :config
   (setq titlecase-style "chicago"))
 
-(use-package toggle-term
+(use-package term-toggle
 :demand t
-  :config
-    (setq toggle-term-size 25)
-    (setq toggle-term-switch-upon-toggle t)
-(setq toggle-term-init-toggle '("my-terminal" . "eat"))
+:ensure
+    (:host github :repo "amno1/emacs-term-toggle")
+    :config
+    (setq term-toggle-no-confirm-exit t)
+  (defun term-toggle-eat ()
+    "Toggle `term'."
+    (interactive) (term-toggle 'eat))
 :general
-("<f2>" #'toggle-term-toggle)
-)
+   ("<f2>" #'term-toggle-eat
+   "<S-f2>" #'term-toggle-eshell
+   "C-`" #'iterm-goto-filedir-or-home)
+    )
 
 (use-package vertico
   :demand t

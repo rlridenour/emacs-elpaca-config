@@ -465,6 +465,14 @@ Don't ask for confirmation to kill processes when exiting Emacs. Credit to [[htt
     (cl-flet ((process-list ())) ad-do-it))
 #+end_src
 
+Don't ask for confirmation when killing process buffers.
+
+#+begin_src emacs-lisp
+(setq kill-buffer-query-functions nil)
+#+end_src
+
+
+
 Don't display async shell command process buffers
 
 #+begin_src emacs-lisp
@@ -2297,21 +2305,25 @@ Increase number of recent files shown.
 #+end_src
 
 
-** Toggle Term
+** Term Toggle
+https://github.com/amno1/emacs-term-toggle
 
 #+begin_src emacs-lisp
-(use-package toggle-term
+  (use-package term-toggle
 :demand t
-  :config
-    (setq toggle-term-size 25)
-    (setq toggle-term-switch-upon-toggle t)
-(setq toggle-term-init-toggle '("my-terminal" . "eat"))
+:ensure
+    (:host github :repo "amno1/emacs-term-toggle")
+    :config
+    (setq term-toggle-no-confirm-exit t)
+  (defun term-toggle-eat ()
+    "Toggle `term'."
+    (interactive) (term-toggle 'eat))
 :general
-("<f2>" #'toggle-term-toggle)
-)
+   ("<f2>" #'term-toggle-eat
+   "<S-f2>" #'term-toggle-eshell
+   "C-`" #'iterm-goto-filedir-or-home)
+    )
 #+end_src
-
-
 
 ** Vertico
 
