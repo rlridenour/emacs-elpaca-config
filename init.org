@@ -969,6 +969,16 @@ Search notes with the xapian syntax (+word -word AND NOT etc), <tab> to preview,
     (xeft-recursive nil))
 #+end_src
 
+** Devil Mode
+
+
+#+begin_src emacs-lisp
+  (use-package devil
+    :config
+    (global-devil-mode))
+#+end_src
+
+
 ** Dired
 
 #+begin_src emacs-lisp
@@ -1046,6 +1056,30 @@ Make copying and moving files easier.
     :custom
     (ebib-preload-bib-files '("~/Dropbox/bibtex/rlr.bib")))
 #+end_src
+
+** Embark
+
+#+begin_src emacs-lisp 
+  (use-package embark
+    :general
+    ("C-." #'embark-act)
+     ("C-:" #'embark-dwim)
+     ("C-h B" #'embark-bindings) ;; alternative for `describe-bindings'
+    :init
+    (setq prefix-help-command #'embark-prefix-help-command)
+    :config
+    (add-to-list 'display-buffer-alist
+		 '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+		   nil
+		   (window-parameters (mode-line-format . none)))))
+#+end_src
+
+#+begin_src emacs-lisp 
+  (use-package embark-consult
+    :hook
+    (embark-collect-mode . consult-preview-at-point-mode))
+#+end_src
+
 
 ** Evil Nerd Commenter
 
@@ -1137,6 +1171,14 @@ Make copying and moving files easier.
   (use-package exec-path-from-shell
     :config
     (exec-path-from-shell-initialize))
+#+end_src
+
+
+** Expand-region
+
+#+begin_src emacs-lisp 
+  (use-package expand-region
+    :general ("C-=" #'er/expand-region))
 #+end_src
 
 ** Fish
@@ -1700,30 +1742,6 @@ Display suggestions in grid.
 
 ** Magit
 
-#+begin_src emacs-lisp :tangle no
-  (use-package magit
-    :config
-    (global-auto-revert-mode)
-    (setq magit-refresh-status-buffer nil
-	  magit-diff-highlight-indentation nil
-	  magit-diff-highlight-trailing nil
-	  magit-diff-paint-whitespace nil
-	  magit-diff-highlight-hunk-body nil
-	  magit-diff-refine-hunk nil
-	  magit-revision-insert-related-refs nil)
-    :commands
-    (magit-after-save-refresh-status)
-    :hook
-    (after-save . magit-after-save-refresh-status)
-    :custom
-    (transient-history-file
-     (expand-file-name "transient/history.el" rr-cache-dir))
-    (transient-levels-file
-     (expand-file-name "transient/levels.el" rr-cache-dir))
-    (transient-values-file
-     (expand-file-name "transient/values.el" rr-cache-dir)))
-#+end_src
-
 #+begin_src emacs-lisp
   (use-package transient)
   (use-package hl-todo
@@ -1771,6 +1789,21 @@ Enrich existing commands with completion annotations
   (fset 'copy-beamer-note
 	(kmacro-lambda-form [?\C-r ?: ?E ?N ?D return down ?\C-  ?\C-s ?* ?* ?  ?N ?o ?t ?e ?s return up ?\M-w ?\C-s ?: ?E ?N ?D return down return ?\s-v return] 0 "%d"))
 #+end_src
+
+
+
+** Mastodon
+
+
+#+begin_src emacs-lisp
+  (use-package mastodon
+    :config
+    (mastodon-discover)
+    (setq mastodon-instance-url "https://emacs.ch/"
+	  mastodon-active-user "randyridenour"))
+#+end_src
+
+
 
 ** Modus Themes
 
@@ -2215,6 +2248,22 @@ org-toggle-emphasis: easily toggle emphasis markers: =~*/_+]]
     :defer 2)
 #+end_src
 
+** PDF-Tools
+
+#+begin_src emacs-lisp
+  (use-package pdf-tools
+    :config
+    (pdf-tools-install)
+    (setq-default pdf-view-display-size 'fit-width)
+    (define-key pdf-view-mode-map (kbd "C-s") 'isearch-forward)
+    :custom
+    (pdf-annot-activate-created-annotations t "automatically annotate highlights")
+  (add-hook 'pdf-view-mode-hook (lambda() (display-line-numbers-mode -1) (blink-cursor-mode -1))))
+
+  ;; (add-hook 'TeX-after-compilation-finished-functions #'TeX-revert-document-buffer)
+#+end_src
+
+
 ** Persistent Scratch
 
 Remove scratch buffer message and set the mode to org-mode.
@@ -2250,13 +2299,24 @@ Use ~persistent-scratch~ to save scratch file between sessions.
     (persistent-scratch-setup-default))
 #+end_src
 
+
+** Project.el
+
+#+begin_src emacs-lisp
+(use-feature project
+:init
+(setq project-vc-ignores '("*.aux" "*.bbl" "*.bcf" "*.blg" "*.fdb_latexmk" "*.fls" "*.log" "*.out" "*.run.xml" "*.run.xml" "*.synctex.gz" "auto/" "*.pdf"))
+(setq project-vc-extra-root-markers '(".proj")))
+#+end_src
+
+
+
 ** Recentf
 
 Increase number of recent files shown.
 
 #+begin_src emacs-lisp :lexical t
   (use-feature recentf
-    :defer 1
     :config (recentf-mode)
     :custom
     (recentf-max-menu-items 1000 "Offer more recent files in menu")
@@ -2266,8 +2326,7 @@ Increase number of recent files shown.
 ** Reveal in Finder
 
 #+begin_src emacs-lisp
-  (use-package reveal-in-osx-finder
-    :defer 2)
+  (use-package reveal-in-osx-finder)
 #+end_src
 
 ** Shrink Whitespace
