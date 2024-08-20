@@ -984,10 +984,10 @@
    (major-mode-hydra-define dired-mode
      (:quit-key "q")
      ("New"
-      (("a" new-article "article")
-       ("l" new-lecture "lecture")
-       ("h" new-handout "handout")
-       ("s" new-syllabus "syllabus"))
+      (("a" rlrt-new-article "article")
+       ("l" rlrt-new-lecture "lecture")
+       ("h" rlrt-new-handout "handout")
+       ("s" rlrt-new-syllabus "syllabus"))
       "Tools"
       (("d" crux-open-with "Open in default program")
        ("h" dired-omit-mode "Show hidden files")

@@ -1,11 +1,8 @@
 #+LaTeX_CLASS: org-article
 #+LaTeX_CLASS_OPTIONS: [11pt]
-#+LaTeX_HEADER: \usepackage{amssymb}
-#+LaTeX_HEADER: \usepackage{url}
+#+LaTeX_HEADER: \usepackage{amssymb,url,microtype,csquotes,booktabs,longtable,multirow,pdfpages}
 #+LaTeX_HEADER: \usepackage[normalem]{ulem}
-#+LaTeX_HEADER: \usepackage{microtype}
 #+LaTeX_HEADER: \usepackage[american]{babel}
-#+LaTeX_HEADER: \usepackage{booktabs,longtable,multirow,pdfpages}
 #+LaTeX_HEADER: \usepackage[letterpaper,centering]{geometry}
 #+LaTeX_HEADER: \usepackage[sf,sc]{titlesec}
 #+LaTeX_HEADER: \usepackage[parfill]{parskip} % Line between paragraphs
@@ -13,15 +10,12 @@
 #+LaTeX_HEADER: %\addbibresource{/Users/rlridenour/Dropbox/bibtex/randybib.bib}
 #+LaTeX_HEADER: \clubpenalty = 10000 % Reduce orphans and widows
 #+LaTeX_HEADER: \widowpenalty = 10000
-#+LaTeX_HEADER:
 #+LaTeX_HEADER: \usepackage{enumitem}
 #+LaTeX_HEADER: \setlist[itemize]{noitemsep} % Comment out for wider separation in lists.
 #+LaTeX_HEADER: \setlist[enumerate]{noitemsep}
-#+LaTeX_HEADER:
 #+LaTeX_HEADER: \usepackage{libertinus-type1}
-#+LaTeX_HEADER: \usepackage[libertinust1math}
+#+LaTeX_HEADER: \usepackage{libertinust1math}
 #+LaTeX_HEADER: \usepackage[T1]{fontenc}
-
 #+LaTeX_HEADER:\usepackage[unicode=true]{hyperref}
 #+OPTIONS: title:nil
 #+OPTIONS: toc:nil
