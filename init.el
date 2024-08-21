@@ -768,9 +768,9 @@
       (("b" hugo-draft-post "blog post")
        ("a" new-article "article"))
       "Teaching"
-      (("l" new-lecture "lecture")
-       ("h" new-handout "handout")
-       ("s" new-syllabus "syllabus"))
+      (("l" rlrt-new-lecture "lecture")
+       ("h" rlrt-new-handout "handout")
+       ("s" rlrt-new-syllabus "syllabus"))
       ))
    (pretty-hydra-define hydra-logic
      (:color pink :quit-key "0" :title "Logic")
