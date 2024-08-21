@@ -841,7 +841,7 @@ Load general before the remaining packages so they can make use of the ~:general
     :custom
     (org-cite-global-bibliography '("~/Dropbox/bibtex/rlr.bib"))
     (citar-bibliography '("~/Dropbox/bibtex/rlr.bib"))
-    (org-cite-csl-styles-dir "/usr/local/texlive/2023/texmf-dist/tex/latex/citation-style-language/styles")
+    (org-cite-csl-styles-dir "/usr/local/texlive/2024/texmf-dist/tex/latex/citation-style-language/styles")
     (org-cite-export-processors
      '((md . (csl "chicago-author-date.csl"))
        (latex biblatex)
