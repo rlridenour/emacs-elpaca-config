@@ -1491,15 +1491,15 @@
   :defer 2)
 
 (use-package pdf-tools
-  :config
-  (pdf-tools-install)
-  (setq-default pdf-view-display-size 'fit-width)
-  (define-key pdf-view-mode-map (kbd "C-s") 'isearch-forward)
-  :custom
-  (pdf-annot-activate-created-annotations t "automatically annotate highlights")
-(add-hook 'pdf-view-mode-hook (lambda() (display-line-numbers-mode -1) (blink-cursor-mode -1))))
-
-;; (add-hook 'TeX-after-compilation-finished-functions #'TeX-revert-document-buffer)
+ :hook (pdf-view-mode . (lambda () (display-line-numbers-mode -1)))
+ :init
+ (pdf-loader-install)
+:config
+(setq-default pdf-view-display-size 'fit-width)
+:general
+(:keymaps 'pdf-view-mode-map
+"C-s" #'isearch-forward)
+)
 
 (defun unkillable-scratch-buffer ()
   (if (equal (buffer-name (current-buffer)) "*scratch*")
