@@ -803,32 +803,32 @@ Load general before the remaining packages so they can make use of the ~:general
 
 ** Casual Suite
 
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package casual-suite
-    :defer 2
     :init
     (require 'transient)
     :config
     (require 're-builder)
     (setq reb-re-syntax 'string)
     :general
+    ("M-g a"  #'casual-avy-tmenu)
+
     (:keymaps 'calc-mode-map
-	      "s-."  #'casual-calc-tmenu)
+	    "s-."  #'casual-calc-tmenu)
     (:keymaps 'Info-mode-map
-	      "s-." #'casual-info-tmenu)
+	    "s-." #'casual-info-tmenu)
     (:keymaps 'dired-mode-map
-	      "s-." #'casual-dired-tmenu
-	      "M-g a"  #'casual-avy-tmenu)
+	    "s-." #'casual-dired-tmenu)
     (:keymaps 'isearch-mode-map
-	      "<f8>" #'casual-isearch-tmenu)
+	    "<f8>" #'casual-isearch-tmenu)
     (:keymaps 'ibuffer-mode-map
-	      "s-." #'casual-ibuffer-tmenu
-	      "F" #'casual-ibuffer-filter-tmenu
-	      "s" #'casual-ibuffer-sortby-tmenu)
+	    "s-." #'casual-ibuffer-tmenu
+	    "F" #'casual-ibuffer-filter-tmenu
+	    "s" #'casual-ibuffer-sortby-tmenu)
     (:keymaps 'reb-mode-map
-	      "s-." #'casual-re-builder-tmenu)
+	    "s-." #'casual-re-builder-tmenu)
     (:keymaps 'bookmark-bmenu-mode-map
-	      "s-." #'casual-bookmarks-tmenu))
+	    "s-." #'casual-bookmarks-tmenu))
 #+end_src
 
 ** Citar
@@ -1059,7 +1059,7 @@ Make copying and moving files easier.
 
 ** Embark
 
-#+begin_src emacs-lisp 
+#+begin_src emacs-lisp
   (use-package embark
     :general
     ("C-." #'embark-act)
@@ -1074,7 +1074,7 @@ Make copying and moving files easier.
 		   (window-parameters (mode-line-format . none)))))
 #+end_src
 
-#+begin_src emacs-lisp 
+#+begin_src emacs-lisp
   (use-package embark-consult
     :hook
     (embark-collect-mode . consult-preview-at-point-mode))
@@ -1176,7 +1176,7 @@ Make copying and moving files easier.
 
 ** Expand-region
 
-#+begin_src emacs-lisp 
+#+begin_src emacs-lisp
   (use-package expand-region
     :general ("C-=" #'er/expand-region))
 #+end_src
