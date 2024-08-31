@@ -681,8 +681,7 @@
 
 (use-package rlr-hugo
 :demand t
-:ensure
-(:host github :repo "rlridenour/rlr-hugo"))
+:ensure (:host github :repo "~/elisp~/rlr-hugo"))
 
 (use-package hungry-delete
   :config
@@ -1331,8 +1330,7 @@
 
 (use-package rlr-teaching
   :demand t
-  :ensure
-  (:host github :repo "rlridenour/rlr-teaching"))
+  :ensure (:host github :repo "~/elisp/rlr-teaching/"))
 
 (use-package org-auto-tangle
   :hook (org-mode . org-auto-tangle-mode))
