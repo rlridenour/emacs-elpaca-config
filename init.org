@@ -820,7 +820,7 @@ Load general before the remaining packages so they can make use of the ~:general
     (:keymaps 'dired-mode-map
 	    "s-." #'casual-dired-tmenu)
     (:keymaps 'isearch-mode-map
-	    "<f8>" #'casual-isearch-tmenu)
+	    "s-." #'casual-isearch-tmenu)
     (:keymaps 'ibuffer-mode-map
 	    "s-." #'casual-ibuffer-tmenu
 	    "F" #'casual-ibuffer-filter-tmenu
@@ -2306,6 +2306,14 @@ Use ~persistent-scratch~ to save scratch file between sessions.
 :init
 (setq project-vc-ignores '("*.aux" "*.bbl" "*.bcf" "*.blg" "*.fdb_latexmk" "*.fls" "*.log" "*.out" "*.run.xml" "*.run.xml" "*.synctex.gz" "auto/" "*.pdf"))
 (setq project-vc-extra-root-markers '(".proj")))
+#+end_src
+
+** Pulsar
+
+#+begin_src emacs-lisp
+(use-package pulsar
+:config
+(pulsar-global-mode 1))
 #+end_src
 
 

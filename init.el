@@ -403,7 +403,7 @@
   (:keymaps 'dired-mode-map
 	  "s-." #'casual-dired-tmenu)
   (:keymaps 'isearch-mode-map
-	  "<f8>" #'casual-isearch-tmenu)
+	  "s-." #'casual-isearch-tmenu)
   (:keymaps 'ibuffer-mode-map
 	  "s-." #'casual-ibuffer-tmenu
 	  "F" #'casual-ibuffer-filter-tmenu
@@ -1550,6 +1550,10 @@
 :init
 (setq project-vc-ignores '("*.aux" "*.bbl" "*.bcf" "*.blg" "*.fdb_latexmk" "*.fls" "*.log" "*.out" "*.run.xml" "*.run.xml" "*.synctex.gz" "auto/" "*.pdf"))
 (setq project-vc-extra-root-markers '(".proj")))
+
+(use-package pulsar
+:config
+(pulsar-global-mode 1))
 
 (use-feature recentf
   :config (recentf-mode)
