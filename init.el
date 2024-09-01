@@ -1710,9 +1710,9 @@
  "C-S-a" #'embark-act)
 
 (general-define-key
- ;; "C-1" #'delete-other-windows
- ;; "C-2" #'split-window-below-focus
- ;; "C-3" #'split-window-right-focus
+ "s-1" #'delete-other-windows
+ "s-2" #'rlr/find-file-below
+ "s-3" #'rlr/find-file-right
  "s-6" #'toggle-window-split
  "S-C-<left>" #'shrink-window-horizontally
  "S-C-<right>" #'enlarge-window-horizontally
