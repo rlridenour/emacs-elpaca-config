@@ -1,1 +1,2 @@
-# emacs-config
+init.org
+
