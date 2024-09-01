@@ -1,1 +1,1 @@
-/Users/rlridenour/.config/emacs/init.org
+init.org
