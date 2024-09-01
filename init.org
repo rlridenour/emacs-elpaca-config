@@ -660,6 +660,38 @@ Immediately highlight matching pairs of parentheses and quotes.
   (setq show-paren-delay 0)
 #+end_src
 
+** Search
+
+Don't preserve case in replacements.
+
+#+begin_src emacs-lisp
+  (setq case-replace nil)
+#+end_src
+
+Show number of matches at the end of search field.
+
+#+begin_src emacs-lisp
+  (setq isearch-lazy-count t)
+  (setq lazy-count-prefix-format nil)
+  (setq lazy-count-suffix-format "   (%s/%s)")
+#+end_src
+
+Use Spotlight for locate.
+
+#+begin_src emacs-lisp
+  (setq locate-command "mdfind")
+#+end_src
+
+Find non-ascii characters in buffer.
+
+#+begin_src emacs-lisp
+  (defun occur-non-ascii ()
+    "Find any non-ascii characters in the current buffer."
+    (interactive)
+    (occur "[^[:ascii:]]"))
+#+end_src
+
+
 ** Shells
 
 Don't ask to create new shell buffers.
@@ -757,7 +789,6 @@ Load general before the remaining packages so they can make use of the ~:general
 
 #+begin_src emacs-lisp
   (use-package ace-link
-    :defer 2
     :init
     (ace-link-setup-default))
 #+end_src
@@ -765,8 +796,7 @@ Load general before the remaining packages so they can make use of the ~:general
 ** Ace Window
 
 #+begin_src emacs-lisp
-  (use-package ace-window
-    :defer 2)
+  (use-package ace-window)
 #+end_src
 
 ** Aggressive Indent
@@ -783,7 +813,6 @@ Load general before the remaining packages so they can make use of the ~:general
 
 #+begin_src emacs-lisp
   (use-package avy
-    :defer 2
     :config
     (avy-setup-default)
     :general
@@ -831,6 +860,33 @@ Load general before the remaining packages so they can make use of the ~:general
 	    "s-." #'casual-bookmarks-tmenu))
 #+end_src
 
+** Cape
+
+#+begin_src emacs-lisp
+(use-package cape
+  :commands (cape-file)
+     :general (:prefix "M-p"
+		      "p" 'completion-at-point ;; capf
+		      "d" 'cape-dabbrev        ;; or dabbrev-completion
+		      "a" 'cape-abbrev
+		      "w" 'cape-dict
+		      "\\" 'cape-tex
+		      "_" 'cape-tex
+		      "^" 'cape-tex)
+:init
+  ;; Add to the global default value of `completion-at-point-functions' which is
+  ;; used by `completion-at-point'.  The order of the functions matters, the
+  ;; first function returning a result wins.  Note that the list of buffer-local
+  ;; completion functions takes precedence over the global list.
+  (add-hook 'completion-at-point-functions #'cape-dabbrev)
+  (add-hook 'completion-at-point-functions #'cape-file)
+  (add-hook 'completion-at-point-functions #'cape-elisp-block)
+  (add-hook 'completion-at-point-functions #'cape-history)
+)
+#+end_src
+
+
+
 ** Citar
 
 #+begin_src emacs-lisp
@@ -854,8 +910,28 @@ Load general before the remaining packages so they can make use of the ~:general
 #+begin_src emacs-lisp
   (use-package consult
     :demand t
+:config
+  (defun rlr/consult-rg ()
+    "Function for `consult-ripgrep' with the `universal-argument'."
+    (interactive)
+    (consult-ripgrep (list 4)))
+
+  (defun rlr/consult-fd ()
+    "Function for `consult-find' with the `universal-argument'."
+    (interactive)
+    (consult-find (list 4)))
     :general
     ("C-x b" #'consult-buffer))
+#+end_src
+
+** Corfu
+
+#+begin_src emacs-lisp
+(use-package corfu
+:custom
+(corfu-cycle t)
+:config
+(global-corfu-mode))
 #+end_src
 
 ** Crux
@@ -974,6 +1050,8 @@ Search notes with the xapian syntax (+word -word AND NOT etc), <tab> to preview,
 
 #+begin_src emacs-lisp
   (use-package devil
+    :demand t
+    :ensure
     :config
     (global-devil-mode))
 #+end_src
@@ -1047,7 +1125,6 @@ Make copying and moving files easier.
 
 #+begin_src emacs-lisp
   (use-package ebib
-    :defer 2
     :config
     (setq ebib-bibtex-dialect 'biblatex)
     ;;(evil-set-initial-state 'ebib-index-mode 'emacs)
@@ -1063,8 +1140,8 @@ Make copying and moving files easier.
   (use-package embark
     :general
     ("C-." #'embark-act)
-     ("C-:" #'embark-dwim)
-     ("C-h B" #'embark-bindings) ;; alternative for `describe-bindings'
+    ("C-:" #'embark-dwim)
+    ("C-h B" #'embark-bindings) ;; alternative for `describe-bindings'
     :init
     (setq prefix-help-command #'embark-prefix-help-command)
     :config
@@ -1184,8 +1261,7 @@ Make copying and moving files easier.
 ** Fish
 
 #+begin_src emacs-lisp
-  (use-package fish-mode
-    :defer)
+  (use-package fish-mode)
 #+end_src
 
 ** Helpful
@@ -1198,7 +1274,6 @@ Make copying and moving files easier.
 
 #+begin_src emacs-lisp
   (use-feature savehist
-    :defer 1
     :config
     (savehist-mode 1))
 #+end_src
@@ -1206,7 +1281,7 @@ Make copying and moving files easier.
 ** Hugo
 
 #+begin_src emacs-lisp
-    (use-package rlr-hugo
+  (use-package rlr-hugo
     :demand t
     :ensure (:host github :repo "~/elisp~/rlr-hugo"))
 #+end_src
@@ -1715,7 +1790,7 @@ Display suggestions in grid.
   (use-package latex-change-env
     :after latex
     :bind
-    (:map LaTeX-mode-map ("C-c r" . latex-change-env)))
+    (:map LaTeX-mode-map ("C-c e" . latex-change-env)))
 #+end_src
 
 *** Math Delimiters
@@ -1764,7 +1839,6 @@ Enrich existing commands with completion annotations
 
 #+begin_src emacs-lisp :lexical t
   (use-package marginalia
-    :defer 2
     :config (marginalia-mode))
 #+end_src
 
@@ -1772,7 +1846,6 @@ Enrich existing commands with completion annotations
 
 #+begin_src emacs-lisp
   (use-package markdown-mode
-    :defer 2
     :mode (("README\\.md\\'" . gfm-mode)
 	   ("\\.md\\'" . markdown-mode)
 	   ("\\.Rmd\\'" . markdown-mode)
@@ -1828,7 +1901,6 @@ Enrich existing commands with completion annotations
 
 #+begin_src emacs-lisp :lexical t
   (use-package orderless
-    :defer 1
     :custom
     (completion-styles '(orderless basic))
     (completion-category-overrides '((file (styles partial-completion)))))
@@ -2044,41 +2116,41 @@ Use ~org-auto-tangle~ to generate ~early-init.el~ and ~init.el~ whenever ~README
 #+end_src
 
 #+begin_src emacs-lisp
-(with-eval-after-load 'org
-  (add-to-list
-   'org-agenda-custom-commands
-   `("c" "Today - Full View"
-     ((agenda ""
-	      ((org-agenda-entry-types '(:timestamp :sexp))
-	       (org-agenda-overriding-header
-		(concat "CALENDAR Today "
-			(format-time-string "%a %d" (current-time))))
-	       (org-agenda-span 'day)))
-      (tags-todo "LEVEL=1+inbox"
-		 ((org-agenda-overriding-header "INBOX (Unscheduled)")))
-      (tags-todo "DEADLINE<\"<+1d>\"+DEADLINE>\"<-1d>\""
-		 ((org-agenda-overriding-header "DUE TODAY")
-		  (org-agenda-skip-function
-		   '(org-agenda-skip-entry-if 'notdeadline))
-		  (org-agenda-sorting-strategy '(priority-down))))
-      (tags-todo "DEADLINE<\"<today>\""
-		 ((org-agenda-overriding-header "OVERDUE")
-		  (org-agenda-skip-function
-		   '(org-agenda-skip-entry-if 'notdeadline))
-		  (org-agenda-sorting-strategy '(priority-down))))
-      (agenda ""
-	      ((org-agenda-entry-types '(:scheduled))
-	       (org-agenda-overriding-header "SCHEDULED")
-	       (org-agenda-skip-function
-		'(org-agenda-skip-entry-if 'todo 'done))
-	       (org-agenda-sorting-strategy
-		'(priority-down time-down))
-	       (org-agenda-span 'day)
-	       (org-agenda-start-on-weekday nil)))
-      (todo "DONE"
-	    ((org-agenda-overriding-header "COMPLETED"))))
-     ((org-agenda-format-date "")
-      (org-agenda-start-with-clockreport-mode nil))) t))
+  (with-eval-after-load 'org
+    (add-to-list
+     'org-agenda-custom-commands
+     `("c" "Today - Full View"
+       ((agenda ""
+		((org-agenda-entry-types '(:timestamp :sexp))
+		 (org-agenda-overriding-header
+		  (concat "CALENDAR Today "
+			  (format-time-string "%a %d" (current-time))))
+		 (org-agenda-span 'day)))
+	(tags-todo "LEVEL=1+inbox"
+		   ((org-agenda-overriding-header "INBOX (Unscheduled)")))
+	(tags-todo "DEADLINE<\"<+1d>\"+DEADLINE>\"<-1d>\""
+		   ((org-agenda-overriding-header "DUE TODAY")
+		    (org-agenda-skip-function
+		     '(org-agenda-skip-entry-if 'notdeadline))
+		    (org-agenda-sorting-strategy '(priority-down))))
+	(tags-todo "DEADLINE<\"<today>\""
+		   ((org-agenda-overriding-header "OVERDUE")
+		    (org-agenda-skip-function
+		     '(org-agenda-skip-entry-if 'notdeadline))
+		    (org-agenda-sorting-strategy '(priority-down))))
+	(agenda ""
+		((org-agenda-entry-types '(:scheduled))
+		 (org-agenda-overriding-header "SCHEDULED")
+		 (org-agenda-skip-function
+		  '(org-agenda-skip-entry-if 'todo 'done))
+		 (org-agenda-sorting-strategy
+		  '(priority-down time-down))
+		 (org-agenda-span 'day)
+		 (org-agenda-start-on-weekday nil)))
+	(todo "DONE"
+	      ((org-agenda-overriding-header "COMPLETED"))))
+       ((org-agenda-format-date "")
+	(org-agenda-start-with-clockreport-mode nil))) t))
 #+end_src
 
 #+begin_src emacs-lisp :tangle no
@@ -2242,23 +2314,22 @@ org-toggle-emphasis: easily toggle emphasis markers: =~*/_+]]
 *** Org Mac Link
 
 #+begin_src emacs-lisp
-  (use-package org-mac-link
-    :defer 2)
+  (use-package org-mac-link)
 #+end_src
 
 ** PDF-Tools
 
 #+begin_src emacs-lisp
-(use-package pdf-tools
- :hook (pdf-view-mode . (lambda () (display-line-numbers-mode -1)))
- :init
- (pdf-loader-install)
-:config
-(setq-default pdf-view-display-size 'fit-width)
-:general
-(:keymaps 'pdf-view-mode-map
-"C-s" #'isearch-forward)
-)
+  (use-package pdf-tools
+    :hook (pdf-view-mode . (lambda () (display-line-numbers-mode -1)))
+    :init
+    (pdf-loader-install)
+    :config
+    (setq-default pdf-view-display-size 'fit-width)
+    :general
+    (:keymaps 'pdf-view-mode-map
+	    "C-s" #'isearch-forward)
+    )
 #+end_src
 
 ** Persistent Scratch
@@ -2300,21 +2371,19 @@ Use ~persistent-scratch~ to save scratch file between sessions.
 ** Project.el
 
 #+begin_src emacs-lisp
-(use-feature project
-:init
-(setq project-vc-ignores '("*.aux" "*.bbl" "*.bcf" "*.blg" "*.fdb_latexmk" "*.fls" "*.log" "*.out" "*.run.xml" "*.run.xml" "*.synctex.gz" "auto/" "*.pdf"))
-(setq project-vc-extra-root-markers '(".proj")))
+  (use-feature project
+    :init
+    (setq project-vc-ignores '("*.aux" "*.bbl" "*.bcf" "*.blg" "*.fdb_latexmk" "*.fls" "*.log" "*.out" "*.run.xml" "*.run.xml" "*.synctex.gz" "auto/" "*.pdf"))
+    (setq project-vc-extra-root-markers '(".proj")))
 #+end_src
 
 ** Pulsar
 
 #+begin_src emacs-lisp
-(use-package pulsar
-:config
-(pulsar-global-mode 1))
+  (use-package pulsar
+    :config
+    (pulsar-global-mode 1))
 #+end_src
-
-
 
 ** Recentf
 
@@ -2343,11 +2412,11 @@ Increase number of recent files shown.
 ** Smartparens
 
 #+begin_src emacs-lisp
-(use-package smartparens
-  :hook (prog-mode text-mode markdown-mode) ;; add `smartparens-mode` to these hooks
-  :config
-  ;; load default config
-  (require 'smartparens-config))
+  (use-package smartparens
+    :hook (prog-mode text-mode markdown-mode) ;; add `smartparens-mode` to these hooks
+    :config
+    ;; load default config
+    (require 'smartparens-config))
 #+end_src
 
 ** Super Save
@@ -2362,12 +2431,12 @@ Increase number of recent files shown.
 ** Terminal Here
 
 #+begin_src emacs-lisp
-(use-package terminal-here
-:config
-(setq terminal-here-mac-terminal-command 'kitty)
-:general
-("C-`" #'terminal-here-launch)
-)
+  (use-package terminal-here
+    :config
+    (setq terminal-here-mac-terminal-command 'kitty)
+    :general
+    ("C-`" #'terminal-here-launch)
+    )
 #+end_src
 
 
@@ -2378,17 +2447,17 @@ https://github.com/amno1/emacs-term-toggle
 
 #+begin_src emacs-lisp
   (use-package term-toggle
-:demand t
-:ensure
+    :demand t
+    :ensure
     (:host github :repo "amno1/emacs-term-toggle")
     :config
     (setq term-toggle-no-confirm-exit t)
-  (defun term-toggle-eat ()
-    "Toggle `term'."
-    (interactive) (term-toggle 'eat))
-:general
-   ("<f2>" #'term-toggle-eat
-   "<S-f2>" #'term-toggle-eshell)
+    (defun term-toggle-eat ()
+      "Toggle `term'."
+      (interactive) (term-toggle 'eat))
+    :general
+    ("<f2>" #'term-toggle-eat
+     "<S-f2>" #'term-toggle-eshell)
     )
 #+end_src
 
@@ -2396,7 +2465,6 @@ https://github.com/amno1/emacs-term-toggle
 
 #+begin_src emacs-lisp
   (use-package titlecase
-    :defer 2
     :config
     (setq titlecase-style "chicago"))
 #+end_src
@@ -2415,11 +2483,28 @@ https://github.com/amno1/emacs-term-toggle
     (define-key vertico-map (kbd "C-h") #'+minibuffer-up-dir))
 #+end_src
 
+
+** Unfill
+
+#+begin_src emacs-lisp
+  (use-package unfill)
+#+end_src
+
+** Visual-Regexp
+
+#+begin_src emacs-lisp
+  (use-package visual-regexp
+    :general
+    ("C-c r" #'vr/replace)
+    ("C-c q" #'vr/query-replace))
+#+end_src
+
+
+
 ** Vundo
 
 #+begin_src emacs-lisp
   (use-package vundo
-    :defer 2
     :custom
     (vundo-glyph-alist vundo-unicode-symbols)
     :bind
@@ -2456,7 +2541,6 @@ https://github.com/justbur/emacs-which-key
 
 #+begin_src emacs-lisp
   (use-package yankpad
-    :defer 2
     :init
     (setq yankpad-file "~/Library/Mobile Documents/com~apple~CloudDocs/org/yankpad.org")
     :general

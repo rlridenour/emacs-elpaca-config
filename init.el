@@ -306,6 +306,19 @@
 (show-paren-mode)
 (setq show-paren-delay 0)
 
+(setq case-replace nil)
+
+(setq isearch-lazy-count t)
+(setq lazy-count-prefix-format nil)
+(setq lazy-count-suffix-format "   (%s/%s)")
+
+(setq locate-command "mdfind")
+
+(defun occur-non-ascii ()
+  "Find any non-ascii characters in the current buffer."
+  (interactive)
+  (occur "[^[:ascii:]]"))
+
 (setq async-shell-command-buffer "new-buffer")
 
 (defun async-shell-command-no-window
@@ -362,19 +375,16 @@
   (load "~/Dropbox/emacs/my-emacs-abbrev"))
 
 (use-package ace-link
-  :defer 2
   :init
   (ace-link-setup-default))
 
-(use-package ace-window
-  :defer 2)
+(use-package ace-window)
 
 (use-package aggressive-indent
   :config
   (global-aggressive-indent-mode 1))
 
 (use-package avy
-  :defer 2
   :config
   (avy-setup-default)
   :general
@@ -413,6 +423,27 @@
   (:keymaps 'bookmark-bmenu-mode-map
 	  "s-." #'casual-bookmarks-tmenu))
 
+(use-package cape
+  :commands (cape-file)
+     :general (:prefix "M-p"
+		      "p" 'completion-at-point ;; capf
+		      "d" 'cape-dabbrev        ;; or dabbrev-completion
+		      "a" 'cape-abbrev
+		      "w" 'cape-dict
+		      "\\" 'cape-tex
+		      "_" 'cape-tex
+		      "^" 'cape-tex)
+:init
+  ;; Add to the global default value of `completion-at-point-functions' which is
+  ;; used by `completion-at-point'.  The order of the functions matters, the
+  ;; first function returning a result wins.  Note that the list of buffer-local
+  ;; completion functions takes precedence over the global list.
+  (add-hook 'completion-at-point-functions #'cape-dabbrev)
+  (add-hook 'completion-at-point-functions #'cape-file)
+  (add-hook 'completion-at-point-functions #'cape-elisp-block)
+  (add-hook 'completion-at-point-functions #'cape-history)
+)
+
 (use-package citar
   :bind (("C-c C-b" . citar-insert-citation)
 	 :map minibuffer-local-map
@@ -428,9 +459,25 @@
      (t . (csl "chicago-author-date.csl")))))
 
 (use-package consult
-  :demand t
-  :general
-  ("C-x b" #'consult-buffer))
+    :demand t
+:config
+  (defun rlr/consult-rg ()
+    "Function for `consult-ripgrep' with the `universal-argument'."
+    (interactive)
+    (consult-ripgrep (list 4)))
+
+  (defun rlr/consult-fd ()
+    "Function for `consult-find' with the `universal-argument'."
+    (interactive)
+    (consult-find (list 4)))
+    :general
+    ("C-x b" #'consult-buffer))
+
+(use-package corfu
+:custom
+(corfu-cycle t)
+:config
+(global-corfu-mode))
 
 (use-package crux)
 
@@ -518,6 +565,8 @@
   (xeft-recursive nil))
 
 (use-package devil
+  :demand t
+  :ensure
   :config
   (global-devil-mode))
 
@@ -562,7 +611,6 @@
 	       (:exclude ".dir-locals.el" "*-tests.el"))))
 
 (use-package ebib
-  :defer 2
   :config
   (setq ebib-bibtex-dialect 'biblatex)
   ;;(evil-set-initial-state 'ebib-index-mode 'emacs)
@@ -574,8 +622,8 @@
 (use-package embark
   :general
   ("C-." #'embark-act)
-   ("C-:" #'embark-dwim)
-   ("C-h B" #'embark-bindings) ;; alternative for `describe-bindings'
+  ("C-:" #'embark-dwim)
+  ("C-h B" #'embark-bindings) ;; alternative for `describe-bindings'
   :init
   (setq prefix-help-command #'embark-prefix-help-command)
   :config
@@ -669,19 +717,17 @@
 (use-package expand-region
   :general ("C-=" #'er/expand-region))
 
-(use-package fish-mode
-  :defer)
+(use-package fish-mode)
 
 (use-package helpful)
 
 (use-feature savehist
-  :defer 1
   :config
   (savehist-mode 1))
 
 (use-package rlr-hugo
-:demand t
-:ensure (:host github :repo "~/elisp~/rlr-hugo"))
+  :demand t
+  :ensure (:host github :repo "~/elisp~/rlr-hugo"))
 
 (use-package hungry-delete
   :config
@@ -1141,7 +1187,7 @@
 (use-package latex-change-env
   :after latex
   :bind
-  (:map LaTeX-mode-map ("C-c r" . latex-change-env)))
+  (:map LaTeX-mode-map ("C-c e" . latex-change-env)))
 
 (use-package math-delimiters
   :ensure
@@ -1174,11 +1220,9 @@
   (transient-bind-q-to-quit))
 
 (use-package marginalia
-  :defer 2
   :config (marginalia-mode))
 
 (use-package markdown-mode
-  :defer 2
   :mode (("README\\.md\\'" . gfm-mode)
 	 ("\\.md\\'" . markdown-mode)
 	 ("\\.Rmd\\'" . markdown-mode)
@@ -1217,7 +1261,6 @@
   ("<f9>" #'modus-themes-toggle))
 
 (use-package orderless
-  :defer 1
   :custom
   (completion-styles '(orderless basic))
   (completion-category-overrides '((file (styles partial-completion)))))
@@ -1511,19 +1554,18 @@
  "s-_" (lambda () (interactive) (my/org-toggle-emphasis ?_))
  "s-+" (lambda () (interactive) (my/org-toggle-emphasis ?+)))
 
-(use-package org-mac-link
-  :defer 2)
+(use-package org-mac-link)
 
 (use-package pdf-tools
- :hook (pdf-view-mode . (lambda () (display-line-numbers-mode -1)))
- :init
- (pdf-loader-install)
-:config
-(setq-default pdf-view-display-size 'fit-width)
-:general
-(:keymaps 'pdf-view-mode-map
-"C-s" #'isearch-forward)
-)
+  :hook (pdf-view-mode . (lambda () (display-line-numbers-mode -1)))
+  :init
+  (pdf-loader-install)
+  :config
+  (setq-default pdf-view-display-size 'fit-width)
+  :general
+  (:keymaps 'pdf-view-mode-map
+	  "C-s" #'isearch-forward)
+  )
 
 (defun unkillable-scratch-buffer ()
   (if (equal (buffer-name (current-buffer)) "*scratch*")
@@ -1545,13 +1587,13 @@
   (persistent-scratch-setup-default))
 
 (use-feature project
-:init
-(setq project-vc-ignores '("*.aux" "*.bbl" "*.bcf" "*.blg" "*.fdb_latexmk" "*.fls" "*.log" "*.out" "*.run.xml" "*.run.xml" "*.synctex.gz" "auto/" "*.pdf"))
-(setq project-vc-extra-root-markers '(".proj")))
+  :init
+  (setq project-vc-ignores '("*.aux" "*.bbl" "*.bcf" "*.blg" "*.fdb_latexmk" "*.fls" "*.log" "*.out" "*.run.xml" "*.run.xml" "*.synctex.gz" "auto/" "*.pdf"))
+  (setq project-vc-extra-root-markers '(".proj")))
 
 (use-package pulsar
-:config
-(pulsar-global-mode 1))
+  :config
+  (pulsar-global-mode 1))
 
 (use-feature recentf
   :config (recentf-mode)
@@ -1575,28 +1617,27 @@
   (super-save-mode +1))
 
 (use-package terminal-here
-:config
-(setq terminal-here-mac-terminal-command 'kitty)
-:general
-("C-`" #'terminal-here-launch)
-)
+  :config
+  (setq terminal-here-mac-terminal-command 'kitty)
+  :general
+  ("C-`" #'terminal-here-launch)
+  )
 
 (use-package term-toggle
-:demand t
-:ensure
-    (:host github :repo "amno1/emacs-term-toggle")
-    :config
-    (setq term-toggle-no-confirm-exit t)
+  :demand t
+  :ensure
+  (:host github :repo "amno1/emacs-term-toggle")
+  :config
+  (setq term-toggle-no-confirm-exit t)
   (defun term-toggle-eat ()
     "Toggle `term'."
     (interactive) (term-toggle 'eat))
-:general
-   ("<f2>" #'term-toggle-eat
+  :general
+  ("<f2>" #'term-toggle-eat
    "<S-f2>" #'term-toggle-eshell)
-    )
+  )
 
 (use-package titlecase
-  :defer 2
   :config
   (setq titlecase-style "chicago"))
 
@@ -1609,8 +1650,14 @@
   (vertico-multiform-mode)
   (define-key vertico-map (kbd "C-h") #'+minibuffer-up-dir))
 
+(use-package unfill)
+
+(use-package visual-regexp
+  :general
+  ("C-c r" #'vr/replace)
+  ("C-c q" #'vr/query-replace))
+
 (use-package vundo
-  :defer 2
   :custom
   (vundo-glyph-alist vundo-unicode-symbols)
   :bind
@@ -1631,7 +1678,6 @@
 (use-package writeroom-mode)
 
 (use-package yankpad
-  :defer 2
   :init
   (setq yankpad-file "~/Library/Mobile Documents/com~apple~CloudDocs/org/yankpad.org")
   :general
