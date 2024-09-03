@@ -1710,16 +1710,18 @@
  "C-S-a" #'embark-act)
 
 (general-define-key
- "s-1" #'delete-other-windows
- "s-2" #'rlr/find-file-below
- "s-3" #'rlr/find-file-right
- "s-6" #'toggle-window-split
- "S-C-<left>" #'shrink-window-horizontally
- "S-C-<right>" #'enlarge-window-horizontally
- "S-C-<down>" #'shrink-window
- "S-C-<up>" #'enlarge-window
- "C-x w" #'delete-frame
- "M-o" #'crux-other-window-or-switch-buffer)
+   "s-1" #'delete-other-windows
+   "s-2" #'rlr/find-file-below
+   "s-3" #'rlr/find-file-right
+"s-4" #'split-window-below-focus
+"s-5" #'split-window-right-focus
+   "s-6" #'toggle-window-split
+   "S-C-<left>" #'shrink-window-horizontally
+   "S-C-<right>" #'enlarge-window-horizontally
+   "S-C-<down>" #'shrink-window
+   "S-C-<up>" #'enlarge-window
+   "C-x w" #'delete-frame
+   "M-o" #'crux-other-window-or-switch-buffer)
 
 (general-define-key
  "s-l" #'hydra-locate/body
