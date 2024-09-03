@@ -1044,11 +1044,11 @@
        ("vI" org-toggle-inline-images "Inline images")
        )
       "Blog"
-      (("bn" hugo-draft-post "New draft")
-       ("bp" hugo-publish-post "Publish")
-       ("bt" hugo-timestamp "Update timestamp")
-       ("bd" hugo-org-deploy "Deploy")
-       ("be" org-hugo-auto-export-mode "Auto export"))
+      (("Hn" hugo-draft-post "New draft")
+       ("Hp" hugo-publish-post "Publish")
+       ("Ht" hugo-timestamp "Update timestamp")
+       ("Hd" hugo-org-deploy "Deploy")
+       ("He" org-hugo-auto-export-mode "Auto export"))
       "Notes"
       (("1" denote-link "link to note"))
       ))
