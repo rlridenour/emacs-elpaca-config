@@ -1009,6 +1009,7 @@
       (
        ("m" rlr/org-mkpdf "Make PDF with PDFLaTeX")
        ("p" rlr/org-open-pdf "View PDF")
+       ("h" make-html "HTML")
        ("l" rlr/org-mklua "Make PDF with LuaLaTeX")
        ("el" org-latex-export-to-latex "Org to LaTeX")
        ("eb" org-beamer-export-to-pdf "Org to Beamer-PDF")
@@ -1043,11 +1044,11 @@
        ("vI" org-toggle-inline-images "Inline images")
        )
       "Blog"
-      (("hn" hugo-draft-post "New draft")
-       ("hp" hugo-publish-post "Publish")
-       ("ht" hugo-timestamp "Update timestamp")
-       ("hd" hugo-org-deploy "Deploy")
-       ("he" org-hugo-auto-export-mode "Auto export"))
+      (("bn" hugo-draft-post "New draft")
+       ("bp" hugo-publish-post "Publish")
+       ("bt" hugo-timestamp "Update timestamp")
+       ("bd" hugo-org-deploy "Deploy")
+       ("be" org-hugo-auto-export-mode "Auto export"))
       "Notes"
       (("1" denote-link "link to note"))
       ))
@@ -1061,7 +1062,7 @@
        ("s" rlrt-new-syllabus "syllabus"))
       "Tools"
       (("d" crux-open-with "Open in default program")
-       ("h" dired-omit-mode "Show hidden files")
+       ("." dired-omit-mode "Show hidden files")
        ("p" diredp-copy-abs-filenames-as-kill "Copy filename and path")
        ("n" dired-toggle-read-only "edit Filenames"))))
 
