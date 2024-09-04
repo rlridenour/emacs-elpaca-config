@@ -751,6 +751,24 @@ Make help buffers active when created, so pressing "q" will immediately close th
   (setq Man-notify-method 'aggressive)
 #+end_src
 
+** Functions
+
+Use ~C-c d d~ to insert Month, Day Year and ~C-c d s~ to insert YYYYMMDD date string.
+
+#+begin_src emacs-lisp
+  (defun insert-date-string ()
+    "Insert current date yyyymmdd."
+    (interactive)
+    (insert (format-time-string "%Y%m%d")))
+
+  (defun insert-standard-date ()
+    "Inserts standard date time string."
+    (interactive)
+    (insert (format-time-string "%B %e, %Y")))
+#+end_src
+
+
+
 * Packages
 :PROPERTIES:
 :header-args: :tangle init.el

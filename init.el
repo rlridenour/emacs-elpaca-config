@@ -355,6 +355,16 @@
 (setq help-window-select t)
 (setq Man-notify-method 'aggressive)
 
+(defun insert-date-string ()
+  "Insert current date yyyymmdd."
+  (interactive)
+  (insert (format-time-string "%Y%m%d")))
+
+(defun insert-standard-date ()
+  "Inserts standard date time string."
+  (interactive)
+  (insert (format-time-string "%B %e, %Y")))
+
 (use-package general
   :ensure (:wait t)
   :demand t
