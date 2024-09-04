@@ -832,7 +832,7 @@ Load general before the remaining packages so they can make use of the ~:general
 
 ** Casual Suite
 
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp :tangle yes
   (use-package casual-suite
     :init
     (require 'transient)
@@ -856,6 +856,8 @@ Load general before the remaining packages so they can make use of the ~:general
 	    "s" #'casual-ibuffer-sortby-tmenu)
     (:keymaps 'reb-mode-map
 	    "s-." #'casual-re-builder-tmenu)
+(:keymaps 'org-agenda-mode-map
+	    "s-." #'casual-agenda-tmenu)
     (:keymaps 'bookmark-bmenu-mode-map
 	    "s-." #'casual-bookmarks-tmenu))
 #+end_src
