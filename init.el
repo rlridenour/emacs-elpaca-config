@@ -408,31 +408,31 @@
   (setq bookmark-save-flag 1))
 
 (use-package casual-suite
-    :init
-    (require 'transient)
-    :config
-    (require 're-builder)
-    (setq reb-re-syntax 'string)
-    :general
-    ("M-g a"  #'casual-avy-tmenu)
+  :init
+  (require 'transient)
+  :config
+  (require 're-builder)
+  (setq reb-re-syntax 'string)
+  :general
+  ("M-g a"  #'casual-avy-tmenu)
 
-    (:keymaps 'calc-mode-map
+  (:keymaps 'calc-mode-map
 	    "s-."  #'casual-calc-tmenu)
-    (:keymaps 'Info-mode-map
+  (:keymaps 'Info-mode-map
 	    "s-." #'casual-info-tmenu)
-    (:keymaps 'dired-mode-map
+  (:keymaps 'dired-mode-map
 	    "s-." #'casual-dired-tmenu)
-    (:keymaps 'isearch-mode-map
+  (:keymaps 'isearch-mode-map
 	    "s-." #'casual-isearch-tmenu)
-    (:keymaps 'ibuffer-mode-map
+  (:keymaps 'ibuffer-mode-map
 	    "s-." #'casual-ibuffer-tmenu
 	    "F" #'casual-ibuffer-filter-tmenu
 	    "s" #'casual-ibuffer-sortby-tmenu)
-    (:keymaps 'reb-mode-map
+  (:keymaps 'reb-mode-map
 	    "s-." #'casual-re-builder-tmenu)
-(:keymaps 'org-agenda-mode-map
+  (:keymaps 'org-agenda-mode-map
 	    "s-." #'casual-agenda-tmenu)
-    (:keymaps 'bookmark-bmenu-mode-map
+  (:keymaps 'bookmark-bmenu-mode-map
 	    "s-." #'casual-bookmarks-tmenu))
 
 (use-package cape
