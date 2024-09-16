@@ -807,7 +807,7 @@
        ("s" whitespace-mode "whitespace" :toggle t))
       " "
       (("c" cdlatex-mode "cdlatex" :toggle t)
-       ("w" writeroom-mode "writeroom" :toggle t)
+       ("o" olivetti-mode "writeroom" :toggle t)
        ("r" read-only-mode "read-only" :toggle t)
        ("v" view-mode "view" :toggle t)
        ("W" wc-mode "word-count" :toggle t)
@@ -956,7 +956,6 @@
       (("l" hydra-logic/body "logic")
        ("m" hydra-math/body))))
    ))
-;; (global-set-key (kbd "s-t") 'hydra-toggle/body)
 
 (with-after-elpaca-init
  (progn
@@ -1302,6 +1301,8 @@
   (load-theme 'modus-operandi t)
   :general
   ("<f9>" #'modus-themes-toggle))
+
+(use-package olivetti)
 
 (use-package orderless
   :custom
@@ -1654,6 +1655,9 @@
   ;; load default config
   (require 'smartparens-config))
 
+(use-package spacious-padding
+  :init (spacious-padding-mode))
+
 (use-package super-save
   :config
   (setq super-save-auto-save-when-idle t)
@@ -1717,8 +1721,6 @@
   (which-key-sort-order 'which-key-key-order-alpha)
   (which-key-side-window-max-width 0.33)
   (which-key-idle-delay 0.2))
-
-(use-package writeroom-mode)
 
 (use-package yankpad
   :init

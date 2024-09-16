@@ -1402,7 +1402,7 @@ Make copying and moving files easier.
 	 ("s" whitespace-mode "whitespace" :toggle t))
 	" "
 	(("c" cdlatex-mode "cdlatex" :toggle t)
-	 ("w" writeroom-mode "writeroom" :toggle t)
+	 ("o" olivetti-mode "writeroom" :toggle t)
 	 ("r" read-only-mode "read-only" :toggle t)
 	 ("v" view-mode "view" :toggle t)
 	 ("W" wc-mode "word-count" :toggle t)
@@ -1551,7 +1551,6 @@ Make copying and moving files easier.
 	(("l" hydra-logic/body "logic")
 	 ("m" hydra-math/body))))
      ))
-  ;; (global-set-key (kbd "s-t") 'hydra-toggle/body)
 #+end_src
 
 *** Major Mode Hydras
@@ -1971,6 +1970,13 @@ Enrich existing commands with completion annotations
     (load-theme 'modus-operandi t)
     :general
     ("<f9>" #'modus-themes-toggle))
+#+end_src
+
+
+** Olivetti
+
+#+begin_src emacs-lisp
+(use-package olivetti)
 #+end_src
 
 ** Orderless
@@ -2495,6 +2501,16 @@ Increase number of recent files shown.
     (require 'smartparens-config))
 #+end_src
 
+
+** Spacious-Padding
+
+#+begin_src emacs-lisp
+(use-package spacious-padding
+  :init (spacious-padding-mode))
+#+end_src
+
+
+
 ** Super Save
 
 #+begin_src emacs-lisp
@@ -2605,12 +2621,6 @@ https://github.com/justbur/emacs-which-key
     (which-key-sort-order 'which-key-key-order-alpha)
     (which-key-side-window-max-width 0.33)
     (which-key-idle-delay 0.2))
-#+end_src
-
-** Writeroom
-
-#+begin_src emacs-lisp
-  (use-package writeroom-mode)
 #+end_src
 
 ** Yankpad
