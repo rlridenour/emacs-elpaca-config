@@ -1134,6 +1134,7 @@
   :init
   (setenv "PKG_CONFIG_PATH" (concat "/opt/homebrew/opt/glib/lib/pkgconfig/:" (getenv "PKG_CONFIG_PATH")))
   :config
+  (setq ispell-silently-savep t)
   (defun jinx-correct-all ()
     (interactive)
     (let ((current-prefix-arg '(4)))
