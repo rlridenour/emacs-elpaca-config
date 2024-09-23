@@ -527,7 +527,9 @@
 :config
 (global-corfu-mode))
 
-(use-package crux)
+(use-package crux
+:general
+("s-p" #'crux-create-scratch-buffer))
 
 (use-package dashboard
   :demand t

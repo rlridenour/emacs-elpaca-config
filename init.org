@@ -1012,7 +1012,9 @@ Load general before the remaining packages so they can make use of the ~:general
 ** Crux
 
 #+begin_src emacs-lisp
-  (use-package crux)
+  (use-package crux
+:general
+("s-p" #'crux-create-scratch-buffer))
 #+end_src
 
 ** Dashboard
