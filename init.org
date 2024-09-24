@@ -522,6 +522,14 @@ Kills all open buffers except scratch, dashboard and messages. From https://gith
     (find-file "~/.config/fish/functions/"))
 #+end_src
 
+Save the current (system) clipboard before replacing it with the Emacs’ text.
+https://github.com/dakrone/eos/blob/master/eos.org
+
+#+begin_src emacs-lisp
+(setq save-interprogram-paste-before-kill t)
+#+end_src
+
+
 ** Windows
 
 #+begin_src emacs-lisp
@@ -690,7 +698,6 @@ Find non-ascii characters in buffer.
     (interactive)
     (occur "[^[:ascii:]]"))
 #+end_src
-
 
 ** Shells
 

@@ -212,6 +212,8 @@
   "Find Emacs literate init file."
   (find-file "~/.config/fish/functions/"))
 
+(setq save-interprogram-paste-before-kill t)
+
 (defun delete-window-balance ()
   "Delete window and rebalance the remaining ones."
   (interactive)
