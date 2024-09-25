@@ -343,9 +343,9 @@
     " tell application \"iTerm2\"\n"
     "   tell the current session of current window\n"
     (format "     write text \"cd %s\" \n"
-	  ;; string escaping madness for applescript
-	  (replace-regexp-in-string "\\\\" "\\\\\\\\"
-				    (shell-quote-argument (or default-directory "~"))))
+	    ;; string escaping madness for applescript
+	    (replace-regexp-in-string "\\\\" "\\\\\\\\"
+				      (shell-quote-argument (or default-directory "~"))))
     "   end tell\n"
     " end tell\n"
     " do shell script \"open -a iTerm\"\n"
@@ -1146,24 +1146,11 @@
   (setenv "PKG_CONFIG_PATH" (concat "/opt/homebrew/opt/glib/lib/pkgconfig/:" (getenv "PKG_CONFIG_PATH")))
   :config
   (setq ispell-silently-savep t)
-  (defun jinx-correct-all ()
-    (interactive)
-    (let ((current-prefix-arg '(4)))
-      (call-interactively #'jinx-correct)))
   :hook (emacs-startup . global-jinx-mode)
   :general
   ([remap ispell-word] #'jinx-correct
    "<f7>" #'jinx-correct
    "S-<f7>" #'jinx-correct-all))
-
-;; (defun jinx-correct-all ()
-;;   (interactive)
-;;   (let ((current-prefix-arg '(4)))
-;;     (call-interactively #'jinx-correct)))
-
-;; (general-define-key
-;;  "<f7>" #'jinx-correct
-;;  "S-<f7>" #'jinx-correct-all)
 
 (with-after-elpaca-init
  (add-to-list 'vertico-multiform-categories
