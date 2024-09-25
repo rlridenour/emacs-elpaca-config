@@ -12,6 +12,8 @@
    5 nil
    (lambda () (unless (frame-focus-state) (garbage-collect)))))
 
+(setq max-lisp-eval-depth 10000)
+
 (defun +reset-init-values ()
   (run-with-idle-timer
    1 nil

@@ -36,6 +36,15 @@ Set the header and prevent package initialization.
      (lambda () (unless (frame-focus-state) (garbage-collect)))))
 #+end_src
 
+Raise max lisp nesting depth.
+
+#+begin_src emacs-lisp
+(setq max-lisp-eval-depth 10000)
+#+end_src
+
+
+
+
 #+begin_src emacs-lisp :lexical t
   (defun +reset-init-values ()
     (run-with-idle-timer
