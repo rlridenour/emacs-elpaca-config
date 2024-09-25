@@ -794,6 +794,15 @@ Copy entire buffer then kill. I use this with temporary scratch buffers to write
     (kill-buffer))
 #+end_src
 
+Make a function to reload the Emacs config file to test changes.
+
+#+begin_src emacs-lisp
+  (defun reload-user-init-file()
+    (interactive)
+    (load-file user-init-file))
+#+end_src
+
+
 * Packages
 :PROPERTIES:
 :header-args: :tangle init.el

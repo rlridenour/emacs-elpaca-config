@@ -374,6 +374,10 @@
     (copy-region-as-kill 1 (buffer-size)))
   (kill-buffer))
 
+(defun reload-user-init-file()
+  (interactive)
+  (load-file user-init-file))
+
 (use-package general
   :ensure (:wait t)
   :demand t
