@@ -774,7 +774,16 @@ Use ~C-c d d~ to insert Month, Day Year and ~C-c d s~ to insert YYYYMMDD date st
     (insert (format-time-string "%B %e, %Y")))
 #+end_src
 
+Copy entire buffer then kill. I use this with temporary scratch buffers to write text that will be pasted into other apps.
 
+#+begin_src emacs-lisp
+  (defun copy-kill-buffer ()
+    (interactive)
+    (save-excursion
+      (mark-whole-buffer)
+      (copy-region-as-kill 1 (buffer-size)))
+    (kill-buffer))
+#+end_src
 
 * Packages
 :PROPERTIES:
@@ -858,7 +867,7 @@ Load general before the remaining packages so they can make use of the ~:general
 ** Casual Suite
 
 #+begin_src emacs-lisp
-(use-package casual-re-builder
+  (use-package casual-re-builder
     :config
     (require 're-builder)
     (setq reb-re-syntax 'string)
@@ -869,7 +878,7 @@ Load general before the remaining packages so they can make use of the ~:general
 
 
 #+begin_src emacs-lisp
-(use-package casual-calc
+  (use-package casual-calc
 
     :config
     :general
@@ -878,7 +887,7 @@ Load general before the remaining packages so they can make use of the ~:general
 #+end_src
 
 #+begin_src emacs-lisp
-(use-package casual-dired
+  (use-package casual-dired
 
     :config
     :general
@@ -909,7 +918,7 @@ Load general before the remaining packages so they can make use of the ~:general
 
 
 #+begin_src emacs-lisp
-(use-package casual-bookmarks
+  (use-package casual-bookmarks
 
     :config
     :general
@@ -918,7 +927,7 @@ Load general before the remaining packages so they can make use of the ~:general
 #+end_src
 
 #+begin_src emacs-lisp
-(use-package casual-agenda
+  (use-package casual-agenda
 
     :config
     :general
@@ -927,7 +936,7 @@ Load general before the remaining packages so they can make use of the ~:general
 #+end_src
 
 #+begin_src emacs-lisp
-(use-package casual-info
+  (use-package casual-info
 
     :config
     :general
@@ -936,18 +945,18 @@ Load general before the remaining packages so they can make use of the ~:general
 #+end_src
 
 #+begin_src emacs-lisp
-(use-package casual-avy
+  (use-package casual-avy
 
     :general
-("M-g a" #'casual-avy-tmenu))
+    ("M-g a" #'casual-avy-tmenu))
 #+end_src
 
 ** Cape
 
 #+begin_src emacs-lisp
-(use-package cape
-  :commands (cape-file)
-     :general (:prefix "M-p"
+  (use-package cape
+    :commands (cape-file)
+    :general (:prefix "M-p"
 		      "p" 'completion-at-point ;; capf
 		      "d" 'cape-dabbrev        ;; or dabbrev-completion
 		      "a" 'cape-abbrev
@@ -955,16 +964,16 @@ Load general before the remaining packages so they can make use of the ~:general
 		      "\\" 'cape-tex
 		      "_" 'cape-tex
 		      "^" 'cape-tex)
-:init
-  ;; Add to the global default value of `completion-at-point-functions' which is
-  ;; used by `completion-at-point'.  The order of the functions matters, the
-  ;; first function returning a result wins.  Note that the list of buffer-local
-  ;; completion functions takes precedence over the global list.
-  (add-hook 'completion-at-point-functions #'cape-dabbrev)
-  (add-hook 'completion-at-point-functions #'cape-file)
-  (add-hook 'completion-at-point-functions #'cape-elisp-block)
-  (add-hook 'completion-at-point-functions #'cape-history)
-)
+    :init
+    ;; Add to the global default value of `completion-at-point-functions' which is
+    ;; used by `completion-at-point'.  The order of the functions matters, the
+    ;; first function returning a result wins.  Note that the list of buffer-local
+    ;; completion functions takes precedence over the global list.
+    (add-hook 'completion-at-point-functions #'cape-dabbrev)
+    (add-hook 'completion-at-point-functions #'cape-file)
+    (add-hook 'completion-at-point-functions #'cape-elisp-block)
+    (add-hook 'completion-at-point-functions #'cape-history)
+    )
 #+end_src
 
 
@@ -992,16 +1001,16 @@ Load general before the remaining packages so they can make use of the ~:general
 #+begin_src emacs-lisp
   (use-package consult
     :demand t
-:config
-  (defun rlr/consult-rg ()
-    "Function for `consult-ripgrep' with the `universal-argument'."
-    (interactive)
-    (consult-ripgrep (list 4)))
+    :config
+    (defun rlr/consult-rg ()
+      "Function for `consult-ripgrep' with the `universal-argument'."
+      (interactive)
+      (consult-ripgrep (list 4)))
 
-  (defun rlr/consult-fd ()
-    "Function for `consult-find' with the `universal-argument'."
-    (interactive)
-    (consult-find (list 4)))
+    (defun rlr/consult-fd ()
+      "Function for `consult-find' with the `universal-argument'."
+      (interactive)
+      (consult-find (list 4)))
     :general
     ("C-x b" #'consult-buffer))
 #+end_src
@@ -1009,19 +1018,19 @@ Load general before the remaining packages so they can make use of the ~:general
 ** Corfu
 
 #+begin_src emacs-lisp
-(use-package corfu
-:custom
-(corfu-cycle t)
-:config
-(global-corfu-mode))
+  (use-package corfu
+    :custom
+    (corfu-cycle t)
+    :config
+    (global-corfu-mode))
 #+end_src
 
 ** Crux
 
 #+begin_src emacs-lisp
   (use-package crux
-:general
-("s-p" #'crux-create-scratch-buffer))
+    :general
+    ("s-p" #'crux-create-scratch-buffer))
 #+end_src
 
 ** Dashboard
@@ -1072,7 +1081,7 @@ Load general before the remaining packages so they can make use of the ~:general
 
   (general-define-key
    "s-d" #'goto-dashboard)
-    #+end_src
+#+end_src
 
 ** Deadgrep
 
@@ -1986,7 +1995,7 @@ Enrich existing commands with completion annotations
 ** Olivetti
 
 #+begin_src emacs-lisp
-(use-package olivetti)
+  (use-package olivetti)
 #+end_src
 
 ** Orderless
@@ -2420,7 +2429,7 @@ org-toggle-emphasis: easily toggle emphasis markers: =~*/_+]]
     (setq-default pdf-view-display-size 'fit-width)
     :general
     (:keymaps 'pdf-view-mode-map
-	    "C-s" #'isearch-forward)
+	      "C-s" #'isearch-forward)
     )
 #+end_src
 
@@ -2515,8 +2524,8 @@ Increase number of recent files shown.
 ** Spacious-Padding
 
 #+begin_src emacs-lisp
-(use-package spacious-padding
-  :init (spacious-padding-mode))
+  (use-package spacious-padding
+    :init (spacious-padding-mode))
 #+end_src
 
 
@@ -2693,7 +2702,8 @@ Keybindings for files and buffers.
    "s-K" #'nuke-all-buffers
    "s-r" #'consult-buffer
    "M-s-r" #'consult-buffer-other-window
-   "C-S-a" #'embark-act)
+   "C-S-a" #'embark-act
+   "C-M-S-s-k" #'copy-kill-buffer)
 #+end_src
 
 ** Window Keybindings

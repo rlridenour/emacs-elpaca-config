@@ -367,6 +367,13 @@
   (interactive)
   (insert (format-time-string "%B %e, %Y")))
 
+(defun copy-kill-buffer ()
+  (interactive)
+  (save-excursion
+    (mark-whole-buffer)
+    (copy-region-as-kill 1 (buffer-size)))
+  (kill-buffer))
+
 (use-package general
   :ensure (:wait t)
   :demand t
@@ -410,26 +417,26 @@
   (setq bookmark-save-flag 1))
 
 (use-package casual-re-builder
-    :config
-    (require 're-builder)
-    (setq reb-re-syntax 'string)
-    :general
-    (:keymaps 'reb-mode-map
-	      "s-." #'casual-re-builder-tmenu))
+  :config
+  (require 're-builder)
+  (setq reb-re-syntax 'string)
+  :general
+  (:keymaps 'reb-mode-map
+	    "s-." #'casual-re-builder-tmenu))
 
 (use-package casual-calc
 
-    :config
-    :general
-    (:keymaps 'calc-mode-map
-	      "s-." #'casual-calc-tmenu))
+  :config
+  :general
+  (:keymaps 'calc-mode-map
+	    "s-." #'casual-calc-tmenu))
 
 (use-package casual-dired
 
-    :config
-    :general
-    (:keymaps 'calc-mode-map
-	      "s-." #'casual-dired-tmenu))
+  :config
+  :general
+  (:keymaps 'calc-mode-map
+	    "s-." #'casual-dired-tmenu))
 
 (use-package casual-isearch
 
@@ -449,41 +456,41 @@
 
 (use-package casual-bookmarks
 
-    :config
-    :general
-    (:keymaps 'bookmark-bemenu-mode-map
-	      "s-." #'casual-bookmarks-tmenu))
+  :config
+  :general
+  (:keymaps 'bookmark-bemenu-mode-map
+	    "s-." #'casual-bookmarks-tmenu))
 
 (use-package casual-agenda
 
-    :config
-    :general
-    (:keymaps 'org-agenda-mode-map
-	      "s-." #'casual-agenda-tmenu))
+  :config
+  :general
+  (:keymaps 'org-agenda-mode-map
+	    "s-." #'casual-agenda-tmenu))
 
 (use-package casual-info
 
-    :config
-    :general
-    (:keymaps 'Info-mode-map
-	      "s-." #'casual-info-tmenu))
+  :config
+  :general
+  (:keymaps 'Info-mode-map
+	    "s-." #'casual-info-tmenu))
 
 (use-package casual-avy
 
-    :general
-("M-g a" #'casual-avy-tmenu))
+  :general
+  ("M-g a" #'casual-avy-tmenu))
 
 (use-package cape
   :commands (cape-file)
-     :general (:prefix "M-p"
-		      "p" 'completion-at-point ;; capf
-		      "d" 'cape-dabbrev        ;; or dabbrev-completion
-		      "a" 'cape-abbrev
-		      "w" 'cape-dict
-		      "\\" 'cape-tex
-		      "_" 'cape-tex
-		      "^" 'cape-tex)
-:init
+  :general (:prefix "M-p"
+		    "p" 'completion-at-point ;; capf
+		    "d" 'cape-dabbrev        ;; or dabbrev-completion
+		    "a" 'cape-abbrev
+		    "w" 'cape-dict
+		    "\\" 'cape-tex
+		    "_" 'cape-tex
+		    "^" 'cape-tex)
+  :init
   ;; Add to the global default value of `completion-at-point-functions' which is
   ;; used by `completion-at-point'.  The order of the functions matters, the
   ;; first function returning a result wins.  Note that the list of buffer-local
@@ -492,7 +499,7 @@
   (add-hook 'completion-at-point-functions #'cape-file)
   (add-hook 'completion-at-point-functions #'cape-elisp-block)
   (add-hook 'completion-at-point-functions #'cape-history)
-)
+  )
 
 (use-package citar
   :bind (("C-c C-b" . citar-insert-citation)
@@ -509,8 +516,8 @@
      (t . (csl "chicago-author-date.csl")))))
 
 (use-package consult
-    :demand t
-:config
+  :demand t
+  :config
   (defun rlr/consult-rg ()
     "Function for `consult-ripgrep' with the `universal-argument'."
     (interactive)
@@ -520,18 +527,18 @@
     "Function for `consult-find' with the `universal-argument'."
     (interactive)
     (consult-find (list 4)))
-    :general
-    ("C-x b" #'consult-buffer))
+  :general
+  ("C-x b" #'consult-buffer))
 
 (use-package corfu
-:custom
-(corfu-cycle t)
-:config
-(global-corfu-mode))
+  :custom
+  (corfu-cycle t)
+  :config
+  (global-corfu-mode))
 
 (use-package crux
-:general
-("s-p" #'crux-create-scratch-buffer))
+  :general
+  ("s-p" #'crux-create-scratch-buffer))
 
 (use-package dashboard
   :demand t
@@ -1613,7 +1620,7 @@
   (setq-default pdf-view-display-size 'fit-width)
   :general
   (:keymaps 'pdf-view-mode-map
-	  "C-s" #'isearch-forward)
+	    "C-s" #'isearch-forward)
   )
 
 (defun unkillable-scratch-buffer ()
@@ -1757,7 +1764,8 @@
  "s-K" #'nuke-all-buffers
  "s-r" #'consult-buffer
  "M-s-r" #'consult-buffer-other-window
- "C-S-a" #'embark-act)
+ "C-S-a" #'embark-act
+ "C-M-S-s-k" #'copy-kill-buffer)
 
 (general-define-key
    "s-1" #'delete-other-windows
