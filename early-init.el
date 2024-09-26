@@ -63,8 +63,6 @@
 
 (add-hook 'server-after-make-frame-hook #'my/focus-new-client-frame)
 
-(setq initial-major-mode 'org-mode)
-
 (set-face-attribute 'default nil :height 160)
 
 ;; Local Variables:

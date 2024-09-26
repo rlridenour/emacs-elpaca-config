@@ -214,6 +214,16 @@
 
 (setq save-interprogram-paste-before-kill t)
 
+(defvar-keymap initial-mode-map
+  "C-c C-c" #'copy-kill-buffer)
+
+(define-derived-mode initial-mode
+  text-mode "Initial"
+  "Major mode for scratch buffers."
+  )
+
+(setq initial-major-mode 'initial-mode)
+
 (defun delete-window-balance ()
   "Delete window and rebalance the remaining ones."
   (interactive)
