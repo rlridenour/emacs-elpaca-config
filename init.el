@@ -222,7 +222,7 @@
   "Major mode for scratch buffers."
   )
 
-(setq initial-major-mode 'notepad-mode)
+(setq initial-major-mode 'org-mode)
 
 (defun delete-window-balance ()
   "Delete window and rebalance the remaining ones."
@@ -383,7 +383,8 @@
   (newline)
   (mark-whole-buffer)
   (copy-region-as-kill 1 (buffer-size))
-  (kill-buffer))
+  (kill-buffer)
+  (delete-frame))
 
 (defun reload-user-init-file()
   (interactive)
