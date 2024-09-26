@@ -534,11 +534,11 @@ https://github.com/dakrone/eos/blob/master/eos.org
 Define initial mode to use for scratch buffers. This is so I can have special keybindings just for scratch buffers.
 
 #+begin_src emacs-lisp
-(defvar-keymap initial-mode-map
+(defvar-keymap notepad-mode-map
   "C-c C-c" #'copy-kill-buffer)
 
-(define-derived-mode initial-mode
-  text-mode "Initial"
+(define-derived-mode notepad-mode
+  text-mode "Notepad"
   "Major mode for scratch buffers."
   )
 #+end_src
@@ -546,7 +546,7 @@ Define initial mode to use for scratch buffers. This is so I can have special ke
 Set initial mode to org-mode.
 
 #+begin_src emacs-lisp
-  (setq initial-major-mode 'initial-mode)
+  (setq initial-major-mode 'notepad-mode)
 #+end_src
 
 
@@ -799,9 +799,10 @@ Copy entire buffer then kill. I use this with temporary scratch buffers to write
 #+begin_src emacs-lisp
   (defun copy-kill-buffer ()
     (interactive)
-    (save-excursion
-      (mark-whole-buffer)
-      (copy-region-as-kill 1 (buffer-size)))
+    (goto-char (point-max))
+    (newline)
+    (mark-whole-buffer)
+    (copy-region-as-kill 1 (buffer-size))
     (kill-buffer))
 #+end_src
 

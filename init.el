@@ -214,15 +214,15 @@
 
 (setq save-interprogram-paste-before-kill t)
 
-(defvar-keymap initial-mode-map
+(defvar-keymap notepad-mode-map
   "C-c C-c" #'copy-kill-buffer)
 
-(define-derived-mode initial-mode
-  text-mode "Initial"
+(define-derived-mode notepad-mode
+  text-mode "Notepad"
   "Major mode for scratch buffers."
   )
 
-(setq initial-major-mode 'initial-mode)
+(setq initial-major-mode 'notepad-mode)
 
 (defun delete-window-balance ()
   "Delete window and rebalance the remaining ones."
@@ -379,9 +379,10 @@
 
 (defun copy-kill-buffer ()
   (interactive)
-  (save-excursion
-    (mark-whole-buffer)
-    (copy-region-as-kill 1 (buffer-size)))
+  (goto-char (point-max))
+  (newline)
+  (mark-whole-buffer)
+  (copy-region-as-kill 1 (buffer-size))
   (kill-buffer))
 
 (defun reload-user-init-file()
