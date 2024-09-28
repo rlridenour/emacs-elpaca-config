@@ -377,6 +377,13 @@
   (interactive)
   (insert (format-time-string "%B %e, %Y")))
 
+(defun rlr-create-notepad-buffer ()
+  "Create a new notepad buffer."
+  (interactive)
+  (let ((buf (generate-new-buffer "*notepad*")))
+    (switch-to-buffer buf)
+    (notepad-mode)))
+
 (defun copy-kill-buffer ()
   (interactive)
   (goto-char (point-max))
@@ -1614,6 +1621,8 @@
  "s-+" (lambda () (interactive) (my/org-toggle-emphasis ?+)))
 
 (use-package org-mac-link)
+
+(use-package osx-dictionary)
 
 (use-package pdf-tools
   :hook (pdf-view-mode . (lambda () (display-line-numbers-mode -1)))

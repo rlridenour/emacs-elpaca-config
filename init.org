@@ -794,6 +794,17 @@ Use ~C-c d d~ to insert Month, Day Year and ~C-c d s~ to insert YYYYMMDD date st
     (insert (format-time-string "%B %e, %Y")))
 #+end_src
 
+Create notepad buffer
+
+#+begin_src emacs-lisp
+(defun rlr-create-notepad-buffer ()
+  "Create a new notepad buffer."
+  (interactive)
+  (let ((buf (generate-new-buffer "*notepad*")))
+    (switch-to-buffer buf)
+    (notepad-mode)))
+#+end_src
+
 Copy entire buffer then kill. I use this with temporary scratch buffers to write text that will be pasted into other apps.
 
 #+begin_src emacs-lisp
@@ -2434,6 +2445,12 @@ org-toggle-emphasis: easily toggle emphasis markers: =~*/_+]]
 
 #+begin_src emacs-lisp
   (use-package org-mac-link)
+#+end_src
+
+** OSX Dictionary
+
+#+begin_src emacs-lisp
+(use-package osx-dictionary)
 #+end_src
 
 ** PDF-Tools
