@@ -51,7 +51,7 @@
 (setq use-dialog-box nil)
 
 (setq frame-resize-pixelwise t)
-(add-to-list 'default-frame-alist '(fullscreen . fullheight))
+;; (add-to-list 'default-frame-alist '(fullscreen . fullheight))
 (add-to-list 'default-frame-alist '(left . 0))
 (add-to-list 'default-frame-alist '(width . 100))
 

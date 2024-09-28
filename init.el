@@ -1312,8 +1312,16 @@
   "Create a new notepad buffer."
   (interactive)
   (let ((buf (generate-new-buffer "*notepad*")))
-    (switch-to-buffer buf)
-    (notepad-mode)))
+    (switch-to-buffer buf))
+    (notepad-mode))
+
+(defun app-switch ()
+(interactive)
+(do-applescript "tell application \"System Events\" to keystroke tab using command down")
+)
+
+(general-define-key
+ "C-s-<tab>" #'app-switch)
 
 (defun copy-kill-buffer ()
   (interactive)
@@ -1322,7 +1330,8 @@
   (mark-whole-buffer)
   (copy-region-as-kill 1 (buffer-size))
   (kill-buffer)
-  (delete-frame))
+  (delete-frame)
+  (app-switch))
 
 (use-package olivetti)
 

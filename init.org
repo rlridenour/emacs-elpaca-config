@@ -114,7 +114,7 @@ Set initial frame size to fullheight.
 
 #+begin_src emacs-lisp
   (setq frame-resize-pixelwise t)
-  (add-to-list 'default-frame-alist '(fullscreen . fullheight))
+  ;; (add-to-list 'default-frame-alist '(fullscreen . fullheight))
   (add-to-list 'default-frame-alist '(left . 0))
   (add-to-list 'default-frame-alist '(width . 100))
 #+end_src
@@ -1989,7 +1989,7 @@ Enrich existing commands with completion annotations
 
 ** Notepad
 
-I use this to quickly create a disposable Emacs buffer to write some quick text for pasting into another app. 
+I use this to quickly create a disposable Emacs buffer to write some quick text for pasting into another app.
 
 TODO: Enable switching back to original app after killing Emacs buffer.
 
@@ -2012,8 +2012,24 @@ Create notepad buffer
   "Create a new notepad buffer."
   (interactive)
   (let ((buf (generate-new-buffer "*notepad*")))
-    (switch-to-buffer buf)
-    (notepad-mode)))
+    (switch-to-buffer buf))
+    (notepad-mode))
+#+end_src
+
+
+Use command-tab to switch to previous app.
+
+#+begin_src emacs-lisp
+(defun app-switch ()
+(interactive)
+(do-applescript "tell application \"System Events\" to keystroke tab using command down")
+)
+#+end_src
+
+
+#+begin_src emacs-lisp
+  (general-define-key
+   "C-s-<tab>" #'app-switch)
 #+end_src
 
 Copy entire buffer then kill. I use this with temporary scratch buffers to write text that will be pasted into other apps.
@@ -2026,7 +2042,8 @@ Copy entire buffer then kill. I use this with temporary scratch buffers to write
     (mark-whole-buffer)
     (copy-region-as-kill 1 (buffer-size))
     (kill-buffer)
-    (delete-frame))
+    (delete-frame)
+    (app-switch))
 #+end_src
 
 
