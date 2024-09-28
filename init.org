@@ -531,17 +531,6 @@ https://github.com/dakrone/eos/blob/master/eos.org
   (setq save-interprogram-paste-before-kill t)
 #+end_src
 
-Define initial mode to use for scratch buffers. This is so I can have special keybindings just for scratch buffers.
-
-#+begin_src emacs-lisp
-  (defvar-keymap notepad-mode-map
-    "C-c C-c" #'copy-kill-buffer)
-
-  (define-derived-mode notepad-mode
-    text-mode "Notepad"
-    "Major mode for scratch buffers."
-    )
-#+end_src
 
 Set initial mode to org-mode.
 
@@ -794,29 +783,6 @@ Use ~C-c d d~ to insert Month, Day Year and ~C-c d s~ to insert YYYYMMDD date st
     (insert (format-time-string "%B %e, %Y")))
 #+end_src
 
-Create notepad buffer
-
-#+begin_src emacs-lisp
-(defun rlr-create-notepad-buffer ()
-  "Create a new notepad buffer."
-  (interactive)
-  (let ((buf (generate-new-buffer "*notepad*")))
-    (switch-to-buffer buf)
-    (notepad-mode)))
-#+end_src
-
-Copy entire buffer then kill. I use this with temporary scratch buffers to write text that will be pasted into other apps.
-
-#+begin_src emacs-lisp
-  (defun copy-kill-buffer ()
-    (interactive)
-    (goto-char (point-max))
-    (newline)
-    (mark-whole-buffer)
-    (copy-region-as-kill 1 (buffer-size))
-    (kill-buffer)
-    (delete-frame))
-#+end_src
 
 Make a function to reload the Emacs config file to test changes.
 
@@ -2018,6 +1984,49 @@ Enrich existing commands with completion annotations
     (load-theme 'modus-operandi t)
     :general
     ("<f9>" #'modus-themes-toggle))
+#+end_src
+
+
+** Notepad
+
+I use this to quickly create a disposable Emacs buffer to write some quick text for pasting into another app. 
+
+TODO: Enable switching back to original app after killing Emacs buffer.
+
+Define initial mode to use for notepad buffers. This is so I can use "C-c C-c" to copy and kill.
+
+#+begin_src emacs-lisp
+  (defvar-keymap notepad-mode-map
+    "C-c C-c" #'copy-kill-buffer)
+
+  (define-derived-mode notepad-mode
+    org-mode "Notepad"
+    "Major mode for scratch buffers."
+    )
+#+end_src
+
+Create notepad buffer
+
+#+begin_src emacs-lisp
+(defun rlr-create-notepad-buffer ()
+  "Create a new notepad buffer."
+  (interactive)
+  (let ((buf (generate-new-buffer "*notepad*")))
+    (switch-to-buffer buf)
+    (notepad-mode)))
+#+end_src
+
+Copy entire buffer then kill. I use this with temporary scratch buffers to write text that will be pasted into other apps.
+
+#+begin_src emacs-lisp
+  (defun copy-kill-buffer ()
+    (interactive)
+    (goto-char (point-max))
+    (newline)
+    (mark-whole-buffer)
+    (copy-region-as-kill 1 (buffer-size))
+    (kill-buffer)
+    (delete-frame))
 #+end_src
 
 

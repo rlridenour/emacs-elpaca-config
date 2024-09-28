@@ -214,14 +214,6 @@
 
 (setq save-interprogram-paste-before-kill t)
 
-(defvar-keymap notepad-mode-map
-  "C-c C-c" #'copy-kill-buffer)
-
-(define-derived-mode notepad-mode
-  text-mode "Notepad"
-  "Major mode for scratch buffers."
-  )
-
 (setq initial-major-mode 'org-mode)
 
 (defun delete-window-balance ()
@@ -376,22 +368,6 @@
   "Inserts standard date time string."
   (interactive)
   (insert (format-time-string "%B %e, %Y")))
-
-(defun rlr-create-notepad-buffer ()
-  "Create a new notepad buffer."
-  (interactive)
-  (let ((buf (generate-new-buffer "*notepad*")))
-    (switch-to-buffer buf)
-    (notepad-mode)))
-
-(defun copy-kill-buffer ()
-  (interactive)
-  (goto-char (point-max))
-  (newline)
-  (mark-whole-buffer)
-  (copy-region-as-kill 1 (buffer-size))
-  (kill-buffer)
-  (delete-frame))
 
 (defun reload-user-init-file()
   (interactive)
@@ -1323,6 +1299,30 @@
   (load-theme 'modus-operandi t)
   :general
   ("<f9>" #'modus-themes-toggle))
+
+(defvar-keymap notepad-mode-map
+  "C-c C-c" #'copy-kill-buffer)
+
+(define-derived-mode notepad-mode
+  org-mode "Notepad"
+  "Major mode for scratch buffers."
+  )
+
+(defun rlr-create-notepad-buffer ()
+  "Create a new notepad buffer."
+  (interactive)
+  (let ((buf (generate-new-buffer "*notepad*")))
+    (switch-to-buffer buf)
+    (notepad-mode)))
+
+(defun copy-kill-buffer ()
+  (interactive)
+  (goto-char (point-max))
+  (newline)
+  (mark-whole-buffer)
+  (copy-region-as-kill 1 (buffer-size))
+  (kill-buffer)
+  (delete-frame))
 
 (use-package olivetti)
 
