@@ -2017,14 +2017,14 @@ Create notepad buffer
 #+end_src
 
 
-Use command-tab to switch to previous app.
+This calls a fish function that uses command-tab to switch to the previous app and pastes the clipboard.
 
 #+begin_src emacs-lisp
 (defun app-switch ()
 (interactive)
-(do-applescript "tell application \"System Events\" to keystroke tab using command down")
-)
+(shell-command "switch-paste"))
 #+end_src
+
 
 
 #+begin_src emacs-lisp

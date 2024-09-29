@@ -1317,8 +1317,7 @@
 
 (defun app-switch ()
 (interactive)
-(do-applescript "tell application \"System Events\" to keystroke tab using command down")
-)
+(shell-command "switch-paste"))
 
 (general-define-key
  "C-s-<tab>" #'app-switch)
