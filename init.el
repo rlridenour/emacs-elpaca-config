@@ -1662,6 +1662,16 @@
   :init
   (persistent-scratch-setup-default))
 
+(use-package vertico-posframe
+    :init
+    (vertico-posframe-mode))
+  (use-package which-key-posframe
+    :init
+    (which-key-posframe-mode))
+  (use-package transient-posframe
+    :init
+    (transient-posframe-mode))
+
 (use-feature project
   :init
   (setq project-vc-ignores '("*.aux" "*.bbl" "*.bcf" "*.blg" "*.fdb_latexmk" "*.fls" "*.log" "*.out" "*.run.xml" "*.run.xml" "*.synctex.gz" "auto/" "*.pdf"))

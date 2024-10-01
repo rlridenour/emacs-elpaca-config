@@ -2529,6 +2529,22 @@ Use ~persistent-scratch~ to save scratch file between sessions.
     (persistent-scratch-setup-default))
 #+end_src
 
+** Posframes
+
+#+begin_src emacs-lisp
+(use-package vertico-posframe
+    :init
+    (vertico-posframe-mode))
+  (use-package which-key-posframe
+    :init
+    (which-key-posframe-mode))
+  (use-package transient-posframe
+    :init
+    (transient-posframe-mode))
+#+end_src
+
+
+
 
 ** Project.el
 
