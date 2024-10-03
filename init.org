@@ -1784,7 +1784,7 @@ For spell-checking
 
 Display suggestions in grid.
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (with-after-elpaca-init
    (add-to-list 'vertico-multiform-categories
 		'(jinx grid (vertico-grid-annotate . 20))))
@@ -2543,9 +2543,6 @@ Use ~persistent-scratch~ to save scratch file between sessions.
     (transient-posframe-mode))
 #+end_src
 
-
-
-
 ** Project.el
 
 #+begin_src emacs-lisp
@@ -2668,8 +2665,18 @@ https://github.com/amno1/emacs-term-toggle
     (setf (car vertico-multiline) "\n") ;; don't replace newlines
     (vertico-mode)
     (vertico-multiform-mode)
-    (define-key vertico-map (kbd "C-h") #'+minibuffer-up-dir))
-#+end_src
+    (setq vertico-multiform-categories
+	'((file grid)
+	  (jinx grid (vertico-grid-annotate . 20))
+	  (citar buffer)))
+    (setq vertico-cycle t) ;; enable cycling for 'vertico-next' and 'vertico-prev'
+    :general
+    (:keymaps 'vertico-map
+	      ;; keybindings to cycle through vertico results.
+	    "C-h" #'+minibuffer-up-dir
+	      "<backspace>" 'vertico-directory-delete-char
+	      "RET" 'vertico-directory-enter))
+
 
 
 ** Unfill

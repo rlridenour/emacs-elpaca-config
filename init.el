@@ -1151,10 +1151,6 @@
    "<f7>" #'jinx-correct
    "S-<f7>" #'jinx-correct-all))
 
-(with-after-elpaca-init
- (add-to-list 'vertico-multiform-categories
-	      '(jinx grid (vertico-grid-annotate . 20))))
-
 (use-package auctex
   :ensure (auctex :pre-build (("./autogen.sh")
 			      ("./configure"
@@ -1737,7 +1733,24 @@
   (setf (car vertico-multiline) "\n") ;; don't replace newlines
   (vertico-mode)
   (vertico-multiform-mode)
-  (define-key vertico-map (kbd "C-h") #'+minibuffer-up-dir))
+  (setq vertico-multiform-categories
+      '((file grid)
+	(jinx grid (vertico-grid-annotate . 20))
+	(citar buffer)))
+  (setq vertico-cycle t) ;; enable cycling for 'vertico-next' and 'vertico-prev'
+  :general
+  (:keymaps 'vertico-map
+	    ;; keybindings to cycle through vertico results.
+	  "C-h" #'+minibuffer-up-dir
+	    "C-j" 'vertico-next
+	    "C-k" 'vertico-previous
+	    "C-f" 'vertico-exit
+	    "<backspace>" 'vertico-directory-delete-char
+	    "C-<backspace>" 'vertico-directory-delete-word
+	    "C-w" 'vertico-directory-delete-word
+	    "RET" 'vertico-directory-enter)
+  (:keymaps 'minibuffer-local-map
+	    "M-h" 'backward-kill-word))
 
 (use-package unfill)
 
