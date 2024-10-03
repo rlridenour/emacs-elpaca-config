@@ -2531,7 +2531,7 @@ Use ~persistent-scratch~ to save scratch file between sessions.
 
 ** Posframes
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package vertico-posframe
     :init
     (vertico-posframe-mode))
@@ -2676,7 +2676,7 @@ https://github.com/amno1/emacs-term-toggle
 	    "C-h" #'+minibuffer-up-dir
 	      "<backspace>" 'vertico-directory-delete-char
 	      "RET" 'vertico-directory-enter))
-
+#+end_src
 
 
 ** Unfill

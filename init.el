@@ -1658,16 +1658,6 @@
   :init
   (persistent-scratch-setup-default))
 
-(use-package vertico-posframe
-    :init
-    (vertico-posframe-mode))
-  (use-package which-key-posframe
-    :init
-    (which-key-posframe-mode))
-  (use-package transient-posframe
-    :init
-    (transient-posframe-mode))
-
 (use-feature project
   :init
   (setq project-vc-ignores '("*.aux" "*.bbl" "*.bcf" "*.blg" "*.fdb_latexmk" "*.fls" "*.log" "*.out" "*.run.xml" "*.run.xml" "*.synctex.gz" "auto/" "*.pdf"))
@@ -1742,15 +1732,8 @@
   (:keymaps 'vertico-map
 	    ;; keybindings to cycle through vertico results.
 	  "C-h" #'+minibuffer-up-dir
-	    "C-j" 'vertico-next
-	    "C-k" 'vertico-previous
-	    "C-f" 'vertico-exit
 	    "<backspace>" 'vertico-directory-delete-char
-	    "C-<backspace>" 'vertico-directory-delete-word
-	    "C-w" 'vertico-directory-delete-word
-	    "RET" 'vertico-directory-enter)
-  (:keymaps 'minibuffer-local-map
-	    "M-h" 'backward-kill-word))
+	    "RET" 'vertico-directory-enter))
 
 (use-package unfill)
 
