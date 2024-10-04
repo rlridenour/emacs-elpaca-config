@@ -636,7 +636,8 @@ Set font
   (set-face-attribute 'default nil :family "SF Mono" :height 160 :weight 'medium)
 
   ;; Proportionately spaced typeface
-  (set-face-attribute 'variable-pitch nil :family "SF Pro" :height 1.0 :weight 'medium)
+  ;; (set-face-attribute 'variable-pitch nil :family "SF Pro" :height 1.0 :weight 'medium)
+(set-face-attribute 'variable-pitch nil :family "Atkinson Hyperlegible" :height 1.1 :weight 'regular)
 
   ;; Monospaced typeface
   (set-face-attribute 'fixed-pitch nil :family "SF Mono" :height 1.0 :weight 'medium)

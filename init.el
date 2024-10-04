@@ -289,13 +289,14 @@
 (defun toggle-frame-maximized-undecorated () (interactive) (let* ((frame (selected-frame)) (on? (and (frame-parameter frame 'undecorated) (eq (frame-parameter frame 'fullscreen) 'maximized))) (geom (frame-monitor-attribute 'geometry)) (x (nth 0 geom)) (y (nth 1 geom)) (display-height (nth 3 geom)) (display-width (nth 2 geom)) (cut (if on? (if ns-auto-hide-menu-bar 26 50) (if ns-auto-hide-menu-bar 4 26)))) (set-frame-position frame x y) (set-frame-parameter frame 'fullscreen-restore 'maximized) (set-frame-parameter nil 'fullscreen 'maximized) (set-frame-parameter frame 'undecorated (not on?)) (set-frame-height frame (- display-height cut) nil t) (set-frame-width frame (- display-width 20) nil t) (set-frame-position frame x y)))
 
 ;; Main typeface
-(set-face-attribute 'default nil :family "SF Mono" :height 160 :weight 'medium)
+  (set-face-attribute 'default nil :family "SF Mono" :height 160 :weight 'medium)
 
-;; Proportionately spaced typeface
-(set-face-attribute 'variable-pitch nil :family "SF Pro" :height 1.0 :weight 'medium)
+  ;; Proportionately spaced typeface
+  ;; (set-face-attribute 'variable-pitch nil :family "SF Pro" :height 1.0 :weight 'medium)
+(set-face-attribute 'variable-pitch nil :family "Atkinson Hyperlegible" :height 1.1 :weight 'regular)
 
-;; Monospaced typeface
-(set-face-attribute 'fixed-pitch nil :family "SF Mono" :height 1.0 :weight 'medium)
+  ;; Monospaced typeface
+  (set-face-attribute 'fixed-pitch nil :family "SF Mono" :height 1.0 :weight 'medium)
 
 (setq-default line-spacing 0.25)
 
