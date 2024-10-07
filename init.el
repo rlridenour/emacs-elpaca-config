@@ -1651,7 +1651,8 @@ agenda-home)))
   (pulsar-global-mode 1))
 
 (use-feature recentf
-  :config (recentf-mode)
+  :init
+  (recentf-mode)
   :custom
   (recentf-max-menu-items 1000 "Offer more recent files in menu")
   (recentf-max-saved-items 1000 "Save more recent files"))
