@@ -199,7 +199,7 @@
        (kill-buffer buffer)))
    (buffer-list))
   (delete-other-windows)
-  (goto-dashboard)
+  ;; (goto-dashboard)
   )
 
 (defun goto-emacs-init ()
@@ -540,51 +540,32 @@
   :general
   ("s-p" #'crux-create-scratch-buffer))
 
-(use-package dashboard
-  :demand t
-  :config
-  (dashboard-setup-startup-hook)
-  (setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
-  ;; (setq dashboard-week-agenda nil)
-  (setq dashboard-agenda-time-string-format "%Y-%m-%d %H:%M")
-  (setq dashboard-startup-banner "/Users/rlridenour/.config/emacs/logo-emacs.png")
-  (setq dashboard-center-content t)
-  (setq dashboard-set-footer nil)
-  (setq dashboard-banner-logo-title nil)
-  (setq dashboard-set-heading-icons t)
-  (setq dashboard-set-file-icons nil)
-  (setq dashboard-set-navigator nil)
-  (setq dashboard-projects-backend 'project-el)
-  (setq dashboard-items '((agenda . 5)
-			  (recents  . 5)
-			  (bookmarks . 10)
-			  (projects . 5)))
-  (setq dashboard-startupify-list '(dashboard-insert-banner
-				    dashboard-insert-newline
-				    dashboard-insert-banner-title
-				    dashboard-insert-newline
-				    dashboard-insert-navigator
-				    dashboard-insert-newline
-				    dashboard-insert-init-info
-				    dashboard-insert-items
-				    dashboard-insert-newline))
-
-  (defun dashboard-insert-agenda (&rest _)
-    "Insert a copy of org-agenda buffer."
-    (insert (save-window-excursion
-	      (org-agenda nil "d")
-	      (prog1 (buffer-string)
-	      (kill-buffer))))))
-
-(defun goto-dashboard ()
-  "this sends you to the dashboard buffer"
+(defun agenda-home ()
   (interactive)
-  (let ((goto-dashboard-buffer (get-buffer "*dashboard*")))
-    (switch-to-buffer goto-dashboard-buffer))
-  (dashboard-refresh-buffer))
+  (org-agenda-list 1)
+  (delete-other-windows))
+
+(add-hook 'server-after-make-frame-hook 'agenda-home)
+
+(defun dashboard ()
+(interactive)
+(agenda-home)
+(find-file-noselect "~/.config/emacs/start.org")
+(display-buffer "start.org"
+                '(display-buffer-in-side-window . ((side . left))))
+)
+
+(let ((safe-commands '(org-agenda-list
+org-clock-goto
+org-goto-calendar
+org-tags-view
+org-todo-list
+agenda-home)))
+  (setq org-link-elisp-skip-confirm-regexp
+	(concat "\\`\\(" (mapconcat #'symbol-name safe-commands "\\|") "\\)\\'")))
 
 (general-define-key
- "s-d" #'goto-dashboard)
+ "s-d" #'agenda-home)
 
 (use-package deadgrep)
 
@@ -1356,6 +1337,7 @@
       '(("DONE" . "green4") ("TODO" . org-warning)))
   (setq org-agenda-files '("/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/"))
   (setq org-agenda-start-on-weekday nil)
+  (setq org-agenda-window-setup 'current-window)
   :config
   (require 'org-tempo)
   )
@@ -1795,18 +1777,19 @@
  "C-M-S-s-k" #'copy-kill-buffer)
 
 (general-define-key
-   "s-1" #'delete-other-windows
-   "s-2" #'rlr/find-file-below
-   "s-3" #'rlr/find-file-right
-"s-4" #'split-window-below-focus
-"s-5" #'split-window-right-focus
-   "s-6" #'toggle-window-split
-   "S-C-<left>" #'shrink-window-horizontally
-   "S-C-<right>" #'enlarge-window-horizontally
-   "S-C-<down>" #'shrink-window
-   "S-C-<up>" #'enlarge-window
-   "C-x w" #'delete-frame
-   "M-o" #'crux-other-window-or-switch-buffer)
+ "s-0" #'delete-window
+ "s-1" #'delete-other-windows
+ "s-2" #'rlr/find-file-below
+ "s-3" #'rlr/find-file-right
+ "s-4" #'split-window-below-focus
+ "s-5" #'split-window-right-focus
+ "s-6" #'toggle-window-split
+ "S-C-<left>" #'shrink-window-horizontally
+ "S-C-<right>" #'enlarge-window-horizontally
+ "S-C-<down>" #'shrink-window
+ "S-C-<up>" #'enlarge-window
+ "C-x w" #'delete-frame
+ "M-o" #'crux-other-window-or-switch-buffer)
 
 (general-define-key
  "s-l" #'hydra-locate/body

@@ -506,7 +506,7 @@ Kills all open buffers except scratch, dashboard and messages. From https://gith
 	 (kill-buffer buffer)))
      (buffer-list))
     (delete-other-windows)
-    (goto-dashboard)
+    ;; (goto-dashboard)
     )
 #+end_src
 
@@ -1044,7 +1044,7 @@ Load general before the remaining packages so they can make use of the ~:general
 
 ** Dashboard
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package dashboard
     :demand t
     :config
@@ -1072,14 +1072,7 @@ Load general before the remaining packages so they can make use of the ~:general
 				      dashboard-insert-newline
 				      dashboard-insert-init-info
 				      dashboard-insert-items
-				      dashboard-insert-newline))
-
-    (defun dashboard-insert-agenda (&rest _)
-      "Insert a copy of org-agenda buffer."
-      (insert (save-window-excursion
-		(org-agenda nil "d")
-		(prog1 (buffer-string)
-		(kill-buffer))))))
+				      dashboard-insert-newline)))
 
   (defun goto-dashboard ()
     "this sends you to the dashboard buffer"
@@ -1091,6 +1084,59 @@ Load general before the remaining packages so they can make use of the ~:general
   (general-define-key
    "s-d" #'goto-dashboard)
 #+end_src
+
+This opens the daily agenda and deletes all other windows.
+
+#+begin_src emacs-lisp
+  (defun agenda-home ()
+    (interactive)
+    (org-agenda-list 1)
+    (delete-other-windows))
+#+end_src
+
+This opens the daily agenda on start-up.
+
+#+begin_src emacs-lisp
+  (add-hook 'server-after-make-frame-hook 'agenda-home)
+#+end_src
+
+This makes a dashboard with the agenda on the right and an org file for links on the left.
+
+#+begin_src emacs-lisp
+(defun dashboard ()
+(interactive)
+(agenda-home)
+(find-file-noselect "~/.config/emacs/start.org")
+(display-buffer "start.org"
+                '(display-buffer-in-side-window . ((side . left))))
+)
+#+end_src
+
+This will avoid needing to confirm when activating the link. Just add the function names to the list.
+
+#+begin_src emacs-lisp
+(let ((safe-commands '(org-agenda-list
+org-clock-goto
+org-goto-calendar
+org-tags-view
+org-todo-list
+agenda-home)))
+  (setq org-link-elisp-skip-confirm-regexp
+	(concat "\\`\\(" (mapconcat #'symbol-name safe-commands "\\|") "\\)\\'")))
+#+end_src
+
+
+#+begin_src emacs-lisp
+  (general-define-key
+   "s-d" #'agenda-home)
+#+end_src
+
+
+
+
+
+
+
 
 ** Deadgrep
 
@@ -2086,6 +2132,7 @@ Copy entire buffer then kill. I use this with temporary scratch buffers to write
 	'(("DONE" . "green4") ("TODO" . org-warning)))
     (setq org-agenda-files '("/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/"))
     (setq org-agenda-start-on-weekday nil)
+    (setq org-agenda-window-setup 'current-window)
     :config
     (require 'org-tempo)
     )
@@ -2795,11 +2842,12 @@ Keybindings for files and buffers.
 
 #+begin_src emacs-lisp
   (general-define-key
+   "s-0" #'delete-window
    "s-1" #'delete-other-windows
    "s-2" #'rlr/find-file-below
    "s-3" #'rlr/find-file-right
-"s-4" #'split-window-below-focus
-"s-5" #'split-window-right-focus
+   "s-4" #'split-window-below-focus
+   "s-5" #'split-window-right-focus
    "s-6" #'toggle-window-split
    "S-C-<left>" #'shrink-window-horizontally
    "S-C-<right>" #'enlarge-window-horizontally
