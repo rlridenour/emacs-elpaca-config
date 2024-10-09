@@ -548,28 +548,28 @@
 (add-hook 'server-after-make-frame-hook 'agenda-home)
 
 (defcustom rlr-agenda-dashboard-file "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/start.org"
-  "Path to the dashboard org file."
-  :type 'string)
+    "Path to the dashboard org file."
+:type 'string)
 
-(defcustom rlr-agenda-dashboard-sidebar-width 40
-  "Width of the dashboard sidebar."
-  :type 'integer)
+  (defcustom rlr-agenda-dashboard-sidebar-width 40
+    "Width of the dashboard sidebar."
+    :type 'integer)
 
-(defun dashboard ()
-  (interactive)
-  (progn
-    (display-buffer-in-side-window
-     (find-file-noselect org-agenda-dashboard-file)
-     (list
-      (cons 'side 'left)
-      (cons 'window-width org-agenda-dashboard-sidebar-width)
-      (cons 'window-parameters (list (cons 'no-delete-other-windows t)
-				   (cons 'no-other-window nil)
-				   (cons 'mode-line-format 'none)))))
-    (switch-to-buffer-other-window (get-file-buffer org-agenda-dashboard-file))
-    ;; (org-agenda-dashboard-mode)
+  (defun dashboard ()
+    (interactive)
+    (progn
+      (display-buffer-in-side-window
+       (find-file-noselect rlr-agenda-dashboard-file)
+       (list
+	(cons 'side 'left)
+	(cons 'window-width rlr-agenda-dashboard-sidebar-width)
+	(cons 'window-parameters (list (cons 'no-delete-other-windows t)
+				     (cons 'no-other-window nil)
+				     (cons 'mode-line-format 'none)))))
+      (switch-to-buffer-other-window (get-file-buffer rlr-agenda-dashboard-file))
+      ;; (org-agenda-dashboard-mode)
+      )
     )
-  )
 
 (let ((safe-commands '(
 		       org-agenda-list
