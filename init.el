@@ -1338,32 +1338,35 @@
   (completion-category-overrides '((file (styles partial-completion)))))
 
 (use-package org
-  :ensure nil
-  :init
-  ;; (setq org-directory "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/")
-  (setq org-directory "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/")
-  :config
-  (setq org-list-allow-alphabetical t)
-  (setq org-highlight-latex-and-related '(latex script entities))
-  ;; (setq org-startup-indented t)
-  (setq org-adapt-indentation nil)
-  ;; (setq org-hide-leading-stars nil)
-  (setq org-hide-emphasis-markers nil)
-  (setq org-support-shift-select t)
-  ;; (setq org-footnote-section nil)
-  (setq org-html-validation-link nil)
-  (setq org-time-stamp-rounding-minutes '(0 15))
-  (setq org-todo-keyword-faces
-      '(("DONE" . "green4") ("TODO" . org-warning)))
-  (setq org-agenda-files '("/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/"))
-  (setq org-agenda-start-on-weekday nil)
-  (setq org-agenda-window-setup 'current-window)
-  (require 'org-tempo)
-  ;; Open directory links in Dired.
-  (add-to-list 'org-file-apps '(directory . emacs))
-  ;; Open links in same window.
-  (setf (cdr (rassoc 'find-file-other-window org-link-frame-setup)) 'find-file)
-  )
+    :ensure nil
+    :init
+    ;; (setq org-directory "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/")
+    (setq org-directory "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/")
+    :config
+    (setq org-list-allow-alphabetical t)
+    (setq org-highlight-latex-and-related '(latex script entities))
+    ;; (setq org-startup-indented t)
+    (setq org-adapt-indentation nil)
+    ;; (setq org-hide-leading-stars nil)
+    (setq org-hide-emphasis-markers nil)
+    (setq org-support-shift-select t)
+    ;; (setq org-footnote-section nil)
+    (setq org-html-validation-link nil)
+    (setq org-time-stamp-rounding-minutes '(0 15))
+    (setq org-todo-keyword-faces
+  	'(("DONE" . "green4") ("TODO" . org-warning)))
+    (setq org-agenda-files '("/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/"))
+    (setq org-agenda-start-on-weekday nil)
+    (setq org-agenda-window-setup 'current-window)
+(setq org-link-frame-setup
+   '((vm . vm-visit-folder-other-frame)
+     (vm-imap . vm-visit-imap-folder-other-frame)
+     (gnus . org-gnus-no-new-news)
+     (file . find-file)
+     (wl . wl-other-frame)))
+    (require 'org-tempo)
+    ;; Open directory links in Dired.
+    (add-to-list 'org-file-apps '(directory . emacs)))
 
 (require 'ox-beamer)
 (with-eval-after-load 'ox-latex
