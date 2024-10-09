@@ -547,22 +547,42 @@
 
 (add-hook 'server-after-make-frame-hook 'agenda-home)
 
-(defun dashboard ()
-(interactive)
-(agenda-home)
-(find-file-noselect "~/.config/emacs/start.org")
-(display-buffer "start.org"
-                '(display-buffer-in-side-window . ((side . left))))
-)
+(defcustom rlr-agenda-dashboard-file "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/start.org"
+  "Path to the dashboard org file."
+  :type 'string)
 
-(let ((safe-commands '(org-agenda-list
-org-clock-goto
-org-goto-calendar
-org-tags-view
-org-todo-list
-agenda-home)))
+(defcustom rlr-agenda-dashboard-sidebar-width 40
+  "Width of the dashboard sidebar."
+  :type 'integer)
+
+(defun dashboard ()
+  (interactive)
+  (progn
+    (display-buffer-in-side-window
+     (find-file-noselect org-agenda-dashboard-file)
+     (list
+      (cons 'side 'left)
+      (cons 'window-width org-agenda-dashboard-sidebar-width)
+      (cons 'window-parameters (list (cons 'no-delete-other-windows t)
+				   (cons 'no-other-window nil)
+				   (cons 'mode-line-format 'none)))))
+    (switch-to-buffer-other-window (get-file-buffer org-agenda-dashboard-file))
+    ;; (org-agenda-dashboard-mode)
+    )
+  )
+
+(let ((safe-commands '(
+		       org-agenda-list
+		       org-clock-goto
+		       org-goto-calendar
+		       org-tags-view
+		       org-todo-list
+		       agenda-home
+		       )
+		     )
+      )
   (setq org-link-elisp-skip-confirm-regexp
-	(concat "\\`\\(" (mapconcat #'symbol-name safe-commands "\\|") "\\)\\'")))
+      (concat "\\`\\(" (mapconcat #'symbol-name safe-commands "\\|") "\\)\\'")))
 
 (general-define-key
  "s-d" #'agenda-home)
@@ -1291,11 +1311,11 @@ agenda-home)))
   (interactive)
   (let ((buf (generate-new-buffer "*notepad*")))
     (switch-to-buffer buf))
-    (notepad-mode))
+  (notepad-mode))
 
 (defun app-switch ()
-(interactive)
-(shell-command "switch-paste"))
+  (interactive)
+  (shell-command "switch-paste"))
 
 (general-define-key
  "C-s-<tab>" #'app-switch)
@@ -1338,8 +1358,11 @@ agenda-home)))
   (setq org-agenda-files '("/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/"))
   (setq org-agenda-start-on-weekday nil)
   (setq org-agenda-window-setup 'current-window)
-  :config
   (require 'org-tempo)
+  ;; Open directory links in Dired.
+  (add-to-list 'org-file-apps '(directory . emacs))
+  ;; Open links in same window.
+  (setf (cdr (rassoc 'find-file-other-window org-link-frame-setup)) 'find-file)
   )
 
 (require 'ox-beamer)

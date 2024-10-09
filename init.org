@@ -1102,26 +1102,67 @@ This opens the daily agenda on start-up.
 
 This makes a dashboard with the agenda on the right and an org file for links on the left.
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (defun dashboard ()
 (interactive)
 (agenda-home)
-(find-file-noselect "~/.config/emacs/start.org")
+(find-file-noselect "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/start.org")
 (display-buffer "start.org"
-                '(display-buffer-in-side-window . ((side . left))))
+		'(display-buffer-in-side-window . ((side . left))))
 )
 #+end_src
+
+#+begin_src emacs-lisp
+  (defcustom rlr-agenda-dashboard-file "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/start.org"
+    "Path to the dashboard org file."
+    :type 'string)
+
+  (defcustom rlr-agenda-dashboard-sidebar-width 40
+    "Width of the dashboard sidebar."
+    :type 'integer)
+
+  (defun dashboard ()
+    (interactive)
+    (progn
+      (display-buffer-in-side-window
+       (find-file-noselect org-agenda-dashboard-file)
+       (list
+	(cons 'side 'left)
+	(cons 'window-width org-agenda-dashboard-sidebar-width)
+	(cons 'window-parameters (list (cons 'no-delete-other-windows t)
+				     (cons 'no-other-window nil)
+				     (cons 'mode-line-format 'none)))))
+      (switch-to-buffer-other-window (get-file-buffer org-agenda-dashboard-file))
+      ;; (org-agenda-dashboard-mode)
+      )
+    )
+#+end_src
+
+
+
+
+Make Emacs open Org directory links in Dired in Mac OS.
+
+#+begin_src emacs-lisp :tangle no
+  (add-to-list 'org-file-apps '(directory . emacs))
+#+end_src
+
+
 
 This will avoid needing to confirm when activating the link. Just add the function names to the list.
 
 #+begin_src emacs-lisp
-(let ((safe-commands '(org-agenda-list
-org-clock-goto
-org-goto-calendar
-org-tags-view
-org-todo-list
-agenda-home)))
-  (setq org-link-elisp-skip-confirm-regexp
+  (let ((safe-commands '(
+			 org-agenda-list
+			 org-clock-goto
+			 org-goto-calendar
+			 org-tags-view
+			 org-todo-list
+			 agenda-home
+			 )
+		       )
+	)
+    (setq org-link-elisp-skip-confirm-regexp
 	(concat "\\`\\(" (mapconcat #'symbol-name safe-commands "\\|") "\\)\\'")))
 #+end_src
 
@@ -2055,11 +2096,11 @@ Define initial mode to use for notepad buffers. This is so I can use "C-c C-c" t
 Create notepad buffer
 
 #+begin_src emacs-lisp
-(defun rlr-create-notepad-buffer ()
-  "Create a new notepad buffer."
-  (interactive)
-  (let ((buf (generate-new-buffer "*notepad*")))
-    (switch-to-buffer buf))
+  (defun rlr-create-notepad-buffer ()
+    "Create a new notepad buffer."
+    (interactive)
+    (let ((buf (generate-new-buffer "*notepad*")))
+      (switch-to-buffer buf))
     (notepad-mode))
 #+end_src
 
@@ -2067,9 +2108,9 @@ Create notepad buffer
 This calls a fish function that uses command-tab to switch to the previous app and pastes the clipboard.
 
 #+begin_src emacs-lisp
-(defun app-switch ()
-(interactive)
-(shell-command "switch-paste"))
+  (defun app-switch ()
+    (interactive)
+    (shell-command "switch-paste"))
 #+end_src
 
 
@@ -2129,12 +2170,15 @@ Copy entire buffer then kill. I use this with temporary scratch buffers to write
     (setq org-html-validation-link nil)
     (setq org-time-stamp-rounding-minutes '(0 15))
     (setq org-todo-keyword-faces
-	'(("DONE" . "green4") ("TODO" . org-warning)))
+  	'(("DONE" . "green4") ("TODO" . org-warning)))
     (setq org-agenda-files '("/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/"))
     (setq org-agenda-start-on-weekday nil)
     (setq org-agenda-window-setup 'current-window)
-    :config
     (require 'org-tempo)
+    ;; Open directory links in Dired.
+    (add-to-list 'org-file-apps '(directory . emacs))
+    ;; Open links in same window.
+    (setf (cdr (rassoc 'find-file-other-window org-link-frame-setup)) 'find-file)
     )
 #+end_src
 
