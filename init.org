@@ -1044,45 +1044,13 @@ Load general before the remaining packages so they can make use of the ~:general
 
 ** Dashboard
 
-#+begin_src emacs-lisp :tangle no
-  (use-package dashboard
-    :demand t
-    :config
-    (dashboard-setup-startup-hook)
-    (setq initial-buffer-choice (lambda () (get-buffer-create "*dashboard*")))
-    ;; (setq dashboard-week-agenda nil)
-    (setq dashboard-agenda-time-string-format "%Y-%m-%d %H:%M")
-    (setq dashboard-startup-banner "/Users/rlridenour/.config/emacs/logo-emacs.png")
-    (setq dashboard-center-content t)
-    (setq dashboard-set-footer nil)
-    (setq dashboard-banner-logo-title nil)
-    (setq dashboard-set-heading-icons t)
-    (setq dashboard-set-file-icons nil)
-    (setq dashboard-set-navigator nil)
-    (setq dashboard-projects-backend 'project-el)
-    (setq dashboard-items '((agenda . 5)
-			    (recents  . 5)
-			    (bookmarks . 10)
-			    (projects . 5)))
-    (setq dashboard-startupify-list '(dashboard-insert-banner
-				      dashboard-insert-newline
-				      dashboard-insert-banner-title
-				      dashboard-insert-newline
-				      dashboard-insert-navigator
-				      dashboard-insert-newline
-				      dashboard-insert-init-info
-				      dashboard-insert-items
-				      dashboard-insert-newline)))
+Create mode for dashboard buffers.
 
-  (defun goto-dashboard ()
-    "this sends you to the dashboard buffer"
-    (interactive)
-    (let ((goto-dashboard-buffer (get-buffer "*dashboard*")))
-      (switch-to-buffer goto-dashboard-buffer))
-    (dashboard-refresh-buffer))
-
-  (general-define-key
-   "s-d" #'goto-dashboard)
+#+begin_src emacs-lisp
+  (define-derived-mode dashboard-mode
+    org-mode "Dashboard"
+    "Major mode for Dashboard buffers."
+    )
 #+end_src
 
 This opens the daily agenda and deletes all other windows.
@@ -1094,36 +1062,35 @@ This opens the daily agenda and deletes all other windows.
     (delete-other-windows))
 #+end_src
 
-This opens the daily agenda on start-up.
+Set the initial frame. This opens the daily agenda on start-up.
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (add-hook 'server-after-make-frame-hook 'agenda-home)
 #+end_src
 
-This makes a dashboard with the agenda on the right and an org file for links on the left.
-
-#+begin_src emacs-lisp :tangle no
-(defun dashboard ()
-(interactive)
-(agenda-home)
-(find-file-noselect "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/start.org")
-(display-buffer "start.org"
-		'(display-buffer-in-side-window . ((side . left))))
-)
-#+end_src
+Set path to dashboard org file.
 
 #+begin_src emacs-lisp
   (defcustom rlr-agenda-dashboard-file "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/start.org"
     "Path to the dashboard org file."
-:type 'string)
+    :type 'string)
+#+end_src
 
+Set width of the dashboard sidebar.
+
+#+begin_src emacs-lisp
   (defcustom rlr-agenda-dashboard-sidebar-width 40
     "Width of the dashboard sidebar."
     :type 'integer)
+#+end_src
 
-  (defun dashboard ()
+This shows the daily agenda on the right and the dashboard org file in a side window on the left. The dashboard is set to read-only.
+
+#+begin_src emacs-lisp
+  (defun rlr-agenda-dashboard ()
     (interactive)
     (progn
+      (agenda-home)
       (display-buffer-in-side-window
        (find-file-noselect rlr-agenda-dashboard-file)
        (list
@@ -1133,10 +1100,71 @@ This makes a dashboard with the agenda on the right and an org file for links on
 				     (cons 'no-other-window nil)
 				     (cons 'mode-line-format 'none)))))
       (switch-to-buffer-other-window (get-file-buffer rlr-agenda-dashboard-file))
-      ;; (org-agenda-dashboard-mode)
+      (read-only-mode 1)
+      (dashboard-mode)
       )
     )
+      #+end_src
+
+#+begin_src emacs-lisp
+  (general-define-key
+   "s-d" #'rlr-agenda-dashboard)
 #+end_src
+
+Open the dashboard on start-up.
+
+#+begin_src emacs-lisp
+  (add-hook 'server-after-make-frame-hook #'rlr-agenda-dashboard)
+#+end_src
+
+Dashboard link functions
+
+#+begin_src emacs-lisp
+  (defun rlr-dashboard-class-1 ()
+    (interactive)
+    (progn
+      (kill-this-buffer)
+      (dired "~/icloud/teaching/intro/lectures")
+      (delete-other-windows)))
+#+end_src
+
+#+begin_src emacs-lisp
+  (defun rlr-dashboard-class-2 ()
+    (interactive)
+    (progn
+      (kill-this-buffer)
+      (dired "~/icloud/teaching/religion/lectures")
+      (delete-other-windows)))
+#+end_src
+
+#+begin_src emacs-lisp
+  (defun rlr-dashboard-class-3 ()
+    (interactive)
+    (progn
+      (kill-this-buffer)
+      (dired "~/icloud/teaching/ethics/lectures")
+      (delete-other-windows)))
+#+end_src
+
+#+begin_src emacs-lisp
+  (defun rlr-dashboard-class-4 ()
+    (interactive)
+    (progn
+      (kill-this-buffer)
+      (dired "~/icloud/teaching/epistemology/lectures")
+      (delete-other-windows)))
+#+end_src
+
+
+Make keymap for dashboard mode.
+
+#+begin_src emacs-lisp
+  (defvar-keymap dashboard-mode-map
+    "H-1" #'rlr-dashboard-class-1)
+#+end_src
+
+
+
 
 
 
@@ -1167,10 +1195,6 @@ This will avoid needing to confirm when activating the link. Just add the functi
 #+end_src
 
 
-#+begin_src emacs-lisp
-  (general-define-key
-   "s-d" #'agenda-home)
-#+end_src
 
 
 
@@ -2130,7 +2154,6 @@ Copy entire buffer then kill. I use this with temporary scratch buffers to write
     (mark-whole-buffer)
     (copy-region-as-kill 1 (buffer-size))
     (kill-buffer)
-    (delete-frame)
     (app-switch))
 #+end_src
 
@@ -2170,7 +2193,7 @@ Copy entire buffer then kill. I use this with temporary scratch buffers to write
     (setq org-html-validation-link nil)
     (setq org-time-stamp-rounding-minutes '(0 15))
     (setq org-todo-keyword-faces
-  	'(("DONE" . "green4") ("TODO" . org-warning)))
+	  '(("DONE" . "green4") ("TODO" . org-warning)))
     (setq org-agenda-files '("/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/"))
     (setq org-agenda-start-on-weekday nil)
     (setq org-agenda-window-setup 'current-window)

@@ -540,36 +540,77 @@
   :general
   ("s-p" #'crux-create-scratch-buffer))
 
+(define-derived-mode dashboard-mode
+  org-mode "Dashboard"
+  "Major mode for Dashboard buffers."
+  )
+
 (defun agenda-home ()
   (interactive)
   (org-agenda-list 1)
   (delete-other-windows))
 
-(add-hook 'server-after-make-frame-hook 'agenda-home)
-
 (defcustom rlr-agenda-dashboard-file "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/start.org"
-    "Path to the dashboard org file."
-:type 'string)
+  "Path to the dashboard org file."
+  :type 'string)
 
-  (defcustom rlr-agenda-dashboard-sidebar-width 40
-    "Width of the dashboard sidebar."
-    :type 'integer)
+(defcustom rlr-agenda-dashboard-sidebar-width 40
+  "Width of the dashboard sidebar."
+  :type 'integer)
 
-  (defun dashboard ()
-    (interactive)
-    (progn
-      (display-buffer-in-side-window
-       (find-file-noselect rlr-agenda-dashboard-file)
-       (list
-	(cons 'side 'left)
-	(cons 'window-width rlr-agenda-dashboard-sidebar-width)
-	(cons 'window-parameters (list (cons 'no-delete-other-windows t)
-				     (cons 'no-other-window nil)
-				     (cons 'mode-line-format 'none)))))
-      (switch-to-buffer-other-window (get-file-buffer rlr-agenda-dashboard-file))
-      ;; (org-agenda-dashboard-mode)
-      )
+(defun rlr-agenda-dashboard ()
+  (interactive)
+  (progn
+    (agenda-home)
+    (display-buffer-in-side-window
+     (find-file-noselect rlr-agenda-dashboard-file)
+     (list
+      (cons 'side 'left)
+      (cons 'window-width rlr-agenda-dashboard-sidebar-width)
+      (cons 'window-parameters (list (cons 'no-delete-other-windows t)
+				   (cons 'no-other-window nil)
+				   (cons 'mode-line-format 'none)))))
+    (switch-to-buffer-other-window (get-file-buffer rlr-agenda-dashboard-file))
+    (read-only-mode 1)
+    (dashboard-mode)
     )
+  )
+
+(general-define-key
+ "s-d" #'rlr-agenda-dashboard)
+
+(add-hook 'server-after-make-frame-hook #'rlr-agenda-dashboard)
+
+(defun rlr-dashboard-class-1 ()
+  (interactive)
+  (progn
+    (kill-this-buffer)
+    (dired "~/icloud/teaching/intro/lectures")
+    (delete-other-windows)))
+
+(defun rlr-dashboard-class-2 ()
+  (interactive)
+  (progn
+    (kill-this-buffer)
+    (dired "~/icloud/teaching/religion/lectures")
+    (delete-other-windows)))
+
+(defun rlr-dashboard-class-3 ()
+  (interactive)
+  (progn
+    (kill-this-buffer)
+    (dired "~/icloud/teaching/ethics/lectures")
+    (delete-other-windows)))
+
+(defun rlr-dashboard-class-4 ()
+  (interactive)
+  (progn
+    (kill-this-buffer)
+    (dired "~/icloud/teaching/epistemology/lectures")
+    (delete-other-windows)))
+
+(defvar-keymap dashboard-mode-map
+  "H-1" #'rlr-dashboard-class-1)
 
 (let ((safe-commands '(
 		       org-agenda-list
@@ -583,9 +624,6 @@
       )
   (setq org-link-elisp-skip-confirm-regexp
       (concat "\\`\\(" (mapconcat #'symbol-name safe-commands "\\|") "\\)\\'")))
-
-(general-define-key
- "s-d" #'agenda-home)
 
 (use-package deadgrep)
 
@@ -1327,7 +1365,6 @@
   (mark-whole-buffer)
   (copy-region-as-kill 1 (buffer-size))
   (kill-buffer)
-  (delete-frame)
   (app-switch))
 
 (use-package olivetti)
@@ -1354,7 +1391,7 @@
   (setq org-html-validation-link nil)
   (setq org-time-stamp-rounding-minutes '(0 15))
   (setq org-todo-keyword-faces
-      '(("DONE" . "green4") ("TODO" . org-warning)))
+	'(("DONE" . "green4") ("TODO" . org-warning)))
   (setq org-agenda-files '("/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/"))
   (setq org-agenda-start-on-weekday nil)
   (setq org-agenda-window-setup 'current-window)
