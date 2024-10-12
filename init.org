@@ -318,7 +318,7 @@ Use "y" and "n" in confirmation dialogs.
   (setf use-short-answers t)
 #+end_src
 
-Set Mac fn key as Emacs hyper key. The fn key with A, D, F, H, E, C, N, M, and Q are used by the system. Maybe I can find a way to disable some of those keyboard shortcuts.
+Set Mac fn key as Emacs hyper key. The fn key with A, F, H, E, C, N, and Q are used by the system. Maybe I can find a way to disable some of those keyboard shortcuts.
 
 #+begin_src emacs-lisp
   (setq ns-function-modifier 'hyper)
@@ -1064,7 +1064,7 @@ This opens the daily agenda and deletes all other windows.
 
 Set the initial frame. This opens the daily agenda on start-up.
 
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (add-hook 'server-after-make-frame-hook 'agenda-home)
 #+end_src
 
@@ -1108,19 +1108,19 @@ This shows the daily agenda on the right and the dashboard org file in a side wi
 
 #+begin_src emacs-lisp
   (general-define-key
-   "s-d" #'rlr-agenda-dashboard)
+   "s-d" #'agenda-home)
 #+end_src
 
 Open the dashboard on start-up.
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (add-hook 'server-after-make-frame-hook #'rlr-agenda-dashboard)
 #+end_src
 
 Dashboard link functions
 
 #+begin_src emacs-lisp
-  (defun rlr-dashboard-class-1 ()
+  (defun rlr-intro ()
     (interactive)
     (progn
       (kill-this-buffer)
@@ -1129,7 +1129,7 @@ Dashboard link functions
 #+end_src
 
 #+begin_src emacs-lisp
-  (defun rlr-dashboard-class-2 ()
+  (defun rlr-religion ()
     (interactive)
     (progn
       (kill-this-buffer)
@@ -1138,7 +1138,7 @@ Dashboard link functions
 #+end_src
 
 #+begin_src emacs-lisp
-  (defun rlr-dashboard-class-3 ()
+  (defun rlr-ethics ()
     (interactive)
     (progn
       (kill-this-buffer)
@@ -1147,7 +1147,7 @@ Dashboard link functions
 #+end_src
 
 #+begin_src emacs-lisp
-  (defun rlr-dashboard-class-4 ()
+  (defun rlr-epistemology ()
     (interactive)
     (progn
       (kill-this-buffer)
@@ -1160,14 +1160,8 @@ Make keymap for dashboard mode.
 
 #+begin_src emacs-lisp
   (defvar-keymap dashboard-mode-map
-    "H-1" #'rlr-dashboard-class-1)
+    )
 #+end_src
-
-
-
-
-
-
 
 Make Emacs open Org directory links in Dired in Mac OS.
 
@@ -1187,6 +1181,10 @@ This will avoid needing to confirm when activating the link. Just add the functi
 			 org-tags-view
 			 org-todo-list
 			 agenda-home
+rlr-intro
+rlr-religion
+rlr-ethics
+rlr-epistemology
 			 )
 		       )
 	)
@@ -1711,8 +1709,14 @@ Make copying and moving files easier.
 	(("m" consult-bookmark "bookmarks")
 	 ("a" consult-org-agenda "consult-agenda")
 	 ("t" (find-file "/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/tasks.org") "open tasks")
-	 ("b" (find-file "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/bookmarks.org") "web bookmarks")
-	 )))
+	 ("b" (find-file "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/bookmarks.org") "web bookmarks"))
+	"Classes"
+	(("1" (dired "~/icloud/teaching/intro/lectures") "Intro")
+	 ("2" (dired "~/icloud/teaching/intro/lectures") "Religion")
+	 ("3" (dired "~/icloud/teaching/intro/lectures") "Ethics")
+	 ("4" (dired "~/icloud/teaching/intro/lectures") "Epistemology")
+	 )
+	))
 
      (major-mode-hydra-define eww-mode
        (:quit-key "q")
@@ -1871,8 +1875,8 @@ Make copying and moving files easier.
   (general-define-key
    "s-h" #'hydra-hydras/body
    "s-n" #'hydra-new/body
-   "s-t" #'hydra-toggle/body
-   "s-w" #'hydra-window/body
+   "H-t" #'hydra-toggle/body
+   "H-w" #'hydra-window/body
    ;; "s-b" #'hydra-buffer/body
    "C-x 9" #'hydra-logic/body)
 #+end_src
@@ -2928,6 +2932,16 @@ Keybindings for files and buffers.
    "M-o" #'crux-other-window-or-switch-buffer)
 #+end_src
 
+** Tab Keybindings
+
+#+begin_src emacs-lisp
+(general-define-key
+"s-t" #'tab-new
+"s-w" #'tab-close)
+#+end_src
+
+
+
 ** Search Keybindings
 
 #+begin_src emacs-lisp
@@ -3024,13 +3038,7 @@ Open fish functions directory.
    ;; Projects
    "p f" #'consult-project-buffer
    "p d" #'project-find-dired
-   "t a" #'centaur-tabs-ace-jump
-   "t f" #'centaur-tabs-forward-group
-   "t k" #'centaur-tabs-kill-unmodified-buffers-in-current-group
-   "t K" #'centaur-tabs-kill-other-buffers-in-current-group
    "a" #'org-agenda
-   "2" #'rlr/find-file-below
-   "3" #'rlr/find-file-right
    "b" #'consult-bookmark
    "c" #'org-capture
    "d s" #'insert-date-string

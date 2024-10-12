@@ -550,6 +550,8 @@
   (org-agenda-list 1)
   (delete-other-windows))
 
+(add-hook 'server-after-make-frame-hook 'agenda-home)
+
 (defcustom rlr-agenda-dashboard-file "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/start.org"
   "Path to the dashboard org file."
   :type 'string)
@@ -577,32 +579,30 @@
   )
 
 (general-define-key
- "s-d" #'rlr-agenda-dashboard)
+ "s-d" #'agenda-home)
 
-(add-hook 'server-after-make-frame-hook #'rlr-agenda-dashboard)
-
-(defun rlr-dashboard-class-1 ()
+(defun rlr-intro ()
   (interactive)
   (progn
     (kill-this-buffer)
     (dired "~/icloud/teaching/intro/lectures")
     (delete-other-windows)))
 
-(defun rlr-dashboard-class-2 ()
+(defun rlr-religion ()
   (interactive)
   (progn
     (kill-this-buffer)
     (dired "~/icloud/teaching/religion/lectures")
     (delete-other-windows)))
 
-(defun rlr-dashboard-class-3 ()
+(defun rlr-ethics ()
   (interactive)
   (progn
     (kill-this-buffer)
     (dired "~/icloud/teaching/ethics/lectures")
     (delete-other-windows)))
 
-(defun rlr-dashboard-class-4 ()
+(defun rlr-epistemology ()
   (interactive)
   (progn
     (kill-this-buffer)
@@ -610,20 +610,24 @@
     (delete-other-windows)))
 
 (defvar-keymap dashboard-mode-map
-  "H-1" #'rlr-dashboard-class-1)
+  )
 
 (let ((safe-commands '(
-		       org-agenda-list
-		       org-clock-goto
-		       org-goto-calendar
-		       org-tags-view
-		       org-todo-list
-		       agenda-home
+			 org-agenda-list
+			 org-clock-goto
+			 org-goto-calendar
+			 org-tags-view
+			 org-todo-list
+			 agenda-home
+rlr-intro
+rlr-religion
+rlr-ethics
+rlr-epistemology
+			 )
 		       )
-		     )
-      )
-  (setq org-link-elisp-skip-confirm-regexp
-      (concat "\\`\\(" (mapconcat #'symbol-name safe-commands "\\|") "\\)\\'")))
+	)
+    (setq org-link-elisp-skip-confirm-regexp
+	(concat "\\`\\(" (mapconcat #'symbol-name safe-commands "\\|") "\\)\\'")))
 
 (use-package deadgrep)
 
@@ -1024,8 +1028,14 @@
       (("m" consult-bookmark "bookmarks")
        ("a" consult-org-agenda "consult-agenda")
        ("t" (find-file "/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/tasks.org") "open tasks")
-       ("b" (find-file "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/bookmarks.org") "web bookmarks")
-       )))
+       ("b" (find-file "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/bookmarks.org") "web bookmarks"))
+      "Classes"
+      (("1" (dired "~/icloud/teaching/intro/lectures") "Intro")
+       ("2" (dired "~/icloud/teaching/intro/lectures") "Religion")
+       ("3" (dired "~/icloud/teaching/intro/lectures") "Ethics")
+       ("4" (dired "~/icloud/teaching/intro/lectures") "Epistemology")
+       )
+      ))
 
    (major-mode-hydra-define eww-mode
      (:quit-key "q")
@@ -1175,8 +1185,8 @@
 (general-define-key
  "s-h" #'hydra-hydras/body
  "s-n" #'hydra-new/body
- "s-t" #'hydra-toggle/body
- "s-w" #'hydra-window/body
+ "H-t" #'hydra-toggle/body
+ "H-w" #'hydra-window/body
  ;; "s-b" #'hydra-buffer/body
  "C-x 9" #'hydra-logic/body)
 
@@ -1391,7 +1401,7 @@
     (setq org-html-validation-link nil)
     (setq org-time-stamp-rounding-minutes '(0 15))
     (setq org-todo-keyword-faces
-  	'(("DONE" . "green4") ("TODO" . org-warning)))
+	  '(("DONE" . "green4") ("TODO" . org-warning)))
     (setq org-agenda-files '("/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/"))
     (setq org-agenda-start-on-weekday nil)
     (setq org-agenda-window-setup 'current-window)
@@ -1856,6 +1866,10 @@
  "M-o" #'crux-other-window-or-switch-buffer)
 
 (general-define-key
+"s-t" #'tab-new
+"s-w" #'tab-close)
+
+(general-define-key
  "s-l" #'hydra-locate/body
  "s-f" #'consult-line
  "<f5>" #'deadgrep
@@ -1926,13 +1940,7 @@
  ;; Projects
  "p f" #'consult-project-buffer
  "p d" #'project-find-dired
- "t a" #'centaur-tabs-ace-jump
- "t f" #'centaur-tabs-forward-group
- "t k" #'centaur-tabs-kill-unmodified-buffers-in-current-group
- "t K" #'centaur-tabs-kill-other-buffers-in-current-group
  "a" #'org-agenda
- "2" #'rlr/find-file-below
- "3" #'rlr/find-file-right
  "b" #'consult-bookmark
  "c" #'org-capture
  "d s" #'insert-date-string
