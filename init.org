@@ -678,6 +678,21 @@ Immediately highlight matching pairs of parentheses and quotes.
   (setq show-paren-delay 0)
 #+end_src
 
+
+** Tabs
+
+I can't imagine wanting the same buffer in two tabs, so this calls consult-buffer when opening a new tab.
+
+#+begin_src emacs-lisp
+(defun rlr/find-file-new-tab ()
+    "Open new tab and select recent file."
+    (interactive)
+    (tab-new)
+    (consult-buffer))
+#+end_src
+
+
+
 ** Search
 
 Don't preserve case in replacements.
@@ -2910,7 +2925,8 @@ Keybindings for files and buffers.
    "s-r" #'consult-buffer
    "M-s-r" #'consult-buffer-other-window
    "C-S-a" #'embark-act
-   "C-M-S-s-k" #'copy-kill-buffer)
+   "C-M-S-s-k" #'copy-kill-buffer
+   "C-M-S-s-s" #'goto-scratch)
 #+end_src
 
 ** Window Keybindings
@@ -2936,7 +2952,7 @@ Keybindings for files and buffers.
 
 #+begin_src emacs-lisp
 (general-define-key
-"s-t" #'tab-new
+"s-t" #'rlr/find-file-new-tab
 "s-w" #'tab-close)
 #+end_src
 

@@ -311,6 +311,12 @@
 (show-paren-mode)
 (setq show-paren-delay 0)
 
+(defun rlr/find-file-new-tab ()
+    "Open new tab and select recent file."
+    (interactive)
+    (tab-new)
+    (consult-buffer))
+
 (setq case-replace nil)
 
 (setq isearch-lazy-count t)
@@ -1848,7 +1854,8 @@ rlr-epistemology
  "s-r" #'consult-buffer
  "M-s-r" #'consult-buffer-other-window
  "C-S-a" #'embark-act
- "C-M-S-s-k" #'copy-kill-buffer)
+ "C-M-S-s-k" #'copy-kill-buffer
+ "C-M-S-s-s" #'goto-scratch)
 
 (general-define-key
  "s-0" #'delete-window
@@ -1866,7 +1873,7 @@ rlr-epistemology
  "M-o" #'crux-other-window-or-switch-buffer)
 
 (general-define-key
-"s-t" #'tab-new
+"s-t" #'rlr/find-file-new-tab
 "s-w" #'tab-close)
 
 (general-define-key
