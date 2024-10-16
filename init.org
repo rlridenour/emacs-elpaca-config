@@ -119,6 +119,24 @@ Set initial frame size to fullheight.
   ;; (add-to-list 'default-frame-alist '(width . 100))
 #+end_src
 
+Bring new frame to front. From [[https://www.reddit.com/r/emacs/comments/1g2hkh8/a_useful_snippet_to_bring_emacs_client_to_the/][a useful snippet to bring emacs client to the front on OS X : r/emacs]].
+
+#+begin_src emacs-lisp
+(defun initd/bring-emacs-to-front ()
+  "Using applescript, force the Emacs frame to be activated."
+  (when (eq system-type 'darwin)
+    (start-process "bring-emacs-to-front" nil
+    	       "osascript"
+	           "-e"
+	           "tell application \"Emacs\" to activate")))
+
+(add-hook 'server-after-make-frame-hook #'initd/bring-emacs-to-front)
+#+end_src
+
+
+
+
+
 Set the frame title format.
 
 #+begin_src emacs-lisp

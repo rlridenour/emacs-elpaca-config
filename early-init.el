@@ -55,6 +55,16 @@
 ;; (add-to-list 'default-frame-alist '(left . 0))
 ;; (add-to-list 'default-frame-alist '(width . 100))
 
+(defun initd/bring-emacs-to-front ()
+  "Using applescript, force the Emacs frame to be activated."
+  (when (eq system-type 'darwin)
+    (start-process "bring-emacs-to-front" nil
+    	       "osascript"
+	           "-e"
+	           "tell application \"Emacs\" to activate")))
+
+(add-hook 'server-after-make-frame-hook #'initd/bring-emacs-to-front)
+
 (setq-default cursor-in-non-selected-windows nil
 	      frame-title-format '("%f [%m]"))
 
