@@ -1037,9 +1037,9 @@ rlr-epistemology
        ("b" (find-file "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/bookmarks.org") "web bookmarks"))
       "Classes"
       (("1" (dired "~/icloud/teaching/intro/lectures") "Intro")
-       ("2" (dired "~/icloud/teaching/intro/lectures") "Religion")
-       ("3" (dired "~/icloud/teaching/intro/lectures") "Ethics")
-       ("4" (dired "~/icloud/teaching/intro/lectures") "Epistemology")
+       ("2" (dired "~/icloud/teaching/religion/lectures") "Religion")
+       ("3" (dired "~/icloud/teaching/ethics/lectures") "Ethics")
+       ("4" (dired "~/icloud/teaching/epistemology/lectures") "Epistemology")
        )
       ))
 
