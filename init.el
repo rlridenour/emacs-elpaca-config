@@ -441,7 +441,7 @@
 
   :config
   :general
-  (:keymaps 'calc-mode-map
+  (:keymaps 'dired-mode-map
 	    "s-." #'casual-dired-tmenu))
 
 (use-package casual-isearch

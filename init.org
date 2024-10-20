@@ -933,7 +933,7 @@ Load general before the remaining packages so they can make use of the ~:general
 
     :config
     :general
-    (:keymaps 'calc-mode-map
+    (:keymaps 'dired-mode-map
 	      "s-." #'casual-dired-tmenu))
 #+end_src
 
