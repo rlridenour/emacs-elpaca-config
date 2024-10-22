@@ -678,6 +678,28 @@ rlr-epistemology
   :config
   (global-devil-mode))
 
+(defun hide-dired-details-include-all-subdir-paths ()
+  (save-excursion
+    (goto-char (point-min))
+    (while (re-search-forward dired-subdir-regexp nil t)
+      (let* ((match-bounds (cons (match-beginning 1) (match-end 1)))
+             (path (file-name-directory (buffer-substring (car match-bounds)
+                                                          (cdr match-bounds))))
+             (path-start (car match-bounds))
+             (path-end (+ (car match-bounds) (length path)))
+             (inhibit-read-only t))
+        (put-text-property path-start path-end
+                           'invisible 'dired-hide-details-information)))))
+
+(use-feature dired
+  :hook ((dired-mode . dired-hide-details-mode)
+         (dired-after-readin . hide-dired-details-include-all-subdir-paths)))
+
+(use-package diredfl
+  :ensure t
+  :config
+  (diredfl-global-mode 1))
+
 (use-package dired-x
   :ensure nil
   :config

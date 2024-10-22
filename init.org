@@ -1303,6 +1303,40 @@ Search notes with the xapian syntax (+word -word AND NOT etc), <tab> to preview,
 
 ** Dired
 
+Hide file details and absolute path by default, from [[https://lmno.lol/alvaro/hide-another-detail][Hide another detail]]. Check back later to see if =dired-hide-details-hide-absolute-location= has been merged into Dired.
+
+#+begin_src emacs-lisp
+(defun hide-dired-details-include-all-subdir-paths ()
+  (save-excursion
+    (goto-char (point-min))
+    (while (re-search-forward dired-subdir-regexp nil t)
+      (let* ((match-bounds (cons (match-beginning 1) (match-end 1)))
+             (path (file-name-directory (buffer-substring (car match-bounds)
+                                                          (cdr match-bounds))))
+             (path-start (car match-bounds))
+             (path-end (+ (car match-bounds) (length path)))
+             (inhibit-read-only t))
+        (put-text-property path-start path-end
+                           'invisible 'dired-hide-details-information)))))
+
+(use-feature dired
+  :hook ((dired-mode . dired-hide-details-mode)
+         (dired-after-readin . hide-dired-details-include-all-subdir-paths)))
+#+end_src
+
+Add some color with diredfl.
+
+#+begin_src emacs-lisp
+  (use-package diredfl
+    :ensure t
+    :config
+    (diredfl-global-mode 1))
+#+end_src
+
+
+
+
+
 #+begin_src emacs-lisp
   (use-package dired-x
     :ensure nil
