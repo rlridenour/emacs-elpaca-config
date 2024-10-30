@@ -909,86 +909,36 @@ Load general before the remaining packages so they can make use of the ~:general
 ** Casual Suite
 
 #+begin_src emacs-lisp
-  (use-package casual-re-builder
-    :config
-    (require 're-builder)
-    (setq reb-re-syntax 'string)
-    :general
+(use-package casual
+:ensure
+(:type git :host github :repo "kickingvegas/casual")
+:general
     (:keymaps 'reb-mode-map
-	      "s-." #'casual-re-builder-tmenu))
-#+end_src
-
-
-#+begin_src emacs-lisp
-  (use-package casual-calc
-
-    :config
-    :general
+	      "s-." #'casual-re-builder-tmenu)
     (:keymaps 'calc-mode-map
-	      "s-." #'casual-calc-tmenu))
-#+end_src
-
-#+begin_src emacs-lisp
-  (use-package casual-dired
-
-    :config
-    :general
+	      "s-." #'casual-calc-tmenu)
     (:keymaps 'dired-mode-map
-	      "s-." #'casual-dired-tmenu))
-#+end_src
-
-
-#+begin_src emacs-lisp
-  (use-package casual-isearch
-
-    :config
-    :general
+	      "s-." #'casual-dired-tmenu)
     (:keymaps 'isearch-mode-map
-	      "s-." #'casual-isearch-tmenu))
-#+end_src
-
-#+begin_src emacs-lisp
-  (use-package casual-ibuffer
-
-    :config
-    :general
+	      "s-." #'casual-isearch-tmenu)
     (:keymaps 'ibuffer-mode-map
 	      "s-." #'casual-ibuffer-tmenu
 	      "F" #'casual-ibuffer-filter-tmenu
-	      "s" #'casual-ibuffer-sortby-tmenu))
-#+end_src
-
-
-#+begin_src emacs-lisp
-  (use-package casual-bookmarks
-
-    :config
-    :general
+	      "s" #'casual-ibuffer-sortby-tmenu)
     (:keymaps 'bookmark-bemenu-mode-map
-	      "s-." #'casual-bookmarks-tmenu))
-#+end_src
-
-#+begin_src emacs-lisp
-  (use-package casual-agenda
-
-    :config
-    :general
+	      "s-." #'casual-bookmarks-tmenu)
     (:keymaps 'org-agenda-mode-map
-	      "s-." #'casual-agenda-tmenu))
-#+end_src
-
-#+begin_src emacs-lisp
-  (use-package casual-info
-
-    :config
-    :general
+	      "s-." #'casual-agenda-tmenu)
     (:keymaps 'Info-mode-map
-	      "s-." #'casual-info-tmenu))
+	      "s-." #'casual-info-tmenu)
+)
 #+end_src
+
+
+
 
 #+begin_src emacs-lisp
   (use-package casual-avy
-
     :general
     ("M-g a" #'casual-avy-tmenu))
 #+end_src

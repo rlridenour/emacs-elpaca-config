@@ -422,67 +422,31 @@
   (bookmark-bmenu-list)
   (setq bookmark-save-flag 1))
 
-(use-package casual-re-builder
-  :config
-  (require 're-builder)
-  (setq reb-re-syntax 'string)
-  :general
-  (:keymaps 'reb-mode-map
-	    "s-." #'casual-re-builder-tmenu))
-
-(use-package casual-calc
-
-  :config
-  :general
-  (:keymaps 'calc-mode-map
-	    "s-." #'casual-calc-tmenu))
-
-(use-package casual-dired
-
-  :config
-  :general
-  (:keymaps 'dired-mode-map
-	    "s-." #'casual-dired-tmenu))
-
-(use-package casual-isearch
-
-  :config
-  :general
-  (:keymaps 'isearch-mode-map
-	    "s-." #'casual-isearch-tmenu))
-
-(use-package casual-ibuffer
-
-  :config
-  :general
-  (:keymaps 'ibuffer-mode-map
-	    "s-." #'casual-ibuffer-tmenu
-	    "F" #'casual-ibuffer-filter-tmenu
-	    "s" #'casual-ibuffer-sortby-tmenu))
-
-(use-package casual-bookmarks
-
-  :config
-  :general
-  (:keymaps 'bookmark-bemenu-mode-map
-	    "s-." #'casual-bookmarks-tmenu))
-
-(use-package casual-agenda
-
-  :config
-  :general
-  (:keymaps 'org-agenda-mode-map
-	    "s-." #'casual-agenda-tmenu))
-
-(use-package casual-info
-
-  :config
-  :general
-  (:keymaps 'Info-mode-map
-	    "s-." #'casual-info-tmenu))
+(use-package casual
+:ensure
+(:type git :host github :repo "kickingvegas/casual")
+:general
+    (:keymaps 'reb-mode-map
+	      "s-." #'casual-re-builder-tmenu)
+    (:keymaps 'calc-mode-map
+	      "s-." #'casual-calc-tmenu)
+    (:keymaps 'dired-mode-map
+	      "s-." #'casual-dired-tmenu)
+    (:keymaps 'isearch-mode-map
+	      "s-." #'casual-isearch-tmenu)
+    (:keymaps 'ibuffer-mode-map
+	      "s-." #'casual-ibuffer-tmenu
+	      "F" #'casual-ibuffer-filter-tmenu
+	      "s" #'casual-ibuffer-sortby-tmenu)
+    (:keymaps 'bookmark-bemenu-mode-map
+	      "s-." #'casual-bookmarks-tmenu)
+    (:keymaps 'org-agenda-mode-map
+	      "s-." #'casual-agenda-tmenu)
+    (:keymaps 'Info-mode-map
+	      "s-." #'casual-info-tmenu)
+)
 
 (use-package casual-avy
-
   :general
   ("M-g a" #'casual-avy-tmenu))
 
