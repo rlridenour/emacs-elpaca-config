@@ -684,6 +684,10 @@ rlr-epistemology
  "M-<RET>" #'crux-open-with
  "s-j" #'dired-goto-file)
 
+(use-package discover
+:config
+(global-discover-mode 1))
+
 (use-package doom-modeline
   :config
   (setq doom-modeline-enable-word-count t)

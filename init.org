@@ -1175,15 +1175,6 @@ rlr-epistemology
 	(concat "\\`\\(" (mapconcat #'symbol-name safe-commands "\\|") "\\)\\'")))
 #+end_src
 
-
-
-
-
-
-
-
-
-
 ** Deadgrep
 
 #+begin_src emacs-lisp
@@ -1318,6 +1309,18 @@ Make copying and moving files easier.
    "M-<RET>" #'crux-open-with
    "s-j" #'dired-goto-file)
 #+end_src
+
+
+** Discover
+
+#+begin_src emacs-lisp
+(use-package discover
+:config
+(global-discover-mode 1))
+#+end_src
+
+
+
 
 ** Doom Modeline
 
@@ -2093,7 +2096,7 @@ Enrich existing commands with completion annotations
   (use-package mastodon
     :config
     (mastodon-discover)
-    (setq mastodon-instance-url "https://emacs.ch/"
+    (setq mastodon-instance-url "https://zirk.us/"
 	  mastodon-active-user "randyridenour"))
 #+end_src
 
