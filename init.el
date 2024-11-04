@@ -380,6 +380,28 @@
   (interactive)
   (load-file user-init-file))
 
+(defun wrap-at-sentences ()
+   "Fills the current paragraph, but starts each sentence on a new line."
+   (interactive)
+   (save-excursion
+     ;; Select the entire paragraph.
+     (mark-paragraph)
+     ;; Move to the start of the paragraph.
+     (goto-char (region-beginning))
+     ;; Record the location of the end of the paragraph.
+     (setq end-of-paragraph (region-end))
+     ;; Wrap lines with 'hard' newlines (i.e., real line breaks).
+     (let ((use-hard-newlines 't))
+       ;; Loop over each sentence in the paragraph.
+       (while (< (point) end-of-paragraph)
+	 ;; Move to end of sentence.
+	 (forward-sentence)
+	 ;; Delete space after sentence
+	 (delete-char 1)
+	 ;; Insert a newline before the next sentence.
+	 (insert "\n")
+       ))))
+
 (use-package general
   :ensure (:wait t)
   :demand t
