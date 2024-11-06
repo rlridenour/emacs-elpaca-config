@@ -126,9 +126,9 @@ Bring new frame to front. From [[https://www.reddit.com/r/emacs/comments/1g2hkh8
   "Using applescript, force the Emacs frame to be activated."
   (when (eq system-type 'darwin)
     (start-process "bring-emacs-to-front" nil
-    	       "osascript"
-	           "-e"
-	           "tell application \"Emacs\" to activate")))
+	       "osascript"
+		   "-e"
+		   "tell application \"Emacs\" to activate")))
 
 (add-hook 'server-after-make-frame-hook #'initd/bring-emacs-to-front)
 #+end_src
@@ -833,25 +833,25 @@ Convert paragraph to single sentence per line.
       "Fills the current paragraph, but starts each sentence on a new line."
       (interactive)
       (save-excursion
-        ;; Select the entire paragraph.
-        (mark-paragraph)
-        ;; Move to the start of the paragraph.
-        (goto-char (region-beginning))
-        ;; Record the location of the end of the paragraph.
-        (setq end-of-paragraph (region-end))
-        ;; Wrap lines with hard newlines.
-        (let ((use-hard-newlines 't))
-  	;; Loop over each sentence in the paragraph.
-  	(while (< (point) end-of-paragraph)
-  	  ;; Move to end of sentence.
-  	  (forward-sentence)
-  	  ;; Delete spaces after sentence.
+	;; Select the entire paragraph.
+	(mark-paragraph)
+	;; Move to the start of the paragraph.
+	(goto-char (region-beginning))
+	;; Record the location of the end of the paragraph.
+	(setq end-of-paragraph (region-end))
+	;; Wrap lines with hard newlines.
+	(let ((use-hard-newlines 't))
+	  ;; Loop over each sentence in the paragraph.
+	  (while (< (point) end-of-paragraph)
+	    ;; Move to end of sentence.
+	    (forward-sentence)
+	    ;; Delete spaces after sentence.
   (just-one-space)
   ;; Delete preceding space.
-  	  (delete-char -1)
-  	  ;; Insert a newline before the next sentence.
-  	  (insert "\n")
-  	))))
+	    (delete-char -1)
+	    ;; Insert a newline before the next sentence.
+	    (insert "\n")
+	  ))))
 #+end_src
 
 
@@ -879,7 +879,8 @@ Load general before the remaining packages so they can make use of the ~:general
       "s-w"
       "s-m"
       "s-n"
-      "s-h"))
+      "s-h"
+      "s-,"))
 #+end_src
 
 ** Abbrev
@@ -938,10 +939,10 @@ Load general before the remaining packages so they can make use of the ~:general
 ** Casual Suite
 
 #+begin_src emacs-lisp
-(use-package casual
-:ensure
-(:type git :host github :repo "kickingvegas/casual")
-:general
+  (use-package casual
+    :ensure
+    (:type git :host github :repo "kickingvegas/casual")
+    :general
     (:keymaps 'reb-mode-map
 	      "s-." #'casual-re-builder-tmenu)
     (:keymaps 'calc-mode-map
@@ -960,7 +961,7 @@ Load general before the remaining packages so they can make use of the ~:general
 	      "s-." #'casual-agenda-tmenu)
     (:keymaps 'Info-mode-map
 	      "s-." #'casual-info-tmenu)
-)
+    )
 #+end_src
 
 
@@ -1109,14 +1110,14 @@ This shows the daily agenda on the right and the dashboard org file in a side wi
 	(cons 'side 'left)
 	(cons 'window-width rlr-agenda-dashboard-sidebar-width)
 	(cons 'window-parameters (list (cons 'no-delete-other-windows t)
-				     (cons 'no-other-window nil)
-				     (cons 'mode-line-format 'none)))))
+				       (cons 'no-other-window nil)
+				       (cons 'mode-line-format 'none)))))
       (switch-to-buffer-other-window (get-file-buffer rlr-agenda-dashboard-file))
       (read-only-mode 1)
       (dashboard-mode)
       )
     )
-      #+end_src
+#+end_src
 
 #+begin_src emacs-lisp
   (general-define-key
@@ -1193,15 +1194,15 @@ This will avoid needing to confirm when activating the link. Just add the functi
 			 org-tags-view
 			 org-todo-list
 			 agenda-home
-rlr-intro
-rlr-religion
-rlr-ethics
-rlr-epistemology
+		       rlr-intro
+		       rlr-religion
+		       rlr-ethics
+		       rlr-epistemology
 			 )
 		       )
 	)
     (setq org-link-elisp-skip-confirm-regexp
-	(concat "\\`\\(" (mapconcat #'symbol-name safe-commands "\\|") "\\)\\'")))
+	  (concat "\\`\\(" (mapconcat #'symbol-name safe-commands "\\|") "\\)\\'")))
 #+end_src
 
 ** Deadgrep
@@ -1276,22 +1277,22 @@ Search notes with the xapian syntax (+word -word AND NOT etc), <tab> to preview,
 Hide file details and absolute path by default, from [[https://lmno.lol/alvaro/hide-another-detail][Hide another detail]]. Check back later to see if =dired-hide-details-hide-absolute-location= has been merged into Dired.
 
 #+begin_src emacs-lisp
-(defun hide-dired-details-include-all-subdir-paths ()
-  (save-excursion
-    (goto-char (point-min))
-    (while (re-search-forward dired-subdir-regexp nil t)
-      (let* ((match-bounds (cons (match-beginning 1) (match-end 1)))
-             (path (file-name-directory (buffer-substring (car match-bounds)
-                                                          (cdr match-bounds))))
-             (path-start (car match-bounds))
-             (path-end (+ (car match-bounds) (length path)))
-             (inhibit-read-only t))
-        (put-text-property path-start path-end
-                           'invisible 'dired-hide-details-information)))))
+  (defun hide-dired-details-include-all-subdir-paths ()
+    (save-excursion
+      (goto-char (point-min))
+      (while (re-search-forward dired-subdir-regexp nil t)
+	(let* ((match-bounds (cons (match-beginning 1) (match-end 1)))
+	       (path (file-name-directory (buffer-substring (car match-bounds)
+							    (cdr match-bounds))))
+	       (path-start (car match-bounds))
+	       (path-end (+ (car match-bounds) (length path)))
+	       (inhibit-read-only t))
+	  (put-text-property path-start path-end
+			     'invisible 'dired-hide-details-information)))))
 
-(use-feature dired
-  :hook ((dired-mode . dired-hide-details-mode)
-         (dired-after-readin . hide-dired-details-include-all-subdir-paths)))
+  (use-feature dired
+    :hook ((dired-mode . dired-hide-details-mode)
+	   (dired-after-readin . hide-dired-details-include-all-subdir-paths)))
 #+end_src
 
 Add some color with diredfl.
@@ -1345,9 +1346,9 @@ Make copying and moving files easier.
 From [[https://github.com/mickeynp/discover.el][mickeynp/discover.el: Discover more of emacs with context menus!]]
 
 #+begin_src emacs-lisp
-(use-package discover
-:config
-(global-discover-mode 1))
+  (use-package discover
+    :config
+    (global-discover-mode 1))
 #+end_src
 
 

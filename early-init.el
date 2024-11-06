@@ -59,9 +59,9 @@
   "Using applescript, force the Emacs frame to be activated."
   (when (eq system-type 'darwin)
     (start-process "bring-emacs-to-front" nil
-    	       "osascript"
-	           "-e"
-	           "tell application \"Emacs\" to activate")))
+	       "osascript"
+		   "-e"
+		   "tell application \"Emacs\" to activate")))
 
 (add-hook 'server-after-make-frame-hook #'initd/bring-emacs-to-front)
 

@@ -392,17 +392,17 @@
       (setq end-of-paragraph (region-end))
       ;; Wrap lines with hard newlines.
       (let ((use-hard-newlines 't))
-      ;; Loop over each sentence in the paragraph.
-      (while (< (point) end-of-paragraph)
-  	;; Move to end of sentence.
-  	(forward-sentence)
-  	;; Delete spaces after sentence.
+	;; Loop over each sentence in the paragraph.
+	(while (< (point) end-of-paragraph)
+	  ;; Move to end of sentence.
+	  (forward-sentence)
+	  ;; Delete spaces after sentence.
 (just-one-space)
 ;; Delete preceding space.
-  	(delete-char -1)
-  	;; Insert a newline before the next sentence.
-  	(insert "\n")
-      ))))
+	  (delete-char -1)
+	  ;; Insert a newline before the next sentence.
+	  (insert "\n")
+	))))
 
 (use-package general
   :ensure (:wait t)
@@ -417,7 +417,8 @@
     "s-w"
     "s-m"
     "s-n"
-    "s-h"))
+    "s-h"
+    "s-,"))
 
 (use-feature abbrev
   :config
@@ -447,28 +448,28 @@
   (setq bookmark-save-flag 1))
 
 (use-package casual
-:ensure
-(:type git :host github :repo "kickingvegas/casual")
-:general
-    (:keymaps 'reb-mode-map
-	      "s-." #'casual-re-builder-tmenu)
-    (:keymaps 'calc-mode-map
-	      "s-." #'casual-calc-tmenu)
-    (:keymaps 'dired-mode-map
-	      "s-." #'casual-dired-tmenu)
-    (:keymaps 'isearch-mode-map
-	      "s-." #'casual-isearch-tmenu)
-    (:keymaps 'ibuffer-mode-map
-	      "s-." #'casual-ibuffer-tmenu
-	      "F" #'casual-ibuffer-filter-tmenu
-	      "s" #'casual-ibuffer-sortby-tmenu)
-    (:keymaps 'bookmark-bemenu-mode-map
-	      "s-." #'casual-bookmarks-tmenu)
-    (:keymaps 'org-agenda-mode-map
-	      "s-." #'casual-agenda-tmenu)
-    (:keymaps 'Info-mode-map
-	      "s-." #'casual-info-tmenu)
-)
+  :ensure
+  (:type git :host github :repo "kickingvegas/casual")
+  :general
+  (:keymaps 'reb-mode-map
+	    "s-." #'casual-re-builder-tmenu)
+  (:keymaps 'calc-mode-map
+	    "s-." #'casual-calc-tmenu)
+  (:keymaps 'dired-mode-map
+	    "s-." #'casual-dired-tmenu)
+  (:keymaps 'isearch-mode-map
+	    "s-." #'casual-isearch-tmenu)
+  (:keymaps 'ibuffer-mode-map
+	    "s-." #'casual-ibuffer-tmenu
+	    "F" #'casual-ibuffer-filter-tmenu
+	    "s" #'casual-ibuffer-sortby-tmenu)
+  (:keymaps 'bookmark-bemenu-mode-map
+	    "s-." #'casual-bookmarks-tmenu)
+  (:keymaps 'org-agenda-mode-map
+	    "s-." #'casual-agenda-tmenu)
+  (:keymaps 'Info-mode-map
+	    "s-." #'casual-info-tmenu)
+  )
 
 (use-package casual-avy
   :general
@@ -564,8 +565,8 @@
       (cons 'side 'left)
       (cons 'window-width rlr-agenda-dashboard-sidebar-width)
       (cons 'window-parameters (list (cons 'no-delete-other-windows t)
-				   (cons 'no-other-window nil)
-				   (cons 'mode-line-format 'none)))))
+				     (cons 'no-other-window nil)
+				     (cons 'mode-line-format 'none)))))
     (switch-to-buffer-other-window (get-file-buffer rlr-agenda-dashboard-file))
     (read-only-mode 1)
     (dashboard-mode)
@@ -607,20 +608,20 @@
   )
 
 (let ((safe-commands '(
-			 org-agenda-list
-			 org-clock-goto
-			 org-goto-calendar
-			 org-tags-view
-			 org-todo-list
-			 agenda-home
-rlr-intro
-rlr-religion
-rlr-ethics
-rlr-epistemology
-			 )
+		       org-agenda-list
+		       org-clock-goto
+		       org-goto-calendar
+		       org-tags-view
+		       org-todo-list
+		       agenda-home
+		     rlr-intro
+		     rlr-religion
+		     rlr-ethics
+		     rlr-epistemology
 		       )
-	)
-    (setq org-link-elisp-skip-confirm-regexp
+		     )
+      )
+  (setq org-link-elisp-skip-confirm-regexp
 	(concat "\\`\\(" (mapconcat #'symbol-name safe-commands "\\|") "\\)\\'")))
 
 (use-package deadgrep)
@@ -671,17 +672,17 @@ rlr-epistemology
     (goto-char (point-min))
     (while (re-search-forward dired-subdir-regexp nil t)
       (let* ((match-bounds (cons (match-beginning 1) (match-end 1)))
-             (path (file-name-directory (buffer-substring (car match-bounds)
-                                                          (cdr match-bounds))))
-             (path-start (car match-bounds))
-             (path-end (+ (car match-bounds) (length path)))
-             (inhibit-read-only t))
-        (put-text-property path-start path-end
-                           'invisible 'dired-hide-details-information)))))
+	     (path (file-name-directory (buffer-substring (car match-bounds)
+							  (cdr match-bounds))))
+	     (path-start (car match-bounds))
+	     (path-end (+ (car match-bounds) (length path)))
+	     (inhibit-read-only t))
+	(put-text-property path-start path-end
+			   'invisible 'dired-hide-details-information)))))
 
 (use-feature dired
   :hook ((dired-mode . dired-hide-details-mode)
-         (dired-after-readin . hide-dired-details-include-all-subdir-paths)))
+	 (dired-after-readin . hide-dired-details-include-all-subdir-paths)))
 
 (use-package diredfl
   :ensure t
@@ -709,8 +710,8 @@ rlr-epistemology
  "s-j" #'dired-goto-file)
 
 (use-package discover
-:config
-(global-discover-mode 1))
+  :config
+  (global-discover-mode 1))
 
 (use-package doom-modeline
   :config
