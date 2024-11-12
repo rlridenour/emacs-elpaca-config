@@ -42,9 +42,6 @@ Raise max lisp nesting depth.
   (setq max-lisp-eval-depth 10000)
 #+end_src
 
-
-
-
 #+begin_src emacs-lisp :lexical t
   (defun +reset-init-values ()
     (run-with-idle-timer
@@ -133,10 +130,6 @@ Bring new frame to front. From [[https://www.reddit.com/r/emacs/comments/1g2hkh8
 (add-hook 'server-after-make-frame-hook #'initd/bring-emacs-to-front)
 #+end_src
 
-
-
-
-
 Set the frame title format.
 
 #+begin_src emacs-lisp
@@ -152,7 +145,6 @@ Focus new frames
 
   (add-hook 'server-after-make-frame-hook #'my/focus-new-client-frame)
 #+end_src
-
 
 ** Font size
 
@@ -226,7 +218,7 @@ Add elisp directory to load path.
 ** Elpaca Install
 
 #+begin_src emacs-lisp
-  (defvar elpaca-installer-version 0.7)
+  (defvar elpaca-installer-version 0.8)
   (defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
   (defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
   (defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
@@ -491,8 +483,6 @@ Don't ask for confirmation when killing process buffers.
   (setq kill-buffer-query-functions nil)
 #+end_src
 
-
-
 Don't display async shell command process buffers
 
 #+begin_src emacs-lisp
@@ -549,13 +539,11 @@ https://github.com/dakrone/eos/blob/master/eos.org
   (setq save-interprogram-paste-before-kill t)
 #+end_src
 
-
 Set initial mode to org-mode.
 
 #+begin_src emacs-lisp
   (setq initial-major-mode 'org-mode)
 #+end_src
-
 
 ** Windows
 
@@ -696,7 +684,6 @@ Immediately highlight matching pairs of parentheses and quotes.
   (setq show-paren-delay 0)
 #+end_src
 
-
 ** Tabs
 
 I can't imagine wanting the same buffer in two tabs, so this calls consult-buffer when opening a new tab.
@@ -708,8 +695,6 @@ I can't imagine wanting the same buffer in two tabs, so this calls consult-buffe
     (tab-new)
     (consult-buffer))
 #+end_src
-
-
 
 ** Search
 
@@ -817,7 +802,6 @@ Use ~C-c d d~ to insert Month, Day Year and ~C-c d s~ to insert YYYYMMDD date st
     (insert (format-time-string "%B %e, %Y")))
 #+end_src
 
-
 Make a function to reload the Emacs config file to test changes.
 
 #+begin_src emacs-lisp
@@ -853,8 +837,6 @@ Convert paragraph to single sentence per line.
 	    (insert "\n")
 	  ))))
 #+end_src
-
-
 
 * Packages
 :PROPERTIES:
@@ -964,9 +946,6 @@ Load general before the remaining packages so they can make use of the ~:general
     )
 #+end_src
 
-
-
-
 #+begin_src emacs-lisp
   (use-package casual-avy
     :general
@@ -997,8 +976,6 @@ Load general before the remaining packages so they can make use of the ~:general
     (add-hook 'completion-at-point-functions #'cape-history)
     )
 #+end_src
-
-
 
 ** Citar
 
@@ -1168,7 +1145,6 @@ Dashboard link functions
       (delete-other-windows)))
 #+end_src
 
-
 Make keymap for dashboard mode.
 
 #+begin_src emacs-lisp
@@ -1181,8 +1157,6 @@ Make Emacs open Org directory links in Dired in Mac OS.
 #+begin_src emacs-lisp :tangle no
   (add-to-list 'org-file-apps '(directory . emacs))
 #+end_src
-
-
 
 This will avoid needing to confirm when activating the link. Just add the function names to the list.
 
@@ -1262,7 +1236,6 @@ Search notes with the xapian syntax (+word -word AND NOT etc), <tab> to preview,
 
 ** Devil Mode
 
-
 #+begin_src emacs-lisp
   (use-package devil
     :demand t
@@ -1270,7 +1243,6 @@ Search notes with the xapian syntax (+word -word AND NOT etc), <tab> to preview,
     :config
     (global-devil-mode))
 #+end_src
-
 
 ** Dired
 
@@ -1304,10 +1276,6 @@ Add some color with diredfl.
     (diredfl-global-mode 1))
 #+end_src
 
-
-
-
-
 #+begin_src emacs-lisp
   (use-package dired-x
     :ensure nil
@@ -1333,13 +1301,25 @@ Make copying and moving files easier.
   (setq dired-dwim-target t)
 #+end_src
 
+Replace spaces in file names with hyphens using "%s" in dired. 
+
 #+begin_src emacs-lisp
-  (general-define-key
-   :keymaps 'dired-mode-map
-   "M-<RET>" #'crux-open-with
-   "s-j" #'dired-goto-file)
+  (defun my-substspaces (str)
+    (subst-char-in-string ?\s ?- str))
+
+  (defun my-dired-substspaces (&optional arg)
+    "Rename all marked (or next ARG) files so that spaces are replaced with underscores."
+    (interactive "P")
+    (dired-rename-non-directory #'my-substspaces "Rename by substituting spa;; ces" arg))
 #+end_src
 
+#+begin_src emacs-lisp
+    (general-define-key
+     :keymaps 'dired-mode-map
+     "M-<RET>" #'crux-open-with
+     "s-j" #'dired-goto-file
+     "%s" #'my-dired-substspaces)
+#+end_src
 
 ** Discover
 
@@ -1350,9 +1330,6 @@ From [[https://github.com/mickeynp/discover.el][mickeynp/discover.el: Discover m
     :config
     (global-discover-mode 1))
 #+end_src
-
-
-
 
 ** Doom Modeline
 
@@ -1419,7 +1396,6 @@ From [[https://github.com/mickeynp/discover.el][mickeynp/discover.el: Discover m
     :hook
     (embark-collect-mode . consult-preview-at-point-mode))
 #+end_src
-
 
 ** Evil Nerd Commenter
 
@@ -1512,7 +1488,6 @@ From [[https://github.com/mickeynp/discover.el][mickeynp/discover.el: Discover m
     :config
     (exec-path-from-shell-initialize))
 #+end_src
-
 
 ** Expand-region
 
@@ -2119,10 +2094,7 @@ Enrich existing commands with completion annotations
 	(kmacro-lambda-form [?\C-r ?: ?E ?N ?D return down ?\C-  ?\C-s ?* ?* ?  ?N ?o ?t ?e ?s return up ?\M-w ?\C-s ?: ?E ?N ?D return down return ?\s-v return] 0 "%d"))
 #+end_src
 
-
-
 ** Mastodon
-
 
 #+begin_src emacs-lisp :tangle no
   (use-package mastodon
@@ -2131,8 +2103,6 @@ Enrich existing commands with completion annotations
     (setq mastodon-instance-url "https://zirk.us/"
 	  mastodon-active-user "randyridenour"))
 #+end_src
-
-
 
 ** Modus Themes
 
@@ -2153,7 +2123,6 @@ Enrich existing commands with completion annotations
     :general
     ("<f9>" #'modus-themes-toggle))
 #+end_src
-
 
 ** Notepad
 
@@ -2184,7 +2153,6 @@ Create notepad buffer
     (notepad-mode))
 #+end_src
 
-
 This calls a fish function that uses command-tab to switch to the previous app and pastes the clipboard.
 
 #+begin_src emacs-lisp
@@ -2192,8 +2160,6 @@ This calls a fish function that uses command-tab to switch to the previous app a
     (interactive)
     (shell-command "switch-paste"))
 #+end_src
-
-
 
 #+begin_src emacs-lisp
   (general-define-key
@@ -2212,7 +2178,6 @@ Copy entire buffer then kill. I use this with temporary scratch buffers to write
     (kill-buffer)
     (app-switch))
 #+end_src
-
 
 ** Olivetti
 
@@ -2769,15 +2734,12 @@ Increase number of recent files shown.
     (require 'smartparens-config))
 #+end_src
 
-
 ** Spacious-Padding
 
 #+begin_src emacs-lisp
   (use-package spacious-padding
     :init (spacious-padding-mode))
 #+end_src
-
-
 
 ** Super Save
 
@@ -2798,9 +2760,6 @@ Increase number of recent files shown.
     ("C-`" #'terminal-here-launch)
     )
 #+end_src
-
-
-
 
 ** Term Toggle
 https://github.com/amno1/emacs-term-toggle
@@ -2829,7 +2788,6 @@ https://github.com/amno1/emacs-term-toggle
     (setq titlecase-style "chicago"))
 #+end_src
 
-
 ** Vertico
 
 #+begin_src emacs-lisp :lexical t
@@ -2853,7 +2811,6 @@ https://github.com/amno1/emacs-term-toggle
 	      "RET" 'vertico-directory-enter))
 #+end_src
 
-
 ** Unfill
 
 #+begin_src emacs-lisp
@@ -2868,8 +2825,6 @@ https://github.com/amno1/emacs-term-toggle
     ("C-c r" #'vr/replace)
     ("C-c q" #'vr/query-replace))
 #+end_src
-
-
 
 ** Vundo
 
@@ -2992,8 +2947,6 @@ Keybindings for files and buffers.
 "s-t" #'rlr/find-file-new-tab
 "s-w" #'tab-close)
 #+end_src
-
-
 
 ** Search Keybindings
 

@@ -27,7 +27,7 @@
 ;; set load path
 (add-to-list 'load-path (concat rr-emacs-dir "elisp"))
 
-(defvar elpaca-installer-version 0.7)
+(defvar elpaca-installer-version 0.8)
 (defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
 (defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
 (defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
@@ -704,10 +704,19 @@
 
 (setq dired-dwim-target t)
 
+(defun my-substspaces (str)
+  (subst-char-in-string ?\s ?- str))
+
+(defun my-dired-substspaces (&optional arg)
+  "Rename all marked (or next ARG) files so that spaces are replaced with underscores."
+  (interactive "P")
+  (dired-rename-non-directory #'my-substspaces "Rename by substituting spa;; ces" arg))
+
 (general-define-key
  :keymaps 'dired-mode-map
  "M-<RET>" #'crux-open-with
- "s-j" #'dired-goto-file)
+ "s-j" #'dired-goto-file
+ "%s" #'my-dired-substspaces)
 
 (use-package discover
   :config
