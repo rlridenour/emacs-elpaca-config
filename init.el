@@ -451,24 +451,25 @@
   :ensure
   (:type git :host github :repo "kickingvegas/casual")
   :general
+  ("s-." #'casual-editkit-main-tmenu)
   (:keymaps 'reb-mode-map
-	    "s-." #'casual-re-builder-tmenu)
+	  "s-." #'casual-re-builder-tmenu)
   (:keymaps 'calc-mode-map
-	    "s-." #'casual-calc-tmenu)
+	  "s-." #'casual-calc-tmenu)
   (:keymaps 'dired-mode-map
-	    "s-." #'casual-dired-tmenu)
+	  "s-." #'casual-dired-tmenu)
   (:keymaps 'isearch-mode-map
-	    "s-." #'casual-isearch-tmenu)
+	  "s-." #'casual-isearch-tmenu)
   (:keymaps 'ibuffer-mode-map
-	    "s-." #'casual-ibuffer-tmenu
-	    "F" #'casual-ibuffer-filter-tmenu
-	    "s" #'casual-ibuffer-sortby-tmenu)
+	  "s-." #'casual-ibuffer-tmenu
+	  "F" #'casual-ibuffer-filter-tmenu
+	  "s" #'casual-ibuffer-sortby-tmenu)
   (:keymaps 'bookmark-bemenu-mode-map
-	    "s-." #'casual-bookmarks-tmenu)
+	  "s-." #'casual-bookmarks-tmenu)
   (:keymaps 'org-agenda-mode-map
-	    "s-." #'casual-agenda-tmenu)
+	  "s-." #'casual-agenda-tmenu)
   (:keymaps 'Info-mode-map
-	    "s-." #'casual-info-tmenu)
+	  "s-." #'casual-info-tmenu)
   )
 
 (use-package casual-avy
@@ -710,7 +711,7 @@
 (defun my-dired-substspaces (&optional arg)
   "Rename all marked (or next ARG) files so that spaces are replaced with underscores."
   (interactive "P")
-  (dired-rename-non-directory #'my-substspaces "Rename by substituting spa;; ces" arg))
+  (dired-rename-non-directory #'my-substspaces "Rename by substituting spaces" arg))
 
 (general-define-key
  :keymaps 'dired-mode-map
@@ -1705,10 +1706,10 @@
  :keymaps 'org-mode-map
  "s-i" (lambda () (interactive) (my/org-toggle-emphasis ?/))
  "s-b" (lambda () (interactive) (my/org-toggle-emphasis ?*))
- "s-e" (lambda () (interactive) (my/org-toggle-emphasis ?~))
- "s-=" (lambda () (interactive) (my/org-toggle-emphasis ?=))
- "s-_" (lambda () (interactive) (my/org-toggle-emphasis ?_))
- "s-+" (lambda () (interactive) (my/org-toggle-emphasis ?+)))
+ "C-c e e" (lambda () (interactive) (my/org-toggle-emphasis ?~))
+ "C-c e -=" (lambda () (interactive) (my/org-toggle-emphasis ?=))
+ "C-c e _" (lambda () (interactive) (my/org-toggle-emphasis ?_))
+ "C-c e +" (lambda () (interactive) (my/org-toggle-emphasis ?+)))
 
 (use-package org-mac-link)
 

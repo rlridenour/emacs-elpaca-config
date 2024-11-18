@@ -925,24 +925,25 @@ Load general before the remaining packages so they can make use of the ~:general
     :ensure
     (:type git :host github :repo "kickingvegas/casual")
     :general
+    ("s-." #'casual-editkit-main-tmenu)
     (:keymaps 'reb-mode-map
-	      "s-." #'casual-re-builder-tmenu)
+	    "s-." #'casual-re-builder-tmenu)
     (:keymaps 'calc-mode-map
-	      "s-." #'casual-calc-tmenu)
+	    "s-." #'casual-calc-tmenu)
     (:keymaps 'dired-mode-map
-	      "s-." #'casual-dired-tmenu)
+	    "s-." #'casual-dired-tmenu)
     (:keymaps 'isearch-mode-map
-	      "s-." #'casual-isearch-tmenu)
+	    "s-." #'casual-isearch-tmenu)
     (:keymaps 'ibuffer-mode-map
-	      "s-." #'casual-ibuffer-tmenu
-	      "F" #'casual-ibuffer-filter-tmenu
-	      "s" #'casual-ibuffer-sortby-tmenu)
+	    "s-." #'casual-ibuffer-tmenu
+	    "F" #'casual-ibuffer-filter-tmenu
+	    "s" #'casual-ibuffer-sortby-tmenu)
     (:keymaps 'bookmark-bemenu-mode-map
-	      "s-." #'casual-bookmarks-tmenu)
+	    "s-." #'casual-bookmarks-tmenu)
     (:keymaps 'org-agenda-mode-map
-	      "s-." #'casual-agenda-tmenu)
+	    "s-." #'casual-agenda-tmenu)
     (:keymaps 'Info-mode-map
-	      "s-." #'casual-info-tmenu)
+	    "s-." #'casual-info-tmenu)
     )
 #+end_src
 
@@ -1301,7 +1302,7 @@ Make copying and moving files easier.
   (setq dired-dwim-target t)
 #+end_src
 
-Replace spaces in file names with hyphens using "%s" in dired. 
+Replace spaces in file names with hyphens using "%s" in dired.
 
 #+begin_src emacs-lisp
   (defun my-substspaces (str)
@@ -1310,7 +1311,7 @@ Replace spaces in file names with hyphens using "%s" in dired.
   (defun my-dired-substspaces (&optional arg)
     "Rename all marked (or next ARG) files so that spaces are replaced with underscores."
     (interactive "P")
-    (dired-rename-non-directory #'my-substspaces "Rename by substituting spa;; ces" arg))
+    (dired-rename-non-directory #'my-substspaces "Rename by substituting spaces" arg))
 #+end_src
 
 #+begin_src emacs-lisp
@@ -2548,7 +2549,7 @@ Use Emacs appointment system for notifications.
 
 *** Org Toggle Emphasis
 
-org-toggle-emphasis: easily toggle emphasis markers: =~*/_+]]
+[[https://gist.github.com/jdtsmith/55e6a660dd4c0779a600ac81bf9bfc23][org-toggle-emphasis: easily toggle emphasis markers: =~*/_+]]
 
 #+begin_src emacs-lisp
   (defun my/org-toggle-emphasis (type)
@@ -2600,16 +2601,22 @@ org-toggle-emphasis: easily toggle emphasis markers: =~*/_+]]
    :keymaps 'org-mode-map
    "s-i" (lambda () (interactive) (my/org-toggle-emphasis ?/))
    "s-b" (lambda () (interactive) (my/org-toggle-emphasis ?*))
-   "s-e" (lambda () (interactive) (my/org-toggle-emphasis ?~))
-   "s-=" (lambda () (interactive) (my/org-toggle-emphasis ?=))
-   "s-_" (lambda () (interactive) (my/org-toggle-emphasis ?_))
-   "s-+" (lambda () (interactive) (my/org-toggle-emphasis ?+)))
+   "C-c e e" (lambda () (interactive) (my/org-toggle-emphasis ?~))
+   "C-c e -=" (lambda () (interactive) (my/org-toggle-emphasis ?=))
+   "C-c e _" (lambda () (interactive) (my/org-toggle-emphasis ?_))
+   "C-c e +" (lambda () (interactive) (my/org-toggle-emphasis ?+)))
 #+end_src
 
 *** Org Mac Link
 
 #+begin_src emacs-lisp
   (use-package org-mac-link)
+#+end_src
+
+*** Style Text Menu
+
+#+begin_src emacs-lisp :tangle no
+(require 'cc-style-text-menu)
 #+end_src
 
 ** OSX Dictionary
