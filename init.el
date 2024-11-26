@@ -470,6 +470,8 @@
 	  "s-." #'casual-agenda-tmenu)
   (:keymaps 'Info-mode-map
 	  "s-." #'casual-info-tmenu)
+  (:keymaps 'calendar-mode-map
+	    "s-." #'casual-calendar-tmenu)
   )
 
 (use-package casual-avy

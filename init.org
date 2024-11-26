@@ -944,6 +944,8 @@ Load general before the remaining packages so they can make use of the ~:general
 	    "s-." #'casual-agenda-tmenu)
     (:keymaps 'Info-mode-map
 	    "s-." #'casual-info-tmenu)
+    (:keymaps 'calendar-mode-map
+	      "s-." #'casual-calendar-tmenu)
     )
 #+end_src
 
