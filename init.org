@@ -352,13 +352,21 @@ World clock settings.
 #+begin_src emacs-lisp
   (setq world-clock-list
 	'(
-	  ("America/Chicago" "Oklahoma City")
-	  ("America/Los_Angeles" "Seattle")
-	  ("Pacific/Honolulu" "Honolulu")
-	  ("America/New_York" "New York")
-	  ("Etc/UTC" "UTC")))
+	("America/Chicago" "Oklahoma City")
+	("America/Los_Angeles" "Seattle")
+	("Pacific/Honolulu" "Honolulu")
+	("America/New_York" "New York")
+	("Etc/UTC" "UTC")))
 
   (setq world-clock-time-format "%a, %d %b %R %Z")
+
+  (setq calendar-location-name "Norman, OK"
+	calendar-latitude 35.24371
+	calendar-longitude -97.416797
+	calendar-mark-holidays-flag t        ;colorize holidays in the calendar
+	holiday-bahai-holidays nil           ;these religions have MANY holidays
+	holiday-islamic-holidays nil         ;... that I don't get off
+	)
 #+end_src
 
 #+begin_src emacs-lisp
@@ -945,9 +953,9 @@ Load general before the remaining packages so they can make use of the ~:general
     (:keymaps 'Info-mode-map
 	    "s-." #'casual-info-tmenu)
     (:keymaps 'calendar-mode-map
-	      "s-." #'casual-calendar-tmenu)
+	    "s-." #'casual-calendar-tmenu)
     )
-#+end_src
+    #+end_src
 
 #+begin_src emacs-lisp
   (use-package casual-avy
@@ -1171,10 +1179,10 @@ This will avoid needing to confirm when activating the link. Just add the functi
 			 org-tags-view
 			 org-todo-list
 			 agenda-home
-		       rlr-intro
-		       rlr-religion
-		       rlr-ethics
-		       rlr-epistemology
+			 rlr-intro
+			 rlr-religion
+			 rlr-ethics
+			 rlr-epistemology
 			 )
 		       )
 	)
@@ -1317,11 +1325,11 @@ Replace spaces in file names with hyphens using "%s" in dired.
 #+end_src
 
 #+begin_src emacs-lisp
-    (general-define-key
-     :keymaps 'dired-mode-map
-     "M-<RET>" #'crux-open-with
-     "s-j" #'dired-goto-file
-     "%s" #'my-dired-substspaces)
+  (general-define-key
+   :keymaps 'dired-mode-map
+   "M-<RET>" #'crux-open-with
+   "s-j" #'dired-goto-file
+   "%s" #'my-dired-substspaces)
 #+end_src
 
 ** Discover
@@ -2221,12 +2229,12 @@ Copy entire buffer then kill. I use this with temporary scratch buffers to write
     (setq org-agenda-files '("/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/"))
     (setq org-agenda-start-on-weekday nil)
     (setq org-agenda-window-setup 'current-window)
-(setq org-link-frame-setup
-   '((vm . vm-visit-folder-other-frame)
-     (vm-imap . vm-visit-imap-folder-other-frame)
-     (gnus . org-gnus-no-new-news)
-     (file . find-file)
-     (wl . wl-other-frame)))
+    (setq org-link-frame-setup
+	'((vm . vm-visit-folder-other-frame)
+	  (vm-imap . vm-visit-imap-folder-other-frame)
+	  (gnus . org-gnus-no-new-news)
+	  (file . find-file)
+	  (wl . wl-other-frame)))
     (require 'org-tempo)
     ;; Open directory links in Dired.
     (add-to-list 'org-file-apps '(directory . emacs)))
@@ -2618,13 +2626,13 @@ Use Emacs appointment system for notifications.
 *** Style Text Menu
 
 #+begin_src emacs-lisp :tangle no
-(require 'cc-style-text-menu)
+  (require 'cc-style-text-menu)
 #+end_src
 
 ** OSX Dictionary
 
 #+begin_src emacs-lisp
-(use-package osx-dictionary)
+  (use-package osx-dictionary)
 #+end_src
 
 ** PDF-Tools
@@ -2680,7 +2688,7 @@ Use ~persistent-scratch~ to save scratch file between sessions.
 ** Posframes
 
 #+begin_src emacs-lisp :tangle no
-(use-package vertico-posframe
+  (use-package vertico-posframe
     :init
     (vertico-posframe-mode))
   (use-package which-key-posframe
@@ -2809,13 +2817,13 @@ https://github.com/amno1/emacs-term-toggle
     (vertico-multiform-mode)
     (setq vertico-multiform-categories
 	'((file grid)
-	  (jinx grid (vertico-grid-annotate . 20))
-	  (citar buffer)))
+	    (jinx grid (vertico-grid-annotate . 20))
+	    (citar buffer)))
     (setq vertico-cycle t) ;; enable cycling for 'vertico-next' and 'vertico-prev'
     :general
     (:keymaps 'vertico-map
 	      ;; keybindings to cycle through vertico results.
-	    "C-h" #'+minibuffer-up-dir
+	      "C-h" #'+minibuffer-up-dir
 	      "<backspace>" 'vertico-directory-delete-char
 	      "RET" 'vertico-directory-enter))
 #+end_src
@@ -2952,9 +2960,9 @@ Keybindings for files and buffers.
 ** Tab Keybindings
 
 #+begin_src emacs-lisp
-(general-define-key
-"s-t" #'rlr/find-file-new-tab
-"s-w" #'tab-close)
+  (general-define-key
+   "s-t" #'rlr/find-file-new-tab
+   "s-w" #'tab-close)
 #+end_src
 
 ** Search Keybindings
@@ -3010,6 +3018,7 @@ Keybindings for files and buffers.
    "C-x 5 b" #'consult-buffer-other-frame
    "C-x r x" #'consult-register
    "M-s m" #'consult-multi-occur
+   "<f8>" #'calendar
    )
 #+end_src
 

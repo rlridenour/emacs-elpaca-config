@@ -106,13 +106,21 @@
 
 (setq world-clock-list
       '(
-	("America/Chicago" "Oklahoma City")
-	("America/Los_Angeles" "Seattle")
-	("Pacific/Honolulu" "Honolulu")
-	("America/New_York" "New York")
-	("Etc/UTC" "UTC")))
+      ("America/Chicago" "Oklahoma City")
+      ("America/Los_Angeles" "Seattle")
+      ("Pacific/Honolulu" "Honolulu")
+      ("America/New_York" "New York")
+      ("Etc/UTC" "UTC")))
 
 (setq world-clock-time-format "%a, %d %b %R %Z")
+
+(setq calendar-location-name "Norman, OK"
+      calendar-latitude 35.24371
+      calendar-longitude -97.416797
+      calendar-mark-holidays-flag t        ;colorize holidays in the calendar
+      holiday-bahai-holidays nil           ;these religions have MANY holidays
+      holiday-islamic-holidays nil         ;... that I don't get off
+      )
 
 (define-key key-translation-map (kbd "ESC") (kbd "C-g"))
 
@@ -471,7 +479,7 @@
   (:keymaps 'Info-mode-map
 	  "s-." #'casual-info-tmenu)
   (:keymaps 'calendar-mode-map
-	    "s-." #'casual-calendar-tmenu)
+	  "s-." #'casual-calendar-tmenu)
   )
 
 (use-package casual-avy
@@ -617,10 +625,10 @@
 		       org-tags-view
 		       org-todo-list
 		       agenda-home
-		     rlr-intro
-		     rlr-religion
-		     rlr-ethics
-		     rlr-epistemology
+		       rlr-intro
+		       rlr-religion
+		       rlr-ethics
+		       rlr-epistemology
 		       )
 		     )
       )
@@ -1418,35 +1426,35 @@
   (completion-category-overrides '((file (styles partial-completion)))))
 
 (use-package org
-    :ensure nil
-    :init
-    ;; (setq org-directory "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/")
-    (setq org-directory "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/")
-    :config
-    (setq org-list-allow-alphabetical t)
-    (setq org-highlight-latex-and-related '(latex script entities))
-    ;; (setq org-startup-indented t)
-    (setq org-adapt-indentation nil)
-    ;; (setq org-hide-leading-stars nil)
-    (setq org-hide-emphasis-markers nil)
-    (setq org-support-shift-select t)
-    ;; (setq org-footnote-section nil)
-    (setq org-html-validation-link nil)
-    (setq org-time-stamp-rounding-minutes '(0 15))
-    (setq org-todo-keyword-faces
-	  '(("DONE" . "green4") ("TODO" . org-warning)))
-    (setq org-agenda-files '("/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/"))
-    (setq org-agenda-start-on-weekday nil)
-    (setq org-agenda-window-setup 'current-window)
-(setq org-link-frame-setup
-   '((vm . vm-visit-folder-other-frame)
-     (vm-imap . vm-visit-imap-folder-other-frame)
-     (gnus . org-gnus-no-new-news)
-     (file . find-file)
-     (wl . wl-other-frame)))
-    (require 'org-tempo)
-    ;; Open directory links in Dired.
-    (add-to-list 'org-file-apps '(directory . emacs)))
+  :ensure nil
+  :init
+  ;; (setq org-directory "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/")
+  (setq org-directory "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/")
+  :config
+  (setq org-list-allow-alphabetical t)
+  (setq org-highlight-latex-and-related '(latex script entities))
+  ;; (setq org-startup-indented t)
+  (setq org-adapt-indentation nil)
+  ;; (setq org-hide-leading-stars nil)
+  (setq org-hide-emphasis-markers nil)
+  (setq org-support-shift-select t)
+  ;; (setq org-footnote-section nil)
+  (setq org-html-validation-link nil)
+  (setq org-time-stamp-rounding-minutes '(0 15))
+  (setq org-todo-keyword-faces
+	'(("DONE" . "green4") ("TODO" . org-warning)))
+  (setq org-agenda-files '("/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/"))
+  (setq org-agenda-start-on-weekday nil)
+  (setq org-agenda-window-setup 'current-window)
+  (setq org-link-frame-setup
+      '((vm . vm-visit-folder-other-frame)
+	(vm-imap . vm-visit-imap-folder-other-frame)
+	(gnus . org-gnus-no-new-news)
+	(file . find-file)
+	(wl . wl-other-frame)))
+  (require 'org-tempo)
+  ;; Open directory links in Dired.
+  (add-to-list 'org-file-apps '(directory . emacs)))
 
 (require 'ox-beamer)
 (with-eval-after-load 'ox-latex
@@ -1815,13 +1823,13 @@
   (vertico-multiform-mode)
   (setq vertico-multiform-categories
       '((file grid)
-	(jinx grid (vertico-grid-annotate . 20))
-	(citar buffer)))
+	  (jinx grid (vertico-grid-annotate . 20))
+	  (citar buffer)))
   (setq vertico-cycle t) ;; enable cycling for 'vertico-next' and 'vertico-prev'
   :general
   (:keymaps 'vertico-map
 	    ;; keybindings to cycle through vertico results.
-	  "C-h" #'+minibuffer-up-dir
+	    "C-h" #'+minibuffer-up-dir
 	    "<backspace>" 'vertico-directory-delete-char
 	    "RET" 'vertico-directory-enter))
 
@@ -1900,8 +1908,8 @@
  "M-o" #'crux-other-window-or-switch-buffer)
 
 (general-define-key
-"s-t" #'rlr/find-file-new-tab
-"s-w" #'tab-close)
+ "s-t" #'rlr/find-file-new-tab
+ "s-w" #'tab-close)
 
 (general-define-key
  "s-l" #'hydra-locate/body
@@ -1945,6 +1953,7 @@
  "C-x 5 b" #'consult-buffer-other-frame
  "C-x r x" #'consult-register
  "M-s m" #'consult-multi-occur
+ "<f8>" #'calendar
  )
 
 (defun open-emacs-config ()
