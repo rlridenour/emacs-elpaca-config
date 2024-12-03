@@ -1723,6 +1723,39 @@
 
 (use-package org-mac-link)
 
+(defun rr-publish-blog ()
+(interactive)
+(progn
+(find-file "~/sites/orgblog/publish.el")
+(eval-buffer)
+(org-publish-all)
+(kill-buffer)))
+
+(defun convert-blog-post ()
+(interactive)
+(beginning-of-buffer)
+(replace-regexp-in-region "tags\\[]" "filetags")
+(beginning-of-buffer)
+(re-search-forward "date.*T")
+(backward-char)
+(kill-line)
+(insert ">")
+(beginning-of-line)
+(re-search-forward "[[:space:]]")
+(insert "<")
+(re-search-forward "lastmod.*T")
+(backward-char)
+(kill-line)
+(insert ">")
+(beginning-of-line)
+(re-search-forward "[[:space:]]")
+(insert "<")
+)
+
+(use-package htmlize)
+
+(use-package ox-rss)
+
 (use-package osx-dictionary)
 
 (use-package pdf-tools

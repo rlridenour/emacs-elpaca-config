@@ -2623,6 +2623,63 @@ Use Emacs appointment system for notifications.
   (use-package org-mac-link)
 #+end_src
 
+*** Blog
+
+#+begin_src emacs-lisp
+(defun rr-publish-blog ()
+(interactive)
+(progn
+(find-file "~/sites/orgblog/publish.el")
+(eval-buffer)
+(org-publish-all)
+(kill-buffer)))
+#+end_src
+
+Convert old Hugo posts to new Org blog.
+
+#+begin_src emacs-lisp
+(defun convert-blog-post ()
+(interactive)
+(beginning-of-buffer)
+(replace-regexp-in-region "tags\\[]" "filetags")
+(beginning-of-buffer)
+(re-search-forward "date.*T")
+(backward-char)
+(kill-line)
+(insert ">")
+(beginning-of-line)
+(re-search-forward "[[:space:]]")
+(insert "<")
+(re-search-forward "lastmod.*T")
+(backward-char)
+(kill-line)
+(insert ">")
+(beginning-of-line)
+(re-search-forward "[[:space:]]")
+(insert "<")
+)
+#+end_src
+
+
+
+
+
+*** Htmlize
+
+#+begin_src emacs-lisp
+  (use-package htmlize)
+#+end_src
+
+
+*** Ox-RSS
+
+#+begin_src emacs-lisp
+(use-package ox-rss)
+#+end_src
+
+
+
+
 *** Style Text Menu
 
 #+begin_src emacs-lisp :tangle no
