@@ -1723,6 +1723,10 @@
 
 (use-package org-mac-link)
 
+(defvar orgblog-content-directory "~/sites/orgblog/" "Path to the Org mode blog.")
+
+(defvar orgblog-public-directory "~/sites/rlridenour.github.io/" "Path to the Org mode blog.")
+
 (defun rr-publish-blog ()
 (interactive)
 (progn
@@ -1730,6 +1734,28 @@
 (eval-buffer)
 (org-publish-all)
 (kill-buffer)))
+
+(defun org-blog-push-source ()
+  "Push changes upstream."
+  (interactive)
+  (dired orgblog-content-directory)
+  (with-dir orgblog-content-directory
+	  (shell-command "git add .")
+	  (--> (current-time-string)
+	       (concat "git commit -m \"" it "\"")
+	       (shell-command it))
+	  (magit-push-current-to-upstream nil)))
+
+
+(defun org-blog-push-public ()
+  "Push changes upstream."
+  (interactive)
+  (with-dir orgblog-public-directory
+	  (shell-command "git add .")
+	  (--> (current-time-string)
+	       (concat "git commit -m \"" it "\"")
+	       (shell-command it))
+	  (magit-push-current-to-upstream nil)))
 
 (defun convert-blog-post ()
 (interactive)

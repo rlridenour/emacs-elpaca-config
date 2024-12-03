@@ -2625,6 +2625,16 @@ Use Emacs appointment system for notifications.
 
 *** Blog
 
+Define directory variables.
+
+#+begin_src emacs-lisp
+  (defvar orgblog-content-directory "~/sites/orgblog/" "Path to the Org mode blog.")
+
+  (defvar orgblog-public-directory "~/sites/rlridenour.github.io/" "Path to the Org mode blog.")
+#+end_src
+
+Publish source to public directory.
+
 #+begin_src emacs-lisp
 (defun rr-publish-blog ()
 (interactive)
@@ -2633,6 +2643,33 @@ Use Emacs appointment system for notifications.
 (eval-buffer)
 (org-publish-all)
 (kill-buffer)))
+#+end_src
+
+Push changes to Github.
+
+#+begin_src emacs-lisp
+  (defun org-blog-push-source ()
+    "Push changes upstream."
+    (interactive)
+    (dired orgblog-content-directory)
+    (with-dir orgblog-content-directory
+	    (shell-command "git add .")
+	    (--> (current-time-string)
+		 (concat "git commit -m \"" it "\"")
+		 (shell-command it))
+	    (magit-push-current-to-upstream nil)))
+
+
+  (defun org-blog-push-public ()
+    "Push changes upstream."
+    (interactive)
+    (with-dir orgblog-public-directory
+	    (shell-command "git add .")
+	    (--> (current-time-string)
+		 (concat "git commit -m \"" it "\"")
+		 (shell-command it))
+	    (magit-push-current-to-upstream nil)))
+
 #+end_src
 
 Convert old Hugo posts to new Org blog.
