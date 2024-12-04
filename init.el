@@ -868,10 +868,6 @@
   :config
   (savehist-mode 1))
 
-(use-package rlr-hugo
-  :demand t
-  :ensure (:host github :repo "~/elisp/rlr-hugo"))
-
 (use-package hungry-delete
   :config
   (global-hungry-delete-mode))
@@ -1723,11 +1719,11 @@
 
 (use-package org-mac-link)
 
-(defvar orgblog-content-directory "~/sites/orgblog/" "Path to the Org mode blog.")
+(defvar orgblog-directory "~/sites/orgblog/" "Path to the Org mode blog.")
 
-(defvar orgblog-public-directory "~/sites/rlridenour.github.io/" "Path to the Org mode blog.")
+(defvar orgblog-public-directory "~/sites/orgblog/docs/" "Path to the blog public directory.")
 
-(defun rr-publish-blog ()
+(defun orgblog-build ()
 (interactive)
 (progn
 (find-file "~/sites/orgblog/publish.el")
@@ -1735,22 +1731,11 @@
 (org-publish-all)
 (kill-buffer)))
 
-(defun org-blog-push-source ()
+(defun orgblog-push ()
   "Push changes upstream."
   (interactive)
-  (dired orgblog-content-directory)
-  (with-dir orgblog-content-directory
-	  (shell-command "git add .")
-	  (--> (current-time-string)
-	       (concat "git commit -m \"" it "\"")
-	       (shell-command it))
-	  (magit-push-current-to-upstream nil)))
-
-
-(defun org-blog-push-public ()
-  "Push changes upstream."
-  (interactive)
-  (with-dir orgblog-public-directory
+  (dired orgblog-directory)
+  (with-dir orgblog-directory
 	  (shell-command "git add .")
 	  (--> (current-time-string)
 	       (concat "git commit -m \"" it "\"")
