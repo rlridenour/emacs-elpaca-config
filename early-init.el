@@ -4,7 +4,7 @@
 (setq inhibit-default-init nil)
 
 (setq gc-cons-threshold most-positive-fixnum
-	gc-cons-percentage 1)
+      gc-cons-percentage 1)
 
 (defun +gc-after-focus-change ()
   "Run GC when frame loses focus."
@@ -19,11 +19,11 @@
    1 nil
    (lambda ()
      (setq file-name-handler-alist default-file-name-handler-alist
-	     gc-cons-percentage 0.1
-	     gc-cons-threshold 100000000)
+	   gc-cons-percentage 0.1
+	   gc-cons-threshold 100000000)
      (message "gc-cons-threshold & file-name-handler-alist restored")
      (when (boundp 'after-focus-change-function)
-	 (add-function :after after-focus-change-function #'+gc-after-focus-change)))))
+       (add-function :after after-focus-change-function #'+gc-after-focus-change)))))
 
 (with-eval-after-load 'elpaca
   (add-hook 'elpaca-after-init-hook '+reset-init-values))
@@ -38,7 +38,7 @@
 (setq file-name-handler-alist nil)
 
 (setq user-full-name "Randy Ridenour"
-	user-mail-address "rlridenour@fastmail.com")
+      user-mail-address "rlridenour@fastmail.com")
 
 (tool-bar-mode -1)
 (scroll-bar-mode -1)
@@ -66,7 +66,7 @@
 (add-hook 'server-after-make-frame-hook #'initd/bring-emacs-to-front)
 
 (setq-default cursor-in-non-selected-windows nil
-		frame-title-format '("%f [%m]"))
+	      frame-title-format '("%f [%m]"))
 
 (defun my/focus-new-client-frame ()
   (select-frame-set-input-focus (selected-frame)))

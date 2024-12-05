@@ -3033,6 +3033,8 @@ Define directory variables.
 #+begin_src emacs-lisp
   (defvar orgblog-directory "~/sites/orgblog/" "Path to the Org mode blog.")
   (defvar orgblog-public-directory "~/sites/orgblog/public/" "Path to the blog public directory.")
+  (defvar orgblog-posts-directory "~/sites/orgblog/posts/" "Path to the blog public directory.")
+
 #+end_src
 
 Create new post.
@@ -3042,7 +3044,7 @@ Create new post.
   (interactive "sTitle: ")
   ;; Make filename
 (setq rlrt-filename (rlrt-make-filename rlrt-title))
-  (find-file (s-concat (format-time-string "%y-%m-%d-") rlrt-filename ".org"))
+  (find-file (s-concat orgblog-posts-directory (format-time-string "%y-%m-%d-") rlrt-filename ".org"))
   (insert (s-concat "#+TITLE: " rlrt-title) ?\n)
   (yas-expand-snippet (yas-lookup-snippet "orgblogt")))
 #+end_src
@@ -3061,25 +3063,7 @@ Publish source to public directory.
 
 Push changes to Github.
 
-#+begin_src
-  (defmacro with-dir (DIR &rest FORMS)
-    "Execute FORMS in DIR."
-    (let ((orig-dir (gensym)))
-      `(progn (setq ,orig-dir default-directory)
-	      (cd ,DIR) ,@FORMS (cd ,orig-dir))))
-
-  (defun orgblog-push ()
-    "Push changes upstream."
-    (interactive)
-    (dired orgblog-directory)
-    (with-dir orgblog-directory
-	    (shell-command "git add .")
-	    (--> (current-time-string)
-		 (concat "git commit -m \"" it "\"")
-		 (shell-command it))
-	    (magit-push-current-to-upstream nil)))
-
-#+end_src
+Need to write shell function here.
 
 Convert old Hugo posts to new Org blog.
 
