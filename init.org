@@ -2331,11 +2331,407 @@ Copy entire buffer then kill. I use this with temporary scratch buffers to write
 
 *** Org Teaching Functions
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package rlr-teaching
     :demand t
     :ensure (:host github :repo "~/elisp/rlr-teaching/"))
 #+end_src
+
+
+
+;; Set initial variable.
+
+(defvar rlrt-filename)
+
+;; Functions for creating handout, syllabus, and lecture files.
+
+;; Convert title to filename string. Remove punctuation, one or two-letter words, and "the".
+
+  (defun rlrt-make-filename (string)
+    (s-downcase  (s-join "-" (s-split " " (replace-regexp-in-string "\\bthe \\b\\|\\band \\b\\|\\b[a-z]\\b \\|\\b[a-z][a-z]\\b \\|[[:punct:]]" "" string)))))
+
+(defun rlrt-new-handout (rlrt-title)
+  (interactive "sTitle: ")
+
+  ;; Make filename
+  (setq rlrt-filename (rlrt-make-filename rlrt-title))
+
+  ;; Create directory
+  (make-directory rlrt-filename)
+
+  ;; Create main org file
+  (find-file (s-concat rlrt-filename "/" rlrt-filename "-handout.org"))
+  (insert (s-concat "#+TITLE: " rlrt-title) ?\n"#+AUTHOR: Dr. Randy Ridenour" ?\n "#+DATE: "(format-time-string "%B %e, %Y") ?\n)
+  (insert-file-contents "~/.config/emacs/teaching-templates/handout/handout.org")
+  (goto-char (point-max))
+  (save-buffer))
+
+;; Create a syllabus in the currently visited directory.
+
+(defun rlrt-new-syllabus (rlrt-title)
+  (interactive "sTitle: ")
+
+  ;; Make filename
+(setq rlrt-filename (rlrt-make-filename rlrt-title))
+
+  ;; Create directory
+  (make-directory rlrt-filename)
+
+  ;; Create main org file
+  (find-file (s-concat rlrt-filename "/" rlrt-filename "-syllabus.org"))
+  (insert-file-contents "~/.config/emacs/teaching-templates/syllabus/syllabus.org")
+  (goto-char (point-max))
+  (insert (s-concat "#+include: \"" rlrt-filename "-data.org\" :minlevel 1"))
+  (save-buffer)
+  (kill-buffer)
+
+  ;; Create Canvas file
+  (find-file (s-concat rlrt-filename "/canvas.org"))
+  (insert-file-contents "~/.config/emacs/teaching-templates/syllabus/canvas.org")
+  (save-buffer)
+  (kill-buffer)
+
+  ;; Create data file
+  (find-file (s-concat rlrt-filename "/" rlrt-filename "-data.org"))
+  (insert (s-concat "#+TITLE: " rlrt-title) ?\n)
+  (yas-expand-snippet (yas-lookup-snippet "syllabus")))
+
+
+
+;; Create lecture slides and notes in the currently visited directory.
+
+(defun rlrt-new-lecture (rlrt-title)
+  (interactive "sTitle: ")
+
+    ;; Make filename
+(setq rlrt-filename (rlrt-make-filename rlrt-title))
+
+
+  ;; Create directory
+  (make-directory rlrt-filename)
+
+  ;; Create LaTeX Beamer org file
+  (find-file (s-concat rlrt-filename "/" rlrt-filename "-slides.org"))
+  (insert-file-contents "~/.config/emacs/teaching-templates/lecture/slides.org")
+  (goto-char (point-max))
+  (insert (s-concat "#+include: \"" rlrt-filename "-data.org\" :minlevel 1"))
+  (save-buffer)
+  (kill-buffer)
+
+  ;; Create notes org file
+  (find-file (s-concat rlrt-filename "/" rlrt-filename "-notes.org"))
+  (insert-file-contents "~/.config/emacs/teaching-templates/lecture/notes.org")
+  (goto-char (point-max))
+  (insert (s-concat "#+include: \"" rlrt-filename "-data.org\" :minlevel 1"))
+  (save-buffer)
+  (kill-buffer)
+  
+  ;; Create Canvas file
+  (find-file (s-concat rlrt-filename "/canvas.org"))
+  (insert-file-contents "~/.config/emacs/teaching-templates/lecture/canvas.org")
+  (goto-char (point-max))
+  (save-buffer)
+  (kill-buffer)
+
+  ;; Create data file
+  (find-file (s-concat rlrt-filename "/" rlrt-filename "-data.org"))
+  (insert (s-concat "#+TITLE: " rlrt-title) ?\n)
+  (yas-expand-snippet (yas-lookup-snippet "beamer-data")))
+
+
+;; Compile the files.
+
+(defun make-slides ()
+  (async-shell-command-no-window "mkslides"))
+
+(defun make-notes ()
+  (async-shell-command-no-window "mknotes"))
+
+;; Compile lecture slides.
+(defun lecture-slides ()
+  "publish org data file as beamer slides"
+  (interactive)
+  (save-buffer)
+  (find-file "*-slides.org" t)
+  (org-beamer-export-to-latex)
+  (kill-buffer)
+  (make-slides)
+  (find-file "*-data.org" t))
+
+(defun rlr/create-frametitle ()
+  "Convert title to frametitle."
+  (interactive)
+  (goto-char 1)
+  (while (ignore-errors
+    	   (re-search-forward "begin{frame}.*]"))
+    (insert "\n \\frametitle")))
+
+;; Compile lecture notes.
+(defun lecture-notes ()
+  "publish org data file as beamer notes"
+  (interactive)
+  (save-buffer)
+  (find-file "*-notes.org" t)
+  (org-beamer-export-to-latex)
+  (kill-buffer)
+  (find-file "*-notes.tex" t)
+  (rlr/create-frametitle)
+  (save-buffer)
+  (kill-buffer)
+  (make-notes)
+  (find-file "*-data.org" t))
+
+;; Copy HTML for Canvas pages
+(defun canvas-copy ()
+  "Copy html for canvas pages"
+  (interactive)
+  (save-buffer)
+  (org-html-export-to-html)
+  (shell-command "canvas"))
+
+;; Compile Canvas HTML notes.
+#+begin_src 
+(defun canvas-notes ()
+  "Copy HTML slide notes for Canvas"
+  (interactive)
+  (save-buffer)
+  (shell-command "canvas-notes")
+  (find-file "canvas.org")
+  (canvas-copy)
+  (kill-buffer)
+  (delete-file "canvas-data.org"))
+#+end_src
+
+Compile handout
+
+#+begin_src 
+(defun make-handout ()
+  "publish org data file as LaTeX handout and Canvas HTML"
+  (interactive)
+  (save-buffer)
+  ;; (find-file "*-handout.org" t)
+  (rlr/org-mkpdf)
+  ;; (kill-buffer)
+  ;; (shell-command "canvas-notes")
+  ;; (find-file "canvas.org" t)
+  (org-html-export-to-html)
+  (shell-command "canvas-handout"))
+#+end_src
+
+
+#+begin_src 
+(defun make-html ()
+  (interactive)
+  (save-buffer)
+  (org-html-export-to-html)
+  (shell-command "canvas-handout"))
+#+end_src
+
+
+Compile syllabus.
+#+begin_src 
+(defun make-syllabus ()
+  "publish org data file as LaTeX syllabus and Canvas HTML"
+  (interactive)
+  (save-buffer)
+  (find-file "*-syllabus.org" t)
+  (rlr/org-mkpdf)
+  (kill-buffer)
+  (shell-command "canvas-notes")
+  (find-file "canvas.org" t)
+  (org-html-export-to-html)
+  (shell-command "canvas")
+  (kill-buffer)
+  (delete-file "canvas-data.org")
+  (find-file "*-data.org" t))
+#+end_src
+
+
+Functions for adding arguments in standard form to Org documents.
+
+#+begin_src 
+(defun  create-args ()
+  (interactive)
+  (kill-ring-save (region-beginning) (region-end))
+  (exchange-point-and-mark)
+  (yas-expand-snippet (yas-lookup-snippet "arg-wrap-tex"))
+  (previous-line)
+  ;; (previous-line)
+  (org-beginning-of-line)
+  (forward-word)
+  (forward-char)
+  (forward-char)
+  (insert "\\underline{")
+  (org-end-of-line)
+  (insert "}")
+  (next-line)
+  (org-beginning-of-line)
+  (forward-word)
+  (insert "[\\phantom{\\(\\therefore\\)}]")
+  (next-line)
+  (next-line)
+  (org-return)
+  (org-return)
+  (org-yank)
+  (exchange-point-and-mark)
+  (yas-expand-snippet (yas-lookup-snippet "arg-wrap-html")))
+#+end_src
+
+
+#+begin_src 
+(defun  create-tex-arg ()
+  (interactive)
+  (yas-expand-snippet (yas-lookup-snippet "arg-wrap-tex"))
+  (previous-line)
+  (previous-line)
+  (forward-word)
+  (forward-char)
+  (forward-char)
+  (insert "\\underline{")
+  (org-end-of-line)
+  (insert "}")
+  (next-line)
+  (org-beginning-of-line)
+  (forward-word)
+  (insert "[\\phantom{\\(\\therefore\\)}]")
+  (next-line)
+  (next-line)
+  (org-return)
+  (org-return))
+#+end_src
+
+Copy slide notes to handout notes.
+
+#+begin_src 
+(defun duplicate-slide-note ()
+  (interactive)
+  (search-backward ":END:")
+  (next-line)
+  (kill-ring-save (point)
+    		  (progn
+    		    (search-forward "** ")
+    		    (beginning-of-line)
+    		    (point))
+    		  )
+  (yas-expand-snippet (yas-lookup-snippet "beamer article notes"))
+  (yank))
+#+end_src
+
+#+begin_src 
+(defun duplicate-all-slide-notes ()
+  (interactive)
+  (save-excursion
+    (end-of-buffer)
+    (newline)
+    (newline)
+    ;; Need a blank slide at the end to convert the last note.
+    (insert "** ")
+    (beginning-of-buffer)
+    (while (ignore-errors
+    	     (search-forward ":BEAMER_ENV: note"))
+      (next-line)
+      (next-line)
+      (kill-ring-save (point)
+    		      (progn
+    			(search-forward "** ")
+    			(beginning-of-line)
+    			(point))
+    		      )
+      (yas-expand-snippet (yas-lookup-snippet "beamer article notes"))
+      (yank))
+    ;; Delete the blank slide that was added earlier.
+    (end-of-buffer)
+    (search-backward "**")
+    (kill-line)
+    )
+  (save-buffer))
+#+end_src
+
+#+begin_src 
+(defun rlrt-new-article (rlrt-title)
+  (interactive "sTitle: ")
+
+  ;; Make filename
+(setq rlrt-filename (rlrt-make-filename rlrt-title))
+
+  ;; Create directory
+  (make-directory rlrt-filename)
+
+  
+  (find-file (s-concat rlrt-filename "/" rlrt-filename ".org"))
+  (insert (s-concat "#+TITLE: " rlrt-title) ?\n)
+  (yas-expand-snippet (yas-lookup-snippet "rlrt-pdf-article")))
+#+end_src
+
+
+#+begin_src 
+(defun rlrt-new-post (rlrt-title)
+  (interactive "sTitle: ")
+
+  ;; Make filename
+(setq rlrt-filename (rlrt-make-filename rlrt-title))
+
+  ;; Create directory
+  ;; (make-directory rlrt-filename)
+
+  
+  (find-file (s-concat (format-time-string "%y-%m-%d-") rlrt-filename ".org"))
+  (insert (s-concat "#+TITLE: " rlrt-title) ?\n)
+  (yas-expand-snippet (yas-lookup-snippet "orgblogt")))
+#+end_src
+
+
+Function for converting Org mode files to QTI file for importing into Canvas using [[https://www.nyit.edu/its/canvas_exam_converter][Canvas Exam Converter]].
+
+#+begin_src 
+(defun convert-qti-nyit ()
+  (interactive)
+  ;; Copy all to a temp buffer and set to text mode.
+  (let ((old-buffer (current-buffer)))
+    (with-temp-buffer
+      (insert-buffer-substring old-buffer)
+      (text-mode)
+      ;; convert multiple correct answer and essay questions
+      (beginning-of-buffer)
+      (while (re-search-forward "^[:space:]*-" nil t)
+	(replace-match ""))
+      ;; Change correct multiple answer options to "*"
+      (beginning-of-buffer)
+      (let ((case-fold-search nil))
+	(while (re-search-forward "\[X\]" nil t)
+	  (replace-match "*")))
+      ;; Mark short answer responses with "**"
+      (beginning-of-buffer)
+      (while (re-search-forward "+" nil t)
+	(replace-match "*"))
+      ;; remove whitespace at beginning of lines
+      (beginning-of-buffer)
+      (while (re-search-forward "^\s-*" nil t)
+	(replace-match ""))
+      (beginning-of-buffer)
+      (while (re-search-forward "\\(^[0-9]\\)" nil t)
+	(replace-match "\n\\1"))
+      ;; move correct answer symbol to beginning of line
+      (beginning-of-buffer)
+      (while (re-search-forward "\\(^.*\\)\\(\*$\\)" nil t)
+	(replace-match "\*\\1"))
+      (delete-trailing-whitespace)
+      ;; delete empty line at end and beginning
+      (end-of-buffer)
+      (delete-char -1)
+      (beginning-of-buffer)
+      (kill-line)
+      ;; Copy result to clipboard
+      (clipboard-kill-ring-save (point-min) (point-max))
+      )
+    )
+  (browse-url "https://www.nyit.edu/its/canvas_exam_converter")
+ ) 
+#+end_src
+
+
+
+
 
 *** Org Auto Tangle
 
@@ -2623,14 +3019,436 @@ Use Emacs appointment system for notifications.
   (use-package org-mac-link)
 #+end_src
 
+
+*** Teaching
+
+Set initial filename variable.
+
+#+begin_src emacs-lisp
+  (defvar rlrt-filename)
+#+end_src
+
+Functions for creating handout, syllabus, and lecture files.
+
+Convert title to filename string. Remove punctuation, one or two-letter words, and "the".
+
+#+begin_src emacs-lisp
+  (defun rlrt-make-filename (string)
+    (s-downcase  (s-join "-" (s-split " " (replace-regexp-in-string "\\bthe \\b\\|\\band \\b\\|\\b[a-z]\\b \\|\\b[a-z][a-z]\\b \\|[[:punct:]]" "" string)))))
+#+end_src
+
+#+begin_src emacs-lisp
+  (defun rlrt-new-handout (rlrt-title)
+    (interactive "sTitle: ")
+
+    ;; Make filename
+    (setq rlrt-filename (rlrt-make-filename rlrt-title))
+
+    ;; Create directory
+    (make-directory rlrt-filename)
+
+    ;; Create main org file
+    (find-file (s-concat rlrt-filename "/" rlrt-filename "-handout.org"))
+    (insert (s-concat "#+TITLE: " rlrt-title) ?\n"#+AUTHOR: Dr. Randy Ridenour" ?\n "#+DATE: "(format-time-string "%B %e, %Y") ?\n)
+    (insert-file-contents "~/.config/emacs/teaching-templates/handout/handout.org")
+    (goto-char (point-max))
+    (save-buffer))
+#+end_src
+
+Create a syllabus in the currently visited directory.
+
+#+begin_src emacs-lisp
+  (defun rlrt-new-syllabus (rlrt-title)
+    (interactive "sTitle: ")
+
+    ;; Make filename
+    (setq rlrt-filename (rlrt-make-filename rlrt-title))
+
+    ;; Create directory
+    (make-directory rlrt-filename)
+
+    ;; Create main org file
+    (find-file (s-concat rlrt-filename "/" rlrt-filename "-syllabus.org"))
+    (insert-file-contents "~/.config/emacs/teaching-templates/syllabus/syllabus.org")
+    (goto-char (point-max))
+    (insert (s-concat "#+include: \"" rlrt-filename "-data.org\" :minlevel 1"))
+    (save-buffer)
+    (kill-buffer)
+
+    ;; Create Canvas file
+    (find-file (s-concat rlrt-filename "/canvas.org"))
+    (insert-file-contents "~/.config/emacs/teaching-templates/syllabus/canvas.org")
+    (save-buffer)
+    (kill-buffer)
+
+    ;; Create data file
+    (find-file (s-concat rlrt-filename "/" rlrt-filename "-data.org"))
+    (insert (s-concat "#+TITLE: " rlrt-title) ?\n)
+    (yas-expand-snippet (yas-lookup-snippet "syllabus")))
+#+end_src
+
+Create lecture slides and notes in the currently visited directory.
+
+#+begin_src emacs-lisp
+  (defun rlrt-new-lecture (rlrt-title)
+    (interactive "sTitle: ")
+
+    ;; Make filename
+    (setq rlrt-filename (rlrt-make-filename rlrt-title))
+
+
+    ;; Create directory
+    (make-directory rlrt-filename)
+#+end_src
+
+Create LaTeX Beamer org file
+
+#+begin_src emacs-lisp
+  (find-file (s-concat rlrt-filename "/" rlrt-filename "-slides.org"))
+  (insert-file-contents "~/.config/emacs/teaching-templates/lecture/slides.org")
+  (goto-char (point-max))
+  (insert (s-concat "#+include: \"" rlrt-filename "-data.org\" :minlevel 1"))
+  (save-buffer)
+  (kill-buffer)
+#+end_src
+
+Create notes org file
+
+#+begin_src emacs-lisp
+  (find-file (s-concat rlrt-filename "/" rlrt-filename "-notes.org"))
+  (insert-file-contents "~/.config/emacs/teaching-templates/lecture/notes.org")
+  (goto-char (point-max))
+  (insert (s-concat "#+include: \"" rlrt-filename "-data.org\" :minlevel 1"))
+  (save-buffer)
+  (kill-buffer)
+#+end_src
+
+Create Canvas file
+#+begin_src emacs-lisp
+  (find-file (s-concat rlrt-filename "/canvas.org"))
+  (insert-file-contents "~/.config/emacs/teaching-templates/lecture/canvas.org")
+  (goto-char (point-max))
+  (save-buffer)
+  (kill-buffer)
+#+end_src
+
+Create data file
+
+#+begin_src emacs-lisp
+  (find-file (s-concat rlrt-filename "/" rlrt-filename "-data.org"))
+  (insert (s-concat "#+TITLE: " rlrt-title) ?\n)
+  (yas-expand-snippet (yas-lookup-snippet "beamer-data")))
+#+end_src
+
+Compile the files.
+
+#+begin_src emacs-lisp
+  (defun make-slides ()
+    (async-shell-command-no-window "mkslides"))
+#+end_src
+
+#+begin_src emacs-lisp
+  (defun make-notes ()
+    (async-shell-command-no-window "mknotes"))
+#+end_src
+
+Compile lecture slides.
+
+#+begin_src emacs-lisp
+  (defun lecture-slides ()
+    "publish org data file as beamer slides"
+    (interactive)
+    (save-buffer)
+    (find-file "*-slides.org" t)
+    (org-beamer-export-to-latex)
+    (kill-buffer)
+    (make-slides)
+    (find-file "*-data.org" t))
+#+end_src
+
+#+begin_src emacs-lisp
+  (defun rlr/create-frametitle ()
+    "Convert title to frametitle."
+    (interactive)
+    (goto-char 1)
+    (while (ignore-errors
+	     (re-search-forward "begin{frame}.*]"))
+      (insert "\n \\frametitle")))
+#+end_src
+
+Compile lecture notes.
+
+#+begin_src emacs-lisp
+  (defun lecture-notes ()
+    "publish org data file as beamer notes"
+    (interactive)
+    (save-buffer)
+    (find-file "*-notes.org" t)
+    (org-beamer-export-to-latex)
+    (kill-buffer)
+    (find-file "*-notes.tex" t)
+    (rlr/create-frametitle)
+    (save-buffer)
+    (kill-buffer)
+    (make-notes)
+    (find-file "*-data.org" t))
+#+end_src
+
+Copy HTML for Canvas pages
+
+#+begin_src emacs-lisp
+  (defun canvas-copy ()
+    "Copy html for canvas pages"
+    (interactive)
+    (save-buffer)
+    (org-html-export-to-html)
+    (shell-command "canvas"))
+#+end_src
+
+Compile Canvas HTML notes.
+
+#+begin_src emacs-lisp
+  (defun canvas-notes ()
+    "Copy HTML slide notes for Canvas"
+    (interactive)
+    (save-buffer)
+    (shell-command "canvas-notes")
+    (find-file "canvas.org")
+    (canvas-copy)
+    (kill-buffer)
+    (delete-file "canvas-data.org"))
+#+end_src
+
+Compile handout
+
+#+begin_src emacs-lisp
+  (defun make-handout ()
+    "publish org data file as LaTeX handout and Canvas HTML"
+    (interactive)
+    (save-buffer)
+    ;; (find-file "*-handout.org" t)
+    (rlr/org-mkpdf)
+    ;; (kill-buffer)
+    ;; (shell-command "canvas-notes")
+    ;; (find-file "canvas.org" t)
+    (org-html-export-to-html)
+    (shell-command "canvas-handout"))
+#+end_src
+
+
+#+begin_src emacs-lisp
+  (defun make-html ()
+    (interactive)
+    (save-buffer)
+    (org-html-export-to-html)
+    (shell-command "canvas-handout"))
+#+end_src
+
+
+Compile syllabus.
+
+#+begin_src emacs-lisp
+  (defun make-syllabus ()
+    "publish org data file as LaTeX syllabus and Canvas HTML"
+    (interactive)
+    (save-buffer)
+    (find-file "*-syllabus.org" t)
+    (rlr/org-mkpdf)
+    (kill-buffer)
+    (shell-command "canvas-notes")
+    (find-file "canvas.org" t)
+    (org-html-export-to-html)
+    (shell-command "canvas")
+    (kill-buffer)
+    (delete-file "canvas-data.org")
+    (find-file "*-data.org" t))
+#+end_src
+
+
+Functions for adding arguments in standard form to Org documents.
+
+#+begin_src emacs-lisp
+  (defun  create-args ()
+    (interactive)
+    (kill-ring-save (region-beginning) (region-end))
+    (exchange-point-and-mark)
+    (yas-expand-snippet (yas-lookup-snippet "arg-wrap-tex"))
+    (previous-line)
+    ;; (previous-line)
+    (org-beginning-of-line)
+    (forward-word)
+    (forward-char)
+    (forward-char)
+    (insert "\\underline{")
+    (org-end-of-line)
+    (insert "}")
+    (next-line)
+    (org-beginning-of-line)
+    (forward-word)
+    (insert "[\\phantom{\\(\\therefore\\)}]")
+    (next-line)
+    (next-line)
+    (org-return)
+    (org-return)
+    (org-yank)
+    (exchange-point-and-mark)
+    (yas-expand-snippet (yas-lookup-snippet "arg-wrap-html")))
+#+end_src
+
+
+#+begin_src emacs-lisp
+  (defun  create-tex-arg ()
+    (interactive)
+    (yas-expand-snippet (yas-lookup-snippet "arg-wrap-tex"))
+    (previous-line)
+    (previous-line)
+    (forward-word)
+    (forward-char)
+    (forward-char)
+    (insert "\\underline{")
+    (org-end-of-line)
+    (insert "}")
+    (next-line)
+    (org-beginning-of-line)
+    (forward-word)
+    (insert "[\\phantom{\\(\\therefore\\)}]")
+    (next-line)
+    (next-line)
+    (org-return)
+    (org-return))
+#+end_src
+
+Copy slide notes to handout notes.
+
+#+begin_src emacs-lisp
+  (defun duplicate-slide-note ()
+    (interactive)
+    (search-backward ":END:")
+    (next-line)
+    (kill-ring-save (point)
+		    (progn
+		      (search-forward "** ")
+		      (beginning-of-line)
+		      (point))
+		    )
+    (yas-expand-snippet (yas-lookup-snippet "beamer article notes"))
+    (yank))
+
+  (defun duplicate-all-slide-notes ()
+    (interactive)
+    (save-excursion
+      (end-of-buffer)
+      (newline)
+      (newline)
+      ;; Need a blank slide at the end to convert the last note.
+      (insert "** ")
+      (beginning-of-buffer)
+      (while (ignore-errors
+	       (search-forward ":BEAMER_ENV: note"))
+	(next-line)
+	(next-line)
+	(kill-ring-save (point)
+			(progn
+			  (search-forward "** ")
+			  (beginning-of-line)
+			  (point))
+			)
+	(yas-expand-snippet (yas-lookup-snippet "beamer article notes"))
+	(yank))
+      ;; Delete the blank slide that was added earlier.
+      (end-of-buffer)
+      (search-backward "**")
+      (kill-line)
+      )
+    (save-buffer))
+#+end_src
+
+Create new article.
+
+#+begin_src emacs-lisp
+  (defun rlrt-new-article (rlrt-title)
+    (interactive "sTitle: ")
+
+    ;; Make filename
+    (setq rlrt-filename (rlrt-make-filename rlrt-title))
+
+    ;; Create directory
+    (make-directory rlrt-filename)
+
+
+    (find-file (s-concat rlrt-filename "/" rlrt-filename ".org"))
+    (insert (s-concat "#+TITLE: " rlrt-title) ?\n)
+    (yas-expand-snippet (yas-lookup-snippet "rlrt-pdf-article")))
+#+end_src
+
+Function for converting Org mode files to QTI file for importing into Canvas using https://www.nyit.edu/its/canvas_exam_converter
+
+#+begin_src emacs-lisp
+  (defun convert-qti-nyit ()
+    (interactive)
+    ;; Copy all to a temp buffer and set to text mode.
+    (let ((old-buffer (current-buffer)))
+      (with-temp-buffer
+	(insert-buffer-substring old-buffer)
+	(text-mode)
+	;; convert multiple correct answer and essay questions
+	(beginning-of-buffer)
+	(while (re-search-forward "^[:space:]*-" nil t)
+	  (replace-match ""))
+	;; Change correct multiple answer options to "*"
+	(beginning-of-buffer)
+	(let ((case-fold-search nil))
+	  (while (re-search-forward "\[X\]" nil t)
+	    (replace-match "*")))
+	;; Mark short answer responses with "**"
+	(beginning-of-buffer)
+	(while (re-search-forward "+" nil t)
+	  (replace-match "*"))
+	;; remove whitespace at beginning of lines
+	(beginning-of-buffer)
+	(while (re-search-forward "^\s-*" nil t)
+	  (replace-match ""))
+	(beginning-of-buffer)
+	(while (re-search-forward "\\(^[0-9]\\)" nil t)
+	  (replace-match "\n\\1"))
+	;; move correct answer symbol to beginning of line
+	(beginning-of-buffer)
+	(while (re-search-forward "\\(^.*\\)\\(\*$\\)" nil t)
+	  (replace-match "\*\\1"))
+	(delete-trailing-whitespace)
+	;; delete empty line at end and beginning
+	(end-of-buffer)
+	(delete-char -1)
+	(beginning-of-buffer)
+	(kill-line)
+	;; Copy result to clipboard
+	(clipboard-kill-ring-save (point-min) (point-max))
+	)
+      )
+    (browse-url "https://www.nyit.edu/its/canvas_exam_converter")
+    )
+#+end_src
+
+
 *** Blog
 
 Define directory variables.
 
 #+begin_src emacs-lisp
   (defvar orgblog-directory "~/sites/orgblog/" "Path to the Org mode blog.")
+  (defvar orgblog-public-directory "~/sites/orgblog/public/" "Path to the blog public directory.")
+#+end_src
 
-  (defvar orgblog-public-directory "~/sites/orgblog/docs/" "Path to the blog public directory.")
+Create new post.
+
+#+begin_src emacs-lisp
+(defun rlrt-new-post (rlrt-title)
+  (interactive "sTitle: ")
+  ;; Make filename
+(setq rlrt-filename (rlrt-make-filename rlrt-title))
+  (find-file (s-concat (format-time-string "%y-%m-%d-") rlrt-filename ".org"))
+  (insert (s-concat "#+TITLE: " rlrt-title) ?\n)
+  (yas-expand-snippet (yas-lookup-snippet "orgblogt")))
 #+end_src
 
 Publish source to public directory.
@@ -2647,7 +3465,13 @@ Publish source to public directory.
 
 Push changes to Github.
 
-#+begin_src emacs-lisp
+#+begin_src
+  (defmacro with-dir (DIR &rest FORMS)
+    "Execute FORMS in DIR."
+    (let ((orig-dir (gensym)))
+      `(progn (setq ,orig-dir default-directory)
+	      (cd ,DIR) ,@FORMS (cd ,orig-dir))))
+
   (defun orgblog-push ()
     "Push changes upstream."
     (interactive)
