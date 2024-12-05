@@ -975,7 +975,7 @@
        ("v" denote-menu-list-notes "view notes")
        ("j" denote-journal-extras-new-or-existing-entry "journal"))
       "Writing"
-      (("b" hugo-draft-post "blog post")
+      (("b" rlrt-new-post "blog post")
        ("a" new-article "article"))
       "Teaching"
       (("l" rlrt-new-lecture "lecture")
@@ -1177,7 +1177,6 @@
        ;; ("fn" org-footnote-new "insert footnote")
        ("ff" org-footnote-action "edit footnote")
        ("fc" citar-insert-citation "citation")
-       ("b" org-cycle-list-bullet "cycle bullets" :exit nil)
        ("il" org-mac-link-safari-insert-frontmost-url "insert safari link")
        ("y" yankpad-set-category "set yankpad")
        )
@@ -1188,11 +1187,9 @@
        ("vI" org-toggle-inline-images "Inline images")
        )
       "Blog"
-      (("Hn" hugo-draft-post "New draft")
-       ("Hp" hugo-publish-post "Publish")
-       ("Ht" hugo-timestamp "Update timestamp")
-       ("Hd" hugo-org-deploy "Deploy")
-       ("He" org-hugo-auto-export-mode "Auto export"))
+      (("bn" rlrt-new-post "New draft")
+       ("bb" orgblog-build "Build Site")
+       ("bd" orgblog-push "Push to Github"))
       "Notes"
       (("1" denote-link "link to note"))
       ))
@@ -2032,7 +2029,7 @@
   )
 
 (defvar orgblog-directory "~/sites/orgblog/" "Path to the Org mode blog.")
-(defvar orgblog-public-directory "~/sites/orgblog/public/" "Path to the blog public directory.")
+(defvar orgblog-public-directory "~/sites/orgblog/docs/" "Path to the blog public directory.")
 (defvar orgblog-posts-directory "~/sites/orgblog/posts/" "Path to the blog public directory.")
 
 (defun rlrt-new-post (rlrt-title)
@@ -2050,6 +2047,10 @@
 (eval-buffer)
 (org-publish-all)
 (kill-buffer)))
+
+(defun orgblog-push ()
+  (interactive)
+  (async-shell-command "orgblog-push"))
 
 (defun convert-blog-post ()
 (interactive)
