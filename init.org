@@ -3058,6 +3058,18 @@ Publish source to public directory.
 (kill-buffer)))
 #+end_src
 
+#+begin_src emacs-lisp
+  (defun orgblog-serve ()
+    (interactive)
+    (progn
+      (let ((default-directory "~/sites/orgblog/docs"))
+	(async-shell-command "serve")
+	(sleep-for 1)
+	(async-shell-command "open http://localhost:3000"))))
+#+end_src
+
+
+
 Push changes to Github.
 
 #+begin_src emacs-lisp

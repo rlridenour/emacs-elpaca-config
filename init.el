@@ -2048,6 +2048,14 @@
 (org-publish-all)
 (kill-buffer)))
 
+(defun orgblog-serve ()
+  (interactive)
+  (progn
+    (let ((default-directory "~/sites/orgblog/docs"))
+      (async-shell-command "serve")
+      (sleep-for 1)
+      (async-shell-command "open http://localhost:3000"))))
+
 (defun orgblog-push ()
   (interactive)
   (async-shell-command "orgblog-push"))
