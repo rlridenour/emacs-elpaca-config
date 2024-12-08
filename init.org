@@ -1260,6 +1260,15 @@ Search notes with the xapian syntax (+word -word AND NOT etc), <tab> to preview,
 Hide file details and absolute path by default, from [[https://lmno.lol/alvaro/hide-another-detail][Hide another detail]]. Check back later to see if =dired-hide-details-hide-absolute-location= has been merged into Dired.
 
 #+begin_src emacs-lisp
+(use-package dired+
+:demand t
+:ensure (:host github :repo "emacsmirror/dired-plus"))
+#+end_src
+
+
+
+
+#+begin_src emacs-lisp
   (defun hide-dired-details-include-all-subdir-paths ()
     (save-excursion
       (goto-char (point-min))
@@ -1645,7 +1654,8 @@ From [[https://github.com/mickeynp/discover.el][mickeynp/discover.el: Discover m
 	"Writeroom"
 	(("W" writeroom-mode "toggle writeroom")
 	 ("M" writeroom-toggle-mode-line "toggle modeline"))))
-     (pretty-hydra-define hydra-new
+     
+(pretty-hydra-define hydra-new
        (:color teal :quit-key "q" title: "New")
        ("Denote"
 	(("c" org-capture "capture")
@@ -1660,6 +1670,7 @@ From [[https://github.com/mickeynp/discover.el][mickeynp/discover.el: Discover m
 	 ("h" rlrt-new-handout "handout")
 	 ("s" rlrt-new-syllabus "syllabus"))
 	))
+
      (pretty-hydra-define hydra-logic
        (:color pink :quit-key "0" :title "Logic")
        ("Operators"
@@ -1680,7 +1691,8 @@ From [[https://github.com/mickeynp/discover.el][mickeynp/discover.el: Discover m
 	"Quit"
 	(("0" quit-window "quit" :color blue))
 	))
-     (pretty-hydra-define hydra-math
+     
+(pretty-hydra-define hydra-math
        (:color pink :quit-key "?" :title "Math")
        ("Operators"
 	(("1" (my/insert-unicode "NOT SIGN") "¬")
@@ -1705,6 +1717,7 @@ From [[https://github.com/mickeynp/discover.el][mickeynp/discover.el: Discover m
 	"Quit"
 	(("?" quit-window "quit" :color blue))
 	))
+
      (pretty-hydra-define hydra-hugo
        (:color teal :quit-key "q" :title "Hugo")
        ("Blog"
@@ -1714,6 +1727,7 @@ From [[https://github.com/mickeynp/discover.el][mickeynp/discover.el: Discover m
 	 ("e" org-hugo-auto-export-mode "Auto export")
 	 ("d" hugo-deploy "Deploy"))
 	))
+
      (pretty-hydra-define hydra-hydras
        (:color teal :quit-key "q" :title "Hydras")
        ("System"
@@ -1729,174 +1743,168 @@ From [[https://github.com/mickeynp/discover.el][mickeynp/discover.el: Discover m
 
 *** Major Mode Hydras
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (with-after-elpaca-init
    (progn
      (major-mode-hydra-define dashboard-mode
        (:quit-key "q")
        ("Open"
-	(("m" consult-bookmark "bookmarks")
-	 ("a" consult-org-agenda "consult-agenda")
-	 ("t" (find-file "/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/tasks.org") "open tasks")
-	 ("b" (find-file "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/bookmarks.org") "web bookmarks")
-	 )))
+        (("m" consult-bookmark "bookmarks")
+         ("a" consult-org-agenda "consult-agenda")
+         ("t" (find-file "/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/tasks.org") "open tasks")
+         ("b" (find-file "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/bookmarks.org") "web bookmarks"))))
 
-     (major-mode-hydra-define org-agenda-mode
-       (:quit-key "q")
-       ("Open"
-	(("m" consult-bookmark "bookmarks")
-	 ("a" consult-org-agenda "consult-agenda")
-	 ("t" (find-file "/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/tasks.org") "open tasks")
-	 ("b" (find-file "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/bookmarks.org") "web bookmarks"))
-	"Classes"
-	(("1" (dired "~/icloud/teaching/intro/lectures") "Intro")
-	 ("2" (dired "~/icloud/teaching/religion/lectures") "Religion")
-	 ("3" (dired "~/icloud/teaching/ethics/lectures") "Ethics")
-	 ("4" (dired "~/icloud/teaching/epistemology/lectures") "Epistemology")
-	 )
-	))
+  (major-mode-hydra-define org-agenda-mode
+    (:quit-key "q")
+    ("Open"
+     (("m" consult-bookmark "bookmarks")
+      ("a" consult-org-agenda "consult-agenda")
+      ("t" (find-file "/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/tasks.org") "open tasks")
+      ("b" (find-file "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/bookmarks.org") "web bookmarks"))
+     "Classes"
+     (("1" (dired "~/icloud/teaching/intro/lectures") "Intro")
+      ("2" (dired "~/icloud/teaching/religion/lectures") "Religion")
+      ("3" (dired "~/icloud/teaching/ethics/lectures") "Ethics")
+      ("4" (dired "~/icloud/teaching/epistemology/lectures") "Epistemology")
+      )
+     ))
 
-     (major-mode-hydra-define eww-mode
-       (:quit-key "q")
-       ("A"
-	(
-	 ;; ("G" eww "Eww Open Browser")
-	 ("g" eww-reload "Eww Reload")
-	 ("6" eww-open-in-new-buffer "Open in new buffer")
-	 ("l" eww-back-url "Back Url")
-	 ("r" eww-forward-url "Forward Url")
-	 ("N" eww-next-url "Next Url")
-	 ("P" eww-previous-url "Previous Url")
-	 ("u" eww-up-url "Up Url")
-	 ("&" eww-browse-with-external-browser "Open in External Browser")
-	 ("d" eww-download "Download")
-	 ("w" eww-copy-page-url "Copy Url Page")
-	 );end theme
-	"B"
-	(
-	 ("T" endless/toggle-image-display "Toggle Image Display")
-	 (">" shr-next-link "Shr Next Link")
-	 ("<" shr-previous-link "Shr Previous Link")
-	 ("n" scroll-down-command "Scroll Down")
-	 ("C" url-cookie-list "Url Cookie List")
-	 ("v" eww-view-source "View Source")
-	 ("R" eww-readable "Make Readable")
-	 ("H" eww-list-histories "List History")
-	 ("E" eww-set-character-encoding "Character Encoding")
-	 ("s" eww-switch-to-buffer "Switch to Buffer")
-	 ("S" eww-list-buffers "List Buffers")
-	 );end highlighting
+  (major-mode-hydra-define eww-mode
+    (:quit-key "q")
+    ("A"
+     (
+      ;; ("G" eww "Eww Open Browser")
+      ("g" eww-reload "Eww Reload")
+      ("6" eww-open-in-new-buffer "Open in new buffer")
+      ("l" eww-back-url "Back Url")
+      ("r" eww-forward-url "Forward Url")
+      ("N" eww-next-url "Next Url")
+      ("P" eww-previous-url "Previous Url")
+      ("u" eww-up-url "Up Url")
+      ("&" eww-browse-with-external-browser "Open in External Browser")
+      ("d" eww-download "Download")
+      ("w" eww-copy-page-url "Copy Url Page")
+      );end theme
+     "B"
+     (
+      ("T" endless/toggle-image-display "Toggle Image Display")
+      (">" shr-next-link "Shr Next Link")
+      ("<" shr-previous-link "Shr Previous Link")
+      ("n" scroll-down-command "Scroll Down")
+      ("C" url-cookie-list "Url Cookie List")
+      ("v" eww-view-source "View Source")
+      ("R" eww-readable "Make Readable")
+      ("H" eww-list-histories "List History")
+      ("E" eww-set-character-encoding "Character Encoding")
+      ("s" eww-switch-to-buffer "Switch to Buffer")
+      ("S" eww-list-buffers "List Buffers")
+      );end highlighting
 
-	"C"
-	(
+     "C"
+     (
+      ("1" rrnet "randyridenour.net")
+      ("2" sep "SEP")
+      ("F" eww-toggle-fonts "Toggle Fonts")
+      ("D" eww-toggle-paragraph-direction "Toggle Paragraph Direction")
+      ("c" eww-toggle-colors "Toggle Colors")
+      ("b" eww-add-bookmark "Add Bookmark")
+      ("B" eww-list-bookmarks "List Bookmarks")
+      ("=" eww-next-bookmark "Next Bookmark")
+      ("-" eww-previous-bookmark "Previous Bookmark")
+      ("O" jao-eww-to-org "Make Org Version")
+      ("<SPC>" nil "Quit" :color pink)
+      );end other
+     ))
 
-	 ("1" rrnet "randyridenour.net")
-	 ("2" sep "SEP")
-	 ("F" eww-toggle-fonts "Toggle Fonts")
-	 ("D" eww-toggle-paragraph-direction "Toggle Paragraph Direction")
-	 ("c" eww-toggle-colors "Toggle Colors")
-	 ("b" eww-add-bookmark "Add Bookmark")
-	 ("B" eww-list-bookmarks "List Bookmarks")
-	 ("=" eww-next-bookmark "Next Bookmark")
-	 ("-" eww-previous-bookmark "Previous Bookmark")
-	 ("O" jao-eww-to-org "Make Org Version")
-	 ("<SPC>" nil "Quit" :color pink)
-	 );end other
-	))
+  (major-mode-hydra-define markdown-mode
+    (:quit-key "q")
+    ("Format"
+     (("h" markdown-insert-header-dwim "header")
+      ("l" markdown-insert-link "link")
+      ("u" markdown-insert-uri "url")
+      ("f" markdown-insert-footnote "footnote")
+      ("w" markdown-insert-wiki-link "wiki")
+      ("r" markdown-insert-reference-link-dwim "r-link")
+      ("n" markdown-cleanup-list-numbers "clean-lists")
+      ("c" markdown-complete-buffer "complete"))))
 
-     (major-mode-hydra-define markdown-mode
-       (:quit-key "q")
-       ("Format"
-	(("h" markdown-insert-header-dwim "header")
-	 ("l" markdown-insert-link "link")
-	 ("u" markdown-insert-uri "url")
-	 ("f" markdown-insert-footnote "footnote")
-	 ("w" markdown-insert-wiki-link "wiki")
-	 ("r" markdown-insert-reference-link-dwim "r-link")
-	 ("n" markdown-cleanup-list-numbers "clean-lists")
-	 ("c" markdown-complete-buffer "complete"))))
+  (major-mode-hydra-define LaTeX-mode
+    (:quit-key "q")
+    ("Bibtex"
+     (("r" citar-insert-citation "citation"))
+     "LaTeXmk"
+     (("m" rlr/tex-mkpdf "PDFLaTeX")
+      ("l" rlr/tex-mklua "LuaLaTeX")
+      ("w" rlr/tex-mktc "watch PDFLaTeX")
+      ("L" rlr/tex-mklua "watch LuaLaTeX")
+      ("c" tex-clean "clean aux")
+      ("C" tex-clean-all "clean all")
+      ("n" latex-word-count "word count"))))
 
-     (major-mode-hydra-define LaTeX-mode
-       (:quit-key "q")
-       ("Bibtex"
-	(("r" citar-insert-citation "citation"))
-	"LaTeXmk"
-	(("m" rlr/tex-mkpdf "PDFLaTeX")
-	 ("l" rlr/tex-mklua "LuaLaTeX")
-	 ("w" rlr/tex-mktc "watch PDFLaTeX")
-	 ("L" rlr/tex-mklua "watch LuaLaTeX")
-	 ("c" tex-clean "clean aux")
-	 ("C" tex-clean-all "clean all")
-	 ("n" latex-word-count "word count"))))
+  (major-mode-hydra-define org-mode
+    (:quit-key "q")
+    ("Export"
+  	(("m" rlr/org-mkpdf "Make PDF with PDFLaTeX")
+  	 ("p" rlr/org-open-pdf "View PDF")
+  	 ("h" make-html "HTML")
+  	 ("l" rlr/org-mklua "Make PDF with LuaLaTeX")
+  	 ("el" org-latex-export-to-latex "Org to LaTeX")
+  	 ("eb" org-beamer-export-to-pdf "Org to Beamer-PDF")
+  	 ("eB" org-beamer-export-to-latex "Org to Beamer-LaTeX")
+  	 ("s" lecture-slides "Lecture slides")
+  	 ("n" lecture-notes "Lecture notes")
+  	 ("ep" present "Present slides")
+  	 ("ec" canvas-copy "Copy HTML for Canvas")
+  	 ("es" canvas-notes "HTML Canvas notes")
+  	 ("eS" make-syllabus "Syllabus")
+  	 ("eh" make-handout "Handout")
+  	 ("c" tex-clean "clean aux")
+  	 ("C" tex-clean-all "clean all"))
+  	"Edit"
+  	(("dd" org-deadline "deadline")
+  	 ("ds" org-schedule "schedule")
+  	 ("r" org-refile "refile")
+  	 ("du" rlr/org-date "update date stamp")
+  	 ;; ("fn" org-footnote-new "insert footnote")
+  	 ("ff" org-footnote-action "edit footnote")
+  	 ("fc" citar-insert-citation "citation")
+  	 ("il" org-mac-link-safari-insert-frontmost-url "insert safari link")
+  	 ("y" yankpad-set-category "set yankpad"))
+  	"View"
+  	(("vi" consult-org-heading "iMenu")
+  	 ("vu" org-toggle-pretty-entities "org-pretty")
+  	 ("vI" org-toggle-inline-images "Inline images"))
+  	"Blog"
+  	(("bn" rlrt-new-post "New draft")
+  	 ("bb" orgblog-build "Build Site")
+  	 ("bd" orgblog-push "Push to Github"))
+  	"Notes"
+  	(("1" denote-link "link to note"))))
 
-     (major-mode-hydra-define org-mode
-       (:quit-key "q")
-       ("Export"
-	(
-	 ("m" rlr/org-mkpdf "Make PDF with PDFLaTeX")
-	 ("p" rlr/org-open-pdf "View PDF")
-	 ("h" make-html "HTML")
-	 ("l" rlr/org-mklua "Make PDF with LuaLaTeX")
-	 ("el" org-latex-export-to-latex "Org to LaTeX")
-	 ("eb" org-beamer-export-to-pdf "Org to Beamer-PDF")
-	 ("eB" org-beamer-export-to-latex "Org to Beamer-LaTeX")
-	 ("s" lecture-slides "Lecture slides")
-	 ("n" lecture-notes "Lecture notes")
-	 ("ep" present "Present slides")
-	 ("ec" canvas-copy "Copy HTML for Canvas")
-	 ("es" canvas-notes "HTML Canvas notes")
-	 ("eS" make-syllabus "Syllabus")
-	 ("eh" make-handout "Handout")
-	 ("c" tex-clean "clean aux")
-	 ("C" tex-clean-all "clean all")
-	 )
-	"Edit"
-	(
-	 ("dd" org-deadline "deadline")
-	 ("ds" org-schedule "schedule")
-	 ("r" org-refile "refile")
-	 ("du" rlr/org-date "update date stamp")
-	 ;; ("fn" org-footnote-new "insert footnote")
-	 ("ff" org-footnote-action "edit footnote")
-	 ("fc" citar-insert-citation "citation")
-	 ("il" org-mac-link-safari-insert-frontmost-url "insert safari link")
-	 ("y" yankpad-set-category "set yankpad")
-	 )
-	"View"
-	(
-	 ("vi" consult-org-heading "iMenu")
-	 ("vu" org-toggle-pretty-entities "org-pretty")
-	 ("vI" org-toggle-inline-images "Inline images")
-	 )
-	"Blog"
-	(("bn" rlrt-new-post "New draft")
-	 ("bb" orgblog-build "Build Site")
-	 ("bd" orgblog-push "Push to Github"))
-	"Notes"
-	(("1" denote-link "link to note"))
-	))
+  (major-mode-hydra-define dired-mode
+    (:quit-key "q")
+    ("New"
+     (("a" rlrt-new-article "article")
+      ("l" rlrt-new-lecture "lecture")
+      ("h" rlrt-new-handout "handout")
+      ("s" rlrt-new-syllabus "syllabus"))
+     "Tools"
+     (("d" crux-open-with "Open in default program")
+      ("." dired-omit-mode "Show hidden files")
+      ("p" diredp-copy-abs-filenames-as-kill "Copy filename and path")
+      ("n" dired-toggle-read-only "edit Filenames"))
+     "Blog"
+     (("bn" rlrt-new-post "New draft")
+      ("bb" orgblog-build "Build Site")
+      ("bd" orgblog-push "Push to Github"))))
 
-     (major-mode-hydra-define dired-mode
-       (:quit-key "q")
-       ("New"
-	(("a" rlrt-new-article "article")
-	 ("l" rlrt-new-lecture "lecture")
-	 ("h" rlrt-new-handout "handout")
-	 ("s" rlrt-new-syllabus "syllabus"))
-	"Tools"
-	(("d" crux-open-with "Open in default program")
-	 ("." dired-omit-mode "Show hidden files")
-	 ("p" diredp-copy-abs-filenames-as-kill "Copy filename and path")
-	 ("n" dired-toggle-read-only "edit Filenames"))))
-
-     (major-mode-hydra-define denote-menu-mode
-       (:quit-key "q")
-       ("Tools"
-	(("f" denote-menu-filter "Filter by regex")
-	 ("k" denote-menu-filter-by-keyword "Filter by keyword")
-	 ("c" denote-menu-clear-filters "Clear filters")
-	 ("d" denote-menu-export-to-dired "Dired")
-	 )))))
+  (major-mode-hydra-define denote-menu-mode
+    (:quit-key "q")
+    ("Tools"
+     (("f" denote-menu-filter "Filter by regex")
+      ("k" denote-menu-filter-by-keyword "Filter by keyword")
+      ("c" denote-menu-clear-filters "Clear filters")
+      ("d" denote-menu-export-to-dired "Dired"))))))
 #+end_src
 
 #+begin_src emacs-lisp :tangle no
@@ -2601,7 +2609,7 @@ Use Emacs appointment system for notifications.
    "s-i" (lambda () (interactive) (my/org-toggle-emphasis ?/))
    "s-b" (lambda () (interactive) (my/org-toggle-emphasis ?*))
    "C-c e e" (lambda () (interactive) (my/org-toggle-emphasis ?~))
-   "C-c e -=" (lambda () (interactive) (my/org-toggle-emphasis ?=))
+   "C-c e =" (lambda () (interactive) (my/org-toggle-emphasis ?=))
    "C-c e _" (lambda () (interactive) (my/org-toggle-emphasis ?_))
    "C-c e +" (lambda () (interactive) (my/org-toggle-emphasis ?+)))
 #+end_src
@@ -3131,6 +3139,12 @@ Convert old Hugo posts to new Org blog.
 
 #+begin_src emacs-lisp
   (use-package osx-dictionary)
+#+end_src
+
+** Pandoc Mode
+
+#+begin_src emacs-lisp
+(use-package pandoc-mode)
 #+end_src
 
 ** PDF-Tools
