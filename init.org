@@ -3270,6 +3270,16 @@ Increase number of recent files shown.
     :init (spacious-padding-mode))
 #+end_src
 
+** Speedrect
+
+#+begin_src emacs-lisp
+(use-package speedrect
+:demand t
+:ensure
+(:host github :repo "jdtsmith/speedrect")
+:config (speedrect-mode))
+#+end_src
+
 ** Super Save
 
 #+begin_src emacs-lisp

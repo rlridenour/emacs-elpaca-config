@@ -2151,6 +2151,12 @@
 (use-package spacious-padding
   :init (spacious-padding-mode))
 
+(use-package speedrect
+:demand t
+:ensure
+(:host github :repo "jdtsmith/speedrect")
+:config (speedrect-mode))
+
 (use-package super-save
   :config
   (setq super-save-auto-save-when-idle t)
