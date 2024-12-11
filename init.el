@@ -889,176 +889,185 @@
   ("s-m" #'major-mode-hydra))
 
 (with-after-elpaca-init
-   (progn
-     (pretty-hydra-define hydra-toggle
-       (:color teal :quit-key "q" :title "Toggle")
-       (" "
-	(("a" abbrev-mode "abbrev" :toggle t)
-	 ("d" toggle-debug-on-error "debug" (default value 'debug-on-error))
-	 ("e" meow-global-mode "meow" :toggle t)
-	 ("i" aggressive-indent-mode "indent" :toggle t)
-	 ("f" auto-fill-mode "fill" :toggle t)
-	 ("l" display-line-numbers-mode "linum" :toggle t)
-	 ("m" mixed-pitch-mode "mixed-pitch" :toggle t)
-	 ("p" electric-pair-mode "electric-pair" :toggle t)
-	 ("t" toggle-truncate-lines "truncate" :toggle t)
-	 ("s" whitespace-mode "whitespace" :toggle t))
-	" "
-	(("c" cdlatex-mode "cdlatex" :toggle t)
-	 ("o" olivetti-mode "writeroom" :toggle t)
-	 ("r" read-only-mode "read-only" :toggle t)
-	 ("v" view-mode "view" :toggle t)
-	 ("W" wc-mode "word-count" :toggle t)
-	 ("S" auto-save-visited-mode "auto-save" :toggle t)
-	 ("C" cua-selection-mode "rectangle" :toggle t))))
-     (pretty-hydra-define hydra-buffer
-       (:color teal :quit-key "q" :title "Buffers and Files")
-       ("Open"
-	(("b" ibuffer "ibuffer")
-	 ("m" consult-bookmark "bookmark")
-	 ("w" consult-buffer-other-window "other window")
-	 ("f" consult-buffer-other-frame "other frame")
-	 ("d" crux-recentf-find-directory "recent directory")
-	 ("a" crux-open-with "open in default app"))
-	"Actions"
-	(("D" crux-delete-file-and-buffer "delete file")
-	 ("R" crux-rename-file-and-buffer "rename file")
-	 ("K" crux-kill-other-buffers "kill other buffers")
-	 ("N" nuke-all-buffers "Kill all buffers")
-	 ("c" crux-cleanup-buffer-or-region "fix indentation"))
-	"Misc"
-	(("t" crux-visit-term-buffer "ansi-term")
-	 ("T" iterm-goto-filedir-or-home "iTerm2")
-	 ("i" crux-find-user-init-file "init.el")
-	 ("s" crux-find-shell-init-file "fish config"))
-	))
-     (pretty-hydra-define hydra-locate
-       (:color teal :quit-key "q" title: "Search")
-       ("Buffer"
-	(("c" pulsar-highlight-dwim "find cursor")
-	 ("h" consult-org-heading "org heading")
-	 ("l" consult-goto-line "goto-line")
-	 ("i" consult-imenu "imenu")
-	 ("m" consult-mark "mark")
-	 ("o" consult-outline "outline"))
-	"Global"
-	(("M" consult-global-mark "global-mark")
-	 ("n" consult-notes "notes")
-	 ("r" consult-ripgrep "ripgrep")
-	 ("d" rlr/consult-rg "rg from dir")
-	 ("f" rlr/consult-fd "find from dir"))
-	"Files"
-	(("e" goto-emacs-init "Emacs init")
-	 ("s" goto-shell-init "Fish functions"))
-	))
-     (pretty-hydra-define hydra-window
-       (:color teal :quit-key "q" title: "Windows")
-       ("Windows"
-	(("w" other-window "cycle windows" :exit nil)
-	 ("a" ace-window "ace window")
-	 ("m" minimize-window "minimize window")
-	 ("s" transpose-windows "swap windows")
-	 ("S" shrink-window-if-larger-than-buffer "shrink to fit")
-	 ("b" balance-windows "balance windows")
-	 ("t" toggle-window-split "toggle split")
-	 ("T" enlarge-window" grow taller" :exit nil)
-	 ("G" enlarge-window-horizontally "grow wider" :exit nil)
-	 ("o" delete-other-windows "kill other windows"))
-	"Frames"
-	(("M" iconify-frame "minimize frame")
-	 ("d" delete-other-frames "delete other frames")
-	 ("D" delete-frame "delete this frame")
-	 ("i" make-frame-invisible "invisible frame")
-	 ("f" toggle-frame-fullscreen "fullscreen")
-	 ("n" make-frame-command "new frame"))
-	"Writeroom"
-	(("W" writeroom-mode "toggle writeroom")
-	 ("M" writeroom-toggle-mode-line "toggle modeline"))))
-     
-(pretty-hydra-define hydra-new
-       (:color teal :quit-key "q" title: "New")
-       ("Denote"
-	(("c" org-capture "capture")
-	 ("n" denote "note")
-	 ("v" denote-menu-list-notes "view notes")
-	 ("j" denote-journal-extras-new-or-existing-entry "journal"))
-	"Writing"
-	(("b" rlrt-new-post "blog post")
-	 ("a" new-article "article"))
-	"Teaching"
-	(("l" rlrt-new-lecture "lecture")
-	 ("h" rlrt-new-handout "handout")
-	 ("s" rlrt-new-syllabus "syllabus"))
-	))
+ (progn
+   (pretty-hydra-define hydra-toggle
+     (:color teal :quit-key "q" :title "Toggle")
+     (" "
+      (("a" abbrev-mode "abbrev" :toggle t)
+       ("d" toggle-debug-on-error "debug" (default value 'debug-on-error))
+       ("e" meow-global-mode "meow" :toggle t)
+       ("i" aggressive-indent-mode "indent" :toggle t)
+       ("f" auto-fill-mode "fill" :toggle t)
+       ("l" display-line-numbers-mode "linum" :toggle t)
+       ("m" mixed-pitch-mode "mixed-pitch" :toggle t)
+       ("p" electric-pair-mode "electric-pair" :toggle t)
+       ("t" toggle-truncate-lines "truncate" :toggle t)
+       ("s" whitespace-mode "whitespace" :toggle t))
+      " "
+      (("c" cdlatex-mode "cdlatex" :toggle t)
+       ("o" olivetti-mode "writeroom" :toggle t)
+       ("r" read-only-mode "read-only" :toggle t)
+       ("v" view-mode "view" :toggle t)
+       ("W" wc-mode "word-count" :toggle t)
+       ("S" auto-save-visited-mode "auto-save" :toggle t)
+       ("C" cua-selection-mode "rectangle" :toggle t))))
+   (pretty-hydra-define hydra-buffer
+     (:color teal :quit-key "q" :title "Buffers and Files")
+     ("Open"
+      (("b" ibuffer "ibuffer")
+       ("m" consult-bookmark "bookmark")
+       ("w" consult-buffer-other-window "other window")
+       ("f" consult-buffer-other-frame "other frame")
+       ("d" crux-recentf-find-directory "recent directory")
+       ("a" crux-open-with "open in default app"))
+      "Actions"
+      (("D" crux-delete-file-and-buffer "delete file")
+       ("R" crux-rename-file-and-buffer "rename file")
+       ("K" crux-kill-other-buffers "kill other buffers")
+       ("N" nuke-all-buffers "Kill all buffers")
+       ("c" crux-cleanup-buffer-or-region "fix indentation"))
+      "Misc"
+      (("t" crux-visit-term-buffer "ansi-term")
+       ("T" iterm-goto-filedir-or-home "iTerm2")
+       ("i" crux-find-user-init-file "init.el")
+       ("s" crux-find-shell-init-file "fish config"))
+      ))
+   (pretty-hydra-define hydra-locate
+     (:color teal :quit-key "q" title: "Search")
+     ("Buffer"
+      (("c" pulsar-highlight-dwim "find cursor")
+       ("h" consult-org-heading "org heading")
+       ("l" consult-goto-line "goto-line")
+       ("i" consult-imenu "imenu")
+       ("m" consult-mark "mark")
+       ("o" consult-outline "outline"))
+      "Global"
+      (("M" consult-global-mark "global-mark")
+       ("n" consult-notes "notes")
+       ("r" consult-ripgrep "ripgrep")
+       ("d" rlr/consult-rg "rg from dir")
+       ("f" rlr/consult-fd "find from dir"))
+      "Files"
+      (("e" goto-emacs-init "Emacs init")
+       ("s" goto-shell-init "Fish functions"))
+      ))
+   (pretty-hydra-define hydra-window
+     (:color teal :quit-key "q" title: "Windows")
+     ("Windows"
+      (("w" other-window "cycle windows" :exit nil)
+       ("a" ace-window "ace window")
+       ("m" minimize-window "minimize window")
+       ("s" transpose-windows "swap windows")
+       ("S" shrink-window-if-larger-than-buffer "shrink to fit")
+       ("b" balance-windows "balance windows")
+       ("t" toggle-window-split "toggle split")
+       ("T" enlarge-window" grow taller" :exit nil)
+       ("G" enlarge-window-horizontally "grow wider" :exit nil)
+       ("o" delete-other-windows "kill other windows"))
+      "Frames"
+      (("M" iconify-frame "minimize frame")
+       ("d" delete-other-frames "delete other frames")
+       ("D" delete-frame "delete this frame")
+       ("i" make-frame-invisible "invisible frame")
+       ("f" toggle-frame-fullscreen "fullscreen")
+       ("n" make-frame-command "new frame"))
+      "Writeroom"
+      (("W" writeroom-mode "toggle writeroom")
+       ("M" writeroom-toggle-mode-line "toggle modeline"))))
 
-     (pretty-hydra-define hydra-logic
-       (:color pink :quit-key "0" :title "Logic")
-       ("Operators"
-	(("1" (my/insert-unicode "NOT SIGN") "¬")
-	 ("2" (my/insert-unicode "AMPERSAND") "&")
-	 ("3" (my/insert-unicode "LOGICAL OR") "v")
-	 ("4" (my/insert-unicode "SUPERSET OF") "⊃")
-	 ;; ("4" (my/insert-unicode "RIGHTWARDS ARROW") "→")
-	 ("5" (my/insert-unicode "IDENTICAL TO") "≡")
-	 ;; ("5" (my/insert-unicode "LEFT RIGHT ARROW") "↔")
-	 ("6" (my/insert-unicode "THERE EXISTS") "∃")
-	 ("7" (my/insert-unicode "FOR ALL") "∀")
-	 ("8" (my/insert-unicode "WHITE MEDIUM SQUARE") "□")
-	 ("9" (my/insert-unicode "LOZENGE") "◊")
-	 ("`" (my/insert-unicode "NOT EQUAL TO") "≠"))
-	"Space"
-	(("?" (my/insert-unicode "MEDIUM MATHEMATICAL SPACE") "Narrow space"))
-	"Quit"
-	(("0" quit-window "quit" :color blue))
-	))
-     
-(pretty-hydra-define hydra-math
-       (:color pink :quit-key "?" :title "Math")
-       ("Operators"
-	(("1" (my/insert-unicode "NOT SIGN") "¬")
-	 ("2" (my/insert-unicode "AMPERSAND") "&")
-	 ("3" (my/insert-unicode "LOGICAL OR") "v")
-	 ("4" (my/insert-unicode "RIGHTWARDS ARROW") "→")
-	 ("5" (my/insert-unicode "LEFT RIGHT ARROW") "↔")
-	 ("6" (my/insert-unicode "THERE EXISTS") "∃")
-	 ("7" (my/insert-unicode "FOR ALL") "∀")
-	 ("8" (my/insert-unicode "WHITE MEDIUM SQUARE") "□")
-	 ("9" (my/insert-unicode "LOZENGE") "◊"))
-	"Sets"
-	(("R" (my/insert-unicode "DOUBLE-STRUCK CAPITAL R") "ℝ real")
-	 ("N" (my/insert-unicode "DOUBLE-STRUCK CAPITAL N") "ℕ natural")
-	 ("Z" (my/insert-unicode "DOUBLE-STRUCK CAPITAL Z") "ℤ integer")
-	 ("Q" (my/insert-unicode "DOUBLE-STRUCK CAPITAL Q") "ℚ rational")
-	 ("Q" (my/insert-unicode "DOUBLE-STRUCK CAPITAL Q") "ℚ rational")
-	 ("Q" (my/insert-unicode "DOUBLE-STRUCK CAPITAL Q") "ℚ rational")
-	 )
-	"Space"
-	(("?" (my/insert-unicode "MEDIUM MATHEMATICAL SPACE") "Narrow space"))
-	"Quit"
-	(("?" quit-window "quit" :color blue))
-	))
+   (pretty-hydra-define hydra-new
+     (:color teal :quit-key "q" title: "New")
+     ("Denote"
+      (("c" org-capture "capture")
+       ("n" denote "note")
+       ("v" denote-menu-list-notes "view notes")
+       ("j" denote-journal-extras-new-or-existing-entry "journal"))
+      "Writing"
+      (("b" rlrt-new-post "blog post")
+       ("a" new-article "article"))
+      "Teaching"
+      (("l" rlrt-new-lecture "lecture")
+       ("h" rlrt-new-handout "handout")
+       ("s" rlrt-new-syllabus "syllabus"))
+      ))
 
-     (pretty-hydra-define hydra-hugo
-       (:color teal :quit-key "q" :title "Hugo")
-       ("Blog"
-	(("n" hugo-draft-post "New draft")
-	 ("p" hugo-publish-post "Publish")
-	 ("t" hugo-timestamp "Update timestamp")
-	 ("e" org-hugo-auto-export-mode "Auto export")
-	 ("d" hugo-deploy "Deploy"))
-	))
+   (pretty-hydra-define hydra-logic
+     (:color pink :quit-key "0" :title "Logic")
+     ("Operators"
+      (("1" (my/insert-unicode "NOT SIGN") "¬")
+       ("2" (my/insert-unicode "AMPERSAND") "&")
+       ("3" (my/insert-unicode "LOGICAL OR") "v")
+       ("4" (my/insert-unicode "SUPERSET OF") "⊃")
+       ;; ("4" (my/insert-unicode "RIGHTWARDS ARROW") "→")
+       ("5" (my/insert-unicode "IDENTICAL TO") "≡")
+       ;; ("5" (my/insert-unicode "LEFT RIGHT ARROW") "↔")
+       ("6" (my/insert-unicode "THERE EXISTS") "∃")
+       ("7" (my/insert-unicode "FOR ALL") "∀")
+       ("8" (my/insert-unicode "WHITE MEDIUM SQUARE") "□")
+       ("9" (my/insert-unicode "LOZENGE") "◊")
+       ("`" (my/insert-unicode "NOT EQUAL TO") "≠"))
+      "Space"
+      (("?" (my/insert-unicode "MEDIUM MATHEMATICAL SPACE") "Narrow space"))
+      "Quit"
+      (("0" quit-window "quit" :color blue))
+      ))
 
-     (pretty-hydra-define hydra-hydras
-       (:color teal :quit-key "q" :title "Hydras")
-       ("System"
-	(("t" hydra-toggle/body)
-	 ("b" hydra-buffer/body)
-	 ("h" hydra-hugo/body)
-	 ("p" powerthesaurus-hydra/body))
-	"Unicode"
-	(("l" hydra-logic/body "logic")
-	 ("m" hydra-math/body))))
-     ))
+   (pretty-hydra-define hydra-math
+     (:color pink :quit-key "?" :title "Math")
+     ("Operators"
+      (("1" (my/insert-unicode "NOT SIGN") "¬")
+       ("2" (my/insert-unicode "AMPERSAND") "&")
+       ("3" (my/insert-unicode "LOGICAL OR") "v")
+       ("4" (my/insert-unicode "RIGHTWARDS ARROW") "→")
+       ("5" (my/insert-unicode "LEFT RIGHT ARROW") "↔")
+       ("6" (my/insert-unicode "THERE EXISTS") "∃")
+       ("7" (my/insert-unicode "FOR ALL") "∀")
+       ("8" (my/insert-unicode "WHITE MEDIUM SQUARE") "□")
+       ("9" (my/insert-unicode "LOZENGE") "◊"))
+      "Sets"
+      (("R" (my/insert-unicode "DOUBLE-STRUCK CAPITAL R") "ℝ real")
+       ("N" (my/insert-unicode "DOUBLE-STRUCK CAPITAL N") "ℕ natural")
+       ("Z" (my/insert-unicode "DOUBLE-STRUCK CAPITAL Z") "ℤ integer")
+       ("Q" (my/insert-unicode "DOUBLE-STRUCK CAPITAL Q") "ℚ rational")
+       ("Q" (my/insert-unicode "DOUBLE-STRUCK CAPITAL Q") "ℚ rational")
+       ("Q" (my/insert-unicode "DOUBLE-STRUCK CAPITAL Q") "ℚ rational")
+       )
+      "Space"
+      (("?" (my/insert-unicode "MEDIUM MATHEMATICAL SPACE") "Narrow space"))
+      "Quit"
+      (("?" quit-window "quit" :color blue))
+      ))
+
+   (pretty-hydra-define hydra-hugo
+     (:color teal :quit-key "q" :title "Hugo")
+     ("Blog"
+      (("n" hugo-draft-post "New draft")
+       ("p" hugo-publish-post "Publish")
+       ("t" hugo-timestamp "Update timestamp")
+       ("e" org-hugo-auto-export-mode "Auto export")
+       ("d" hugo-deploy "Deploy"))
+      ))
+
+   (pretty-hydra-define hydra-hydras
+     (:color teal :quit-key "q" :title "Hydras")
+     ("System"
+      (("t" hydra-toggle/body)
+       ("b" hydra-buffer/body)
+       ("h" hydra-hugo/body)
+       ("p" powerthesaurus-hydra/body))
+      "Unicode"
+      (("l" hydra-logic/body "logic")
+       ("m" hydra-math/body))))
+
+   (pretty-hydra-define hydra-blogconvert
+     (:color teal :quit-key "q" :title "Blog Conversion")
+     ("Functions"
+      (("h" convert-markdown-header "convert header")
+       ("p" fix-prayers "fix prayers")
+       ("l" convert-md-links "convert links")
+       ("f" convert-md-footnotes "convert footnotes"))
+      ))
+   ))
 
 (with-after-elpaca-init
  (progn
@@ -1160,42 +1169,42 @@
 (major-mode-hydra-define org-mode
   (:quit-key "q")
   ("Export"
-      (("m" rlr/org-mkpdf "Make PDF with PDFLaTeX")
-       ("p" rlr/org-open-pdf "View PDF")
-       ("h" make-html "HTML")
-       ("l" rlr/org-mklua "Make PDF with LuaLaTeX")
-       ("el" org-latex-export-to-latex "Org to LaTeX")
-       ("eb" org-beamer-export-to-pdf "Org to Beamer-PDF")
-       ("eB" org-beamer-export-to-latex "Org to Beamer-LaTeX")
-       ("s" lecture-slides "Lecture slides")
-       ("n" lecture-notes "Lecture notes")
-       ("ep" present "Present slides")
-       ("ec" canvas-copy "Copy HTML for Canvas")
-       ("es" canvas-notes "HTML Canvas notes")
-       ("eS" make-syllabus "Syllabus")
-       ("eh" make-handout "Handout")
-       ("c" tex-clean "clean aux")
-       ("C" tex-clean-all "clean all"))
-      "Edit"
-      (("dd" org-deadline "deadline")
-       ("ds" org-schedule "schedule")
-       ("r" org-refile "refile")
-       ("du" rlr/org-date "update date stamp")
-       ;; ("fn" org-footnote-new "insert footnote")
-       ("ff" org-footnote-action "edit footnote")
-       ("fc" citar-insert-citation "citation")
-       ("il" org-mac-link-safari-insert-frontmost-url "insert safari link")
-       ("y" yankpad-set-category "set yankpad"))
-      "View"
-      (("vi" consult-org-heading "iMenu")
-       ("vu" org-toggle-pretty-entities "org-pretty")
-       ("vI" org-toggle-inline-images "Inline images"))
-      "Blog"
-      (("bn" rlrt-new-post "New draft")
-       ("bb" orgblog-build "Build Site")
-       ("bd" orgblog-push "Push to Github"))
-      "Notes"
-      (("1" denote-link "link to note"))))
+	(("m" rlr/org-mkpdf "Make PDF with PDFLaTeX")
+	 ("p" rlr/org-open-pdf "View PDF")
+	 ("h" make-html "HTML")
+	 ("l" rlr/org-mklua "Make PDF with LuaLaTeX")
+	 ("el" org-latex-export-to-latex "Org to LaTeX")
+	 ("eb" org-beamer-export-to-pdf "Org to Beamer-PDF")
+	 ("eB" org-beamer-export-to-latex "Org to Beamer-LaTeX")
+	 ("s" lecture-slides "Lecture slides")
+	 ("n" lecture-notes "Lecture notes")
+	 ("ep" present "Present slides")
+	 ("ec" canvas-copy "Copy HTML for Canvas")
+	 ("es" canvas-notes "HTML Canvas notes")
+	 ("eS" make-syllabus "Syllabus")
+	 ("eh" make-handout "Handout")
+	 ("c" tex-clean "clean aux")
+	 ("C" tex-clean-all "clean all"))
+	"Edit"
+	(("dd" org-deadline "deadline")
+	 ("ds" org-schedule "schedule")
+	 ("r" org-refile "refile")
+	 ("du" rlr/org-date "update date stamp")
+	 ;; ("fn" org-footnote-new "insert footnote")
+	 ("ff" org-footnote-action "edit footnote")
+	 ("fc" citar-insert-citation "citation")
+	 ("il" org-mac-link-safari-insert-frontmost-url "insert safari link")
+	 ("y" yankpad-set-category "set yankpad"))
+	"View"
+	(("vi" consult-org-heading "iMenu")
+	 ("vu" org-toggle-pretty-entities "org-pretty")
+	 ("vI" org-toggle-inline-images "Inline images"))
+	"Blog"
+	(("bn" rlrt-new-post "New draft")
+	 ("bb" orgblog-build "Build Site")
+	 ("bd" orgblog-push "Push to Github"))
+	"Notes"
+	(("1" denote-link "link to note"))))
 
 (major-mode-hydra-define dired-mode
   (:quit-key "q")
@@ -1223,12 +1232,13 @@
     ("d" denote-menu-export-to-dired "Dired"))))))
 
 (general-define-key
- "s-h" #'hydra-hydras/body
- "s-n" #'hydra-new/body
- "H-t" #'hydra-toggle/body
- "H-w" #'hydra-window/body
- ;; "s-b" #'hydra-buffer/body
- "C-x 9" #'hydra-logic/body)
+   "s-h" #'hydra-hydras/body
+   "s-n" #'hydra-new/body
+   "H-t" #'hydra-toggle/body
+   "H-w" #'hydra-window/body
+   ;; "s-b" #'hydra-buffer/body
+   "C-x 9" #'hydra-logic/body
+"C-M-S-s-m" #'hydra-blogconvert/body)
 
 (use-package jinx
   :init

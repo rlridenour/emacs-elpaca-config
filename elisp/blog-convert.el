@@ -77,6 +77,25 @@
     (replace-match "/Amen/")
     ))
 
+(defun convert-md-links ()
+(interactive)
+(beginning-of-buffer)
+;; (while
+;; (re-search-forward "\\(\\[.*\\]\\)(\\(.*\\))" nil t)
+;; (replace-match "[[\\2]\\1]")
+;; )
+(query-replace-regexp "\\(\\[.*\\]\\)(\\(.*\\))" 
+ "[[\\2]\\1]"))
+
+
+(defun convert-md-footnotes ()
+  (interactive)
+  (beginning-of-buffer)
+  (while
+      (re-search-forward "\\[\\^")
+    (replace-match "[fn:"))
+    )
+
 (defun convert-markdown-header ()
   (interactive)
   (progn
@@ -87,6 +106,12 @@
     (fix-blog-tags)
     (delete-url-line)
     (delete-comments-line)
-    (convert-markdown-eol)
-    (italicize-amen)
+    ;; (convert-markdown-eol)
+    ;; (italicize-amen)
     ))
+
+(defun fix-prayers ()
+  (interactive)
+  (progn
+    (convert-markdown-eol)
+    (italicize-amen)))
