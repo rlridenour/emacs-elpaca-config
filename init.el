@@ -436,7 +436,10 @@
   :init
   (ace-link-setup-default))
 
-(use-package ace-window)
+(use-package ace-window
+:general
+("M-O" #'ace-window)
+)
 
 (use-package aggressive-indent
   :config

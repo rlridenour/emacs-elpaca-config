@@ -892,7 +892,10 @@ Load general before the remaining packages so they can make use of the ~:general
 ** Ace Window
 
 #+begin_src emacs-lisp
-  (use-package ace-window)
+  (use-package ace-window
+:general
+("M-O" #'ace-window)
+)
 #+end_src
 
 ** Aggressive Indent
