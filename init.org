@@ -3257,6 +3257,13 @@ Some functions for converting old posts.
       (convert-markdown-eol)
       (italicize-amen)))
 
+(defun fix-post ()
+(interactive)
+(progn
+(convert-markdown-header)
+(fix-prayers)))
+
+
 #+end_src
 
 
