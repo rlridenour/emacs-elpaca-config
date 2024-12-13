@@ -1062,12 +1062,13 @@
    (pretty-hydra-define hydra-blogconvert
      (:color teal :quit-key "q" :title "Blog Conversion")
      ("Functions"
-      (("h" convert-markdown-header "convert header")
-       ("p" fix-prayers "fix prayers")
-       ("l" convert-md-links "convert links")
-       ("f" convert-md-footnotes "convert footnotes"))
-      ))
-   ))
+      (("b" fix-post "fix post")
+      ("h" convert-markdown-header "convert header")
+      ("p" fix-prayers "fix prayers")
+      ("l" convert-md-links "convert links")
+      ("f" convert-md-footnotes "convert footnotes"))
+     ))
+ ))
 
 (with-after-elpaca-init
  (progn
@@ -2182,7 +2183,7 @@
     (interactive)
     (beginning-of-line)
     (while (re-search-forward "[[:blank:]]+$" nil t)
-  	(replace-match "\\\\\\\\")))
+	  (replace-match "\\\\\\\\")))
 
   (defun italicize-amen ()
   (interactive)
@@ -2197,7 +2198,7 @@
   ;; (re-search-forward "\\(\\[.*\\]\\)(\\(.*\\))" nil t)
   ;; (replace-match "[[\\2]\\1]")
   ;; )
-  (query-replace-regexp "\\(\\[.*\\]\\)(\\(.*\\))" 
+  (query-replace-regexp "\\(\\[.*\\]\\)(\\(.*\\))"
    "[[\\2]\\1]"))
 
 
@@ -2205,7 +2206,7 @@
     (interactive)
     (beginning-of-buffer)
     (while
-        (re-search-forward "\\[\\^")
+	(re-search-forward "\\[\\^")
       (replace-match "[fn:"))
       )
 
