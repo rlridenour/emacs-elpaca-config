@@ -16,8 +16,9 @@ eln-cache/
 custom.el
 recentf
 .persistent-scratch
-/transient
+transient/
 bookmarks
 projects
-/elpa
+elpa/
 *desktop*
+persist/
