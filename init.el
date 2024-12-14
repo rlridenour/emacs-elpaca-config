@@ -296,6 +296,46 @@
 
 (defun toggle-frame-maximized-undecorated () (interactive) (let* ((frame (selected-frame)) (on? (and (frame-parameter frame 'undecorated) (eq (frame-parameter frame 'fullscreen) 'maximized))) (geom (frame-monitor-attribute 'geometry)) (x (nth 0 geom)) (y (nth 1 geom)) (display-height (nth 3 geom)) (display-width (nth 2 geom)) (cut (if on? (if ns-auto-hide-menu-bar 26 50) (if ns-auto-hide-menu-bar 4 26)))) (set-frame-position frame x y) (set-frame-parameter frame 'fullscreen-restore 'maximized) (set-frame-parameter nil 'fullscreen 'maximized) (set-frame-parameter frame 'undecorated (not on?)) (set-frame-height frame (- display-height cut) nil t) (set-frame-width frame (- display-width 20) nil t) (set-frame-position frame x y)))
 
+(defun my/quick-window-jump ()
+  "Jump to a window by typing its assigned character label.
+If there are only two windows, jump directly to the other window."
+  (interactive)
+  (let* ((window-list (window-list nil 'no-mini)))
+    (if (< (length window-list) 3)
+	;; If only one window, switch to previous buffer. If only two, jump directly to other window.
+      (if (one-window-p)
+	  (switch-to-buffer nil)
+	(other-window 1))
+      ;; Otherwise, show the key selection interface.
+      (let* ((my/quick-window-overlays nil)
+	     (sorted-windows (sort window-list
+				   (lambda (w1 w2)
+				     (let ((edges1 (window-edges w1))
+					   (edges2 (window-edges w2)))
+				       (or (< (car edges1) (car edges2))
+					   (and (= (car edges1) (car edges2))
+						(< (cadr edges1) (cadr edges2))))))))
+	     (window-keys (seq-take '("j" "k" "l" ";" "a" "s" "d" "f")
+				    (length sorted-windows)))
+	     (window-map (cl-pairlis window-keys sorted-windows)))
+	(setq my/quick-window-overlays
+	      (mapcar (lambda (entry)
+			(let* ((key (car entry))
+			       (window (cdr entry))
+			       (start (window-start window))
+			       (overlay (make-overlay start start (window-buffer window))))
+			  (overlay-put overlay 'after-string
+				       (propertize (format "[%s]" key)
+						   'face '(:foreground "white" :background "blue" :weight bold)))
+			  (overlay-put overlay 'window window)
+			  overlay))
+		      window-map))
+	(let ((key (read-key (format "Select window [%s]: " (string-join window-keys ", ")))))
+	  (mapc #'delete-overlay my/quick-window-overlays)
+	  (setq my/quick-window-overlays nil)
+	  (when-let ((selected-window (cdr (assoc (char-to-string key) window-map))))
+	    (select-window selected-window)))))))
+
 ;; Main typeface
   (set-face-attribute 'default nil :family "SF Mono" :height 160 :weight 'medium)
 
@@ -432,14 +472,10 @@
   :config
   (load "~/Dropbox/emacs/my-emacs-abbrev"))
 
-(use-package ace-link
-  :init
-  (ace-link-setup-default))
-
 (use-package ace-window
-:general
-("M-O" #'ace-window)
-)
+  :general
+  ("M-O" #'ace-window)
+  )
 
 (use-package aggressive-indent
   :config
@@ -464,25 +500,25 @@
   :general
   ("s-." #'casual-editkit-main-tmenu)
   (:keymaps 'reb-mode-map
-	  "s-." #'casual-re-builder-tmenu)
+	    "s-." #'casual-re-builder-tmenu)
   (:keymaps 'calc-mode-map
-	  "s-." #'casual-calc-tmenu)
+	    "s-." #'casual-calc-tmenu)
   (:keymaps 'dired-mode-map
-	  "s-." #'casual-dired-tmenu)
+	    "s-." #'casual-dired-tmenu)
   (:keymaps 'isearch-mode-map
-	  "s-." #'casual-isearch-tmenu)
+	    "s-." #'casual-isearch-tmenu)
   (:keymaps 'ibuffer-mode-map
-	  "s-." #'casual-ibuffer-tmenu
-	  "F" #'casual-ibuffer-filter-tmenu
-	  "s" #'casual-ibuffer-sortby-tmenu)
+	    "s-." #'casual-ibuffer-tmenu
+	    "F" #'casual-ibuffer-filter-tmenu
+	    "s" #'casual-ibuffer-sortby-tmenu)
   (:keymaps 'bookmark-bemenu-mode-map
-	  "s-." #'casual-bookmarks-tmenu)
+	    "s-." #'casual-bookmarks-tmenu)
   (:keymaps 'org-agenda-mode-map
-	  "s-." #'casual-agenda-tmenu)
+	    "s-." #'casual-agenda-tmenu)
   (:keymaps 'Info-mode-map
-	  "s-." #'casual-info-tmenu)
+	    "s-." #'casual-info-tmenu)
   (:keymaps 'calendar-mode-map
-	  "s-." #'casual-calendar-tmenu)
+	    "s-." #'casual-calendar-tmenu)
   )
 
 (use-package casual-avy
@@ -682,8 +718,8 @@
   (global-devil-mode))
 
 (use-package dired+
-:demand t
-:ensure (:host github :repo "emacsmirror/dired-plus"))
+  :demand t
+  :ensure (:host github :repo "emacsmirror/dired-plus"))
 
 (defun hide-dired-details-include-all-subdir-paths ()
   (save-excursion
@@ -1063,12 +1099,12 @@
      (:color teal :quit-key "q" :title "Blog Conversion")
      ("Functions"
       (("b" fix-post "fix post")
-      ("h" convert-markdown-header "convert header")
-      ("p" fix-prayers "fix prayers")
-      ("l" convert-md-links "convert links")
-      ("f" convert-md-footnotes "convert footnotes"))
-     ))
- ))
+       ("h" convert-markdown-header "convert header")
+       ("p" fix-prayers "fix prayers")
+       ("l" convert-md-links "convert links")
+       ("f" convert-md-footnotes "convert footnotes"))
+      ))
+   ))
 
 (with-after-elpaca-init
  (progn
@@ -1080,166 +1116,166 @@
        ("t" (find-file "/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/tasks.org") "open tasks")
        ("b" (find-file "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/bookmarks.org") "web bookmarks"))))
 
-(major-mode-hydra-define org-agenda-mode
-  (:quit-key "q")
-  ("Open"
-   (("m" consult-bookmark "bookmarks")
-    ("a" consult-org-agenda "consult-agenda")
-    ("t" (find-file "/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/tasks.org") "open tasks")
-    ("b" (find-file "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/bookmarks.org") "web bookmarks"))
-   "Classes"
-   (("1" (dired "~/icloud/teaching/intro/lectures") "Intro")
-    ("2" (dired "~/icloud/teaching/religion/lectures") "Religion")
-    ("3" (dired "~/icloud/teaching/ethics/lectures") "Ethics")
-    ("4" (dired "~/icloud/teaching/epistemology/lectures") "Epistemology")
-    )
-   ))
+   (major-mode-hydra-define org-agenda-mode
+     (:quit-key "q")
+     ("Open"
+      (("m" consult-bookmark "bookmarks")
+       ("a" consult-org-agenda "consult-agenda")
+       ("t" (find-file "/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/tasks.org") "open tasks")
+       ("b" (find-file "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/bookmarks.org") "web bookmarks"))
+      "Classes"
+      (("1" (dired "~/icloud/teaching/intro/lectures") "Intro")
+       ("2" (dired "~/icloud/teaching/religion/lectures") "Religion")
+       ("3" (dired "~/icloud/teaching/ethics/lectures") "Ethics")
+       ("4" (dired "~/icloud/teaching/epistemology/lectures") "Epistemology")
+       )
+      ))
 
-(major-mode-hydra-define eww-mode
-  (:quit-key "q")
-  ("A"
-   (
-    ;; ("G" eww "Eww Open Browser")
-    ("g" eww-reload "Eww Reload")
-    ("6" eww-open-in-new-buffer "Open in new buffer")
-    ("l" eww-back-url "Back Url")
-    ("r" eww-forward-url "Forward Url")
-    ("N" eww-next-url "Next Url")
-    ("P" eww-previous-url "Previous Url")
-    ("u" eww-up-url "Up Url")
-    ("&" eww-browse-with-external-browser "Open in External Browser")
-    ("d" eww-download "Download")
-    ("w" eww-copy-page-url "Copy Url Page")
-    );end theme
-   "B"
-   (
-    ("T" endless/toggle-image-display "Toggle Image Display")
-    (">" shr-next-link "Shr Next Link")
-    ("<" shr-previous-link "Shr Previous Link")
-    ("n" scroll-down-command "Scroll Down")
-    ("C" url-cookie-list "Url Cookie List")
-    ("v" eww-view-source "View Source")
-    ("R" eww-readable "Make Readable")
-    ("H" eww-list-histories "List History")
-    ("E" eww-set-character-encoding "Character Encoding")
-    ("s" eww-switch-to-buffer "Switch to Buffer")
-    ("S" eww-list-buffers "List Buffers")
-    );end highlighting
+   (major-mode-hydra-define eww-mode
+     (:quit-key "q")
+     ("A"
+      (
+       ;; ("G" eww "Eww Open Browser")
+       ("g" eww-reload "Eww Reload")
+       ("6" eww-open-in-new-buffer "Open in new buffer")
+       ("l" eww-back-url "Back Url")
+       ("r" eww-forward-url "Forward Url")
+       ("N" eww-next-url "Next Url")
+       ("P" eww-previous-url "Previous Url")
+       ("u" eww-up-url "Up Url")
+       ("&" eww-browse-with-external-browser "Open in External Browser")
+       ("d" eww-download "Download")
+       ("w" eww-copy-page-url "Copy Url Page")
+       );end theme
+      "B"
+      (
+       ("T" endless/toggle-image-display "Toggle Image Display")
+       (">" shr-next-link "Shr Next Link")
+       ("<" shr-previous-link "Shr Previous Link")
+       ("n" scroll-down-command "Scroll Down")
+       ("C" url-cookie-list "Url Cookie List")
+       ("v" eww-view-source "View Source")
+       ("R" eww-readable "Make Readable")
+       ("H" eww-list-histories "List History")
+       ("E" eww-set-character-encoding "Character Encoding")
+       ("s" eww-switch-to-buffer "Switch to Buffer")
+       ("S" eww-list-buffers "List Buffers")
+       );end highlighting
 
-   "C"
-   (
-    ("1" rrnet "randyridenour.net")
-    ("2" sep "SEP")
-    ("F" eww-toggle-fonts "Toggle Fonts")
-    ("D" eww-toggle-paragraph-direction "Toggle Paragraph Direction")
-    ("c" eww-toggle-colors "Toggle Colors")
-    ("b" eww-add-bookmark "Add Bookmark")
-    ("B" eww-list-bookmarks "List Bookmarks")
-    ("=" eww-next-bookmark "Next Bookmark")
-    ("-" eww-previous-bookmark "Previous Bookmark")
-    ("O" jao-eww-to-org "Make Org Version")
-    ("<SPC>" nil "Quit" :color pink)
-    );end other
-   ))
+      "C"
+      (
+       ("1" rrnet "randyridenour.net")
+       ("2" sep "SEP")
+       ("F" eww-toggle-fonts "Toggle Fonts")
+       ("D" eww-toggle-paragraph-direction "Toggle Paragraph Direction")
+       ("c" eww-toggle-colors "Toggle Colors")
+       ("b" eww-add-bookmark "Add Bookmark")
+       ("B" eww-list-bookmarks "List Bookmarks")
+       ("=" eww-next-bookmark "Next Bookmark")
+       ("-" eww-previous-bookmark "Previous Bookmark")
+       ("O" jao-eww-to-org "Make Org Version")
+       ("<SPC>" nil "Quit" :color pink)
+       );end other
+      ))
 
-(major-mode-hydra-define markdown-mode
-  (:quit-key "q")
-  ("Format"
-   (("h" markdown-insert-header-dwim "header")
-    ("l" markdown-insert-link "link")
-    ("u" markdown-insert-uri "url")
-    ("f" markdown-insert-footnote "footnote")
-    ("w" markdown-insert-wiki-link "wiki")
-    ("r" markdown-insert-reference-link-dwim "r-link")
-    ("n" markdown-cleanup-list-numbers "clean-lists")
-    ("c" markdown-complete-buffer "complete"))))
+   (major-mode-hydra-define markdown-mode
+     (:quit-key "q")
+     ("Format"
+      (("h" markdown-insert-header-dwim "header")
+       ("l" markdown-insert-link "link")
+       ("u" markdown-insert-uri "url")
+       ("f" markdown-insert-footnote "footnote")
+       ("w" markdown-insert-wiki-link "wiki")
+       ("r" markdown-insert-reference-link-dwim "r-link")
+       ("n" markdown-cleanup-list-numbers "clean-lists")
+       ("c" markdown-complete-buffer "complete"))))
 
-(major-mode-hydra-define LaTeX-mode
-  (:quit-key "q")
-  ("Bibtex"
-   (("r" citar-insert-citation "citation"))
-   "LaTeXmk"
-   (("m" rlr/tex-mkpdf "PDFLaTeX")
-    ("l" rlr/tex-mklua "LuaLaTeX")
-    ("w" rlr/tex-mktc "watch PDFLaTeX")
-    ("L" rlr/tex-mklua "watch LuaLaTeX")
-    ("c" tex-clean "clean aux")
-    ("C" tex-clean-all "clean all")
-    ("n" latex-word-count "word count"))))
+   (major-mode-hydra-define LaTeX-mode
+     (:quit-key "q")
+     ("Bibtex"
+      (("r" citar-insert-citation "citation"))
+      "LaTeXmk"
+      (("m" rlr/tex-mkpdf "PDFLaTeX")
+       ("l" rlr/tex-mklua "LuaLaTeX")
+       ("w" rlr/tex-mktc "watch PDFLaTeX")
+       ("L" rlr/tex-mklua "watch LuaLaTeX")
+       ("c" tex-clean "clean aux")
+       ("C" tex-clean-all "clean all")
+       ("n" latex-word-count "word count"))))
 
-(major-mode-hydra-define org-mode
-  (:quit-key "q")
-  ("Export"
-	(("m" rlr/org-mkpdf "Make PDF with PDFLaTeX")
-	 ("p" rlr/org-open-pdf "View PDF")
-	 ("h" make-html "HTML")
-	 ("l" rlr/org-mklua "Make PDF with LuaLaTeX")
-	 ("el" org-latex-export-to-latex "Org to LaTeX")
-	 ("eb" org-beamer-export-to-pdf "Org to Beamer-PDF")
-	 ("eB" org-beamer-export-to-latex "Org to Beamer-LaTeX")
-	 ("s" lecture-slides "Lecture slides")
-	 ("n" lecture-notes "Lecture notes")
-	 ("ep" present "Present slides")
-	 ("ec" canvas-copy "Copy HTML for Canvas")
-	 ("es" canvas-notes "HTML Canvas notes")
-	 ("eS" make-syllabus "Syllabus")
-	 ("eh" make-handout "Handout")
-	 ("c" tex-clean "clean aux")
-	 ("C" tex-clean-all "clean all"))
-	"Edit"
-	(("dd" org-deadline "deadline")
-	 ("ds" org-schedule "schedule")
-	 ("r" org-refile "refile")
-	 ("du" rlr/org-date "update date stamp")
-	 ;; ("fn" org-footnote-new "insert footnote")
-	 ("ff" org-footnote-action "edit footnote")
-	 ("fc" citar-insert-citation "citation")
-	 ("il" org-mac-link-safari-insert-frontmost-url "insert safari link")
-	 ("y" yankpad-set-category "set yankpad"))
-	"View"
-	(("vi" consult-org-heading "iMenu")
-	 ("vu" org-toggle-pretty-entities "org-pretty")
-	 ("vI" org-toggle-inline-images "Inline images"))
-	"Blog"
-	(("bn" rlrt-new-post "New draft")
-	 ("bb" orgblog-build "Build Site")
-	 ("bd" orgblog-push "Push to Github"))
-	"Notes"
-	(("1" denote-link "link to note"))))
+   (major-mode-hydra-define org-mode
+     (:quit-key "q")
+     ("Export"
+      (("m" rlr/org-mkpdf "Make PDF with PDFLaTeX")
+       ("p" rlr/org-open-pdf "View PDF")
+       ("h" make-html "HTML")
+       ("l" rlr/org-mklua "Make PDF with LuaLaTeX")
+       ("el" org-latex-export-to-latex "Org to LaTeX")
+       ("eb" org-beamer-export-to-pdf "Org to Beamer-PDF")
+       ("eB" org-beamer-export-to-latex "Org to Beamer-LaTeX")
+       ("s" lecture-slides "Lecture slides")
+       ("n" lecture-notes "Lecture notes")
+       ("ep" present "Present slides")
+       ("ec" canvas-copy "Copy HTML for Canvas")
+       ("es" canvas-notes "HTML Canvas notes")
+       ("eS" make-syllabus "Syllabus")
+       ("eh" make-handout "Handout")
+       ("c" tex-clean "clean aux")
+       ("C" tex-clean-all "clean all"))
+      "Edit"
+      (("dd" org-deadline "deadline")
+       ("ds" org-schedule "schedule")
+       ("r" org-refile "refile")
+       ("du" rlr/org-date "update date stamp")
+       ;; ("fn" org-footnote-new "insert footnote")
+       ("ff" org-footnote-action "edit footnote")
+       ("fc" citar-insert-citation "citation")
+       ("il" org-mac-link-safari-insert-frontmost-url "insert safari link")
+       ("y" yankpad-set-category "set yankpad"))
+      "View"
+      (("vi" consult-org-heading "iMenu")
+       ("vu" org-toggle-pretty-entities "org-pretty")
+       ("vI" org-toggle-inline-images "Inline images"))
+      "Blog"
+      (("bn" rlrt-new-post "New draft")
+       ("bb" orgblog-build "Build Site")
+       ("bd" orgblog-push "Push to Github"))
+      "Notes"
+      (("1" denote-link "link to note"))))
 
-(major-mode-hydra-define dired-mode
-  (:quit-key "q")
-  ("New"
-   (("a" rlrt-new-article "article")
-    ("l" rlrt-new-lecture "lecture")
-    ("h" rlrt-new-handout "handout")
-    ("s" rlrt-new-syllabus "syllabus"))
-   "Tools"
-   (("d" crux-open-with "Open in default program")
-    ("." dired-omit-mode "Show hidden files")
-    ("p" diredp-copy-abs-filenames-as-kill "Copy filename and path")
-    ("n" dired-toggle-read-only "edit Filenames"))
-   "Blog"
-   (("bn" rlrt-new-post "New draft")
-    ("bb" orgblog-build "Build Site")
-    ("bd" orgblog-push "Push to Github"))))
+   (major-mode-hydra-define dired-mode
+     (:quit-key "q")
+     ("New"
+      (("a" rlrt-new-article "article")
+       ("l" rlrt-new-lecture "lecture")
+       ("h" rlrt-new-handout "handout")
+       ("s" rlrt-new-syllabus "syllabus"))
+      "Tools"
+      (("d" crux-open-with "Open in default program")
+       ("." dired-omit-mode "Show hidden files")
+       ("p" diredp-copy-abs-filenames-as-kill "Copy filename and path")
+       ("n" dired-toggle-read-only "edit Filenames"))
+      "Blog"
+      (("bn" rlrt-new-post "New draft")
+       ("bb" orgblog-build "Build Site")
+       ("bd" orgblog-push "Push to Github"))))
 
-(major-mode-hydra-define denote-menu-mode
-  (:quit-key "q")
-  ("Tools"
-   (("f" denote-menu-filter "Filter by regex")
-    ("k" denote-menu-filter-by-keyword "Filter by keyword")
-    ("c" denote-menu-clear-filters "Clear filters")
-    ("d" denote-menu-export-to-dired "Dired"))))))
+   (major-mode-hydra-define denote-menu-mode
+     (:quit-key "q")
+     ("Tools"
+      (("f" denote-menu-filter "Filter by regex")
+       ("k" denote-menu-filter-by-keyword "Filter by keyword")
+       ("c" denote-menu-clear-filters "Clear filters")
+       ("d" denote-menu-export-to-dired "Dired"))))))
 
 (general-define-key
-   "s-h" #'hydra-hydras/body
-   "s-n" #'hydra-new/body
-   "H-t" #'hydra-toggle/body
-   "H-w" #'hydra-window/body
-   ;; "s-b" #'hydra-buffer/body
-   "C-x 9" #'hydra-logic/body
-"C-M-S-s-m" #'hydra-blogconvert/body)
+ "s-h" #'hydra-hydras/body
+ "s-n" #'hydra-new/body
+ "H-t" #'hydra-toggle/body
+ "H-w" #'hydra-window/body
+ ;; "s-b" #'hydra-buffer/body
+ "C-x 9" #'hydra-logic/body
+ "C-M-S-s-m" #'hydra-blogconvert/body)
 
 (use-package jinx
   :init
@@ -1458,10 +1494,10 @@
   (setq org-agenda-window-setup 'current-window)
   (setq org-link-frame-setup
       '((vm . vm-visit-folder-other-frame)
-	(vm-imap . vm-visit-imap-folder-other-frame)
-	(gnus . org-gnus-no-new-news)
-	(file . find-file)
-	(wl . wl-other-frame)))
+	  (vm-imap . vm-visit-imap-folder-other-frame)
+	  (gnus . org-gnus-no-new-news)
+	  (file . find-file)
+	  (wl . wl-other-frame)))
   (require 'org-tempo)
   ;; Open directory links in Dired.
   (add-to-list 'org-file-apps '(directory . emacs)))
@@ -2052,18 +2088,18 @@
 (defun rlrt-new-post (rlrt-title)
   (interactive "sTitle: ")
   ;; Make filename
-(setq rlrt-filename (rlrt-make-filename rlrt-title))
+  (setq rlrt-filename (rlrt-make-filename rlrt-title))
   (find-file (s-concat orgblog-posts-directory (format-time-string "%y-%m-%d-") rlrt-filename ".org"))
   (insert (s-concat "#+TITLE: " rlrt-title) ?\n)
   (yas-expand-snippet (yas-lookup-snippet "orgblogt")))
 
 (defun orgblog-build ()
-(interactive)
-(progn
-(find-file "~/sites/orgblog/publish.el")
-(eval-buffer)
-(org-publish-all)
-(kill-buffer)))
+  (interactive)
+  (progn
+    (find-file "~/sites/orgblog/publish.el")
+    (eval-buffer)
+    (org-publish-all)
+    (kill-buffer)))
 
 (defun orgblog-serve ()
   (interactive)
@@ -2078,120 +2114,120 @@
   (async-shell-command "orgblog-push"))
 
 (defun convert-blog-post ()
-(interactive)
-(beginning-of-buffer)
-(replace-regexp-in-region "tags\\[]" "filetags")
-(beginning-of-buffer)
-(re-search-forward "date.*T")
-(backward-char)
-(kill-line)
-(insert ">")
-(beginning-of-line)
-(re-search-forward "[[:space:]]")
-(insert "<")
-(re-search-forward "lastmod.*T")
-(backward-char)
-(kill-line)
-(insert ">")
-(beginning-of-line)
-(re-search-forward "[[:space:]]")
-(insert "<")
-)
+  (interactive)
+  (beginning-of-buffer)
+  (replace-regexp-in-region "tags\\[]" "filetags")
+  (beginning-of-buffer)
+  (re-search-forward "date.*T")
+  (backward-char)
+  (kill-line)
+  (insert ">")
+  (beginning-of-line)
+  (re-search-forward "[[:space:]]")
+  (insert "<")
+  (re-search-forward "lastmod.*T")
+  (backward-char)
+  (kill-line)
+  (insert ">")
+  (beginning-of-line)
+  (re-search-forward "[[:space:]]")
+  (insert "<")
+  )
 
 (defun fix-blog-title ()
-    (interactive)
-    (beginning-of-buffer)
-    (re-search-forward "title")
-    (beginning-of-line)
-    (insert "#+")
-    (replace-string-in-region "\'" "" (line-beginning-position) (line-end-position))
-    )
+  (interactive)
+  (beginning-of-buffer)
+  (re-search-forward "title")
+  (beginning-of-line)
+  (insert "#+")
+  (replace-string-in-region "\'" "" (line-beginning-position) (line-end-position))
+  )
 
 
-  (defun fix-blog-date ()
-    (interactive)
-    (beginning-of-buffer)
-    (re-search-forward "date")
-    (replace-string-in-region "'" "" (line-beginning-position) (line-end-position))
-    (beginning-of-line)
-    (insert "#+")
-    (re-search-forward ": ")
-    (kill-visual-line)
-    (insert (format-time-string "<%Y-%m-%d>" (date-to-time (current-kill 0 t))))
-    )
+(defun fix-blog-date ()
+  (interactive)
+  (beginning-of-buffer)
+  (re-search-forward "date")
+  (replace-string-in-region "'" "" (line-beginning-position) (line-end-position))
+  (beginning-of-line)
+  (insert "#+")
+  (re-search-forward ": ")
+  (kill-visual-line)
+  (insert (format-time-string "<%Y-%m-%d>" (date-to-time (current-kill 0 t))))
+  )
 
-  (defun delete-draft-line ()
-    (interactive)
-    (beginning-of-buffer)
-    (while (re-search-forward "draft:" nil t)
+(defun delete-draft-line ()
+  (interactive)
+  (beginning-of-buffer)
+  (while (re-search-forward "draft:" nil t)
     (beginning-of-line)
     (kill-visual-line)
     (kill-visual-line))
-    )
+  )
 
-  (defun fix-blog-tags ()
-    (interactive)
-    (beginning-of-buffer)
-    (while (re-search-forward "^tags:" nil t)
+(defun fix-blog-tags ()
+  (interactive)
+  (beginning-of-buffer)
+  (while (re-search-forward "^tags:" nil t)
     (beginning-of-line)
     (insert "#+file")
     (replace-string-in-region "\'" "" (line-beginning-position) (line-end-position))
     (replace-string-in-region "," "" (line-beginning-position) (line-end-position))
     (replace-string-in-region "[" "" (line-beginning-position) (line-end-position))
     (replace-string-in-region "]" "" (line-beginning-position) (line-end-position))
-      (replace-string-in-region "- " "" (line-beginning-position) (line-end-position))
+    (replace-string-in-region "- " "" (line-beginning-position) (line-end-position))
     (downcase-region (line-beginning-position) (line-end-position))
     ))
 
-  (defun delete-unnecessary-header-lines ()
-    (interactive)
-    (beginning-of-buffer)
-    (while (re-search-forward "^---$" nil t)
-      (replace-match "")
-      (kill-visual-line))
-    (beginning-of-buffer)
-    (while (re-search-forward "^url:.*$" nil t 1)
-      (replace-match "")
-      (kill-visual-line))
-    (beginning-of-buffer)
-    (while (re-search-forward "^comments:.*$" nil t 1)
-      (replace-match "")
-      (kill-visual-line))
-    (beginning-of-buffer)
-    (while (re-search-forward "^highlight:.*$" nil t 1)
-      (replace-match "")
-      (kill-visual-line))
-    (beginning-of-buffer)
-    (while (re-search-forward "^markup:.*$" nil t 1)
-      (replace-match "")
-      (kill-visual-line))
-    (beginning-of-buffer)
-    (while (re-search-forward "^math:.*$" nil t 1)
-      (replace-match "")
-      (kill-visual-line))
-    (beginning-of-buffer)
-    (while (re-search-forward "^draft:.*$" nil t 1)
-      (replace-match "")
-      (kill-visual-line))
-    (beginning-of-buffer)
-    (while (re-search-forward "^categories:.*$" nil t 1)
-      (replace-match "")
-      (kill-visual-line))
+(defun delete-unnecessary-header-lines ()
+  (interactive)
+  (beginning-of-buffer)
+  (while (re-search-forward "^---$" nil t)
+    (replace-match "")
+    (kill-visual-line))
+  (beginning-of-buffer)
+  (while (re-search-forward "^url:.*$" nil t 1)
+    (replace-match "")
+    (kill-visual-line))
+  (beginning-of-buffer)
+  (while (re-search-forward "^comments:.*$" nil t 1)
+    (replace-match "")
+    (kill-visual-line))
+  (beginning-of-buffer)
+  (while (re-search-forward "^highlight:.*$" nil t 1)
+    (replace-match "")
+    (kill-visual-line))
+  (beginning-of-buffer)
+  (while (re-search-forward "^markup:.*$" nil t 1)
+    (replace-match "")
+    (kill-visual-line))
+  (beginning-of-buffer)
+  (while (re-search-forward "^math:.*$" nil t 1)
+    (replace-match "")
+    (kill-visual-line))
+  (beginning-of-buffer)
+  (while (re-search-forward "^draft:.*$" nil t 1)
+    (replace-match "")
+    (kill-visual-line))
+  (beginning-of-buffer)
+  (while (re-search-forward "^categories:.*$" nil t 1)
+    (replace-match "")
+    (kill-visual-line))
   )
 
-  (defun convert-markdown-eol ()
-    (interactive)
-    (beginning-of-line)
-    (while (re-search-forward "[[:blank:]]+$" nil t)
-	  (replace-match "\\\\\\\\")))
+(defun convert-markdown-eol ()
+  (interactive)
+  (beginning-of-line)
+  (while (re-search-forward "[[:blank:]]+$" nil t)
+    (replace-match "\\\\\\\\")))
 
-  (defun italicize-amen ()
+(defun italicize-amen ()
   (interactive)
   (while (re-search-forward "^\*Amen\\*" nil t)
-      (replace-match "/Amen/")
-      ))
+    (replace-match "/Amen/")
+    ))
 
-  (defun convert-md-links ()
+(defun convert-md-links ()
   (interactive)
   (beginning-of-buffer)
   ;; (while
@@ -2199,37 +2235,37 @@
   ;; (replace-match "[[\\2]\\1]")
   ;; )
   (query-replace-regexp "\\(\\[.*\\]\\)(\\(.*\\))"
-   "[[\\2]\\1]"))
+		      "[[\\2]\\1]"))
 
 
-  (defun convert-md-footnotes ()
-    (interactive)
-    (beginning-of-buffer)
-    (while
-	(re-search-forward "\\[\\^")
-      (replace-match "[fn:"))
-      )
+(defun convert-md-footnotes ()
+  (interactive)
+  (beginning-of-buffer)
+  (while
+      (re-search-forward "\\[\\^")
+    (replace-match "[fn:"))
+  )
 
-  (defun convert-markdown-header ()
-    (interactive)
-    (progn
-      (delete-unnecessary-header-lines)
-      (fix-blog-title)
-      (fix-blog-date)
-      (fix-blog-tags)
-      ))
+(defun convert-markdown-header ()
+  (interactive)
+  (progn
+    (delete-unnecessary-header-lines)
+    (fix-blog-title)
+    (fix-blog-date)
+    (fix-blog-tags)
+    ))
 
-  (defun fix-prayers ()
-    (interactive)
-    (progn
-      (convert-markdown-eol)
-      (italicize-amen)))
+(defun fix-prayers ()
+  (interactive)
+  (progn
+    (convert-markdown-eol)
+    (italicize-amen)))
 
 (defun fix-post ()
-(interactive)
-(progn
-(convert-markdown-header)
-(fix-prayers)))
+  (interactive)
+  (progn
+    (convert-markdown-header)
+    (fix-prayers)))
 
 (use-package htmlize)
 
@@ -2299,10 +2335,10 @@
   :init (spacious-padding-mode))
 
 (use-package speedrect
-:demand t
-:ensure
-(:host github :repo "jdtsmith/speedrect")
-:config (speedrect-mode))
+  :demand t
+  :ensure
+  (:host github :repo "jdtsmith/speedrect")
+  :config (speedrect-mode))
 
 (use-package super-save
   :config
@@ -2425,7 +2461,8 @@
  "S-C-<down>" #'shrink-window
  "S-C-<up>" #'enlarge-window
  "C-x w" #'delete-frame
- "M-o" #'crux-other-window-or-switch-buffer)
+ "M-o" #'crux-other-window-or-switch-buffer
+ "M-o" #'my/quick-window-jump)
 
 (general-define-key
  "s-t" #'rlr/find-file-new-tab
