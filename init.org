@@ -1970,7 +1970,9 @@ From [[https://github.com/mickeynp/discover.el][mickeynp/discover.el: Discover m
 	 ("vI" org-toggle-inline-images "Inline images"))
 	"Blog"
 	(("bn" rlrt-new-post "New draft")
-	 ("bb" orgblog-build "Build Site")
+	 ("bp" publish-orgblog-draft "Publish draft")
+	 ("bb" orgblog-build "Build site")
+	 ("bs" orgblog-serve "Serve site")
 	 ("bd" orgblog-push "Push to Github"))
 	"Notes"
 	(("1" denote-link "link to note"))))
@@ -1990,6 +1992,7 @@ From [[https://github.com/mickeynp/discover.el][mickeynp/discover.el: Discover m
 	"Blog"
 	(("bn" rlrt-new-post "New draft")
 	 ("bb" orgblog-build "Build Site")
+	 ("bs" orgblog-serve "Serve site")
 	 ("bd" orgblog-push "Push to Github"))))
 
      (major-mode-hydra-define denote-menu-mode
@@ -1999,7 +2002,7 @@ From [[https://github.com/mickeynp/discover.el][mickeynp/discover.el: Discover m
 	 ("k" denote-menu-filter-by-keyword "Filter by keyword")
 	 ("c" denote-menu-clear-filters "Clear filters")
 	 ("d" denote-menu-export-to-dired "Dired"))))))
-#+end_src
+	 #+end_src
 
 #+begin_src emacs-lisp :tangle no
   (defhydra hydra-org (:color teal)
@@ -3134,7 +3137,7 @@ Define directory variables.
   (defvar orgblog-directory "~/sites/orgblog/" "Path to the Org mode blog.")
   (defvar orgblog-public-directory "~/sites/orgblog/docs/" "Path to the blog public directory.")
   (defvar orgblog-posts-directory "~/sites/orgblog/posts/" "Path to the blog public directory.")
-
+  (defvar orgblog-drafts-directory "~/sites/orgblog/drafts/" "Path to the blog public directory.")
 #+end_src
 
 Create new post.
@@ -3144,10 +3147,24 @@ Create new post.
     (interactive "sTitle: ")
     ;; Make filename
     (setq rlrt-filename (rlrt-make-filename rlrt-title))
-    (find-file (s-concat orgblog-posts-directory (format-time-string "%y-%m-%d-") rlrt-filename ".org"))
+    (find-file (s-concat orgblog-drafts-directory (format-time-string "%y-%m-%d-") rlrt-filename ".org"))
     (insert (s-concat "#+TITLE: " rlrt-title) ?\n)
     (yas-expand-snippet (yas-lookup-snippet "orgblogt")))
 #+end_src
+
+Move draft to posts.
+
+#+begin_src emacs-lisp
+  (defun publish-orgblog-draft ()
+    (interactive)
+    (save-buffer)
+    (copy-file (buffer-file-name) "~/sites/orgblog/posts/")
+    (delete-file (buffer-file-name) t)
+    (kill-buffer)
+    (dired "~/sites/orgblog/posts"))
+#+end_src
+
+
 
 Publish source to public directory.
 

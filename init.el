@@ -1254,7 +1254,9 @@ If there are only two windows, jump directly to the other window."
        ("vI" org-toggle-inline-images "Inline images"))
       "Blog"
       (("bn" rlrt-new-post "New draft")
-       ("bb" orgblog-build "Build Site")
+       ("bp" publish-orgblog-draft "Publish draft")
+       ("bb" orgblog-build "Build site")
+       ("bs" orgblog-serve "Serve site")
        ("bd" orgblog-push "Push to Github"))
       "Notes"
       (("1" denote-link "link to note"))))
@@ -1274,6 +1276,7 @@ If there are only two windows, jump directly to the other window."
       "Blog"
       (("bn" rlrt-new-post "New draft")
        ("bb" orgblog-build "Build Site")
+       ("bs" orgblog-serve "Serve site")
        ("bd" orgblog-push "Push to Github"))))
 
    (major-mode-hydra-define denote-menu-mode
@@ -2100,14 +2103,23 @@ If there are only two windows, jump directly to the other window."
 (defvar orgblog-directory "~/sites/orgblog/" "Path to the Org mode blog.")
 (defvar orgblog-public-directory "~/sites/orgblog/docs/" "Path to the blog public directory.")
 (defvar orgblog-posts-directory "~/sites/orgblog/posts/" "Path to the blog public directory.")
+(defvar orgblog-drafts-directory "~/sites/orgblog/drafts/" "Path to the blog public directory.")
 
 (defun rlrt-new-post (rlrt-title)
   (interactive "sTitle: ")
   ;; Make filename
   (setq rlrt-filename (rlrt-make-filename rlrt-title))
-  (find-file (s-concat orgblog-posts-directory (format-time-string "%y-%m-%d-") rlrt-filename ".org"))
+  (find-file (s-concat orgblog-drafts-directory (format-time-string "%y-%m-%d-") rlrt-filename ".org"))
   (insert (s-concat "#+TITLE: " rlrt-title) ?\n)
   (yas-expand-snippet (yas-lookup-snippet "orgblogt")))
+
+(defun publish-orgblog-draft ()
+  (interactive)
+  (save-buffer)
+  (copy-file (buffer-file-name) "~/sites/orgblog/posts/")
+  (delete-file (buffer-file-name) t)
+  (kill-buffer)
+  (dired "~/sites/orgblog/posts"))
 
 (defun orgblog-build ()
   (interactive)
