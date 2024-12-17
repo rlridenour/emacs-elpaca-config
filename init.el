@@ -2282,6 +2282,104 @@ If there are only two windows, jump directly to the other window."
     (convert-markdown-header)
     (fix-prayers)))
 
+(defun convert-html-quotes ()
+    (interactive)
+    (beginning-of-buffer)
+    (while (re-search-forward "</blockquote>" nil t)
+      (replace-match "
+#\+end_quote"))
+    (beginning-of-buffer)
+    (while (re-search-forward "<blockquote.*>" nil t)
+      (replace-match "#\+begin+quote
+	"))
+    (beginning-of-buffer)
+    (while (re-search-forward "</cite>" nil t)
+      (replace-match ""))
+    (beginning-of-buffer)
+    (while (re-search-forward "<cite.*>" nil t)
+      (replace-match "--- ")))
+
+
+
+  (defun convert-html-headings ()
+    (interactive)
+    (beginning-of-buffer)
+    (while (re-search-forward "</h2>" nil t)
+      (replace-match "
+      "))
+    (beginning-of-buffer)
+    (while (re-search-forward "<h2>" nil t)
+      (replace-match "
+      \*\*  "))
+    (beginning-of-buffer)
+    (while (re-search-forward "</h3>" nil t)
+      (replace-match "
+      "))
+    (beginning-of-buffer)
+    (while (re-search-forward "<h3>" nil t)
+      (replace-match "
+      \*\*\*  ")))
+
+  (defun convert-html-links ()
+    (interactive)
+    (beginning-of-buffer)
+    (while
+	(re-search-forward "<a href=\"\\(.*\\)\">" nil t)
+      (replace-match "\[\[\\1\]\[")
+		     )
+    (beginning-of-buffer)
+    (while
+	(re-search-forward "</a>" nil t)
+      (replace-match "\]\]")))
+
+
+  (defun convert-html-lists ()
+    (interactive)
+    (beginning-of-buffer)
+    (while
+	(re-search-forward "<li>" nil t)
+      (replace-match "- ")))
+
+
+  (defun strip-html ()
+    "Remove HTML tags from the current buffer,
+	 (this will affect the whole buffer regardless of the restrictions in effect)."
+    (interactive "*")
+    (save-excursion
+      (save-restriction
+	(widen)
+	(goto-char (point-min))
+	(while (re-search-forward "<[^" (point-max) t)
+	(replace-match "\\1"))
+	(goto-char (point-min))
+	(replace-string "(c)" "(c)")
+	(goto-char (point-min))
+	(replace-string "&" "&")
+	(goto-char (point-min))
+	(replace-string "<" "")
+	(goto-char (point-min)))))
+
+
+
+  (defun convert-html-post ()
+    (interactive)
+    (beginning-of-buffer)
+    (progn
+      (while
+	(re-search-forward "</p>/" nil t)
+	(replace-match "
+      "))
+      (beginning-of-buffer)
+      (while
+	(re-search-forward "&hellip;" nil t)
+	(replace-match "..."))
+      (convert-html-headings)
+      (convert-html-quotes)
+      (convert-html-links)
+      (convert-html-lists)
+      ;; (strip-html)
+      ))
+
 (use-package htmlize)
 
 (use-package ox-rss)
