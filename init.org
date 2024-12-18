@@ -1824,15 +1824,14 @@ From [[https://github.com/mickeynp/discover.el][mickeynp/discover.el: Discover m
 
      (pretty-hydra-define hydra-blogconvert
        (:color teal :quit-key "q" :title "Blog Conversion")
-       ("Markdown"
-	(("m m" fix-post "fix post")
-	 ("m h" convert-markdown-header "convert header")
-	 ("m p" fix-prayers "fix prayers")
-	 ("m l" convert-md-links "convert links")
-	 ("m f" convert-md-footnotes "convert footnotes"))
-"HTML"
-(("h h" convert-html-post "convert html post"))
-)))
+       ("Functions"
+	(("b" fix-post "fix post")
+	 ("h" convert-markdown-header "convert header")
+	 ("p" fix-prayers "fix prayers")
+	 ("l" convert-md-links "convert links")
+	 ("f" convert-md-footnotes "convert footnotes"))
+	))
+     ))
 #+end_src
 
 *** Major Mode Hydras
@@ -1970,9 +1969,7 @@ From [[https://github.com/mickeynp/discover.el][mickeynp/discover.el: Discover m
 	 ("vI" org-toggle-inline-images "Inline images"))
 	"Blog"
 	(("bn" rlrt-new-post "New draft")
-	 ("bp" publish-orgblog-draft "Publish draft")
-	 ("bb" orgblog-build "Build site")
-	 ("bs" orgblog-serve "Serve site")
+	 ("bb" orgblog-build "Build Site")
 	 ("bd" orgblog-push "Push to Github"))
 	"Notes"
 	(("1" denote-link "link to note"))))
@@ -1992,7 +1989,6 @@ From [[https://github.com/mickeynp/discover.el][mickeynp/discover.el: Discover m
 	"Blog"
 	(("bn" rlrt-new-post "New draft")
 	 ("bb" orgblog-build "Build Site")
-	 ("bs" orgblog-serve "Serve site")
 	 ("bd" orgblog-push "Push to Github"))))
 
      (major-mode-hydra-define denote-menu-mode
@@ -2002,7 +1998,7 @@ From [[https://github.com/mickeynp/discover.el][mickeynp/discover.el: Discover m
 	 ("k" denote-menu-filter-by-keyword "Filter by keyword")
 	 ("c" denote-menu-clear-filters "Clear filters")
 	 ("d" denote-menu-export-to-dired "Dired"))))))
-	 #+end_src
+#+end_src
 
 #+begin_src emacs-lisp :tangle no
   (defhydra hydra-org (:color teal)
@@ -3137,7 +3133,7 @@ Define directory variables.
   (defvar orgblog-directory "~/sites/orgblog/" "Path to the Org mode blog.")
   (defvar orgblog-public-directory "~/sites/orgblog/docs/" "Path to the blog public directory.")
   (defvar orgblog-posts-directory "~/sites/orgblog/posts/" "Path to the blog public directory.")
-  (defvar orgblog-drafts-directory "~/sites/orgblog/drafts/" "Path to the blog public directory.")
+
 #+end_src
 
 Create new post.
@@ -3147,24 +3143,10 @@ Create new post.
     (interactive "sTitle: ")
     ;; Make filename
     (setq rlrt-filename (rlrt-make-filename rlrt-title))
-    (find-file (s-concat orgblog-drafts-directory (format-time-string "%y-%m-%d-") rlrt-filename ".org"))
+    (find-file (s-concat orgblog-posts-directory (format-time-string "%y-%m-%d-") rlrt-filename ".org"))
     (insert (s-concat "#+TITLE: " rlrt-title) ?\n)
     (yas-expand-snippet (yas-lookup-snippet "orgblogt")))
 #+end_src
-
-Move draft to posts.
-
-#+begin_src emacs-lisp
-  (defun publish-orgblog-draft ()
-    (interactive)
-    (save-buffer)
-    (copy-file (buffer-file-name) "~/sites/orgblog/posts/")
-    (delete-file (buffer-file-name) t)
-    (kill-buffer)
-    (dired "~/sites/orgblog/posts"))
-#+end_src
-
-
 
 Publish source to public directory.
 
@@ -3371,11 +3353,11 @@ Convert HTML posts.
     (beginning-of-buffer)
     (while (re-search-forward "</blockquote>" nil t)
       (replace-match "
-    #\+end_quote"))
+#\+end_quote"))
     (beginning-of-buffer)
     (while (re-search-forward "<blockquote.*>" nil t)
       (replace-match "#\+begin+quote
-	  "))
+	"))
     (beginning-of-buffer)
     (while (re-search-forward "</cite>" nil t)
       (replace-match ""))
@@ -3390,19 +3372,19 @@ Convert HTML posts.
     (beginning-of-buffer)
     (while (re-search-forward "</h2>" nil t)
       (replace-match "
-	  "))
+      "))
     (beginning-of-buffer)
-    (while (re-search-forward "<h2.*>" nil t)
+    (while (re-search-forward "<h2>" nil t)
       (replace-match "
-    \*\*  "))
+      \*\*  "))
     (beginning-of-buffer)
     (while (re-search-forward "</h3>" nil t)
       (replace-match "
-	  "))
+      "))
     (beginning-of-buffer)
-    (while (re-search-forward "<h3.*>" nil t)
+    (while (re-search-forward "<h3>" nil t)
       (replace-match "
-    \*\*\*  ")))
+      \*\*\*  ")))
 
   (defun convert-html-links ()
     (interactive)
@@ -3410,7 +3392,7 @@ Convert HTML posts.
     (while
 	(re-search-forward "<a href=\"\\(.*\\)\">" nil t)
       (replace-match "\[\[\\1\]\[")
-      )
+		     )
     (beginning-of-buffer)
     (while
 	(re-search-forward "</a>" nil t)
@@ -3422,57 +3404,19 @@ Convert HTML posts.
     (beginning-of-buffer)
     (while
 	(re-search-forward "<li>" nil t)
-      (replace-match "- "))
-    (beginning-of-buffer)
-    (while
-	(re-search-forward "</li>" nil t)
-      (replace-match ""))
-    (beginning-of-buffer)
-    (while
-	(re-search-forward "</ol>" nil t)
-      (replace-match ""))
-    (beginning-of-buffer)
-    (while
-	(re-search-forward "<ol>" nil t)
-      (replace-match ""))
-    )
+      (replace-match "- ")))
 
-
-  (defun convert-misc-html ()
-    (interactive)
-    (beginning-of-buffer)
-    (while
-	(re-search-forward "<p>" nil t)
-      (replace-match ""))
-    (beginning-of-buffer)
-    (while
-	(re-search-forward "</p>" nil t)
-      (replace-match "
-    "))
-    (beginning-of-buffer)
-    (while
-	(re-search-forward "<em>" nil t)
-      (replace-match "/"))
-    (beginning-of-buffer)
-    (while
-	(re-search-forward "</em>" nil t)
-      (replace-match "/"))
-    (beginning-of-buffer)
-    (while
-	(re-search-forward "&hellip;" nil t)
-      (replace-match "..."))
-    )
 
   (defun strip-html ()
     "Remove HTML tags from the current buffer,
-	   (this will affect the whole buffer regardless of the restrictions in effect)."
+	 (this will affect the whole buffer regardless of the restrictions in effect)."
     (interactive "*")
     (save-excursion
       (save-restriction
 	(widen)
 	(goto-char (point-min))
 	(while (re-search-forward "<[^" (point-max) t)
-	  (replace-match "\\1"))
+	(replace-match "\\1"))
 	(goto-char (point-min))
 	(replace-string "(c)" "(c)")
 	(goto-char (point-min))
@@ -3485,12 +3429,22 @@ Convert HTML posts.
 
   (defun convert-html-post ()
     (interactive)
-    (convert-html-headings)
-    (convert-html-quotes)
-    (convert-html-links)
-    (convert-html-lists)
-    (convert-misc-html)
-    )
+    (beginning-of-buffer)
+    (progn
+      (while
+	(re-search-forward "</p>/" nil t)
+	(replace-match "
+      "))
+      (beginning-of-buffer)
+      (while
+	(re-search-forward "&hellip;" nil t)
+	(replace-match "..."))
+      (convert-html-headings)
+      (convert-html-quotes)
+      (convert-html-links)
+      (convert-html-lists)
+      ;; (strip-html)
+      ))
 #+end_src
 
 
