@@ -1824,12 +1824,19 @@ From [[https://github.com/mickeynp/discover.el][mickeynp/discover.el: Discover m
 
      (pretty-hydra-define hydra-blogconvert
        (:color teal :quit-key "q" :title "Blog Conversion")
-       ("Functions"
+       ("Markdown"
 	(("b" fix-post "fix post")
 	 ("h" convert-markdown-header "convert header")
 	 ("p" fix-prayers "fix prayers")
 	 ("l" convert-md-links "convert links")
 	 ("f" convert-md-footnotes "convert footnotes"))
+"HTML"
+(("B" convert-html-post "fix all html" )
+("M" convert-misc-html "fix misc")
+("Q" convert-html-quotes "fix quotes")
+("H" convert-html-headings "fix headings")
+("A" convert-html-links "fix links")
+("L" convert-html-lists "fix lists"))
 	))
      ))
 #+end_src
@@ -1969,7 +1976,9 @@ From [[https://github.com/mickeynp/discover.el][mickeynp/discover.el: Discover m
 	 ("vI" org-toggle-inline-images "Inline images"))
 	"Blog"
 	(("bn" rlrt-new-post "New draft")
-	 ("bb" orgblog-build "Build Site")
+	 ("bi" orgblog-insert-image "Insert image")
+	 ("bb" orgblog-build "Build site")
+	 ("bs" orblog-serve "Serve site")
 	 ("bd" orgblog-push "Push to Github"))
 	"Notes"
 	(("1" denote-link "link to note"))))
@@ -1989,6 +1998,7 @@ From [[https://github.com/mickeynp/discover.el][mickeynp/discover.el: Discover m
 	"Blog"
 	(("bn" rlrt-new-post "New draft")
 	 ("bb" orgblog-build "Build Site")
+	 ("bs" orgblog-serve "Serve Site")
 	 ("bd" orgblog-push "Push to Github"))))
 
      (major-mode-hydra-define denote-menu-mode
@@ -3148,6 +3158,24 @@ Create new post.
     (insert (s-concat "#+TITLE: " rlrt-title) ?\n)
     (yas-expand-snippet (yas-lookup-snippet "orgblogt")))
 #+end_src
+
+
+Insert image.
+
+#+begin_src emacs-lisp
+(defun orgblog-insert-image ()
+(interactive)
+(insert "#+begin_center
+#+ATTR_HTML: :width 100% :height
+")
+(insert "[[" (file-relative-name (read-file-name "Insert file name: " "~/sites/orgblog/images/posts/")) "]]
+#+end_center
+
+")
+)
+#+end_src
+
+
 
 
 Move draft to posts.
