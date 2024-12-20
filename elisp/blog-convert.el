@@ -291,3 +291,24 @@
     )
 
 
+
+(defun mark-whole-buffer ()
+  "Put point at beginning and mark at end of buffer."
+  (interactive)
+  (push-mark (point))
+  (push-mark (point-max))
+  (goto-char (point-min)))
+
+
+;; Move converted post.
+
+  (defun orgblog-move-post ()
+    (interactive)
+    (mark-whole-buffer)
+    (crux-cleanup-buffer-or-region)
+    (save-buffer)
+    (copy-file (buffer-file-name) "~/sites/orgblog/posts/")
+    (delete-file (buffer-file-name) t)
+    (kill-buffer))
+
+
