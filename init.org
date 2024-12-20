@@ -1978,7 +1978,7 @@ From [[https://github.com/mickeynp/discover.el][mickeynp/discover.el: Discover m
 	(("bn" rlrt-new-post "New draft")
 	 ("bi" orgblog-insert-image "Insert image")
 	 ("bb" orgblog-build "Build site")
-	 ("bs" orblog-serve "Serve site")
+	 ("bs" orgblog-serve "Serve site")
 	 ("bd" orgblog-push "Push to Github"))
 	"Notes"
 	(("1" denote-link "link to note"))))
@@ -2008,7 +2008,7 @@ From [[https://github.com/mickeynp/discover.el][mickeynp/discover.el: Discover m
 	 ("k" denote-menu-filter-by-keyword "Filter by keyword")
 	 ("c" denote-menu-clear-filters "Clear filters")
 	 ("d" denote-menu-export-to-dired "Dired"))))))
-#+end_src
+	 #+end_src
 
 #+begin_src emacs-lisp :tangle no
   (defhydra hydra-org (:color teal)
@@ -3163,16 +3163,16 @@ Create new post.
 Insert image.
 
 #+begin_src emacs-lisp
-(defun orgblog-insert-image ()
-(interactive)
-(insert "#+begin_center
-#+ATTR_HTML: :width 100% :height
-")
-(insert "[[" (file-relative-name (read-file-name "Insert file name: " "~/sites/orgblog/images/posts/")) "]]
-#+end_center
+  (defun orgblog-insert-image ()
+    (interactive)
+    (insert "#+begin_center
+  ,#+ATTR_HTML: :width 100% :height
+  ")
+    (insert "[[" (file-relative-name (read-file-name "Insert file name: " "~/sites/orgblog/images/posts/")) "]]
+  ,#+end_center
 
-")
-)
+  ")
+    )
 #+end_src
 
 
@@ -3209,10 +3209,9 @@ Start local server.
   (defun orgblog-serve ()
     (interactive)
     (progn
-      (let ((default-directory "~/sites/orgblog/docs"))
-	(async-shell-command "serve")
-	(sleep-for 1)
-	(async-shell-command "open http://localhost:3000"))))
+      (async-shell-command "orgblog-serve")
+      (sleep-for 2)
+      (async-shell-command "open http://localhost:3000")))
 #+end_src
 
 

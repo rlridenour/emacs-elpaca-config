@@ -1262,7 +1262,7 @@ If there are only two windows, jump directly to the other window."
       (("bn" rlrt-new-post "New draft")
        ("bi" orgblog-insert-image "Insert image")
        ("bb" orgblog-build "Build site")
-       ("bs" orblog-serve "Serve site")
+       ("bs" orgblog-serve "Serve site")
        ("bd" orgblog-push "Push to Github"))
       "Notes"
       (("1" denote-link "link to note"))))
@@ -2120,15 +2120,15 @@ If there are only two windows, jump directly to the other window."
   (yas-expand-snippet (yas-lookup-snippet "orgblogt")))
 
 (defun orgblog-insert-image ()
-(interactive)
-(insert "#+begin_center
+  (interactive)
+  (insert "#+begin_center
 #+ATTR_HTML: :width 100% :height
 ")
-(insert "[[" (file-relative-name (read-file-name "Insert file name: " "~/sites/orgblog/images/posts/")) "]]
+  (insert "[[" (file-relative-name (read-file-name "Insert file name: " "~/sites/orgblog/images/posts/")) "]]
 #+end_center
 
 ")
-)
+  )
 
 (defun orgblog-build ()
   (interactive)
@@ -2141,10 +2141,9 @@ If there are only two windows, jump directly to the other window."
 (defun orgblog-serve ()
   (interactive)
   (progn
-    (let ((default-directory "~/sites/orgblog/docs"))
-      (async-shell-command "serve")
-      (sleep-for 1)
-      (async-shell-command "open http://localhost:3000"))))
+    (async-shell-command "orgblog-serve")
+    (sleep-for 2)
+    (async-shell-command "open http://localhost:3000")))
 
 (defun orgblog-push ()
   (interactive)
