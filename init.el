@@ -1304,7 +1304,7 @@ If there are only two windows, jump directly to the other window."
  "H-w" #'hydra-window/body
  ;; "s-b" #'hydra-buffer/body
  "C-x 9" #'hydra-logic/body
- "C-M-S-s-m" #'hydra-blogconvert/body)
+ "s-;" #'hydra-blogconvert/body)
 
 (use-package jinx
   :init
@@ -2152,6 +2152,13 @@ If there are only two windows, jump directly to the other window."
 (defun orgblog-push ()
   (interactive)
   (async-shell-command "orgblog-push"))
+
+(setq org-html-footnotes-section "<div id=\"footnotes\">
+<h2 class=\"footnotes\">%s</h2>
+<div id=\"text-footnotes\">
+%s
+</div>
+</div>")
 
 (defun orgblog-load-conversion ()
     (interactive)

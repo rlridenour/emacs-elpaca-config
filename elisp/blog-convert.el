@@ -283,11 +283,11 @@
 
   (defun convert-html-post ()
     (interactive)
+    (convert-misc-html)
     (convert-html-headings)
     (convert-html-quotes)
     (convert-html-links)
     (convert-html-lists)
-    (convert-misc-html)
     )
 
 
@@ -310,5 +310,3 @@
     (copy-file (buffer-file-name) "~/sites/orgblog/posts/")
     (delete-file (buffer-file-name) t)
     (kill-buffer))
-
-

@@ -2029,7 +2029,7 @@ From [[https://github.com/mickeynp/discover.el][mickeynp/discover.el: Discover m
    "H-w" #'hydra-window/body
    ;; "s-b" #'hydra-buffer/body
    "C-x 9" #'hydra-logic/body
-   "C-M-S-s-m" #'hydra-blogconvert/body)
+   "s-;" #'hydra-blogconvert/body)
 #+end_src
 
 ** Jinx
@@ -3225,6 +3225,19 @@ Push changes to Github.
     (interactive)
     (async-shell-command "orgblog-push"))
 #+end_src
+
+
+Modify footnote section label.
+
+#+begin_src emacs-lisp
+(setq org-html-footnotes-section "<div id=\"footnotes\">
+<h2 class=\"footnotes\">%s</h2>
+<div id=\"text-footnotes\">
+%s
+</div>
+</div>")
+#+end_src
+
 
 
 
