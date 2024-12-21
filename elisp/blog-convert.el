@@ -259,6 +259,17 @@
     (while
 	(re-search-forward "&hellip;" nil t)
       (replace-match "..."))
+        (beginning-of-buffer)
+    (while
+	(re-search-forward "&ndash;" nil t)
+      (replace-match "--"))
+        (beginning-of-buffer)
+    (while
+	(re-search-forward "&mdash;" nil t)
+      (replace-match "---"))
+    (while
+	(re-search-forward "<br />" nil t)
+      (replace-match "\\\\\\\\"))
     )
 
   (defun strip-html ()
