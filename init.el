@@ -424,32 +424,36 @@ If there are only two windows, jump directly to the other window."
   (interactive)
   (insert (format-time-string "%B %e, %Y")))
 
+(defun insert-blog-date ()
+  (interactive)
+  (insert (format-time-string "%Y-%m-%d-")))
+
 (defun reload-user-init-file()
   (interactive)
   (load-file user-init-file))
 
 (defun wrap-at-sentences ()
-    "Fills the current paragraph, but starts each sentence on a new line."
-    (interactive)
-    (save-excursion
-      ;; Select the entire paragraph.
-      (mark-paragraph)
-      ;; Move to the start of the paragraph.
-      (goto-char (region-beginning))
-      ;; Record the location of the end of the paragraph.
-      (setq end-of-paragraph (region-end))
-      ;; Wrap lines with hard newlines.
-      (let ((use-hard-newlines 't))
-	;; Loop over each sentence in the paragraph.
-	(while (< (point) end-of-paragraph)
-	  ;; Move to end of sentence.
-	  (forward-sentence)
-	  ;; Delete spaces after sentence.
-(just-one-space)
-;; Delete preceding space.
-	  (delete-char -1)
-	  ;; Insert a newline before the next sentence.
-	  (insert "\n")
+  "Fills the current paragraph, but starts each sentence on a new line."
+  (interactive)
+  (save-excursion
+    ;; Select the entire paragraph.
+    (mark-paragraph)
+    ;; Move to the start of the paragraph.
+    (goto-char (region-beginning))
+    ;; Record the location of the end of the paragraph.
+    (setq end-of-paragraph (region-end))
+    ;; Wrap lines with hard newlines.
+    (let ((use-hard-newlines 't))
+      ;; Loop over each sentence in the paragraph.
+      (while (< (point) end-of-paragraph)
+	;; Move to end of sentence.
+	(forward-sentence)
+	;; Delete spaces after sentence.
+      (just-one-space)
+      ;; Delete preceding space.
+	(delete-char -1)
+	;; Insert a newline before the next sentence.
+	(insert "\n")
 	))))
 
 (use-package general
@@ -1288,6 +1292,15 @@ If there are only two windows, jump directly to the other window."
        ("bb" orgblog-build "Build Site")
        ("bs" orgblog-serve "Serve Site")
        ("bd" orgblog-push "Push to Github"))))
+
+   (major-mode-hydra-define css-mode
+     (:quit-key "q")
+     ("Blog"
+      (("bn" rlrt-new-post "New draft")
+       ("bb" orgblog-build "Build Site")
+       ("bs" orgblog-serve "Serve Site")
+       ("bd" orgblog-push "Push to Github"))))
+
 
    (major-mode-hydra-define denote-menu-mode
      (:quit-key "q")
@@ -2163,27 +2176,27 @@ If there are only two windows, jump directly to the other window."
 (defvar yt-iframe-format
   ;; You may want to change your width and height.
   (concat "<iframe width=\"440\""
-          " height=\"335\""
-          " src=\"https://www.youtube.com/embed/%s\""
-          " frameborder=\"0\""
-          " allowfullscreen>%s</iframe>"))
+	  " height=\"335\""
+	  " src=\"https://www.youtube.com/embed/%s\""
+	  " frameborder=\"0\""
+	  " allowfullscreen>%s</iframe>"))
 
 (org-add-link-type
  "yt"
  (lambda (handle)
    (browse-url
     (concat "https://www.youtube.com/embed/"
-            handle)))
+	    handle)))
  (lambda (path desc backend)
    (cl-case backend
      (html (format yt-iframe-format
-                   path (or desc "")))
+		   path (or desc "")))
      (latex (format "\href{%s}{%s}"
-                    path (or desc "video"))))))
+		    path (or desc "video"))))))
 
 (defun orgblog-load-conversion ()
-    (interactive)
-(progn
+  (interactive)
+  (progn
     (find-file "/Users/rlridenour/.config/emacs/elisp/blog-convert.el")
     (eval-buffer)
     (dired "/Users/rlridenour/icloud/blog/posts-to-be-converted")))
@@ -2241,6 +2254,10 @@ If there are only two windows, jump directly to the other window."
   (recentf-max-saved-items 1000 "Save more recent files"))
 
 (use-package reveal-in-osx-finder)
+
+(use-package rg
+:config
+(rg-enable-default-bindings))
 
 (use-package shrink-whitespace)
 
@@ -2464,6 +2481,7 @@ If there are only two windows, jump directly to the other window."
  "c" #'org-capture
  "d s" #'insert-date-string
  "d d" #'insert-standard-date
+ "d b" #'insert-blog-date
  "D" #'crux-delete-file-and-buffer
  ;; "h" #'consult-history
  "k" #'crux-kill-other-buffers
@@ -2472,7 +2490,7 @@ If there are only two windows, jump directly to the other window."
  "n b" #'hugo-draft-post
  "o" #'consult-outline
  "r" #'crux-rename-file-and-buffer
- "s" #'goto-scratch
+ ;; "s" #'rg-menu
  "S" #'crux-cleanup-buffer-or-region
  ;; "t" #'crux-visit-term-buffer
  "u" #'unfill-paragraph

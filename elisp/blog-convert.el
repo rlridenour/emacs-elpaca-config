@@ -321,3 +321,23 @@
     (copy-file (buffer-file-name) "~/sites/orgblog/posts/")
     (delete-file (buffer-file-name) t)
     (kill-buffer))
+
+
+;; Add tagline to bottom of buffer
+
+(defun create-tag-line ()
+(interactive)
+(beginning-of-buffer)
+(while (re-search-forward "filetags: " nil t)
+(copy-region-as-kill (point) (line-end-position))
+(end-of-buffer)
+(insert "
+
+#+begin_tagline
+Tagged: ")
+(yank)
+(insert"
+#+end_tagline")
+(save-buffer))
+(kill-buffer)
+)
