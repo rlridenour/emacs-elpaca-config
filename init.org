@@ -3277,6 +3277,75 @@ Embed YouTube videos, from [[https://endlessparentheses.com/embedding-youtube-vi
 		      path (or desc "video"))))))
 #+end_src
 
+**** Blog Tags
+
+Select tag from list.
+
+#+begin_src emacs-lisp
+(defun orgblog-all-tag-lines ()
+  "Get filetag lines from all posts."
+  (let ((post-dir (f-dirname (f-this-file)))
+	(regex "^#\\+filetags:\\s([a-zA-Z]+)"))
+    (shell-command-to-string
+     (concat "rg --context 0 --no-filename --no-heading --replace \"\\$1\" -- " (shell-quote-argument regex) " " post-dir))))
+
+(defun orgblog-all-tags ()
+  "Return a list of unique tags from all posts."
+  (delete-dups
+   (split-string (orgblog-all-tag-lines) nil t)))
+
+(defun orgblog-select-tag ()
+  "Select and insert a tag from tags in the blog."
+  (defvar newtag)
+  (setq newtag (completing-read "Tag: " (orgblog-all-tags))))
+#+end_src
+
+Insert tag to heading and tag line.
+
+#+begin_src emacs-lisp
+(defun insert-post-tag ()
+  (orgblog-select-tag)
+  (beginning-of-buffer)
+  (search-forward "#+filetags" nil 1)
+  (end-of-line)
+  (insert (concat " " newtag))
+  (search-forward "Tagged:")
+  (end-of-line)
+  (insert (concat " [[file:../tags/" newtag ".org][" (s-titleized-words newtag) "]]")))
+#+end_src
+
+Add tagged post to tag page.
+
+#+begin_src emacs-lisp
+(defun add-post-to-tagfile ()
+  (defvar tagfile)
+  (defvar post-filename)
+  (defvar post-title)
+  (setq tagfile (concat "../tags/" newtag ".org"))
+  (setq post-filename (f-filename (f-this-file)))
+  (progn
+    (beginning-of-buffer)
+    (search-forward "#+title: " nil 1)
+    (setq post-title (buffer-substring (point) (line-end-position))))
+  (when
+      (not (file-exists-p tagfile))
+    (f-append-text (concat "#+title: Tagged: " (s-titleized-words newtag) "\n#+setupfile: ../org-templates/post.org\n") 'utf-8 tagfile))
+  (f-append-text (concat "\n- [[file:../posts/" post-filename "][" post-title "]]") 'utf-8 tagfile))
+#+end_src
+
+
+Select tag, add tag to to post, then add post to tag page.
+
+#+begin_src emacs-lisp
+(defun new-orgblog-tag ()
+  (interactive)
+  (orgblog-select-tag)
+  (insert-post-tag)
+  (add-post-to-tagfile)
+  (save-buffer))
+#+end_src
+
+
 **** Blog Conversion
 
 Load conversion functions.
@@ -3422,7 +3491,7 @@ Increase number of recent files shown.
 (rg-enable-default-bindings))
 #+end_src
 
-** 
+**
 
 ** Shrink Whitespace
 
