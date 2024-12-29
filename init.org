@@ -119,15 +119,15 @@ Set initial frame size to fullheight.
 Bring new frame to front. From [[https://www.reddit.com/r/emacs/comments/1g2hkh8/a_useful_snippet_to_bring_emacs_client_to_the/][a useful snippet to bring emacs client to the front on OS X : r/emacs]].
 
 #+begin_src emacs-lisp
-(defun initd/bring-emacs-to-front ()
-  "Using applescript, force the Emacs frame to be activated."
-  (when (eq system-type 'darwin)
-    (start-process "bring-emacs-to-front" nil
-	       "osascript"
-		   "-e"
-		   "tell application \"Emacs\" to activate")))
+  (defun initd/bring-emacs-to-front ()
+    "Using applescript, force the Emacs frame to be activated."
+    (when (eq system-type 'darwin)
+      (start-process "bring-emacs-to-front" nil
+		   "osascript"
+		     "-e"
+		     "tell application \"Emacs\" to activate")))
 
-(add-hook 'server-after-make-frame-hook #'initd/bring-emacs-to-front)
+  (add-hook 'server-after-make-frame-hook #'initd/bring-emacs-to-front)
 #+end_src
 
 Set the frame title format.
@@ -654,8 +654,8 @@ If one window, switch to previous buffer. If two, then jump to other window. If 
       (if (< (length window-list) 3)
 	  ;; If only one window, switch to previous buffer. If only two, jump directly to other window.
 	(if (one-window-p)
-	    (switch-to-buffer nil)
-	  (other-window 1))
+	      (switch-to-buffer nil)
+	    (other-window 1))
 	;; Otherwise, show the key selection interface.
 	(let* ((my/quick-window-overlays nil)
 	       (sorted-windows (sort window-list
@@ -697,7 +697,7 @@ Set font
 
   ;; Proportionately spaced typeface
   ;; (set-face-attribute 'variable-pitch nil :family "SF Pro" :height 1.0 :weight 'medium)
-(set-face-attribute 'variable-pitch nil :family "Atkinson Hyperlegible" :height 1.1 :weight 'regular)
+  (set-face-attribute 'variable-pitch nil :family "Atkinson Hyperlegible" :height 1.1 :weight 'regular)
 
   ;; Monospaced typeface
   (set-face-attribute 'fixed-pitch nil :family "SF Mono" :height 1.0 :weight 'medium)
@@ -743,7 +743,7 @@ Immediately highlight matching pairs of parentheses and quotes.
 I can't imagine wanting the same buffer in two tabs, so this calls consult-buffer when opening a new tab.
 
 #+begin_src emacs-lisp
-(defun rlr/find-file-new-tab ()
+  (defun rlr/find-file-new-tab ()
     "Open new tab and select recent file."
     (interactive)
     (tab-new)
@@ -3282,36 +3282,37 @@ Embed YouTube videos, from [[https://endlessparentheses.com/embedding-youtube-vi
 Select tag from list.
 
 #+begin_src emacs-lisp
-(defun orgblog-all-tag-lines ()
-  "Get filetag lines from all posts."
-  (let ((post-dir (f-dirname (f-this-file)))
-	(regex "^#\\+filetags:\\s([a-zA-Z]+)"))
-    (shell-command-to-string
-     (concat "rg --context 0 --no-filename --no-heading --replace \"\\$1\" -- " (shell-quote-argument regex) " " post-dir))))
+  (defun orgblog-all-tag-lines ()
+    "Get filetag lines from all posts."
+    (let ((post-dir (f-dirname (f-this-file)))
+	  (regex "^#\\+filetags:\\s([a-zA-Z]+)"))
+      (shell-command-to-string
+       (concat "rg --context 0 --no-filename --no-heading --replace \"\\$1\" -- " (shell-quote-argument regex) " " post-dir))))
 
-(defun orgblog-all-tags ()
-  "Return a list of unique tags from all posts."
-  (delete-dups
-   (split-string (orgblog-all-tag-lines) nil t)))
+  (defun orgblog-all-tags ()
+    "Return a list of unique tags from all posts."
+    (delete-dups
+     (split-string (orgblog-all-tag-lines) nil t)))
 
-(defun orgblog-select-tag ()
-  "Select and insert a tag from tags in the blog."
-  (defvar newtag)
-  (setq newtag (completing-read "Tag: " (orgblog-all-tags))))
+  (defun orgblog-select-tag ()
+    "Select and insert a tag from tags in the blog."
+    (defvar newtag)
+    (setq newtag (completing-read "Tag: " (orgblog-all-tags))))
 #+end_src
 
 Insert tag to heading and tag line.
 
 #+begin_src emacs-lisp
-(defun insert-post-tag ()
-  (orgblog-select-tag)
-  (beginning-of-buffer)
-  (search-forward "#+filetags" nil 1)
-  (end-of-line)
-  (insert (concat " " newtag))
-  (search-forward "Tagged:")
-  (end-of-line)
-  (insert (concat " [[file:../tags/" newtag ".org][" (s-titleized-words newtag) "]]")))
+  (defun insert-post-tag ()
+    (orgblog-select-tag)
+    (beginning-of-buffer)
+    (search-forward "#+filetags" nil 1)
+    (end-of-line)
+    (insert (concat " " newtag))
+    (beginning-of-buffer)
+    (search-forward "Tagged:")
+    (end-of-line)
+    (insert (concat " [[file:../tags/" newtag ".org][" (s-titleized-words newtag) "]]")))
 #+end_src
 
 Add tagged post to tag page.

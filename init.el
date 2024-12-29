@@ -304,8 +304,8 @@ If there are only two windows, jump directly to the other window."
     (if (< (length window-list) 3)
 	;; If only one window, switch to previous buffer. If only two, jump directly to other window.
       (if (one-window-p)
-	  (switch-to-buffer nil)
-	(other-window 1))
+	    (switch-to-buffer nil)
+	  (other-window 1))
       ;; Otherwise, show the key selection interface.
       (let* ((my/quick-window-overlays nil)
 	     (sorted-windows (sort window-list
@@ -337,14 +337,14 @@ If there are only two windows, jump directly to the other window."
 	    (select-window selected-window)))))))
 
 ;; Main typeface
-  (set-face-attribute 'default nil :family "SF Mono" :height 160 :weight 'medium)
+(set-face-attribute 'default nil :family "SF Mono" :height 160 :weight 'medium)
 
-  ;; Proportionately spaced typeface
-  ;; (set-face-attribute 'variable-pitch nil :family "SF Pro" :height 1.0 :weight 'medium)
+;; Proportionately spaced typeface
+;; (set-face-attribute 'variable-pitch nil :family "SF Pro" :height 1.0 :weight 'medium)
 (set-face-attribute 'variable-pitch nil :family "Atkinson Hyperlegible" :height 1.1 :weight 'regular)
 
-  ;; Monospaced typeface
-  (set-face-attribute 'fixed-pitch nil :family "SF Mono" :height 1.0 :weight 'medium)
+;; Monospaced typeface
+(set-face-attribute 'fixed-pitch nil :family "SF Mono" :height 1.0 :weight 'medium)
 
 (setq-default line-spacing 0.25)
 
@@ -360,10 +360,10 @@ If there are only two windows, jump directly to the other window."
 (setq show-paren-delay 0)
 
 (defun rlr/find-file-new-tab ()
-    "Open new tab and select recent file."
-    (interactive)
-    (tab-new)
-    (consult-buffer))
+  "Open new tab and select recent file."
+  (interactive)
+  (tab-new)
+  (consult-buffer))
 
 (setq case-replace nil)
 
@@ -2217,6 +2217,7 @@ If there are only two windows, jump directly to the other window."
   (search-forward "#+filetags" nil 1)
   (end-of-line)
   (insert (concat " " newtag))
+  (beginning-of-buffer)
   (search-forward "Tagged:")
   (end-of-line)
   (insert (concat " [[file:../tags/" newtag ".org][" (s-titleized-words newtag) "]]")))

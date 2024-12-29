@@ -59,7 +59,7 @@
   "Using applescript, force the Emacs frame to be activated."
   (when (eq system-type 'darwin)
     (start-process "bring-emacs-to-front" nil
-	       "osascript"
+		 "osascript"
 		   "-e"
 		   "tell application \"Emacs\" to activate")))
 
