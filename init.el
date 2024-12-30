@@ -1093,16 +1093,6 @@ If there are only two windows, jump directly to the other window."
       (("?" quit-window "quit" :color blue))
       ))
 
-   (pretty-hydra-define hydra-hugo
-     (:color teal :quit-key "q" :title "Hugo")
-     ("Blog"
-      (("n" hugo-draft-post "New draft")
-       ("p" hugo-publish-post "Publish")
-       ("t" hugo-timestamp "Update timestamp")
-       ("e" org-hugo-auto-export-mode "Auto export")
-       ("d" hugo-deploy "Deploy"))
-      ))
-
    (pretty-hydra-define hydra-hydras
      (:color teal :quit-key "q" :title "Hydras")
      ("System"
@@ -1113,26 +1103,6 @@ If there are only two windows, jump directly to the other window."
       "Unicode"
       (("l" hydra-logic/body "logic")
        ("m" hydra-math/body))))
-
-   (pretty-hydra-define hydra-blogconvert
-     (:color teal :quit-key "q" :title "Blog Conversion")
-     ("Load/Move"
-      (("i" orgblog-load-conversion "Load functions")
-       ("m" orgblog-move-post "Move post"))
-      "Markdown"
-      (("b" fix-post "fix post")
-       ("h" convert-markdown-header "convert header")
-       ("p" fix-prayers "fix prayers")
-       ("l" convert-md-links "convert links")
-       ("f" convert-md-footnotes "convert footnotes"))
-      "HTML"
-      (("B" convert-html-post "fix all html" )
-       ("M" convert-misc-html "fix misc")
-       ("Q" convert-html-quotes "fix quotes")
-       ("H" convert-html-headings "fix headings")
-       ("A" convert-html-links "fix links")
-       ("L" convert-html-lists "fix lists"))
-      ))
    ))
 
 (with-after-elpaca-init
@@ -1267,6 +1237,7 @@ If there are only two windows, jump directly to the other window."
        ("vI" org-toggle-inline-images "Inline images"))
       "Blog"
       (("bn" rlrt-new-post "New draft")
+       ("bt" orgblog-add-tag "Add tag")
        ("bi" orgblog-insert-image "Insert image")
        ("bp" orgblog-publish-draft "Publish draft")
        ("bb" orgblog-build "Build site")
@@ -2127,12 +2098,13 @@ If there are only two windows, jump directly to the other window."
 (defvar orgblog-directory "~/sites/orgblog/" "Path to the Org mode blog.")
 (defvar orgblog-public-directory "~/sites/orgblog/docs/" "Path to the blog public directory.")
 (defvar orgblog-posts-directory "~/sites/orgblog/posts/" "Path to the blog public directory.")
+(defvar orgblog-drafts-directory "~/sites/orgblog/drafts/" "Path to the blog public directory.")
 
 (defun rlrt-new-post (rlrt-title)
   (interactive "sTitle: ")
   ;; Make filename
   (setq rlrt-filename (rlrt-make-filename rlrt-title))
-  (find-file (s-concat orgblog-posts-directory (format-time-string "%y-%m-%d-") rlrt-filename ".org"))
+  (find-file (s-concat orgblog-drafts-directory (format-time-string "%y-%m-%d-") rlrt-filename ".org"))
   (insert (s-concat "#+TITLE: " rlrt-title) ?\n)
   (yas-expand-snippet (yas-lookup-snippet "orgblogt")))
 
@@ -2196,7 +2168,7 @@ If there are only two windows, jump directly to the other window."
 
 (defun orgblog-all-tag-lines ()
   "Get filetag lines from all posts."
-  (let ((post-dir (f-dirname (f-this-file)))
+  (let ((post-dir orgblog-posts-directory)
 	(regex "^#\\+filetags:\\s([a-zA-Z]+)"))
     (shell-command-to-string
      (concat "rg --context 0 --no-filename --no-heading --replace \"\\$1\" -- " (shell-quote-argument regex) " " post-dir))))
@@ -2237,19 +2209,12 @@ If there are only two windows, jump directly to the other window."
     (f-append-text (concat "#+title: Tagged: " (s-titleized-words newtag) "\n#+setupfile: ../org-templates/post.org\n") 'utf-8 tagfile))
   (f-append-text (concat "\n- [[file:../posts/" post-filename "][" post-title "]]") 'utf-8 tagfile))
 
-(defun new-orgblog-tag ()
+(defun orgblog-add-tag ()
   (interactive)
   (orgblog-select-tag)
   (insert-post-tag)
   (add-post-to-tagfile)
   (save-buffer))
-
-(defun orgblog-load-conversion ()
-  (interactive)
-  (progn
-    (find-file "/Users/rlridenour/.config/emacs/elisp/blog-convert.el")
-    (eval-buffer)
-    (dired "/Users/rlridenour/icloud/blog/posts-to-be-converted")))
 
 (use-package htmlize)
 
