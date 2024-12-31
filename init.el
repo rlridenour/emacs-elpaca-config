@@ -476,26 +476,6 @@ If there are only two windows, jump directly to the other window."
   :config
   (load "~/Dropbox/emacs/my-emacs-abbrev"))
 
-(use-package activities
-  :init
-  (activities-mode)
-  (activities-tabs-mode)
-  ;; Prevent `edebug' default bindings from interfering.
-  (setq edebug-inhibit-emacs-lisp-mode-bindings t)
-  :general
-  ("C-x C-a C-n" #'activities-new)
-  ("C-x C-a C-d" #'activities-define)
-  ("C-x C-a C-a" #'activities-resume)
-  ("C-x C-a C-s" #'activities-suspend)
-  ("C-x C-a C-k" #'activities-kill)
-  ("C-x C-a RET" #'activities-switch)
-  ("C-x C-a b" #'activities-switch-buffer)
-  ("C-x C-a g" #'activities-revert)
-  ("C-x C-a l" #'activities-list)
-  )
-
-(use-package persist)
-
 (use-package aggressive-indent
   :config
   (global-aggressive-indent-mode 1))
@@ -1375,11 +1355,6 @@ If there are only two windows, jump directly to the other window."
 	      (call-process "texcount" nil t nil "-brief" this-file)))))
     (string-match "\n$" word-count)
     (message (replace-match "" nil nil word-count))))
-
-(use-package latex-change-env
-  :after latex
-  :bind
-  (:map LaTeX-mode-map ("C-c e" . latex-change-env)))
 
 (use-package math-delimiters
   :ensure
