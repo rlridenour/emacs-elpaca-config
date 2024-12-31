@@ -3290,20 +3290,20 @@ Insert tag to heading and tag line.
 Add tagged post to tag page.
 
 #+begin_src emacs-lisp
-(defun add-post-to-tagfile ()
-  (defvar tagfile)
-  (defvar post-filename)
-  (defvar post-title)
-  (setq tagfile (concat "../tags/" newtag ".org"))
-  (setq post-filename (f-filename (f-this-file)))
-  (progn
-    (beginning-of-buffer)
-    (search-forward "#+title: " nil 1)
-    (setq post-title (buffer-substring (point) (line-end-position))))
-  (when
-      (not (file-exists-p tagfile))
-    (f-append-text (concat "#+title: Tagged: " (s-titleized-words newtag) "\n#+setupfile: ../org-templates/post.org\n") 'utf-8 tagfile))
-  (f-append-text (concat "\n- [[file:../posts/" post-filename "][" post-title "]]") 'utf-8 tagfile))
+  (defun add-post-to-tagfile ()
+    (defvar tagfile)
+    (defvar post-filename)
+    (defvar post-title)
+    (setq tagfile (concat "../tags/" newtag ".org"))
+    (setq post-filename (f-filename (f-this-file)))
+    (progn
+      (beginning-of-buffer)
+      (search-forward "#+title: " nil 1)
+      (setq post-title (buffer-substring (point) (line-end-position))))
+    (when
+        (not (file-exists-p tagfile))
+      (f-append-text (concat "#+title: Tagged: " (s-titleized-words newtag) "\n#+setupfile: ../org-templates/post.org\n") 'utf-8 tagfile))
+    (f-append-text (concat "\n- [[file:../posts/" post-filename "][" post-title "]]") 'utf-8 tagfile))
 #+end_src
 
 
