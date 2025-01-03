@@ -456,6 +456,12 @@ If there are only two windows, jump directly to the other window."
 	(insert "\n")
 	))))
 
+(defun dos2unix () 
+  "Replace DOS eolns CR LF with Unix eolns CR" 
+  (interactive) 
+    (goto-char (point-min)) 
+      (while (search-forward (string ?\C-m) nil t) (replace-match "\n")))
+
 (use-package general
   :ensure (:wait t)
   :demand t

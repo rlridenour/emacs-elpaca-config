@@ -896,6 +896,17 @@ Convert paragraph to single sentence per line.
 	  ))))
 #+end_src
 
+Convert DOS line-endings to UNIX.
+
+#+begin_src emacs-lisp 
+(defun dos2unix () 
+  "Replace DOS eolns CR LF with Unix eolns CR" 
+  (interactive) 
+    (goto-char (point-min)) 
+      (while (search-forward (string ?\C-m) nil t) (replace-match "\n"))) 
+#+end_src
+
+
 * Packages
 :PROPERTIES:
 :header-args: :tangle init.el
