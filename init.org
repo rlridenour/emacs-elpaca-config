@@ -687,8 +687,6 @@ If one window, switch to previous buffer. If two, then jump to other window. If 
 	      (select-window selected-window)))))))
 #+end_src
 
-
-
 Set font
 
 #+begin_src emacs-lisp
@@ -905,7 +903,6 @@ Convert DOS line-endings to UNIX.
     (goto-char (point-min)) 
       (while (search-forward (string ?\C-m) nil t) (replace-match "\n"))) 
 #+end_src
-
 
 * Packages
 :PROPERTIES:
@@ -1328,9 +1325,6 @@ Hide file details and absolute path by default, from [[https://lmno.lol/alvaro/h
     :demand t
     :ensure (:host github :repo "emacsmirror/dired-plus"))
 #+end_src
-
-
-
 
 #+begin_src emacs-lisp
   (defun hide-dired-details-include-all-subdir-paths ()
@@ -1964,7 +1958,6 @@ From [[https://github.com/mickeynp/discover.el][mickeynp/discover.el: Discover m
 	 ("bb" orgblog-build "Build Site")
 	 ("bs" orgblog-serve "Serve Site")
 	 ("bd" orgblog-push "Push to Github"))))
-
 
      (major-mode-hydra-define denote-menu-mode
        (:quit-key "q")
@@ -2681,7 +2674,6 @@ Use Emacs appointment system for notifications.
   (use-package org-mac-link)
 #+end_src
 
-
 *** Teaching
 
 Set initial filename variable.
@@ -2757,7 +2749,6 @@ Create lecture slides and notes in the currently visited directory.
 
     ;; Make filename
     (setq rlrt-filename (rlrt-make-filename rlrt-title))
-
 
     ;; Create directory
     (make-directory rlrt-filename)
@@ -2897,7 +2888,6 @@ Compile handout
     (shell-command "canvas-handout"))
 #+end_src
 
-
 #+begin_src emacs-lisp
   (defun make-html ()
     (interactive)
@@ -2905,7 +2895,6 @@ Compile handout
     (org-html-export-to-html)
     (shell-command "canvas-handout"))
 #+end_src
-
 
 Compile syllabus.
 
@@ -2925,7 +2914,6 @@ Compile syllabus.
     (delete-file "canvas-data.org")
     (find-file "*-data.org" t))
 #+end_src
-
 
 Functions for adding arguments in standard form to Org documents.
 
@@ -2956,7 +2944,6 @@ Functions for adding arguments in standard form to Org documents.
     (exchange-point-and-mark)
     (yas-expand-snippet (yas-lookup-snippet "arg-wrap-html")))
 #+end_src
-
 
 #+begin_src emacs-lisp
   (defun  create-tex-arg ()
@@ -3037,7 +3024,6 @@ Create new article.
     ;; Create directory
     (make-directory rlrt-filename)
 
-
     (find-file (s-concat rlrt-filename "/" rlrt-filename ".org"))
     (insert (s-concat "#+TITLE: " rlrt-title) ?\n)
     (yas-expand-snippet (yas-lookup-snippet "rlrt-pdf-article")))
@@ -3091,7 +3077,6 @@ Function for converting Org mode files to QTI file for importing into Canvas usi
     )
 #+end_src
 
-
 *** Blog
 
 Define directory variables.
@@ -3116,7 +3101,6 @@ Create new post.
     (yas-expand-snippet (yas-lookup-snippet "orgblogt")))
 #+end_src
 
-
 Insert image.
 
 #+begin_src emacs-lisp
@@ -3132,9 +3116,6 @@ Insert image.
     )
 #+end_src
 
-
-
-
 Move draft to posts.
 
 #+begin_src
@@ -3146,7 +3127,6 @@ Move draft to posts.
     (kill-buffer)
     (dired "~/sites/orgblog/posts"))
 #+end_src
-
 
 Publish source to public directory.
 
@@ -3179,7 +3159,6 @@ Push changes to Github.
     (async-shell-command "orgblog-push"))
 #+end_src
 
-
 Modify footnote section label.
 
 #+begin_src emacs-lisp
@@ -3190,7 +3169,6 @@ Modify footnote section label.
   </div>
   </div>")
 #+end_src
-
 
 Embed YouTube videos, from [[https://endlessparentheses.com/embedding-youtube-videos-with-org-mode-links.html][Embedding Youtube videos with org-mode links · Endless Parentheses]]. Add link like this: =[[yt:3Aoa-yP5U_Y]]=
 
@@ -3273,7 +3251,6 @@ Add tagged post to tag page.
       (f-append-text (concat "#+title: Tagged: " (s-titleized-words newtag) "\n#+setupfile: ../org-templates/post.org\n") 'utf-8 tagfile))
     (f-append-text (concat "\n- [[file:../posts/" post-filename "][" post-title "]]") 'utf-8 tagfile))
 #+end_src
-
 
 Select tag, add tag to to post, then add post to tag page.
 

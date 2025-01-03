@@ -1258,7 +1258,6 @@ If there are only two windows, jump directly to the other window."
        ("bs" orgblog-serve "Serve Site")
        ("bd" orgblog-push "Push to Github"))))
 
-
    (major-mode-hydra-define denote-menu-mode
      (:quit-key "q")
      ("Tools"
@@ -1815,7 +1814,6 @@ If there are only two windows, jump directly to the other window."
   ;; Make filename
   (setq rlrt-filename (rlrt-make-filename rlrt-title))
 
-
   ;; Create directory
   (make-directory rlrt-filename)
 
@@ -2026,7 +2024,6 @@ If there are only two windows, jump directly to the other window."
 
   ;; Create directory
   (make-directory rlrt-filename)
-
 
   (find-file (s-concat rlrt-filename "/" rlrt-filename ".org"))
   (insert (s-concat "#+TITLE: " rlrt-title) ?\n)
