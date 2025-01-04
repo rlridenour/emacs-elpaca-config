@@ -1559,6 +1559,18 @@ From [[https://github.com/mickeynp/discover.el][mickeynp/discover.el: Discover m
        (goto-char (point-min)))))
 #+end_src
 
+** Emmet
+
+#+begin_src emacs-lisp
+(use-package emmet-mode
+:general
+(:keymaps 'mhtml-mode-map
+"C-M-S-s-<right>" #'emmet-next-edit-point
+"C-M-S-s-<left>" #'emmet-prev-edit-point))
+#+end_src
+
+
+
 ** Exec-Path-From-Shell
 
 #+begin_src emacs-lisp

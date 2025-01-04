@@ -901,6 +901,12 @@ If there are only two windows, jump directly to the other window."
      (pop-to-buffer buff)
      (goto-char (point-min)))))
 
+(use-package emmet-mode
+:general
+(:keymaps 'mhtml-mode-map
+"C-M-S-s-<right>" #'emmet-next-edit-point
+"C-M-S-s-<left>" #'emmet-prev-edit-point))
+
 (use-package exec-path-from-shell
   :config
   (exec-path-from-shell-initialize))
