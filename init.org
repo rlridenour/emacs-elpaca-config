@@ -1564,7 +1564,7 @@ From [[https://github.com/mickeynp/discover.el][mickeynp/discover.el: Discover m
 #+begin_src emacs-lisp
 (use-package emmet-mode
 :general
-(:keymaps 'mhtml-mode-map
+(:keymaps 'html-mode-map
 "C-M-S-s-<right>" #'emmet-next-edit-point
 "C-M-S-s-<left>" #'emmet-prev-edit-point))
 #+end_src
@@ -2748,9 +2748,7 @@ Create a syllabus in the currently visited directory.
     (kill-buffer)
 
     ;; Create data file
-    (find-file (s-concat rlrt-filename "/" rlrt-filename "-data.org"))
-    (insert (s-concat "#+TITLE: " rlrt-title) ?\n)
-    (yas-expand-snippet (yas-lookup-snippet "syllabus")))
+    (find-file (s-concat rlrt-filename "/" rlrt-filename "-data.org")))
 #+end_src
 
 Create lecture slides and notes in the currently visited directory.
@@ -3130,7 +3128,7 @@ Insert image.
 
 Move draft to posts.
 
-#+begin_src
+#+begin_src emacs-lisp
   (defun orgblog-publish-draft ()
     (interactive)
     (save-buffer)

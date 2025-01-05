@@ -903,7 +903,7 @@ If there are only two windows, jump directly to the other window."
 
 (use-package emmet-mode
 :general
-(:keymaps 'mhtml-mode-map
+(:keymaps 'html-mode-map
 "C-M-S-s-<right>" #'emmet-next-edit-point
 "C-M-S-s-<left>" #'emmet-prev-edit-point))
 
@@ -1810,9 +1810,7 @@ If there are only two windows, jump directly to the other window."
   (kill-buffer)
 
   ;; Create data file
-  (find-file (s-concat rlrt-filename "/" rlrt-filename "-data.org"))
-  (insert (s-concat "#+TITLE: " rlrt-title) ?\n)
-  (yas-expand-snippet (yas-lookup-snippet "syllabus")))
+  (find-file (s-concat rlrt-filename "/" rlrt-filename "-data.org")))
 
 (defun rlrt-new-lecture (rlrt-title)
   (interactive "sTitle: ")
@@ -2102,6 +2100,14 @@ If there are only two windows, jump directly to the other window."
 
 ")
   )
+
+(defun orgblog-publish-draft ()
+  (interactive)
+  (save-buffer)
+  (copy-file (buffer-file-name) "~/sites/orgblog/posts/")
+  (delete-file (buffer-file-name) t)
+  (kill-buffer)
+  (dired "~/sites/orgblog/posts"))
 
 (defun orgblog-build ()
   (interactive)

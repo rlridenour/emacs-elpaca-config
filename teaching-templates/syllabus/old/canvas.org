@@ -5,7 +5,7 @@
 #+OPTIONS: title:nil
 #+OPTIONS: html-style:nil
 #+OPTIONS: num:nil
-#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="https://randyridenour.net/css/canvas-syllabus.css"/>
+#+HTML_HEAD: <link rel="stylesheet" type="text/css" href="https://randyridenour.net/css/canvas-handout.css"/>
 
 #+include: "canvas-data.org" :minlevel 1
 
