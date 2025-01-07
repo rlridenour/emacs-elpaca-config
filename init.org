@@ -896,12 +896,12 @@ Convert paragraph to single sentence per line.
 
 Convert DOS line-endings to UNIX.
 
-#+begin_src emacs-lisp 
-(defun dos2unix () 
-  "Replace DOS eolns CR LF with Unix eolns CR" 
-  (interactive) 
-    (goto-char (point-min)) 
-      (while (search-forward (string ?\C-m) nil t) (replace-match "\n"))) 
+#+begin_src emacs-lisp
+  (defun dos2unix ()
+    "Replace DOS eolns CR LF with Unix eolns CR"
+    (interactive)
+    (goto-char (point-min))
+    (while (search-forward (string ?\C-m) nil t) (replace-match "\n")))
 #+end_src
 
 * Packages
@@ -1562,11 +1562,11 @@ From [[https://github.com/mickeynp/discover.el][mickeynp/discover.el: Discover m
 ** Emmet
 
 #+begin_src emacs-lisp
-(use-package emmet-mode
-:general
-(:keymaps 'html-mode-map
-"C-M-S-s-<right>" #'emmet-next-edit-point
-"C-M-S-s-<left>" #'emmet-prev-edit-point))
+  (use-package emmet-mode
+    :general
+    (:keymaps 'html-mode-map
+	    "C-M-S-s-<right>" #'emmet-next-edit-point
+	    "C-M-S-s-<left>" #'emmet-prev-edit-point))
 #+end_src
 
 
@@ -1994,8 +1994,7 @@ From [[https://github.com/mickeynp/discover.el][mickeynp/discover.el: Discover m
    "H-t" #'hydra-toggle/body
    "H-w" #'hydra-window/body
    ;; "s-b" #'hydra-buffer/body
-   "C-x 9" #'hydra-logic/body
-   "s-;" #'hydra-blogconvert/body)
+   "C-x 9" #'hydra-logic/body)
 #+end_src
 
 ** Jinx
@@ -3257,7 +3256,7 @@ Add tagged post to tag page.
       (search-forward "#+title: " nil 1)
       (setq post-title (buffer-substring (point) (line-end-position))))
     (when
-        (not (file-exists-p tagfile))
+	(not (file-exists-p tagfile))
       (f-append-text (concat "#+title: Tagged: " (s-titleized-words newtag) "\n#+setupfile: ../org-templates/post.org\n") 'utf-8 tagfile))
     (f-append-text (concat "\n- [[file:../posts/" post-filename "][" post-title "]]") 'utf-8 tagfile))
 #+end_src
@@ -3265,12 +3264,12 @@ Add tagged post to tag page.
 Select tag, add tag to to post, then add post to tag page.
 
 #+begin_src emacs-lisp
-(defun orgblog-add-tag ()
-  (interactive)
-  (orgblog-select-tag)
-  (insert-post-tag)
-  (add-post-to-tagfile)
-  (save-buffer))
+  (defun orgblog-add-tag ()
+    (interactive)
+    (orgblog-select-tag)
+    (insert-post-tag)
+    (add-post-to-tagfile)
+    (save-buffer))
 #+end_src
 
 *** Htmlize
@@ -3400,9 +3399,9 @@ Increase number of recent files shown.
 ** Rg
 
 #+begin_src emacs-lisp
-(use-package rg
-:config
-(rg-enable-default-bindings))
+  (use-package rg
+    :config
+    (rg-enable-default-bindings))
 #+end_src
 
 **
@@ -3637,7 +3636,8 @@ Keybindings for files and buffers.
    "S-C-<up>" #'enlarge-window
    "C-x w" #'delete-frame
    "M-o" #'crux-other-window-or-switch-buffer
-   "M-o" #'my/quick-window-jump)
+   "M-o" #'my/quick-window-jump
+   "s-\"" #'previous-window-any-frame)
 #+end_src
 
 ** Tab Keybindings

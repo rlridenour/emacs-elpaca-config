@@ -456,11 +456,11 @@ If there are only two windows, jump directly to the other window."
 	(insert "\n")
 	))))
 
-(defun dos2unix () 
-  "Replace DOS eolns CR LF with Unix eolns CR" 
-  (interactive) 
-    (goto-char (point-min)) 
-      (while (search-forward (string ?\C-m) nil t) (replace-match "\n")))
+(defun dos2unix ()
+  "Replace DOS eolns CR LF with Unix eolns CR"
+  (interactive)
+  (goto-char (point-min))
+  (while (search-forward (string ?\C-m) nil t) (replace-match "\n")))
 
 (use-package general
   :ensure (:wait t)
@@ -902,10 +902,10 @@ If there are only two windows, jump directly to the other window."
      (goto-char (point-min)))))
 
 (use-package emmet-mode
-:general
-(:keymaps 'html-mode-map
-"C-M-S-s-<right>" #'emmet-next-edit-point
-"C-M-S-s-<left>" #'emmet-prev-edit-point))
+  :general
+  (:keymaps 'html-mode-map
+	  "C-M-S-s-<right>" #'emmet-next-edit-point
+	  "C-M-S-s-<left>" #'emmet-prev-edit-point))
 
 (use-package exec-path-from-shell
   :config
@@ -1278,8 +1278,7 @@ If there are only two windows, jump directly to the other window."
  "H-t" #'hydra-toggle/body
  "H-w" #'hydra-window/body
  ;; "s-b" #'hydra-buffer/body
- "C-x 9" #'hydra-logic/body
- "s-;" #'hydra-blogconvert/body)
+ "C-x 9" #'hydra-logic/body)
 
 (use-package jinx
   :init
@@ -2261,8 +2260,8 @@ If there are only two windows, jump directly to the other window."
 (use-package reveal-in-osx-finder)
 
 (use-package rg
-:config
-(rg-enable-default-bindings))
+  :config
+  (rg-enable-default-bindings))
 
 (use-package shrink-whitespace)
 
@@ -2403,7 +2402,8 @@ If there are only two windows, jump directly to the other window."
  "S-C-<up>" #'enlarge-window
  "C-x w" #'delete-frame
  "M-o" #'crux-other-window-or-switch-buffer
- "M-o" #'my/quick-window-jump)
+ "M-o" #'my/quick-window-jump
+ "s-\"" #'previous-window-any-frame)
 
 (general-define-key
  "s-t" #'rlr/find-file-new-tab
