@@ -3146,7 +3146,17 @@ Publish source to public directory.
       (find-file "~/sites/orgblog/publish.el")
       (eval-buffer)
       (org-publish-all)
-      (kill-buffer)))
+      (webfeeder-build "atom.xml"
+		       "./docs"
+		       "https://randyridenour.net/"
+		       (let ((default-directory (expand-file-name "./docs")))
+			 (remove "posts/index.html"
+				 (directory-files-recursively "posts"
+							      ".*\\.html$")))
+		       :title "Randy Ridenour"
+		       :description "Blog posts by Randy Ridenour")
+      (kill-buffer))
+    (message "Build complete!"))
 #+end_src
 
 Start local server.
@@ -3532,6 +3542,12 @@ https://github.com/amno1/emacs-term-toggle
     (vundo-glyph-alist vundo-unicode-symbols)
     :bind
     ("C-x u" . vundo))
+#+end_src
+
+** Webfeeder
+
+#+begin_src emacs-lisp
+(use-package webfeeder)
 #+end_src
 
 ** Which-Key

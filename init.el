@@ -2114,7 +2114,17 @@ If there are only two windows, jump directly to the other window."
     (find-file "~/sites/orgblog/publish.el")
     (eval-buffer)
     (org-publish-all)
-    (kill-buffer)))
+    (webfeeder-build "atom.xml"
+		     "./docs"
+		     "https://randyridenour.net/"
+		     (let ((default-directory (expand-file-name "./docs")))
+		       (remove "posts/index.html"
+			       (directory-files-recursively "posts"
+							    ".*\\.html$")))
+		     :title "Randy Ridenour"
+		     :description "Blog posts by Randy Ridenour")
+    (kill-buffer))
+  (message "Build complete!"))
 
 (defun orgblog-serve ()
   (interactive)
@@ -2341,6 +2351,8 @@ If there are only two windows, jump directly to the other window."
   (vundo-glyph-alist vundo-unicode-symbols)
   :bind
   ("C-x u" . vundo))
+
+(use-package webfeeder)
 
 (use-package which-key
   :demand t
