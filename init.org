@@ -3404,7 +3404,26 @@ Increase number of recent files shown.
     (rg-enable-default-bindings))
 #+end_src
 
-**
+** Selected
+
+#+begin_src emacs-lisp
+  (use-package selected
+    :ensure
+    :commands selected-minor-mode
+    :general
+    (:keymaps 'selected-keymap
+	      "w" #'forward-word
+	      "W" #'backward-word
+	    "j" #'next-line
+	    "k" #'previous-line
+	    "l" #'forward-char
+	    "h" #'backward-char
+	      "d" #'downcase-region
+	      "c" #'count-words-region
+	      "m" #'apply-macro-to-region-lines))
+#+end_src
+
+
 
 ** Shrink Whitespace
 

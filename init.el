@@ -2267,6 +2267,21 @@ If there are only two windows, jump directly to the other window."
   :config
   (rg-enable-default-bindings))
 
+(use-package selected
+  :ensure
+  :commands selected-minor-mode
+  :general
+  (:keymaps 'selected-keymap
+	    "w" #'forward-word
+	    "W" #'backward-word
+	  "j" #'next-line
+	  "k" #'previous-line
+	  "l" #'forward-char
+	  "h" #'backward-char
+	    "d" #'downcase-region
+	    "c" #'count-words-region
+	    "m" #'apply-macro-to-region-lines))
+
 (use-package shrink-whitespace)
 
 (use-package smartparens
