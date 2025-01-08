@@ -3410,16 +3410,24 @@ Increase number of recent files shown.
   (use-package selected
     :ensure
     :commands selected-minor-mode
+    :config
+    (selected-global-mode)
     :general
     (:keymaps 'selected-keymap
-	      "w" #'forward-word
-	      "W" #'backward-word
-	    "j" #'next-line
-	    "k" #'previous-line
-	    "l" #'forward-char
-	    "h" #'backward-char
-	      "d" #'downcase-region
-	      "c" #'count-words-region
+	      "j" #'next-line
+	      "k" #'previous-line
+	      "l" #'forward-char
+	      "h" #'backward-char
+	      "d" #'downcase-dwim
+	      "f" #'forward-word
+	      "b" #'backward-word
+	      "e" #'forward-sentence
+	      "a" #'backward-sentence
+	      "}" #'forward-paragraph
+	      "{" #'backward-paragraph
+	      "u" #'upcase-dwim
+	      "c" #'capitalize-dwim
+	      "C" #'count-words-region
 	      "m" #'apply-macro-to-region-lines))
 #+end_src
 
