@@ -716,12 +716,6 @@ If there are only two windows, jump directly to the other window."
   ;; Only parse the root directory
   (xeft-recursive nil))
 
-(use-package devil
-  :demand t
-  :ensure
-  :config
-  (global-devil-mode))
-
 (use-package dired+
   :demand t
   :ensure (:host github :repo "emacsmirror/dired-plus"))

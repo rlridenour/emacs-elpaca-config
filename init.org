@@ -1306,16 +1306,6 @@ Search notes with the xapian syntax (+word -word AND NOT etc), <tab> to preview,
     (xeft-recursive nil))
 #+end_src
 
-** Devil Mode
-
-#+begin_src emacs-lisp
-  (use-package devil
-    :demand t
-    :ensure
-    :config
-    (global-devil-mode))
-#+end_src
-
 ** Dired
 
 Hide file details and absolute path by default, from [[https://lmno.lol/alvaro/hide-another-detail][Hide another detail]]. Check back later to see if =dired-hide-details-hide-absolute-location= has been merged into Dired.
