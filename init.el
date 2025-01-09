@@ -780,9 +780,9 @@ If there are only two windows, jump directly to the other window."
   (setq doom-modeline-enable-word-count t)
   (setq doom-modeline-continuous-word-count-modes '(markdown-mode gfm-mode org-mode))
   (setq display-time-day-and-date t)
+  (setq doom-modeline-modal t)
   :hook
-  (elpaca-after-init . doom-modeline-mode)
-  )
+  (elpaca-after-init . doom-modeline-mode))
 
 (use-package eat
   :demand t
@@ -820,6 +820,15 @@ If there are only two windows, jump directly to the other window."
 (use-package embark-consult
   :hook
   (embark-collect-mode . consult-preview-at-point-mode))
+
+(use-package evil
+  :demand
+  :init
+  (setq evil-respect-visual-line-mode t
+	evil-disable-insert-state-bindings t)
+  (setq evil-default-state 'emacs)
+  :config
+  (evil-mode 1))
 
 (use-package evil-nerd-commenter
   :general
@@ -2266,29 +2275,6 @@ If there are only two windows, jump directly to the other window."
 (use-package rg
   :config
   (rg-enable-default-bindings))
-
-(use-package selected
-  :ensure
-  :commands selected-minor-mode
-  :config
-  (selected-global-mode)
-  :general
-  (:keymaps 'selected-keymap
-	    "j" #'next-line
-	    "k" #'previous-line
-	    "l" #'forward-char
-	    "h" #'backward-char
-	    "d" #'downcase-dwim
-	    "f" #'forward-word
-	    "b" #'backward-word
-	    "e" #'forward-sentence
-	    "a" #'backward-sentence
-	    "}" #'forward-paragraph
-	    "{" #'backward-paragraph
-	    "u" #'upcase-dwim
-	    "c" #'capitalize-dwim
-	    "C" #'count-words-region
-	    "m" #'apply-macro-to-region-lines))
 
 (use-package shrink-whitespace)
 
