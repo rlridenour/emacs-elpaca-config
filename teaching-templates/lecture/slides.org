@@ -9,6 +9,12 @@
 #+LATEX_HEADER: \addtobeamertemplate{note page}{\setbeamerfont{itemize/enumerate subbody}{size=\footnotesize}}{}
 #+LATEX_HEADER: \setbeamercolor{alerted text}{fg=black}
 #+LATEX_HEADER: \setbeamerfont{alerted text}{series=\bfseries}
+# #+LaTeX_HEADER: \renewcommand{\land}{\mathbin{\&}}
+#+LaTeX_HEADER: \renewcommand{\land}{\bm{\cdot}}
+#+LaTeX_HEADER: \newcommand{\lif}{\supset}
+#+LaTeX_HEADER: \newcommand{\liff}{\equiv}
+# #+LaTeX_HEADER: \newcommand{\lneg}{\neg}
+#+LaTeX_HEADER: \newcommand{\lneg}{\sim}
 #+LATEX_HEADER: \hypersetup{pdfkeywords={SP-Right}}
 #+LATEX_COMPILER: pdflatex
 #+OPTIONS: toc:nil

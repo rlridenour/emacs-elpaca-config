@@ -97,7 +97,8 @@
 
 (setf use-short-answers t)
 
-(setq ns-function-modifier 'hyper)
+(setq ns-function-modifier 'control
+      ns-right-command-modifier 'hyper)
 
 (setq enable-recursive-minibuffers t)
 (minibuffer-depth-indicate-mode 1)
@@ -432,7 +433,7 @@ If there are only two windows, jump directly to the other window."
   (interactive)
   (load-file user-init-file))
 
-(defun wrap-at-sentences ()
+(defun rr/wrap-at-sentences ()
   "Fills the current paragraph, but starts each sentence on a new line."
   (interactive)
   (save-excursion
@@ -462,9 +463,18 @@ If there are only two windows, jump directly to the other window."
   (goto-char (point-min))
   (while (search-forward (string ?\C-m) nil t) (replace-match "\n")))
 
+(defun my/stretchlink-cc ()
+  (interactive)
+  (progn
+    (setq current-safari-url (do-applescript "tell application \"Safari\" to return URL of document 1"))
+    (shell-command
+     (concat "curl " "\"https://stretchlink.cc/api/1?u=" current-safari-url "&t=1&c=1&o=text\" | pbcopy"))
+     (setq myurl (yank))
+     (message myurl)))
+
 (use-package general
   :ensure (:wait t)
-  :demand t
+  :demand
   :config
   (general-override-mode)
   (general-auto-unbind-keys)
@@ -566,7 +576,7 @@ If there are only two windows, jump directly to the other window."
      (t . (csl "chicago-author-date.csl")))))
 
 (use-package consult
-  :demand t
+  :demand
   :config
   (defun rlr/consult-rg ()
     "Function for `consult-ripgrep' with the `universal-argument'."
@@ -717,7 +727,7 @@ If there are only two windows, jump directly to the other window."
   (xeft-recursive nil))
 
 (use-package dired+
-  :demand t
+  :demand
   :ensure (:host github :repo "emacsmirror/dired-plus"))
 
 (defun hide-dired-details-include-all-subdir-paths ()
@@ -785,7 +795,7 @@ If there are only two windows, jump directly to the other window."
   (elpaca-after-init . doom-modeline-mode))
 
 (use-package eat
-  :demand t
+  :demand
   :ensure
   (:host codeberg
        :repo "akib/emacs-eat"
@@ -822,13 +832,14 @@ If there are only two windows, jump directly to the other window."
   (embark-collect-mode . consult-preview-at-point-mode))
 
 (use-package evil
-  :demand
-  :init
-  (setq evil-respect-visual-line-mode t
-	evil-disable-insert-state-bindings t)
-  (setq evil-default-state 'emacs)
-  :config
-  (evil-mode 1))
+    :init
+    (setq evil-respect-visual-line-mode t
+	evil-track-eol nil
+	evil-want-fine-undo t
+	  evil-disable-insert-state-bindings t)
+    (setq evil-default-state 'emacs)
+:config
+(evil-mode -1))
 
 (use-package evil-nerd-commenter
   :general
@@ -907,8 +918,8 @@ If there are only two windows, jump directly to the other window."
 (use-package emmet-mode
   :general
   (:keymaps 'html-mode-map
-	  "C-M-S-s-<right>" #'emmet-next-edit-point
-	  "C-M-S-s-<left>" #'emmet-prev-edit-point))
+	    "C-M-S-s-<right>" #'emmet-next-edit-point
+	    "C-M-S-s-<left>" #'emmet-prev-edit-point))
 
 (use-package exec-path-from-shell
   :config
@@ -945,7 +956,7 @@ If there are only two windows, jump directly to the other window."
      (" "
       (("a" abbrev-mode "abbrev" :toggle t)
        ("d" toggle-debug-on-error "debug" (default value 'debug-on-error))
-       ("e" meow-global-mode "meow" :toggle t)
+       ("e" evil-mode "evil" :toggle t)
        ("i" aggressive-indent-mode "indent" :toggle t)
        ("f" auto-fill-mode "fill" :toggle t)
        ("l" display-line-numbers-mode "linum" :toggle t)
@@ -955,7 +966,7 @@ If there are only two windows, jump directly to the other window."
        ("s" whitespace-mode "whitespace" :toggle t))
       " "
       (("c" cdlatex-mode "cdlatex" :toggle t)
-       ("o" olivetti-mode "writeroom" :toggle t)
+       ("o" olivetti-mode "olivetti" :toggle t)
        ("r" read-only-mode "read-only" :toggle t)
        ("v" view-mode "view" :toggle t)
        ("W" wc-mode "word-count" :toggle t)
@@ -1044,8 +1055,11 @@ If there are only two windows, jump directly to the other window."
    (pretty-hydra-define hydra-logic
      (:color pink :quit-key "0" :title "Logic")
      ("Operators"
-      (("1" (my/insert-unicode "NOT SIGN") "¬")
-       ("2" (my/insert-unicode "AMPERSAND") "&")
+      (
+       ;; ("1" (my/insert-unicode "NOT SIGN") "¬")
+       ("1" (my/insert-unicode "TILDE OPERATOR") "∼")
+       ;; ("2" (my/insert-unicode "AMPERSAND") "&")
+       ("2" (my/insert-unicode "BULLET") "•")
        ("3" (my/insert-unicode "LOGICAL OR") "v")
        ("4" (my/insert-unicode "SUPERSET OF") "⊃")
        ;; ("4" (my/insert-unicode "RIGHTWARDS ARROW") "→")
@@ -1418,8 +1432,18 @@ If there are only two windows, jump directly to the other window."
 (fset 'copy-beamer-note
       (kmacro-lambda-form [?\C-r ?: ?E ?N ?D return down ?\C-  ?\C-s ?* ?* ?  ?N ?o ?t ?e ?s return up ?\M-w ?\C-s ?: ?E ?N ?D return down return ?\s-v return] 0 "%d"))
 
+(defun cc/markdown-to-org-region (start end) 
+  "Convert Markdown formatted text in region (START, END) to Org. 
+ 
+This command requires that pandoc (man page `pandoc(1)') be 
+installed." 
+  (interactive "r") 
+  (shell-command-on-region 
+   start end 
+   "pandoc -f markdown -t org --wrap=preserve" t t))
+
 (use-package modus-themes
-  :demand t
+  :demand
   :config
   ;; Add all your customizations prior to loading the themes
   (setq modus-themes-italic-constructs t
@@ -2288,7 +2312,7 @@ If there are only two windows, jump directly to the other window."
   :init (spacious-padding-mode))
 
 (use-package speedrect
-  :demand t
+  :demand
   :ensure
   (:host github :repo "jdtsmith/speedrect")
   :config (speedrect-mode))
@@ -2306,7 +2330,7 @@ If there are only two windows, jump directly to the other window."
   )
 
 (use-package term-toggle
-  :demand t
+  :demand
   :ensure
   (:host github :repo "amno1/emacs-term-toggle")
   :config
@@ -2324,7 +2348,7 @@ If there are only two windows, jump directly to the other window."
   (setq titlecase-style "chicago"))
 
 (use-package vertico
-  :demand t
+  :demand
   :custom (vertico-cycle t)
   :config
   (setf (car vertico-multiline) "\n") ;; don't replace newlines
@@ -2358,7 +2382,7 @@ If there are only two windows, jump directly to the other window."
 (use-package webfeeder)
 
 (use-package which-key
-  :demand t
+  :demand
   :init
   (setq which-key-enable-extended-define-key t)
   :config

@@ -328,10 +328,11 @@ Use "y" and "n" in confirmation dialogs.
   (setf use-short-answers t)
 #+end_src
 
-Set Mac fn key as Emacs hyper key. The fn key with A, F, H, E, C, N, and Q are used by the system. Maybe I can find a way to disable some of those keyboard shortcuts.
+Set Mac right command key as Emacs hyper key. The fn key with A, F, H, E, C, N, and Q are used by the system. Maybe I can find a way to disable some of those keyboard shortcuts. On the new magic keyboard, the left control key is small and right by the fn key which I seem to always be reaching for. So, remap the fn key to control.
 
 #+begin_src emacs-lisp
-  (setq ns-function-modifier 'hyper)
+  (setq ns-function-modifier 'control
+	ns-right-command-modifier 'hyper)
 #+end_src
 
 Allow entering a command when the minibuffer is active.
@@ -869,7 +870,7 @@ Make a function to reload the Emacs config file to test changes.
 Convert paragraph to single sentence per line.
 
 #+begin_src emacs-lisp
-  (defun wrap-at-sentences ()
+  (defun rr/wrap-at-sentences ()
     "Fills the current paragraph, but starts each sentence on a new line."
     (interactive)
     (save-excursion
@@ -904,6 +905,22 @@ Convert DOS line-endings to UNIX.
     (while (search-forward (string ?\C-m) nil t) (replace-match "\n")))
 #+end_src
 
+Strip tracking elements from URL's using Brett Terpstra's stretchlink.cc.
+
+#+begin_src emacs-lisp
+(defun my/stretchlink-cc ()
+  (interactive)
+  (progn
+    (setq current-safari-url (do-applescript "tell application \"Safari\" to return URL of document 1"))
+    (shell-command
+     (concat "curl " "\"https://stretchlink.cc/api/1?u=" current-safari-url "&t=1&c=1&o=text\" | pbcopy"))
+     (setq myurl (yank))
+     (message myurl)))
+
+#+end_src
+
+
+
 * Packages
 :PROPERTIES:
 :header-args: :tangle init.el
@@ -916,7 +933,7 @@ Load general before the remaining packages so they can make use of the ~:general
 #+begin_src emacs-lisp :lexical t
   (use-package general
     :ensure (:wait t)
-    :demand t
+    :demand
     :config
     (general-override-mode)
     (general-auto-unbind-keys)
@@ -1071,7 +1088,7 @@ Load general before the remaining packages so they can make use of the ~:general
 
 #+begin_src emacs-lisp
   (use-package consult
-    :demand t
+    :demand
     :config
     (defun rlr/consult-rg ()
       "Function for `consult-ripgrep' with the `universal-argument'."
@@ -1312,7 +1329,7 @@ Hide file details and absolute path by default, from [[https://lmno.lol/alvaro/h
 
 #+begin_src emacs-lisp
   (use-package dired+
-    :demand t
+    :demand
     :ensure (:host github :repo "emacsmirror/dired-plus"))
 #+end_src
 
@@ -1418,7 +1435,7 @@ From [[https://github.com/mickeynp/discover.el][mickeynp/discover.el: Discover m
 
 #+begin_src emacs-lisp
   (use-package eat
-    :demand t
+    :demand
     :ensure
     (:host codeberg
 	 :repo "akib/emacs-eat"
@@ -1469,13 +1486,14 @@ From [[https://github.com/mickeynp/discover.el][mickeynp/discover.el: Discover m
 
 #+begin_src emacs-lisp
   (use-package evil
-    :demand
     :init
     (setq evil-respect-visual-line-mode t
+	evil-track-eol nil
+	evil-want-fine-undo t
 	  evil-disable-insert-state-bindings t)
     (setq evil-default-state 'emacs)
-    :config
-    (evil-mode 1))
+:config
+(evil-mode -1))
 #+end_src
 
 ** Evil Nerd Commenter
@@ -1568,8 +1586,8 @@ From [[https://github.com/mickeynp/discover.el][mickeynp/discover.el: Discover m
   (use-package emmet-mode
     :general
     (:keymaps 'html-mode-map
-	    "C-M-S-s-<right>" #'emmet-next-edit-point
-	    "C-M-S-s-<left>" #'emmet-prev-edit-point))
+	      "C-M-S-s-<right>" #'emmet-next-edit-point
+	      "C-M-S-s-<left>" #'emmet-prev-edit-point))
 #+end_src
 
 
@@ -1613,7 +1631,7 @@ From [[https://github.com/mickeynp/discover.el][mickeynp/discover.el: Discover m
 
 #+begin_src emacs-lisp :tangle no
   (use-package rlr-hugo
-    :demand t
+    :demand
     :ensure (:host github :repo "~/elisp/rlr-hugo"))
 #+end_src
 
@@ -1648,7 +1666,7 @@ From [[https://github.com/mickeynp/discover.el][mickeynp/discover.el: Discover m
        (" "
 	(("a" abbrev-mode "abbrev" :toggle t)
 	 ("d" toggle-debug-on-error "debug" (default value 'debug-on-error))
-	 ("e" meow-global-mode "meow" :toggle t)
+	 ("e" evil-mode "evil" :toggle t)
 	 ("i" aggressive-indent-mode "indent" :toggle t)
 	 ("f" auto-fill-mode "fill" :toggle t)
 	 ("l" display-line-numbers-mode "linum" :toggle t)
@@ -1658,7 +1676,7 @@ From [[https://github.com/mickeynp/discover.el][mickeynp/discover.el: Discover m
 	 ("s" whitespace-mode "whitespace" :toggle t))
 	" "
 	(("c" cdlatex-mode "cdlatex" :toggle t)
-	 ("o" olivetti-mode "writeroom" :toggle t)
+	 ("o" olivetti-mode "olivetti" :toggle t)
 	 ("r" read-only-mode "read-only" :toggle t)
 	 ("v" view-mode "view" :toggle t)
 	 ("W" wc-mode "word-count" :toggle t)
@@ -1747,8 +1765,11 @@ From [[https://github.com/mickeynp/discover.el][mickeynp/discover.el: Discover m
      (pretty-hydra-define hydra-logic
        (:color pink :quit-key "0" :title "Logic")
        ("Operators"
-	(("1" (my/insert-unicode "NOT SIGN") "¬")
-	 ("2" (my/insert-unicode "AMPERSAND") "&")
+	(
+	 ;; ("1" (my/insert-unicode "NOT SIGN") "¬")
+	 ("1" (my/insert-unicode "TILDE OPERATOR") "∼")
+	 ;; ("2" (my/insert-unicode "AMPERSAND") "&")
+	 ("2" (my/insert-unicode "BULLET") "•")
 	 ("3" (my/insert-unicode "LOGICAL OR") "v")
 	 ("4" (my/insert-unicode "SUPERSET OF") "⊃")
 	 ;; ("4" (my/insert-unicode "RIGHTWARDS ARROW") "→")
@@ -2177,6 +2198,24 @@ Enrich existing commands with completion annotations
 	(kmacro-lambda-form [?\C-r ?: ?E ?N ?D return down ?\C-  ?\C-s ?* ?* ?  ?N ?o ?t ?e ?s return up ?\M-w ?\C-s ?: ?E ?N ?D return down return ?\s-v return] 0 "%d"))
 #+end_src
 
+
+From [[http://yummymelon.com/devnull/converting-a-markdown-region-to-org-revisited.html][Charles Choi]].
+
+#+begin_src emacs-lisp
+(defun cc/markdown-to-org-region (start end) 
+  "Convert Markdown formatted text in region (START, END) to Org. 
+ 
+This command requires that pandoc (man page `pandoc(1)') be 
+installed." 
+  (interactive "r") 
+  (shell-command-on-region 
+   start end 
+   "pandoc -f markdown -t org --wrap=preserve" t t))
+#+end_src
+
+
+
+
 ** Mastodon
 
 #+begin_src emacs-lisp :tangle no
@@ -2187,11 +2226,110 @@ Enrich existing commands with completion annotations
 	  mastodon-active-user "randyridenour"))
 #+end_src
 
+** Meow
+
+
+#+begin_src emacs-lisp :tangle no
+(use-package meow
+:demand
+:config
+(defun meow-setup ()
+  (setq meow-cheatsheet-layout meow-cheatsheet-layout-qwerty)
+  (meow-motion-overwrite-define-key
+   '("j" . meow-next)
+   '("k" . meow-prev)
+   '("<escape>" . ignore))
+  (meow-leader-define-key
+   ;; SPC j/k will run the original command in MOTION state.
+   '("j" . "H-j")
+   '("k" . "H-k")
+   ;; Use SPC (0-9) for digit arguments.
+   '("1" . meow-digit-argument)
+   '("2" . meow-digit-argument)
+   '("3" . meow-digit-argument)
+   '("4" . meow-digit-argument)
+   '("5" . meow-digit-argument)
+   '("6" . meow-digit-argument)
+   '("7" . meow-digit-argument)
+   '("8" . meow-digit-argument)
+   '("9" . meow-digit-argument)
+   '("0" . meow-digit-argument)
+   '("/" . meow-keypad-describe-key)
+   '("?" . meow-cheatsheet))
+  (meow-normal-define-key
+   '("0" . meow-expand-0)
+   '("9" . meow-expand-9)
+   '("8" . meow-expand-8)
+   '("7" . meow-expand-7)
+   '("6" . meow-expand-6)
+   '("5" . meow-expand-5)
+   '("4" . meow-expand-4)
+   '("3" . meow-expand-3)
+   '("2" . meow-expand-2)
+   '("1" . meow-expand-1)
+   '("-" . negative-argument)
+   '(";" . meow-reverse)
+   '("," . meow-inner-of-thing)
+   '("." . meow-bounds-of-thing)
+   '("[" . meow-beginning-of-thing)
+   '("]" . meow-end-of-thing)
+   '("a" . meow-append)
+   '("A" . meow-open-below)
+   '("b" . meow-back-word)
+   '("B" . meow-back-symbol)
+   '("c" . meow-change)
+   '("d" . meow-delete)
+   '("D" . meow-backward-delete)
+   '("e" . meow-next-word)
+   '("E" . meow-next-symbol)
+   '("f" . meow-find)
+   '("g" . meow-cancel-selection)
+   '("G" . meow-grab)
+   '("h" . meow-left)
+   '("H" . meow-left-expand)
+   '("i" . meow-insert)
+   '("I" . meow-open-above)
+   '("j" . meow-next)
+   '("J" . meow-next-expand)
+   '("k" . meow-prev)
+   '("K" . meow-prev-expand)
+   '("l" . meow-right)
+   '("L" . meow-right-expand)
+   '("m" . meow-join)
+   '("n" . meow-search)
+   '("o" . meow-block)
+   '("O" . meow-to-block)
+   '("p" . meow-yank)
+   '("q" . meow-quit)
+   '("Q" . meow-goto-line)
+   '("r" . meow-replace)
+   '("R" . meow-swap-grab)
+   '("s" . meow-kill)
+   '("t" . meow-till)
+   '("u" . meow-undo)
+   '("U" . meow-undo-in-selection)
+   '("v" . meow-visit)
+   '("w" . meow-mark-word)
+   '("W" . meow-mark-symbol)
+   '("x" . meow-line)
+   '("X" . meow-goto-line)
+   '("y" . meow-save)
+   '("Y" . meow-sync-grab)
+   '("z" . meow-pop-selection)
+   '("'" . repeat)
+   '("<escape>" . ignore)))
+(meow-setup)
+(meow-global-mode 1)
+)
+#+end_src
+
+
+
 ** Modus Themes
 
 #+begin_src emacs-lisp
   (use-package modus-themes
-    :demand t
+    :demand
     :config
     ;; Add all your customizations prior to loading the themes
     (setq modus-themes-italic-constructs t
@@ -3473,7 +3611,7 @@ Increase number of recent files shown.
 
 #+begin_src emacs-lisp
   (use-package speedrect
-    :demand t
+    :demand
     :ensure
     (:host github :repo "jdtsmith/speedrect")
     :config (speedrect-mode))
@@ -3504,7 +3642,7 @@ https://github.com/amno1/emacs-term-toggle
 
 #+begin_src emacs-lisp
   (use-package term-toggle
-    :demand t
+    :demand
     :ensure
     (:host github :repo "amno1/emacs-term-toggle")
     :config
@@ -3530,7 +3668,7 @@ https://github.com/amno1/emacs-term-toggle
 
 #+begin_src emacs-lisp :lexical t
   (use-package vertico
-    :demand t
+    :demand
     :custom (vertico-cycle t)
     :config
     (setf (car vertico-multiline) "\n") ;; don't replace newlines
@@ -3588,7 +3726,7 @@ https://github.com/justbur/emacs-which-key
 #+end_quote
 #+begin_src emacs-lisp :lexical t
   (use-package which-key
-    :demand t
+    :demand
     :init
     (setq which-key-enable-extended-define-key t)
     :config
