@@ -2347,9 +2347,7 @@ installed."
 
 ** Notepad
 
-I use this to quickly create a disposable Emacs buffer to write some quick text for pasting into another app.
-
-TODO: Enable switching back to original app after killing Emacs buffer.
+I use this to quickly create a disposable Emacs buffer to write some quick text for pasting into another app. I'm using this with a Keyboard Maestro macro.
 
 Define initial mode to use for notepad buffers. This is so I can use "C-c C-c" to copy and kill.
 
@@ -2371,7 +2369,8 @@ Create notepad buffer
     (interactive)
     (let ((buf (generate-new-buffer "*notepad*")))
       (switch-to-buffer buf))
-    (notepad-mode))
+    (notepad-mode)
+(shell-command-on-region (point) (if mark-active (mark) (point)) "pbpaste" nil t))
 #+end_src
 
 This calls a fish function that uses command-tab to switch to the previous app and pastes the clipboard.
@@ -2390,14 +2389,15 @@ This calls a fish function that uses command-tab to switch to the previous app a
 Copy entire buffer then kill. I use this with temporary scratch buffers to write text that will be pasted into other apps.
 
 #+begin_src emacs-lisp
-  (defun copy-kill-buffer ()
-    (interactive)
-    (goto-char (point-max))
-    (newline)
-    (mark-whole-buffer)
-    (copy-region-as-kill 1 (buffer-size))
-    (kill-buffer)
-    (app-switch))
+    (defun copy-kill-buffer ()
+      (interactive)
+      (goto-char (point-max))
+      (newline)
+      (mark-whole-buffer)
+      (copy-region-as-kill 1 (buffer-size))
+      (kill-buffer)
+      ;; (app-switch)
+      (shell-command "open -a ~/icloud/scripts/beep.app"))
 #+end_src
 
 ** Olivetti
@@ -3434,6 +3434,31 @@ Select tag, add tag to to post, then add post to tag page.
 #+begin_src emacs-lisp :tangle no
   (require 'cc-style-text-menu)
 #+end_src
+
+
+*** Copy Org Rich Text
+
+From [[https://kitchingroup.cheme.cmu.edu/blog/2016/06/16/Copy-formatted-org-mode-text-from-Emacs-to-other-applications/][Copy formatted org-mode text from Emacs to other applications]]
+
+#+begin_src emacs-lisp
+(defun formatted-copy ()
+  "Export region to HTML, and copy it to the clipboard."
+  (interactive)
+  (save-window-excursion
+    (let* ((buf (org-export-to-buffer 'html "*Formatted Copy*" nil nil t t))
+           (html (with-current-buffer buf (buffer-string))))
+      (with-current-buffer buf
+        (shell-command-on-region
+         (point-min)
+         (point-max)
+         "textutil -stdin -format html -convert rtf -stdout | pbcopy"))
+      (kill-buffer buf))))
+
+(global-set-key (kbd "H-w") 'formatted-copy)
+#+end_src
+
+
+
 
 ** OSX Dictionary
 

@@ -1467,11 +1467,12 @@ installed."
   )
 
 (defun rlr-create-notepad-buffer ()
-  "Create a new notepad buffer."
-  (interactive)
-  (let ((buf (generate-new-buffer "*notepad*")))
-    (switch-to-buffer buf))
-  (notepad-mode))
+    "Create a new notepad buffer."
+    (interactive)
+    (let ((buf (generate-new-buffer "*notepad*")))
+      (switch-to-buffer buf))
+    (notepad-mode)
+(shell-command-on-region (point) (if mark-active (mark) (point)) "pbpaste" nil t))
 
 (defun app-switch ()
   (interactive)
@@ -1487,7 +1488,8 @@ installed."
   (mark-whole-buffer)
   (copy-region-as-kill 1 (buffer-size))
   (kill-buffer)
-  (app-switch))
+  ;; (app-switch)
+  (shell-command "open -a ~/icloud/scripts/beep.app"))
 
 (use-package olivetti)
 
@@ -2243,6 +2245,21 @@ installed."
   (save-buffer))
 
 (use-package htmlize)
+
+(defun formatted-copy ()
+  "Export region to HTML, and copy it to the clipboard."
+  (interactive)
+  (save-window-excursion
+    (let* ((buf (org-export-to-buffer 'html "*Formatted Copy*" nil nil t t))
+           (html (with-current-buffer buf (buffer-string))))
+      (with-current-buffer buf
+        (shell-command-on-region
+         (point-min)
+         (point-max)
+         "textutil -stdin -format html -convert rtf -stdout | pbcopy"))
+      (kill-buffer buf))))
+
+(global-set-key (kbd "H-w") 'formatted-copy)
 
 (use-package osx-dictionary)
 
