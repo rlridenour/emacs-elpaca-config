@@ -473,20 +473,21 @@ If there are only two windows, jump directly to the other window."
      (message myurl)))
 
 (use-package general
-  :ensure (:wait t)
-  :demand
-  :config
-  (general-override-mode)
-  (general-auto-unbind-keys)
-  (general-unbind
-    "C-z"
-    "s-p"
-    "s-q"
-    "s-w"
-    "s-m"
-    "s-n"
-    "s-h"
-    "s-,"))
+    :ensure (:wait t)
+    :demand
+    :config
+    (general-override-mode)
+    (general-auto-unbind-keys)
+    (general-unbind
+      "C-z"
+"H-w"
+      "s-p"
+      "s-q"
+      "s-w"
+      "s-m"
+      "s-n"
+      "s-h"
+      "s-,"))
 
 (use-feature abbrev
   :config
@@ -2259,7 +2260,7 @@ installed."
          "textutil -stdin -format html -convert rtf -stdout | pbcopy"))
       (kill-buffer buf))))
 
-(global-set-key (kbd "H-w") 'formatted-copy)
+;; (global-set-key (kbd "H-w") 'formatted-copy)
 
 (use-package osx-dictionary)
 

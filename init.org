@@ -939,6 +939,7 @@ Load general before the remaining packages so they can make use of the ~:general
     (general-auto-unbind-keys)
     (general-unbind
       "C-z"
+"H-w"
       "s-p"
       "s-q"
       "s-w"
@@ -3454,7 +3455,7 @@ From [[https://kitchingroup.cheme.cmu.edu/blog/2016/06/16/Copy-formatted-org-mod
          "textutil -stdin -format html -convert rtf -stdout | pbcopy"))
       (kill-buffer buf))))
 
-(global-set-key (kbd "H-w") 'formatted-copy)
+;; (global-set-key (kbd "H-w") 'formatted-copy)
 #+end_src
 
 
