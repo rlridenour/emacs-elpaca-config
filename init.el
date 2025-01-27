@@ -670,6 +670,20 @@ If there are only two windows, jump directly to the other window."
     (dired "~/icloud/teaching/epistemology/lectures")
     (delete-other-windows)))
 
+(defun rlr-medieval ()
+  (interactive)
+  (progn
+    (kill-this-buffer)
+    (dired "~/icloud/teaching/medieval/lectures")
+    (delete-other-windows)))
+
+(defun rlr-logic ()
+  (interactive)
+  (progn
+    (kill-this-buffer)
+    (dired "~/icloud/teaching/logic/lectures")
+    (delete-other-windows)))
+
 (defvar-keymap dashboard-mode-map
   )
 
@@ -684,11 +698,13 @@ If there are only two windows, jump directly to the other window."
 		       rlr-religion
 		       rlr-ethics
 		       rlr-epistemology
+		       rlr-medieval
+		       rlr-logic
 		       )
 		     )
       )
   (setq org-link-elisp-skip-confirm-regexp
-	(concat "\\`\\(" (mapconcat #'symbol-name safe-commands "\\|") "\\)\\'")))
+      (concat "\\`\\(" (mapconcat #'symbol-name safe-commands "\\|") "\\)\\'")))
 
 (use-package deadgrep)
 
@@ -1134,9 +1150,9 @@ If there are only two windows, jump directly to the other window."
        ("b" (find-file "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/bookmarks.org") "web bookmarks"))
       "Classes"
       (("1" (dired "~/icloud/teaching/intro/lectures") "Intro")
-       ("2" (dired "~/icloud/teaching/religion/lectures") "Religion")
-       ("3" (dired "~/icloud/teaching/ethics/lectures") "Ethics")
-       ("4" (dired "~/icloud/teaching/epistemology/lectures") "Epistemology")
+       ("2" (dired "~/icloud/teaching/medieval/lectures") "Medieval")
+       ("3" (dired "~/icloud/teaching/logic/lectures") "Logic")
+       ("4" (dired "~/icloud/teaching/language/lectures") "Language")
        )
       ))
 
@@ -1433,14 +1449,14 @@ If there are only two windows, jump directly to the other window."
 (fset 'copy-beamer-note
       (kmacro-lambda-form [?\C-r ?: ?E ?N ?D return down ?\C-  ?\C-s ?* ?* ?  ?N ?o ?t ?e ?s return up ?\M-w ?\C-s ?: ?E ?N ?D return down return ?\s-v return] 0 "%d"))
 
-(defun cc/markdown-to-org-region (start end) 
-  "Convert Markdown formatted text in region (START, END) to Org. 
- 
-This command requires that pandoc (man page `pandoc(1)') be 
-installed." 
-  (interactive "r") 
-  (shell-command-on-region 
-   start end 
+(defun cc/markdown-to-org-region (start end)
+  "Convert Markdown formatted text in region (START, END) to Org.
+
+This command requires that pandoc (man page `pandoc(1)') be
+installed."
+  (interactive "r")
+  (shell-command-on-region
+   start end
    "pandoc -f markdown -t org --wrap=preserve" t t))
 
 (use-package modus-themes
@@ -2252,12 +2268,12 @@ installed."
   (interactive)
   (save-window-excursion
     (let* ((buf (org-export-to-buffer 'html "*Formatted Copy*" nil nil t t))
-           (html (with-current-buffer buf (buffer-string))))
+	   (html (with-current-buffer buf (buffer-string))))
       (with-current-buffer buf
-        (shell-command-on-region
-         (point-min)
-         (point-max)
-         "textutil -stdin -format html -convert rtf -stdout | pbcopy"))
+	(shell-command-on-region
+	 (point-min)
+	 (point-max)
+	 "textutil -stdin -format html -convert rtf -stdout | pbcopy"))
       (kill-buffer buf))))
 
 ;; (global-set-key (kbd "H-w") 'formatted-copy)
