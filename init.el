@@ -2560,47 +2560,56 @@ installed."
   (dired "~/.config/fish/functions"))
 
 (general-define-key
- :prefix "C-c"
- ;; bind "C-c a" to #'org-agenda
- "f f" #'find-file
- "f k" #'crux-kill-other-buffers
- "f r" #'consult-buffer
- "f R" #'crux-rename-file-and-buffer
- "f P" #'open-emacs-config
- "f S" #'open-fish-functions
- ;; Helpful
- "H c" #'helpful-command
- "H F" #'helpful-callable
- "H h" #'helpful-at-point
- "H f" #'helpful-function
- "H v" #'helpful-variable
- "H k" #'helpful-key
- ;; Projects
- "p f" #'consult-project-buffer
- "p d" #'project-find-dired
- "a" #'org-agenda
- "b" #'consult-bookmark
- "c" #'org-capture
- "d s" #'insert-date-string
- "d d" #'insert-standard-date
- "d b" #'insert-blog-date
- "D" #'crux-delete-file-and-buffer
- ;; "h" #'consult-history
- "k" #'crux-kill-other-buffers
- "l" #'dictionary-search
- "m" #'consult-mark
- "n b" #'hugo-draft-post
- "o" #'consult-outline
- "r" #'crux-rename-file-and-buffer
- ;; "s" #'rg-menu
- "S" #'crux-cleanup-buffer-or-region
- ;; "t" #'crux-visit-term-buffer
- "u" #'unfill-paragraph
- "w" #'ace-window
- "z" #'reveal-in-osx-finder
- "g l" #'avy-goto-line
- "g w" #'avy-goto-word-1
- "C-g" #'pdf-sync-forward-search)
+   :prefix "C-c"
+   ;; bind "C-c a" to #'org-agenda
+
+   "a" #'org-agenda
+   "b" #'consult-bookmark
+   "c" #'org-capture
+
+   "d s" #'insert-date-string
+   "d d" #'insert-standard-date
+   "d b" #'insert-blog-date
+   "D" #'crux-delete-file-and-buffer
+   
+"f f" #'find-file
+   "f k" #'crux-kill-other-buffers
+   "f r" #'consult-buffer
+   "f R" #'crux-rename-file-and-buffer
+   "f P" #'open-emacs-config
+   "f S" #'open-fish-functions
+
+   "g l" #'avy-goto-line
+   "g w" #'avy-goto-word-1
+   "g p" #'pdf-sync-forward-search
+
+   ;; "h" #'consult-history
+
+   ;; Helpful
+   "H c" #'helpful-command
+   "H F" #'helpful-callable
+   "H h" #'helpful-at-point
+   "H f" #'helpful-function
+   "H v" #'helpful-variable
+   "H k" #'helpful-key
+
+   "k" #'crux-kill-other-buffers
+   "l" #'dictionary-search
+   "m" #'consult-mark
+   "n b" #'hugo-draft-post
+   "o" #'consult-outline
+
+   ;; Projects
+   "p f" #'consult-project-buffer
+   "p d" #'project-find-dired
+
+   "r" #'crux-rename-file-and-buffer
+   ;; "s" #'rg-menu
+   "S" #'crux-cleanup-buffer-or-region
+   ;; "t" #'crux-visit-term-buffer
+   "u" #'unfill-paragraph
+   "w" #'kill-buffer-and-window
+   "z" #'reveal-in-osx-finder)
 
 (setq default-directory "~/")
 
