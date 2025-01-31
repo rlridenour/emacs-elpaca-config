@@ -854,8 +854,7 @@ If there are only two windows, jump directly to the other window."
 	evil-track-eol nil
 	evil-want-fine-undo t
 	  evil-disable-insert-state-bindings t)
-    (setq evil-default-state 'emacs)
-:config
+   :config
 (evil-mode -1))
 
 (use-package evil-nerd-commenter
@@ -2311,6 +2310,16 @@ installed."
 (use-package persistent-scratch
   :init
   (persistent-scratch-setup-default))
+
+(use-package vertico-posframe
+  :init
+  (vertico-posframe-mode))
+(use-package which-key-posframe
+  :init
+  (which-key-posframe-mode))
+(use-package transient-posframe
+  :init
+  (transient-posframe-mode))
 
 (use-feature project
   :init

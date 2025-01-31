@@ -1512,8 +1512,7 @@ From [[https://github.com/mickeynp/discover.el][mickeynp/discover.el: Discover m
 	evil-track-eol nil
 	evil-want-fine-undo t
 	  evil-disable-insert-state-bindings t)
-    (setq evil-default-state 'emacs)
-:config
+   :config
 (evil-mode -1))
 #+end_src
 
@@ -3545,7 +3544,7 @@ Use ~persistent-scratch~ to save scratch file between sessions.
 
 ** Posframes
 
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package vertico-posframe
     :init
     (vertico-posframe-mode))
