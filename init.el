@@ -2312,11 +2312,15 @@ installed."
   (persistent-scratch-setup-default))
 
 (use-package vertico-posframe
-  :init
-  (vertico-posframe-mode))
+  :config
+  (setq vertico-posframe-parameters
+      '((left-fringe . 8)
+	  (right-fringe . 8))))
+
 (use-package which-key-posframe
   :init
   (which-key-posframe-mode))
+
 (use-package transient-posframe
   :init
   (transient-posframe-mode))
@@ -2391,23 +2395,34 @@ installed."
   (setq titlecase-style "chicago"))
 
 (use-package vertico
-  :demand
-  :custom (vertico-cycle t)
-  :config
-  (setf (car vertico-multiline) "\n") ;; don't replace newlines
-  (vertico-mode)
-  (vertico-multiform-mode)
-  (setq vertico-multiform-categories
-      '((file grid)
-	  (jinx grid (vertico-grid-annotate . 20))
-	  (citar buffer)))
-  (setq vertico-cycle t) ;; enable cycling for 'vertico-next' and 'vertico-prev'
-  :general
-  (:keymaps 'vertico-map
-	    ;; keybindings to cycle through vertico results.
-	    "C-h" #'+minibuffer-up-dir
-	    "<backspace>" 'vertico-directory-delete-char
-	    "RET" 'vertico-directory-enter))
+    :demand
+    :custom (vertico-cycle t)
+    :config
+    (setf (car vertico-multiline) "\n") ;; don't replace newlines
+    (vertico-mode)
+(setq vertico-multiform-commands
+      '((consult-line
+         posframe
+         (vertico-posframe-poshandler . posframe-poshandler-frame-top-center)
+         (vertico-posframe-border-width . 10)
+         ;; NOTE: This is useful when emacs is used in both in X and
+         ;; terminal, for posframe do not work well in terminal, so
+         ;; vertico-buffer-mode will be used as fallback at the
+         ;; moment.
+         (vertico-posframe-fallback-mode . vertico-buffer-mode))
+        (t posframe)))
+    (vertico-multiform-mode 1)
+    (setq vertico-multiform-categories
+	'((file grid)
+	    (jinx grid (vertico-grid-annotate . 20))
+	    (citar buffer)))
+    (setq vertico-cycle t) ;; enable cycling for 'vertico-next' and 'vertico-prev'
+    :general
+    (:keymaps 'vertico-map
+	      ;; keybindings to cycle through vertico results.
+	      "C-h" #'+minibuffer-up-dir
+	      "<backspace>" 'vertico-directory-delete-char
+	      "RET" 'vertico-directory-enter))
 
 (use-package unfill)
 
