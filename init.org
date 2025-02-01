@@ -737,6 +737,20 @@ Immediately highlight matching pairs of parentheses and quotes.
   (setq show-paren-delay 0)
 #+end_src
 
+If more than one window, delete the window; if only one window, delete the tab; if only one tab, delete the frame.
+
+#+begin_src emacs-lisp
+(defun rlr/delete-tab-or-frame ()
+"Delete current tab. If there is only one tab, then delete current frame."
+(interactive)
+(if
+(not (one-window-p))
+ (delete-window)
+(condition-case nil
+(tab-close)
+(error (delete-frame)))))
+#+end_src
+
 ** Tabs
 
 I can't imagine wanting the same buffer in two tabs, so this calls consult-buffer when opening a new tab.
@@ -1151,7 +1165,7 @@ Set the initial frame. This opens the daily agenda on start-up.
 Set path to dashboard org file.
 
 #+begin_src emacs-lisp
-  (defcustom rlr-agenda-dashboard-file "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/start.org"
+  (defcustom rlr/agenda-dashboard-file "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/start.org"
     "Path to the dashboard org file."
     :type 'string)
 #+end_src
@@ -1159,7 +1173,7 @@ Set path to dashboard org file.
 Set width of the dashboard sidebar.
 
 #+begin_src emacs-lisp
-  (defcustom rlr-agenda-dashboard-sidebar-width 40
+  (defcustom rlr/agenda-dashboard-sidebar-width 40
     "Width of the dashboard sidebar."
     :type 'integer)
 #+end_src
@@ -1167,19 +1181,19 @@ Set width of the dashboard sidebar.
 This shows the daily agenda on the right and the dashboard org file in a side window on the left. The dashboard is set to read-only.
 
 #+begin_src emacs-lisp
-  (defun rlr-agenda-dashboard ()
+  (defun rlr/agenda-dashboard ()
     (interactive)
     (progn
       (agenda-home)
       (display-buffer-in-side-window
-       (find-file-noselect rlr-agenda-dashboard-file)
+       (find-file-noselect rlr/agenda-dashboard-file)
        (list
 	(cons 'side 'left)
-	(cons 'window-width rlr-agenda-dashboard-sidebar-width)
+	(cons 'window-width rlr/agenda-dashboard-sidebar-width)
 	(cons 'window-parameters (list (cons 'no-delete-other-windows t)
 				       (cons 'no-other-window nil)
 				       (cons 'mode-line-format 'none)))))
-      (switch-to-buffer-other-window (get-file-buffer rlr-agenda-dashboard-file))
+      (switch-to-buffer-other-window (get-file-buffer rlr/agenda-dashboard-file))
       (read-only-mode 1)
       (dashboard-mode)
       )
@@ -1194,13 +1208,13 @@ This shows the daily agenda on the right and the dashboard org file in a side wi
 Open the dashboard on start-up.
 
 #+begin_src emacs-lisp :tangle no
-  (add-hook 'server-after-make-frame-hook #'rlr-agenda-dashboard)
+  (add-hook 'server-after-make-frame-hook #'rlr/agenda-dashboard)
 #+end_src
 
 Dashboard link functions
 
 #+begin_src emacs-lisp
-  (defun rlr-intro ()
+  (defun rlr/intro ()
     (interactive)
     (progn
       (kill-this-buffer)
@@ -1209,7 +1223,7 @@ Dashboard link functions
 #+end_src
 
 #+begin_src emacs-lisp
-  (defun rlr-religion ()
+  (defun rlr/religion ()
     (interactive)
     (progn
       (kill-this-buffer)
@@ -1218,7 +1232,7 @@ Dashboard link functions
 #+end_src
 
 #+begin_src emacs-lisp
-  (defun rlr-ethics ()
+  (defun rlr/ethics ()
     (interactive)
     (progn
       (kill-this-buffer)
@@ -1227,7 +1241,7 @@ Dashboard link functions
 #+end_src
 
 #+begin_src emacs-lisp
-  (defun rlr-epistemology ()
+  (defun rlr/epistemology ()
     (interactive)
     (progn
       (kill-this-buffer)
@@ -1236,7 +1250,7 @@ Dashboard link functions
 #+end_src
 
 #+begin_src emacs-lisp
-  (defun rlr-medieval ()
+  (defun rlr/medieval ()
     (interactive)
     (progn
       (kill-this-buffer)
@@ -1245,7 +1259,7 @@ Dashboard link functions
 #+end_src
 
 #+begin_src emacs-lisp
-  (defun rlr-logic ()
+  (defun rlr/logic ()
     (interactive)
     (progn
       (kill-this-buffer)
@@ -1276,12 +1290,12 @@ This will avoid needing to confirm when activating the link. Just add the functi
 			 org-tags-view
 			 org-todo-list
 			 agenda-home
-			 rlr-intro
-			 rlr-religion
-			 rlr-ethics
-			 rlr-epistemology
-			 rlr-medieval
-			 rlr-logic
+			 rlr/intro
+			 rlr/religion
+			 rlr/ethics
+			 rlr/epistemology
+			 rlr/medieval
+			 rlr/logic
 			 )
 		       )
 	)
@@ -1650,9 +1664,9 @@ From [[https://github.com/mickeynp/discover.el][mickeynp/discover.el: Discover m
 ** Hugo
 
 #+begin_src emacs-lisp :tangle no
-  (use-package rlr-hugo
+  (use-package rlr/hugo
     :demand
-    :ensure (:host github :repo "~/elisp/rlr-hugo"))
+    :ensure (:host github :repo "~/elisp/rlr/hugo"))
 #+end_src
 
 ** Hungry Delete
@@ -1775,7 +1789,7 @@ From [[https://github.com/mickeynp/discover.el][mickeynp/discover.el: Discover m
 	 ("j" denote-journal-extras-new-or-existing-entry "journal"))
 	"Writing"
 	(("b" rlrt-new-post "blog post")
-	 ("a" new-article "article"))
+	 ("a" rlrt-new-article "article"))
 	"Teaching"
 	(("l" rlrt-new-lecture "lecture")
 	 ("h" rlrt-new-handout "handout")
@@ -2384,7 +2398,7 @@ Define initial mode to use for notepad buffers. This is so I can use "C-c C-c" t
 Create notepad buffer
 
 #+begin_src emacs-lisp
-  (defun rlr-create-notepad-buffer ()
+  (defun rlr/create-notepad-buffer ()
     "Create a new notepad buffer."
     (interactive)
     (let ((buf (generate-new-buffer "*notepad*")))
@@ -3889,7 +3903,7 @@ Keybindings for files and buffers.
 #+begin_src emacs-lisp
   (general-define-key
    "s-t" #'rlr/find-file-new-tab
-   "s-w" #'tab-close)
+   "s-w" #'rlr/delete-tab-or-frame)
 #+end_src
 
 ** Search Keybindings

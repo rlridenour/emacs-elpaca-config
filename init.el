@@ -360,6 +360,16 @@ If there are only two windows, jump directly to the other window."
 (show-paren-mode)
 (setq show-paren-delay 0)
 
+(defun rlr/delete-tab-or-frame ()
+"Delete current tab. If there is only one tab, then delete current frame."
+(interactive)
+(if
+(not (one-window-p))
+ (delete-window)
+(condition-case nil
+(tab-close)
+(error (delete-frame)))))
+
 (defun rlr/find-file-new-tab ()
   "Open new tab and select recent file."
   (interactive)
@@ -613,27 +623,27 @@ If there are only two windows, jump directly to the other window."
 
 (add-hook 'server-after-make-frame-hook 'agenda-home)
 
-(defcustom rlr-agenda-dashboard-file "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/start.org"
+(defcustom rlr/agenda-dashboard-file "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/start.org"
   "Path to the dashboard org file."
   :type 'string)
 
-(defcustom rlr-agenda-dashboard-sidebar-width 40
+(defcustom rlr/agenda-dashboard-sidebar-width 40
   "Width of the dashboard sidebar."
   :type 'integer)
 
-(defun rlr-agenda-dashboard ()
+(defun rlr/agenda-dashboard ()
   (interactive)
   (progn
     (agenda-home)
     (display-buffer-in-side-window
-     (find-file-noselect rlr-agenda-dashboard-file)
+     (find-file-noselect rlr/agenda-dashboard-file)
      (list
       (cons 'side 'left)
-      (cons 'window-width rlr-agenda-dashboard-sidebar-width)
+      (cons 'window-width rlr/agenda-dashboard-sidebar-width)
       (cons 'window-parameters (list (cons 'no-delete-other-windows t)
 				     (cons 'no-other-window nil)
 				     (cons 'mode-line-format 'none)))))
-    (switch-to-buffer-other-window (get-file-buffer rlr-agenda-dashboard-file))
+    (switch-to-buffer-other-window (get-file-buffer rlr/agenda-dashboard-file))
     (read-only-mode 1)
     (dashboard-mode)
     )
@@ -642,42 +652,42 @@ If there are only two windows, jump directly to the other window."
 (general-define-key
  "s-d" #'agenda-home)
 
-(defun rlr-intro ()
+(defun rlr/intro ()
   (interactive)
   (progn
     (kill-this-buffer)
     (dired "~/icloud/teaching/intro/lectures")
     (delete-other-windows)))
 
-(defun rlr-religion ()
+(defun rlr/religion ()
   (interactive)
   (progn
     (kill-this-buffer)
     (dired "~/icloud/teaching/religion/lectures")
     (delete-other-windows)))
 
-(defun rlr-ethics ()
+(defun rlr/ethics ()
   (interactive)
   (progn
     (kill-this-buffer)
     (dired "~/icloud/teaching/ethics/lectures")
     (delete-other-windows)))
 
-(defun rlr-epistemology ()
+(defun rlr/epistemology ()
   (interactive)
   (progn
     (kill-this-buffer)
     (dired "~/icloud/teaching/epistemology/lectures")
     (delete-other-windows)))
 
-(defun rlr-medieval ()
+(defun rlr/medieval ()
   (interactive)
   (progn
     (kill-this-buffer)
     (dired "~/icloud/teaching/medieval/lectures")
     (delete-other-windows)))
 
-(defun rlr-logic ()
+(defun rlr/logic ()
   (interactive)
   (progn
     (kill-this-buffer)
@@ -694,12 +704,12 @@ If there are only two windows, jump directly to the other window."
 		       org-tags-view
 		       org-todo-list
 		       agenda-home
-		       rlr-intro
-		       rlr-religion
-		       rlr-ethics
-		       rlr-epistemology
-		       rlr-medieval
-		       rlr-logic
+		       rlr/intro
+		       rlr/religion
+		       rlr/ethics
+		       rlr/epistemology
+		       rlr/medieval
+		       rlr/logic
 		       )
 		     )
       )
@@ -1061,7 +1071,7 @@ If there are only two windows, jump directly to the other window."
        ("j" denote-journal-extras-new-or-existing-entry "journal"))
       "Writing"
       (("b" rlrt-new-post "blog post")
-       ("a" new-article "article"))
+       ("a" rlrt-new-article "article"))
       "Teaching"
       (("l" rlrt-new-lecture "lecture")
        ("h" rlrt-new-handout "handout")
@@ -1482,7 +1492,7 @@ installed."
   "Major mode for scratch buffers."
   )
 
-(defun rlr-create-notepad-buffer ()
+(defun rlr/create-notepad-buffer ()
     "Create a new notepad buffer."
     (interactive)
     (let ((buf (generate-new-buffer "*notepad*")))
@@ -2504,7 +2514,7 @@ installed."
 
 (general-define-key
  "s-t" #'rlr/find-file-new-tab
- "s-w" #'tab-close)
+ "s-w" #'rlr/delete-tab-or-frame)
 
 (general-define-key
  "s-l" #'hydra-locate/body
