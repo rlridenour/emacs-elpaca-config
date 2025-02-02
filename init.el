@@ -32,9 +32,9 @@
 (defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
 (defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
 (defvar elpaca-order '(elpaca :repo "https://github.com/progfolio/elpaca.git"
-                              :ref nil :depth 1 :inherit ignore
-                              :files (:defaults "elpaca-test.el" (:exclude "extensions"))
-                              :build (:not elpaca--activate-package)))
+			      :ref nil :depth 1 :inherit ignore
+			      :files (:defaults "elpaca-test.el" (:exclude "extensions"))
+			      :build (:not elpaca--activate-package)))
 (let* ((repo  (expand-file-name "elpaca/" elpaca-repos-directory))
        (build (expand-file-name "elpaca/" elpaca-builds-directory))
        (order (cdr elpaca-order))
@@ -44,20 +44,20 @@
     (make-directory repo t)
     (when (< emacs-major-version 28) (require 'subr-x))
     (condition-case-unless-debug err
-        (if-let* ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
-                  ((zerop (apply #'call-process `("git" nil ,buffer t "clone"
-                                                  ,@(when-let* ((depth (plist-get order :depth)))
-                                                      (list (format "--depth=%d" depth) "--no-single-branch"))
-                                                  ,(plist-get order :repo) ,repo))))
-                  ((zerop (call-process "git" nil buffer t "checkout"
-                                        (or (plist-get order :ref) "--"))))
-                  (emacs (concat invocation-directory invocation-name))
-                  ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
-                                        "--eval" "(byte-recompile-directory \".\" 0 'force)")))
-                  ((require 'elpaca))
-                  ((elpaca-generate-autoloads "elpaca" repo)))
-            (progn (message "%s" (buffer-string)) (kill-buffer buffer))
-          (error "%s" (with-current-buffer buffer (buffer-string))))
+	(if-let* ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
+		  ((zerop (apply #'call-process `("git" nil ,buffer t "clone"
+						  ,@(when-let* ((depth (plist-get order :depth)))
+						      (list (format "--depth=%d" depth) "--no-single-branch"))
+						  ,(plist-get order :repo) ,repo))))
+		  ((zerop (call-process "git" nil buffer t "checkout"
+					(or (plist-get order :ref) "--"))))
+		  (emacs (concat invocation-directory invocation-name))
+		  ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
+					"--eval" "(byte-recompile-directory \".\" 0 'force)")))
+		  ((require 'elpaca))
+		  ((elpaca-generate-autoloads "elpaca" repo)))
+	    (progn (message "%s" (buffer-string)) (kill-buffer buffer))
+	  (error "%s" (with-current-buffer buffer (buffer-string))))
       ((error) (warn "%s" err) (delete-directory repo 'recursive))))
   (unless (require 'elpaca-autoloads nil t)
     (require 'elpaca)
@@ -97,8 +97,8 @@
 
 (setf use-short-answers t)
 
-(setq ns-function-modifier 'control
-      ns-right-command-modifier 'hyper)
+(setq ns-function-modifier 'hyper)
+      ;; ns-right-command-modifier 'hyper)
 
 (setq enable-recursive-minibuffers t)
 (minibuffer-depth-indicate-mode 1)
@@ -483,21 +483,21 @@ If there are only two windows, jump directly to the other window."
      (message myurl)))
 
 (use-package general
-    :ensure (:wait t)
-    :demand
-    :config
-    (general-override-mode)
-    (general-auto-unbind-keys)
-    (general-unbind
-      "C-z"
-"H-w"
-      "s-p"
-      "s-q"
-      "s-w"
-      "s-m"
-      "s-n"
-      "s-h"
-      "s-,"))
+  :ensure (:wait t)
+  :demand
+  :config
+  (general-override-mode)
+  (general-auto-unbind-keys)
+  (general-unbind
+    "C-z"
+    "H-w"
+    "s-p"
+    "s-q"
+    "s-w"
+    "s-m"
+    "s-n"
+    "s-h"
+    "s-,"))
 
 (use-feature abbrev
   :config
@@ -859,13 +859,13 @@ If there are only two windows, jump directly to the other window."
   (embark-collect-mode . consult-preview-at-point-mode))
 
 (use-package evil
-    :init
-    (setq evil-respect-visual-line-mode t
+  :init
+  (setq evil-respect-visual-line-mode t
 	evil-track-eol nil
 	evil-want-fine-undo t
-	  evil-disable-insert-state-bindings t)
-   :config
-(evil-mode -1))
+	evil-disable-insert-state-bindings t)
+  :config
+  (evil-mode -1))
 
 (use-package evil-nerd-commenter
   :general
@@ -1493,12 +1493,12 @@ installed."
   )
 
 (defun rlr/create-notepad-buffer ()
-    "Create a new notepad buffer."
-    (interactive)
-    (let ((buf (generate-new-buffer "*notepad*")))
-      (switch-to-buffer buf))
-    (notepad-mode)
-(shell-command-on-region (point) (if mark-active (mark) (point)) "pbpaste" nil t))
+  "Create a new notepad buffer."
+  (interactive)
+  (let ((buf (generate-new-buffer "*notepad*")))
+    (switch-to-buffer buf))
+  (notepad-mode)
+  (shell-command-on-region (point) (if mark-active (mark) (point)) "pbpaste" nil t))
 
 (defun app-switch ()
   (interactive)
@@ -2321,20 +2321,6 @@ installed."
   :init
   (persistent-scratch-setup-default))
 
-(use-package vertico-posframe
-  :config
-  (setq vertico-posframe-parameters
-      '((left-fringe . 8)
-	  (right-fringe . 8))))
-
-(use-package which-key-posframe
-  :init
-  (which-key-posframe-mode))
-
-(use-package transient-posframe
-  :init
-  (transient-posframe-mode))
-
 (use-feature project
   :init
   (setq project-vc-ignores '("*.aux" "*.bbl" "*.bcf" "*.blg" "*.fdb_latexmk" "*.fls" "*.log" "*.out" "*.run.xml" "*.run.xml" "*.synctex.gz" "auto/" "*.pdf"))
@@ -2405,34 +2391,34 @@ installed."
   (setq titlecase-style "chicago"))
 
 (use-package vertico
-    :demand
-    :custom (vertico-cycle t)
-    :config
-    (setf (car vertico-multiline) "\n") ;; don't replace newlines
-    (vertico-mode)
-(setq vertico-multiform-commands
-      '((consult-line
-         posframe
-         (vertico-posframe-poshandler . posframe-poshandler-frame-top-center)
-         (vertico-posframe-border-width . 10)
-         ;; NOTE: This is useful when emacs is used in both in X and
-         ;; terminal, for posframe do not work well in terminal, so
-         ;; vertico-buffer-mode will be used as fallback at the
-         ;; moment.
-         (vertico-posframe-fallback-mode . vertico-buffer-mode))
-        (t posframe)))
-    (vertico-multiform-mode 1)
-    (setq vertico-multiform-categories
+  :demand
+  :custom (vertico-cycle t)
+  :config
+  (setf (car vertico-multiline) "\n") ;; don't replace newlines
+  (vertico-mode)
+  ;; (setq vertico-multiform-commands
+  ;; 	'((consult-line
+  ;; 	     posframe
+  ;; 	     (vertico-posframe-poshandler . posframe-poshandler-frame-top-center)
+  ;; 	     (vertico-posframe-border-width . 10)
+  ;; 	     ;; NOTE: This is useful when emacs is used in both in X and
+  ;; 	     ;; terminal, for posframe do not work well in terminal, so
+  ;; 	     ;; vertico-buffer-mode will be used as fallback at the
+  ;; 	     ;; moment.
+  ;; 	     (vertico-posframe-fallback-mode . vertico-buffer-mode))
+  ;; 	    (t posframe)))
+  (vertico-multiform-mode 1)
+  (setq vertico-multiform-categories
 	'((file grid)
-	    (jinx grid (vertico-grid-annotate . 20))
-	    (citar buffer)))
-    (setq vertico-cycle t) ;; enable cycling for 'vertico-next' and 'vertico-prev'
-    :general
-    (:keymaps 'vertico-map
-	      ;; keybindings to cycle through vertico results.
-	      "C-h" #'+minibuffer-up-dir
-	      "<backspace>" 'vertico-directory-delete-char
-	      "RET" 'vertico-directory-enter))
+	  (jinx grid (vertico-grid-annotate . 20))
+	  (citar buffer)))
+  (setq vertico-cycle t) ;; enable cycling for 'vertico-next' and 'vertico-prev'
+  :general
+  (:keymaps 'vertico-map
+	    ;; keybindings to cycle through vertico results.
+	    "C-h" #'+minibuffer-up-dir
+	    "<backspace>" 'vertico-directory-delete-char
+	    "RET" 'vertico-directory-enter))
 
 (use-package unfill)
 
@@ -2581,7 +2567,7 @@ installed."
    "d d" #'insert-standard-date
    "d b" #'insert-blog-date
    "D" #'crux-delete-file-and-buffer
-   
+
 "f f" #'find-file
    "f k" #'crux-kill-other-buffers
    "f r" #'consult-buffer
