@@ -1472,6 +1472,12 @@ installed."
    start end
    "pandoc -f markdown -t org --wrap=preserve" t t))
 
+(use-package mastodon
+  :config
+  (mastodon-discover)
+  (setq mastodon-instance-url "https://zirk.us/"
+	mastodon-active-user "randyridenour"))
+
 (use-package modus-themes
   :demand
   :config

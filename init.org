@@ -2252,7 +2252,7 @@ From [[http://yummymelon.com/devnull/converting-a-markdown-region-to-org-revisit
 
 ** Mastodon
 
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package mastodon
     :config
     (mastodon-discover)
