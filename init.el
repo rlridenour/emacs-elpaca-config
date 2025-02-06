@@ -503,6 +503,10 @@ If there are only two windows, jump directly to the other window."
   :config
   (load "~/Dropbox/emacs/my-emacs-abbrev"))
 
+(use-package ace-link
+  :init
+  (ace-link-setup-default))
+
 (use-package aggressive-indent
   :config
   (global-aggressive-indent-mode 1))

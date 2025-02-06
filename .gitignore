@@ -22,3 +22,4 @@ projects
 elpa/
 *desktop*
 persist/
+/url/

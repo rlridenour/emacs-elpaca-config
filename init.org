@@ -973,7 +973,7 @@ Load general before the remaining packages so they can make use of the ~:general
 
 ** Ace Link
 
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package ace-link
     :init
     (ace-link-setup-default))
