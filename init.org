@@ -2247,9 +2247,6 @@ From [[http://yummymelon.com/devnull/converting-a-markdown-region-to-org-revisit
      "pandoc -f markdown -t org --wrap=preserve" t t))
 #+end_src
 
-
-
-
 ** Mastodon
 
 #+begin_src emacs-lisp
@@ -2257,11 +2254,10 @@ From [[http://yummymelon.com/devnull/converting-a-markdown-region-to-org-revisit
     :config
     (mastodon-discover)
     (setq mastodon-instance-url "https://zirk.us/"
-	  mastodon-active-user "randyridenour"))
+  	mastodon-active-user "randyridenour"))
 #+end_src
 
 ** Meow
-
 
 #+begin_src emacs-lisp :tangle no
   (use-package meow

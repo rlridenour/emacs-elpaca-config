@@ -1476,7 +1476,7 @@ installed."
   :config
   (mastodon-discover)
   (setq mastodon-instance-url "https://zirk.us/"
-	mastodon-active-user "randyridenour"))
+      mastodon-active-user "randyridenour"))
 
 (use-package modus-themes
   :demand
