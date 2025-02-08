@@ -1358,6 +1358,14 @@ Search notes with the xapian syntax (+word -word AND NOT etc), <tab> to preview,
     (xeft-recursive nil))
 #+end_src
 
+** Devil Mode
+
+#+begin_src emacs-lisp
+(use-package devil
+:init
+(global-devil-mode))
+#+end_src
+
 ** Dired
 
 Hide file details and absolute path by default, from [[https://lmno.lol/alvaro/hide-another-detail][Hide another detail]]. Check back later to see if =dired-hide-details-hide-absolute-location= has been merged into Dired.
@@ -1699,7 +1707,8 @@ From [[https://github.com/mickeynp/discover.el][mickeynp/discover.el: Discover m
        (:color teal :quit-key "q" :title "Toggle")
        (" "
 	(("a" abbrev-mode "abbrev" :toggle t)
-	 ("d" toggle-debug-on-error "debug" (default value 'debug-on-error))
+	 ("b" toggle-debug-on-error "debug" (default value 'debug-on-error))
+	 ("d" global-devil-mode "devil" :toggle t)
 	 ("e" evil-mode "evil" :toggle t)
 	 ("i" aggressive-indent-mode "indent" :toggle t)
 	 ("f" auto-fill-mode "fill" :toggle t)

@@ -757,6 +757,10 @@ If there are only two windows, jump directly to the other window."
   ;; Only parse the root directory
   (xeft-recursive nil))
 
+(use-package devil
+:init
+(global-devil-mode))
+
 (use-package dired+
   :demand
   :ensure (:host github :repo "emacsmirror/dired-plus"))
@@ -985,7 +989,8 @@ If there are only two windows, jump directly to the other window."
      (:color teal :quit-key "q" :title "Toggle")
      (" "
       (("a" abbrev-mode "abbrev" :toggle t)
-       ("d" toggle-debug-on-error "debug" (default value 'debug-on-error))
+       ("b" toggle-debug-on-error "debug" (default value 'debug-on-error))
+       ("d" global-devil-mode "devil" :toggle t)
        ("e" evil-mode "evil" :toggle t)
        ("i" aggressive-indent-mode "indent" :toggle t)
        ("f" auto-fill-mode "fill" :toggle t)
