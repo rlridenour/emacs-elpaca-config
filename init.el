@@ -1476,7 +1476,7 @@ installed."
   :config
   (mastodon-discover)
   (setq mastodon-instance-url "https://zirk.us/"
-      mastodon-active-user "randyridenour"))
+	mastodon-active-user "randyridenour"))
 
 (use-package modus-themes
   :demand
@@ -1550,17 +1550,19 @@ installed."
   ;; (setq org-footnote-section nil)
   (setq org-html-validation-link nil)
   (setq org-time-stamp-rounding-minutes '(0 15))
+  (setq org-agenda-skip-scheduled-if-deadline-is-shown t)
+  (setq org-agenda-skip-scheduled-if-done t)
   (setq org-todo-keyword-faces
-	'(("DONE" . "green4") ("TODO" . org-warning)))
+      '(("DONE" . "green4") ("TODO" . org-warning)))
   (setq org-agenda-files '("/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/"))
   (setq org-agenda-start-on-weekday nil)
   (setq org-agenda-window-setup 'current-window)
   (setq org-link-frame-setup
       '((vm . vm-visit-folder-other-frame)
-	  (vm-imap . vm-visit-imap-folder-other-frame)
-	  (gnus . org-gnus-no-new-news)
-	  (file . find-file)
-	  (wl . wl-other-frame)))
+	(vm-imap . vm-visit-imap-folder-other-frame)
+	(gnus . org-gnus-no-new-news)
+	(file . find-file)
+	(wl . wl-other-frame)))
   (require 'org-tempo)
   ;; Open directory links in Dired.
   (add-to-list 'org-file-apps '(directory . emacs)))
@@ -2407,16 +2409,16 @@ installed."
   (setf (car vertico-multiline) "\n") ;; don't replace newlines
   (vertico-mode)
   ;; (setq vertico-multiform-commands
-  ;; 	'((consult-line
-  ;; 	     posframe
-  ;; 	     (vertico-posframe-poshandler . posframe-poshandler-frame-top-center)
-  ;; 	     (vertico-posframe-border-width . 10)
-  ;; 	     ;; NOTE: This is useful when emacs is used in both in X and
-  ;; 	     ;; terminal, for posframe do not work well in terminal, so
-  ;; 	     ;; vertico-buffer-mode will be used as fallback at the
-  ;; 	     ;; moment.
-  ;; 	     (vertico-posframe-fallback-mode . vertico-buffer-mode))
-  ;; 	    (t posframe)))
+  ;;	'((consult-line
+  ;;	     posframe
+  ;;	     (vertico-posframe-poshandler . posframe-poshandler-frame-top-center)
+  ;;	     (vertico-posframe-border-width . 10)
+  ;;	     ;; NOTE: This is useful when emacs is used in both in X and
+  ;;	     ;; terminal, for posframe do not work well in terminal, so
+  ;;	     ;; vertico-buffer-mode will be used as fallback at the
+  ;;	     ;; moment.
+  ;;	     (vertico-posframe-fallback-mode . vertico-buffer-mode))
+  ;;	    (t posframe)))
   (vertico-multiform-mode 1)
   (setq vertico-multiform-categories
 	'((file grid)
