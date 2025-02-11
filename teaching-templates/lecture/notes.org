@@ -18,7 +18,7 @@
 #+LaTeX_HEADER: \setlist[enumerate]{noitemsep}
 #+LaTeX_HEADER: \usepackage{tcolorbox}
 #+LaTeX_HEADER: \mode<article>{\setbeamertemplate{frame begin}{\begin{tcolorbox}[colback=white, colframe=gray,]} \setbeamertemplate{frame end}{\end{tcolorbox}}}
-#+LaTeX_HEADER: \usepackage{libertinus-type1}
+#+LaTeX_HEADER: \usepackage{libertine}
 #+LaTeX_HEADER: \usepackage[T1]{fontenc}
 # #+LaTeX_HEADER: \renewcommand{\land}{\mathbin{\&}}
 #+LaTeX_HEADER: \renewcommand{\land}{\bm{\cdot}}
