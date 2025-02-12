@@ -19,7 +19,4 @@
 #+LATEX_COMPILER: pdflatex
 #+OPTIONS: toc:nil
 
-# *** 
-# \maketitle
-
 # For a TOC slide, add "\tableofcontents" under a slide level heading.
