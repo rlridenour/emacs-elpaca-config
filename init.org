@@ -3189,7 +3189,7 @@ Create new post.
     (interactive "sTitle: ")
     ;; Make filename
     (setq rlrt-filename (rlrt-make-filename rlrt-title))
-    (find-file (s-concat orgblog-drafts-directory (format-time-string "%y-%m-%d-") rlrt-filename ".org"))
+    (find-file (s-concat orgblog-drafts-directory (format-time-string "%Y-%m-%d-") rlrt-filename ".org"))
     (insert (s-concat "#+TITLE: " rlrt-title) ?\n)
     (yas-expand-snippet (yas-lookup-snippet "orgblogt")))
 #+end_src
@@ -3696,6 +3696,8 @@ https://github.com/amno1/emacs-term-toggle
 #+end_src
 
 ** Webfeeder
+
+This builds the RSS feed for the blog.
 
 #+begin_src emacs-lisp
   (use-package webfeeder)

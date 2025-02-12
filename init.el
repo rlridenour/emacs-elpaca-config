@@ -2157,7 +2157,7 @@ installed."
   (interactive "sTitle: ")
   ;; Make filename
   (setq rlrt-filename (rlrt-make-filename rlrt-title))
-  (find-file (s-concat orgblog-drafts-directory (format-time-string "%y-%m-%d-") rlrt-filename ".org"))
+  (find-file (s-concat orgblog-drafts-directory (format-time-string "%Y-%m-%d-") rlrt-filename ".org"))
   (insert (s-concat "#+TITLE: " rlrt-title) ?\n)
   (yas-expand-snippet (yas-lookup-snippet "orgblogt")))
 
