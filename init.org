@@ -693,13 +693,10 @@ Set font
 #+begin_src emacs-lisp
   ;; Main typeface
   (set-face-attribute 'default nil :family "SF Mono" :height 160 :weight 'medium)
-
   ;; Proportionately spaced typeface
-  ;; (set-face-attribute 'variable-pitch nil :family "SF Pro" :height 1.0 :weight 'medium)
-  (set-face-attribute 'variable-pitch nil :family "Atkinson Hyperlegible" :height 1.1 :weight 'regular)
-
+  (set-face-attribute 'variable-pitch nil :family "SF Pro Text" :height 1.1 :weight 'regular)
   ;; Monospaced typeface
-  (set-face-attribute 'fixed-pitch nil :family "SF Mono" :height 1.0 :weight 'medium)
+  (set-face-attribute 'fixed-pitch nil :family "SF Mono" :height 1.0 :weight 'regular)
 #+end_src
 
 Add some space between lines.
@@ -2392,6 +2389,15 @@ Copy entire buffer then kill. I use this with temporary scratch buffers to write
     ;; Open directory links in Dired.
     (add-to-list 'org-file-apps '(directory . emacs)))
 #+end_src
+
+#+begin_src emacs-lisp
+(use-package mixed-pitch
+  :hook
+  ;; If you want it in all text modes:
+  (text-mode . mixed-pitch-mode))
+#+end_src
+
+
 
 *** Org LaTeX Export
 

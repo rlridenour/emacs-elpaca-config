@@ -339,13 +339,10 @@ If there are only two windows, jump directly to the other window."
 
 ;; Main typeface
 (set-face-attribute 'default nil :family "SF Mono" :height 160 :weight 'medium)
-
 ;; Proportionately spaced typeface
-;; (set-face-attribute 'variable-pitch nil :family "SF Pro" :height 1.0 :weight 'medium)
-(set-face-attribute 'variable-pitch nil :family "Atkinson Hyperlegible" :height 1.1 :weight 'regular)
-
+(set-face-attribute 'variable-pitch nil :family "SF Pro Text" :height 1.1 :weight 'regular)
 ;; Monospaced typeface
-(set-face-attribute 'fixed-pitch nil :family "SF Mono" :height 1.0 :weight 'medium)
+(set-face-attribute 'fixed-pitch nil :family "SF Mono" :height 1.0 :weight 'regular)
 
 (setq-default line-spacing 0.25)
 
@@ -1571,6 +1568,11 @@ installed."
   (require 'org-tempo)
   ;; Open directory links in Dired.
   (add-to-list 'org-file-apps '(directory . emacs)))
+
+(use-package mixed-pitch
+  :hook
+  ;; If you want it in all text modes:
+  (text-mode . mixed-pitch-mode))
 
 (require 'ox-beamer)
 (with-eval-after-load 'ox-latex
