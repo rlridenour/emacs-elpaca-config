@@ -225,6 +225,8 @@
 
 (setq initial-major-mode 'org-mode)
 
+(delete-selection-mode 1)
+
 (defun delete-window-balance ()
   "Delete window and rebalance the remaining ones."
   (interactive)
