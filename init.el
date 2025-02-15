@@ -1487,11 +1487,12 @@ installed."
   :config
   ;; Add all your customizations prior to loading the themes
   (setq modus-themes-italic-constructs t
-	modus-themes-bold-constructs t)
+      modus-themes-mixed-fonts t
+      modus-themes-bold-constructs t)
 
   ;; Maybe define some palette overrides, such as by using our presets
   (setq modus-themes-common-palette-overrides
-	modus-themes-preset-overrides-faint)
+      modus-themes-preset-overrides-faint)
 
   ;; Load the theme of your choice.
   (load-theme 'modus-operandi t)
@@ -1571,10 +1572,7 @@ installed."
   ;; Open directory links in Dired.
   (add-to-list 'org-file-apps '(directory . emacs)))
 
-(use-package mixed-pitch
-  :hook
-  ;; If you want it in all text modes:
-  (text-mode . mixed-pitch-mode))
+(use-package mixed-pitch)
 
 (require 'ox-beamer)
 (with-eval-after-load 'ox-latex

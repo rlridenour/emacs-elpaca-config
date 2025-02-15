@@ -2280,11 +2280,12 @@ From [[http://yummymelon.com/devnull/converting-a-markdown-region-to-org-revisit
     :config
     ;; Add all your customizations prior to loading the themes
     (setq modus-themes-italic-constructs t
-	  modus-themes-bold-constructs t)
+	modus-themes-mixed-fonts t
+	modus-themes-bold-constructs t)
 
     ;; Maybe define some palette overrides, such as by using our presets
     (setq modus-themes-common-palette-overrides
-	  modus-themes-preset-overrides-faint)
+	modus-themes-preset-overrides-faint)
 
     ;; Load the theme of your choice.
     (load-theme 'modus-operandi t)
@@ -2400,10 +2401,7 @@ Copy entire buffer then kill. I use this with temporary scratch buffers to write
 #+end_src
 
 #+begin_src emacs-lisp
-(use-package mixed-pitch
-  :hook
-  ;; If you want it in all text modes:
-  (text-mode . mixed-pitch-mode))
+(use-package mixed-pitch)
 #+end_src
 
 
