@@ -1532,7 +1532,9 @@ installed."
   ;; (app-switch)
   (shell-command "open -a ~/icloud/scripts/beep.app"))
 
-(use-package olivetti)
+(use-package olivetti
+  :hook
+  (text-mode . olivetti-mode))
 
 (use-package orderless
   :custom
@@ -1540,39 +1542,50 @@ installed."
   (completion-category-overrides '((file (styles partial-completion)))))
 
 (use-package org
-  :ensure nil
-  :init
-  ;; (setq org-directory "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/")
-  (setq org-directory "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/")
-  :config
-  (setq org-list-allow-alphabetical t)
-  (setq org-highlight-latex-and-related '(latex script entities))
-  ;; (setq org-startup-indented t)
-  (setq org-adapt-indentation nil)
-  ;; (setq org-hide-leading-stars nil)
-  (setq org-hide-emphasis-markers nil)
-  (setq org-support-shift-select t)
-  ;; (setq org-footnote-section nil)
-  (setq org-html-validation-link nil)
-  (setq org-time-stamp-rounding-minutes '(0 15))
-  (setq org-agenda-skip-scheduled-if-deadline-is-shown t)
-  (setq org-agenda-skip-scheduled-if-done t)
-  (setq org-todo-keyword-faces
-      '(("DONE" . "green4") ("TODO" . org-warning)))
-  (setq org-agenda-files '("/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/"))
-  (setq org-agenda-start-on-weekday nil)
-  (setq org-agenda-window-setup 'current-window)
-  (setq org-link-frame-setup
-      '((vm . vm-visit-folder-other-frame)
-	(vm-imap . vm-visit-imap-folder-other-frame)
-	(gnus . org-gnus-no-new-news)
-	(file . find-file)
-	(wl . wl-other-frame)))
-  (require 'org-tempo)
-  ;; Open directory links in Dired.
-  (add-to-list 'org-file-apps '(directory . emacs)))
+    :ensure nil
+    :init
+    ;; (setq org-directory "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/")
+    (setq org-directory "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/")
+    :config
+    (setq org-list-allow-alphabetical t)
+    (setq org-highlight-latex-and-related '(latex script entities))
+    ;; (setq org-startup-indented t)
+    (setq org-adapt-indentation nil)
+    (setq org-hide-leading-stars t)
+    (setq org-hide-emphasis-markers t)
+    (setq org-support-shift-select t)
+(setq org-special-ctrl-a/e t)
+    ;; (setq org-footnote-section nil)
+    (setq org-html-validation-link nil)
+    (setq org-time-stamp-rounding-minutes '(0 15))
+    (setq org-agenda-skip-scheduled-if-deadline-is-shown t)
+    (setq org-agenda-skip-scheduled-if-done t)
+(setq org-log-done t)
+    (setq org-todo-keyword-faces
+	'(("DONE" . "green4") ("TODO" . org-warning)))
+    (setq org-agenda-files '("/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/"))
+    (setq org-agenda-start-on-weekday nil)
+    (setq org-agenda-window-setup 'current-window)
+    (setq org-link-frame-setup
+	'((vm . vm-visit-folder-other-frame)
+	  (vm-imap . vm-visit-imap-folder-other-frame)
+	  (gnus . org-gnus-no-new-news)
+	  (file . find-file)
+	  (wl . wl-other-frame)))
+    (require 'org-tempo)
+    ;; Open directory links in Dired.
+    (add-to-list 'org-file-apps '(directory . emacs)))
 
 (use-package mixed-pitch)
+
+(use-package org-appear
+  :commands (org-appear-mode)
+  :hook     (org-mode . org-appear-mode)
+  :config
+  (setq org-hide-emphasis-markers t)  ; Must be activated for org-appear to work
+  (setq org-appear-autoemphasis   t   ; Show bold, italics, verbatim, etc.
+	org-appear-autolinks      t   ; Show links
+		org-appear-autosubmarkers t)) ; Show sub- and superscripts
 
 (require 'ox-beamer)
 (with-eval-after-load 'ox-latex
@@ -1785,50 +1798,52 @@ installed."
 (defun my/org-toggle-emphasis (type)
   "Toggle org emphasis TYPE (a character) at point."
   (cl-labels ((in-emph (re)
-		"See if in org emphasis given by RE."
-		(and (org-in-regexp re 2)
-		     (>= (point) (match-beginning 3))
-		     (<= (point) (match-end 4))))
-	      (de-emphasize ()
-		"Remove most recently matched org emphasis markers."
-		(save-excursion
-		  (replace-match "" nil nil nil 3)
-		  (delete-region (match-end 4) (1+ (match-end 4))))))
+	      "See if in org emphasis given by RE."
+	      (and (org-in-regexp re 2)
+		   (>= (point) (match-beginning 3))
+		   (<= (point) (match-end 4))))
+	    (de-emphasize ()
+	      "Remove most recently matched org emphasis markers."
+	      (save-excursion
+		(replace-match "" nil nil nil 3)
+		(delete-region (match-end 4) (1+ (match-end 4))))))
     (let* ((res (vector org-emph-re org-verbatim-re))
-	   (idx (cl-case type (?/ 0) (?* 0) (?_ 0) (?+ 0) (?= 1) (?~ 1)))
-	   (re (aref res idx))
-	   (other-re (aref res (- 1 idx)))
-	   (type-re (string-replace (if (= idx 1) "=~" "*/_+")
-				    (char-to-string type) re))
-	   add-bounds offset is-word)
+	 (idx (cl-case type (?/ 0) (?* 0) (?_ 0) (?+ 0) (?= 1) (?~ 1)))
+	 (re (aref res idx))
+	 (other-re (aref res (- 1 idx)))
+	 (type-re (string-replace (if (= idx 1) "=~" "*/_+")
+				  (char-to-string type) re))
+	 add-bounds offset is-word)
       (save-match-data
-	(if (region-active-p)
-	    (if (in-emph type-re) (de-emphasize) (org-emphasize type))
-	  (if (eq (char-before) type) (backward-char))
-	  (if (in-emph type-re)       ;nothing marked, in emph text?
-	      (de-emphasize)
-	    (setq add-bounds          ; check other flavors
-		  (if (or (in-emph re) (in-emph other-re))
-		      (cons (match-beginning 4) (match-end 4))
-		    (setq is-word t)
-		    (bounds-of-thing-at-point 'symbol))))
-	  (if add-bounds
-	      (let ((off (- (point) (car add-bounds)))
-		    (at-end (= (point) (cdr add-bounds))))
-		(set-mark (car add-bounds))
-		(goto-char (cdr add-bounds))
-		(org-emphasize type)  ;deletes marked region!
-		(unless is-word       ; delete extra spaces
-		  (goto-char (car add-bounds))
-		  (when (eq (char-after) ?\s) (delete-char 1))
-		  (goto-char (+ 2 (cdr add-bounds)))
-		  (when (eq (char-after) ?\s) (delete-char 1)))
-		(goto-char (+ (car add-bounds) off
-			      (cond ((= off 0) 0) (at-end 2) (t 1)))))
-	    (if is-word (org-emphasize type))))))))
+      (if (region-active-p)
+	  (if (in-emph type-re) (de-emphasize) (org-emphasize type))
+	(if (eq (char-before) type) (backward-char))
+	(if (in-emph type-re)       ;nothing marked, in emph text?
+	    (de-emphasize)
+	  (setq add-bounds          ; check other flavors
+		(if (or (in-emph re) (in-emph other-re))
+		    (cons (match-beginning 4) (match-end 4))
+		  (setq is-word t)
+		  (bounds-of-thing-at-point 'symbol))))
+	(if add-bounds
+	    (let ((off (- (point) (car add-bounds)))
+		  (at-end (= (point) (cdr add-bounds))))
+	      (set-mark (car add-bounds))
+	      (goto-char (cdr add-bounds))
+	      (org-emphasize type)  ;deletes marked region!
+	      (unless is-word       ; delete extra spaces
+		(goto-char (car add-bounds))
+		(when (eq (char-after) ?\s) (delete-char 1))
+		(goto-char (+ 2 (cdr add-bounds)))
+		(when (eq (char-after) ?\s) (delete-char 1)))
+	      (goto-char (+ (car add-bounds) off
+			    (cond ((= off 0) 0) (at-end 2) (t 1)))))
+	  (if is-word (org-emphasize type))))))))
 
 (general-define-key
  :keymaps 'org-mode-map
+ "s-<right>" #'org-end-of-line
+ "s-<left>" #'org-beginning-of-line
  "s-i" (lambda () (interactive) (my/org-toggle-emphasis ?/))
  "s-b" (lambda () (interactive) (my/org-toggle-emphasis ?*))
  "C-c e e" (lambda () (interactive) (my/org-toggle-emphasis ?~))
