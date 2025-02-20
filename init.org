@@ -1,6 +1,7 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
 #+email: rlridenour@fastmail.com
+#+STARTUP: indent
 #+auto_tangle: t
 
 * Early init file
@@ -123,7 +124,7 @@ Bring new frame to front. From [[https://www.reddit.com/r/emacs/comments/1g2hkh8
     "Using applescript, force the Emacs frame to be activated."
     (when (eq system-type 'darwin)
       (start-process "bring-emacs-to-front" nil
-		   "osascript"
+		     "osascript"
 		     "-e"
 		     "tell application \"Emacs\" to activate")))
 
@@ -218,44 +219,44 @@ Add elisp directory to load path.
 ** Elpaca Install
 
 #+begin_src emacs-lisp
-(defvar elpaca-installer-version 0.9)
-(defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
-(defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
-(defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
-(defvar elpaca-order '(elpaca :repo "https://github.com/progfolio/elpaca.git"
-			      :ref nil :depth 1 :inherit ignore
-			      :files (:defaults "elpaca-test.el" (:exclude "extensions"))
-			      :build (:not elpaca--activate-package)))
-(let* ((repo  (expand-file-name "elpaca/" elpaca-repos-directory))
-       (build (expand-file-name "elpaca/" elpaca-builds-directory))
-       (order (cdr elpaca-order))
-       (default-directory repo))
-  (add-to-list 'load-path (if (file-exists-p build) build repo))
-  (unless (file-exists-p repo)
-    (make-directory repo t)
-    (when (< emacs-major-version 28) (require 'subr-x))
-    (condition-case-unless-debug err
-	(if-let* ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
-		  ((zerop (apply #'call-process `("git" nil ,buffer t "clone"
-						  ,@(when-let* ((depth (plist-get order :depth)))
-						      (list (format "--depth=%d" depth) "--no-single-branch"))
-						  ,(plist-get order :repo) ,repo))))
-		  ((zerop (call-process "git" nil buffer t "checkout"
-					(or (plist-get order :ref) "--"))))
-		  (emacs (concat invocation-directory invocation-name))
-		  ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
-					"--eval" "(byte-recompile-directory \".\" 0 'force)")))
-		  ((require 'elpaca))
-		  ((elpaca-generate-autoloads "elpaca" repo)))
-	    (progn (message "%s" (buffer-string)) (kill-buffer buffer))
-	  (error "%s" (with-current-buffer buffer (buffer-string))))
-      ((error) (warn "%s" err) (delete-directory repo 'recursive))))
-  (unless (require 'elpaca-autoloads nil t)
-    (require 'elpaca)
-    (elpaca-generate-autoloads "elpaca" repo)
-    (load "./elpaca-autoloads")))
-(add-hook 'after-init-hook #'elpaca-process-queues)
-(elpaca `(,@elpaca-order))
+  (defvar elpaca-installer-version 0.9)
+  (defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
+  (defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
+  (defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
+  (defvar elpaca-order '(elpaca :repo "https://github.com/progfolio/elpaca.git"
+				:ref nil :depth 1 :inherit ignore
+				:files (:defaults "elpaca-test.el" (:exclude "extensions"))
+				:build (:not elpaca--activate-package)))
+  (let* ((repo  (expand-file-name "elpaca/" elpaca-repos-directory))
+	 (build (expand-file-name "elpaca/" elpaca-builds-directory))
+	 (order (cdr elpaca-order))
+	 (default-directory repo))
+    (add-to-list 'load-path (if (file-exists-p build) build repo))
+    (unless (file-exists-p repo)
+      (make-directory repo t)
+      (when (< emacs-major-version 28) (require 'subr-x))
+      (condition-case-unless-debug err
+	  (if-let* ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
+		    ((zerop (apply #'call-process `("git" nil ,buffer t "clone"
+						    ,@(when-let* ((depth (plist-get order :depth)))
+							(list (format "--depth=%d" depth) "--no-single-branch"))
+						    ,(plist-get order :repo) ,repo))))
+		    ((zerop (call-process "git" nil buffer t "checkout"
+					  (or (plist-get order :ref) "--"))))
+		    (emacs (concat invocation-directory invocation-name))
+		    ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
+					  "--eval" "(byte-recompile-directory \".\" 0 'force)")))
+		    ((require 'elpaca))
+		    ((elpaca-generate-autoloads "elpaca" repo)))
+	      (progn (message "%s" (buffer-string)) (kill-buffer buffer))
+	    (error "%s" (with-current-buffer buffer (buffer-string))))
+	((error) (warn "%s" err) (delete-directory repo 'recursive))))
+    (unless (require 'elpaca-autoloads nil t)
+      (require 'elpaca)
+      (elpaca-generate-autoloads "elpaca" repo)
+      (load "./elpaca-autoloads")))
+  (add-hook 'after-init-hook #'elpaca-process-queues)
+  (elpaca `(,@elpaca-order))
 #+end_src
 
 ** Elpaca Use-Package Support
@@ -332,7 +333,7 @@ Set Mac right command key as Emacs hyper key. The fn key with A, F, H, E, C, N, 
 
 #+begin_src emacs-lisp
   (setq ns-function-modifier 'hyper)
-	;; ns-right-command-modifier 'hyper)
+  ;; ns-right-command-modifier 'hyper)
 #+end_src
 
 Allow entering a command when the minibuffer is active.
@@ -557,7 +558,7 @@ Set initial mode to org-mode.
 Overwrite selected text.
 
 #+begin_src emacs-lisp
-(delete-selection-mode 1)
+  (delete-selection-mode 1)
 #+end_src
 
 
@@ -746,15 +747,15 @@ Immediately highlight matching pairs of parentheses and quotes.
 If more than one window, delete the window; if only one window, delete the tab; if only one tab, delete the frame.
 
 #+begin_src emacs-lisp
-(defun rlr/delete-tab-or-frame ()
-"Delete current tab. If there is only one tab, then delete current frame."
-(interactive)
-(if
-(not (one-window-p))
- (delete-window)
-(condition-case nil
-(tab-close)
-(error (delete-frame)))))
+  (defun rlr/delete-tab-or-frame ()
+    "Delete current tab. If there is only one tab, then delete current frame."
+    (interactive)
+    (if
+	(not (one-window-p))
+	(delete-window)
+      (condition-case nil
+	(tab-close)
+	(error (delete-frame)))))
 #+end_src
 
 ** Tabs
@@ -928,14 +929,14 @@ Convert DOS line-endings to UNIX.
 Strip tracking elements from URL's using Brett Terpstra's stretchlink.cc.
 
 #+begin_src emacs-lisp
-(defun my/stretchlink-cc ()
-  (interactive)
-  (progn
-    (setq current-safari-url (do-applescript "tell application \"Safari\" to return URL of document 1"))
-    (shell-command
-     (concat "curl " "\"https://stretchlink.cc/api/1?u=" current-safari-url "&t=1&c=1&o=text\" | pbcopy"))
-     (setq myurl (yank))
-     (message myurl)))
+  (defun my/stretchlink-cc ()
+    (interactive)
+    (progn
+      (setq current-safari-url (do-applescript "tell application \"Safari\" to return URL of document 1"))
+      (shell-command
+       (concat "curl " "\"https://stretchlink.cc/api/1?u=" current-safari-url "&t=1&c=1&o=text\" | pbcopy"))
+      (setq myurl (yank))
+      (message myurl)))
 
 #+end_src
 
@@ -967,7 +968,7 @@ Load general before the remaining packages so they can make use of the ~:general
       "s-n"
       "s-h"
       "s-,"))
-      #+end_src
+#+end_src
 
 ** Abbrev
 
@@ -1367,9 +1368,9 @@ Search notes with the xapian syntax (+word -word AND NOT etc), <tab> to preview,
 ** Devil Mode
 
 #+begin_src emacs-lisp
-(use-package devil
-:init
-(global-devil-mode))
+  (use-package devil
+    :init
+    (global-devil-mode))
 #+end_src
 
 ** Dired
@@ -2376,18 +2377,31 @@ Copy entire buffer then kill. I use this with temporary scratch buffers to write
     :config
     (setq org-list-allow-alphabetical t)
     (setq org-highlight-latex-and-related '(latex script entities))
-    ;; (setq org-startup-indented t)
-    (setq org-adapt-indentation nil)
+    (setq org-startup-indented t)
+    (setq org-adapt-indentation t)
     (setq org-hide-leading-stars t)
     (setq org-hide-emphasis-markers t)
+(dolist (face '((org-level-1 . 1.3)
+                (org-level-2 . 1.2)
+                (org-level-3 . 1.1)
+                (org-level-4 . 1.0)
+                (org-level-5 . 1.0)
+                (org-level-6 . 1.0)
+                (org-level-7 . 1.0)
+                (org-level-8 . 1.0)))
+  (set-face-attribute (car face) nil :weight 'bold :height (cdr face)))
+
+;; Make the document title a bit bigger
+(set-face-attribute 'org-document-title nil :weight 'bold)
+
     (setq org-support-shift-select t)
-(setq org-special-ctrl-a/e t)
+    (setq org-special-ctrl-a/e t)
     ;; (setq org-footnote-section nil)
     (setq org-html-validation-link nil)
     (setq org-time-stamp-rounding-minutes '(0 15))
     (setq org-agenda-skip-scheduled-if-deadline-is-shown t)
     (setq org-agenda-skip-scheduled-if-done t)
-(setq org-log-done t)
+    (setq org-log-done t)
     (setq org-todo-keyword-faces
 	'(("DONE" . "green4") ("TODO" . org-warning)))
     (setq org-agenda-files '("/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/"))
@@ -2427,6 +2441,19 @@ Mixed-pitch mode renders code and tables in fixed-pitch, other text in variable 
 #+end_src
 
 
+*** Org Superstar
+
+
+
+#+begin_src emacs-lisp
+  (use-package org-superstar
+    :config
+    ;; (setq org-superstar-special-todo-items t) ;; Makes TODO header bullets into boxes
+    ;; (setq org-superstar-todo-bullet-alist '(("TODO"  . 9744)
+					    ;; ("DONE"  . 9745)))
+    :hook
+    (org-mode . org-superstar-mode))
+#+end_src
 
 *** Org LaTeX Export
 

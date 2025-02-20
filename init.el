@@ -98,7 +98,7 @@
 (setf use-short-answers t)
 
 (setq ns-function-modifier 'hyper)
-      ;; ns-right-command-modifier 'hyper)
+;; ns-right-command-modifier 'hyper)
 
 (setq enable-recursive-minibuffers t)
 (minibuffer-depth-indicate-mode 1)
@@ -360,14 +360,14 @@ If there are only two windows, jump directly to the other window."
 (setq show-paren-delay 0)
 
 (defun rlr/delete-tab-or-frame ()
-"Delete current tab. If there is only one tab, then delete current frame."
-(interactive)
-(if
-(not (one-window-p))
- (delete-window)
-(condition-case nil
-(tab-close)
-(error (delete-frame)))))
+  "Delete current tab. If there is only one tab, then delete current frame."
+  (interactive)
+  (if
+      (not (one-window-p))
+      (delete-window)
+    (condition-case nil
+      (tab-close)
+      (error (delete-frame)))))
 
 (defun rlr/find-file-new-tab ()
   "Open new tab and select recent file."
@@ -478,8 +478,8 @@ If there are only two windows, jump directly to the other window."
     (setq current-safari-url (do-applescript "tell application \"Safari\" to return URL of document 1"))
     (shell-command
      (concat "curl " "\"https://stretchlink.cc/api/1?u=" current-safari-url "&t=1&c=1&o=text\" | pbcopy"))
-     (setq myurl (yank))
-     (message myurl)))
+    (setq myurl (yank))
+    (message myurl)))
 
 (use-package general
   :ensure (:wait t)
@@ -757,8 +757,8 @@ If there are only two windows, jump directly to the other window."
   (xeft-recursive nil))
 
 (use-package devil
-:init
-(global-devil-mode))
+  :init
+  (global-devil-mode))
 
 (use-package dired+
   :demand
@@ -1549,18 +1549,31 @@ installed."
     :config
     (setq org-list-allow-alphabetical t)
     (setq org-highlight-latex-and-related '(latex script entities))
-    ;; (setq org-startup-indented t)
-    (setq org-adapt-indentation nil)
+    (setq org-startup-indented t)
+    (setq org-adapt-indentation t)
     (setq org-hide-leading-stars t)
     (setq org-hide-emphasis-markers t)
+(dolist (face '((org-level-1 . 1.3)
+                (org-level-2 . 1.2)
+                (org-level-3 . 1.1)
+                (org-level-4 . 1.0)
+                (org-level-5 . 1.0)
+                (org-level-6 . 1.0)
+                (org-level-7 . 1.0)
+                (org-level-8 . 1.0)))
+  (set-face-attribute (car face) nil :weight 'bold :height (cdr face)))
+
+;; Make the document title a bit bigger
+(set-face-attribute 'org-document-title nil :weight 'bold)
+
     (setq org-support-shift-select t)
-(setq org-special-ctrl-a/e t)
+    (setq org-special-ctrl-a/e t)
     ;; (setq org-footnote-section nil)
     (setq org-html-validation-link nil)
     (setq org-time-stamp-rounding-minutes '(0 15))
     (setq org-agenda-skip-scheduled-if-deadline-is-shown t)
     (setq org-agenda-skip-scheduled-if-done t)
-(setq org-log-done t)
+    (setq org-log-done t)
     (setq org-todo-keyword-faces
 	'(("DONE" . "green4") ("TODO" . org-warning)))
     (setq org-agenda-files '("/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/"))
@@ -1586,6 +1599,14 @@ installed."
   (setq org-appear-autoemphasis   t   ; Show bold, italics, verbatim, etc.
 	org-appear-autolinks      t   ; Show links
 		org-appear-autosubmarkers t)) ; Show sub- and superscripts
+
+(use-package org-superstar
+  :config
+  ;; (setq org-superstar-special-todo-items t) ;; Makes TODO header bullets into boxes
+  ;; (setq org-superstar-todo-bullet-alist '(("TODO"  . 9744)
+					  ;; ("DONE"  . 9745)))
+  :hook
+  (org-mode . org-superstar-mode))
 
 (require 'ox-beamer)
 (with-eval-after-load 'ox-latex

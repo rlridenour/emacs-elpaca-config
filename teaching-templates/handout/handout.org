@@ -22,7 +22,9 @@
 #+LaTeX_HEADER: \widowpenalty = 10000
 #+LaTeX_HEADER: \usepackage{enumitem}
 #+LaTeX_HEADER: \setlist{nosep}
-#+LaTeX_HEADER: \usepackage{libertine}
+#+LaTeX_HEADER: \setlist[itemize]{label=\textbullet}
+#+LaTeX_HEADER: \usepackage{MinionPro}
+#+LaTeX_HEADER: \usepackage{MyriadPro}
 #+LaTeX_HEADER: \usepackage[T1]{fontenc}
 #+LaTeX_HEADER: \usepackage{hyperref}
 # #+LaTeX_HEADER: \renewcommand{\land}{\mathbin{\&}}
@@ -32,7 +34,6 @@
 # #+LaTeX_HEADER: \newcommand{\lneg}{\neg}
 #+LaTeX_HEADER: \newcommand{\lneg}{\sim}
 #+LaTeX_HEADER: \renewcommand\familydefault\sfdefault
-#+LaTeX_HEADER: \usepackage[LGRgreek]{mathastext}
 #+LaTeX_HEADER: \renewcommand\familydefault\rmdefault
 #+OPTIONS: toc:nil
 #+HTML_DOCTYPE: html5
