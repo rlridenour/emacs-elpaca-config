@@ -561,9 +561,6 @@ Overwrite selected text.
   (delete-selection-mode 1)
 #+end_src
 
-
-
-
 ** Windows
 
 #+begin_src emacs-lisp
@@ -939,8 +936,6 @@ Strip tracking elements from URL's using Brett Terpstra's stretchlink.cc.
       (message myurl)))
 
 #+end_src
-
-
 
 * Packages
 :PROPERTIES:
@@ -1639,8 +1634,6 @@ From [[https://github.com/mickeynp/discover.el][mickeynp/discover.el: Discover m
 	      "C-M-S-s-<left>" #'emmet-prev-edit-point))
 #+end_src
 
-
-
 ** Exec-Path-From-Shell
 
 #+begin_src emacs-lisp
@@ -2248,7 +2241,6 @@ Enrich existing commands with completion annotations
 	(kmacro-lambda-form [?\C-r ?: ?E ?N ?D return down ?\C-  ?\C-s ?* ?* ?  ?N ?o ?t ?e ?s return up ?\M-w ?\C-s ?: ?E ?N ?D return down return ?\s-v return] 0 "%d"))
 #+end_src
 
-
 From [[http://yummymelon.com/devnull/converting-a-markdown-region-to-org-revisited.html][Charles Choi]].
 
 #+begin_src emacs-lisp
@@ -2426,7 +2418,6 @@ Mixed-pitch mode renders code and tables in fixed-pitch, other text in variable 
 (use-package mixed-pitch)
 #+end_src
 
-
 *** Org Appear
 
 #+begin_src emacs-lisp
@@ -2440,10 +2431,7 @@ Mixed-pitch mode renders code and tables in fixed-pitch, other text in variable 
 		org-appear-autosubmarkers t)) ; Show sub- and superscripts
 #+end_src
 
-
 *** Org Superstar
-
-
 
 #+begin_src emacs-lisp
   (use-package org-superstar
@@ -3442,7 +3430,6 @@ Select tag, add tag to to post, then add post to tag page.
   (require 'cc-style-text-menu)
 #+end_src
 
-
 *** Copy Org Rich Text
 
 From [[https://kitchingroup.cheme.cmu.edu/blog/2016/06/16/Copy-formatted-org-mode-text-from-Emacs-to-other-applications/][Copy formatted org-mode text from Emacs to other applications]]
@@ -3463,9 +3450,6 @@ From [[https://kitchingroup.cheme.cmu.edu/blog/2016/06/16/Copy-formatted-org-mod
 
   ;; (global-set-key (kbd "H-w") 'formatted-copy)
 #+end_src
-
-
-
 
 ** OSX Dictionary
 
@@ -3617,8 +3601,6 @@ Increase number of recent files shown.
 	      "C" #'count-words-region
 	      "m" #'apply-macro-to-region-lines))
 #+end_src
-
-
 
 ** Shrink Whitespace
 
