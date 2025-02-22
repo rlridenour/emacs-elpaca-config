@@ -2424,17 +2424,6 @@ Mixed-pitch mode renders code and tables in fixed-pitch, other text in variable 
                 org-appear-autosubmarkers t)) ; Show sub- and superscripts
 #+end_src
 
-*** Org Superstar
-
-#+begin_src emacs-lisp :tangle no
-  (use-package org-superstar
-    :config
-    ;; (setq org-superstar-special-todo-items t) ;; Makes TODO header bullets into boxes
-    ;; (setq org-superstar-todo-bullet-alist '(("TODO"  . 9744)
-                                            ;; ("DONE"  . 9745)))
-    :hook
-    (org-mode . org-superstar-mode))
-#+end_src
 
 *** Org LaTeX Export
 
