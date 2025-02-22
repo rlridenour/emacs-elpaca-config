@@ -19,8 +19,8 @@
    1 nil
    (lambda ()
      (setq file-name-handler-alist default-file-name-handler-alist
-	   gc-cons-percentage 0.1
-	   gc-cons-threshold 100000000)
+           gc-cons-percentage 0.1
+           gc-cons-threshold 100000000)
      (message "gc-cons-threshold & file-name-handler-alist restored")
      (when (boundp 'after-focus-change-function)
        (add-function :after after-focus-change-function #'+gc-after-focus-change)))))
@@ -59,14 +59,14 @@
   "Using applescript, force the Emacs frame to be activated."
   (when (eq system-type 'darwin)
     (start-process "bring-emacs-to-front" nil
-		   "osascript"
-		   "-e"
-		   "tell application \"Emacs\" to activate")))
+                   "osascript"
+                   "-e"
+                   "tell application \"Emacs\" to activate")))
 
 (add-hook 'server-after-make-frame-hook #'initd/bring-emacs-to-front)
 
 (setq-default cursor-in-non-selected-windows nil
-	      frame-title-format '("%f [%m]"))
+              frame-title-format '("%f [%m]"))
 
 (defun my/focus-new-client-frame ()
   (select-frame-set-input-focus (selected-frame)))

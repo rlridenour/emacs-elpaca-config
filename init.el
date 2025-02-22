@@ -20,7 +20,7 @@
 
 ;;;; Create directories if non-existing
 (dolist (dir (list rr-cache-dir
-		   rr-backup-dir))
+                   rr-backup-dir))
   (unless (file-directory-p dir)
     (make-directory dir t)))
 
@@ -32,9 +32,9 @@
 (defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
 (defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
 (defvar elpaca-order '(elpaca :repo "https://github.com/progfolio/elpaca.git"
-			      :ref nil :depth 1 :inherit ignore
-			      :files (:defaults "elpaca-test.el" (:exclude "extensions"))
-			      :build (:not elpaca--activate-package)))
+                              :ref nil :depth 1 :inherit ignore
+                              :files (:defaults "elpaca-test.el" (:exclude "extensions"))
+                              :build (:not elpaca--activate-package)))
 (let* ((repo  (expand-file-name "elpaca/" elpaca-repos-directory))
        (build (expand-file-name "elpaca/" elpaca-builds-directory))
        (order (cdr elpaca-order))
@@ -44,20 +44,20 @@
     (make-directory repo t)
     (when (< emacs-major-version 28) (require 'subr-x))
     (condition-case-unless-debug err
-	(if-let* ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
-		  ((zerop (apply #'call-process `("git" nil ,buffer t "clone"
-						  ,@(when-let* ((depth (plist-get order :depth)))
-						      (list (format "--depth=%d" depth) "--no-single-branch"))
-						  ,(plist-get order :repo) ,repo))))
-		  ((zerop (call-process "git" nil buffer t "checkout"
-					(or (plist-get order :ref) "--"))))
-		  (emacs (concat invocation-directory invocation-name))
-		  ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
-					"--eval" "(byte-recompile-directory \".\" 0 'force)")))
-		  ((require 'elpaca))
-		  ((elpaca-generate-autoloads "elpaca" repo)))
-	    (progn (message "%s" (buffer-string)) (kill-buffer buffer))
-	  (error "%s" (with-current-buffer buffer (buffer-string))))
+        (if-let* ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
+                  ((zerop (apply #'call-process `("git" nil ,buffer t "clone"
+                                                  ,@(when-let* ((depth (plist-get order :depth)))
+                                                      (list (format "--depth=%d" depth) "--no-single-branch"))
+                                                  ,(plist-get order :repo) ,repo))))
+                  ((zerop (call-process "git" nil buffer t "checkout"
+                                        (or (plist-get order :ref) "--"))))
+                  (emacs (concat invocation-directory invocation-name))
+                  ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
+                                        "--eval" "(byte-recompile-directory \".\" 0 'force)")))
+                  ((require 'elpaca))
+                  ((elpaca-generate-autoloads "elpaca" repo)))
+            (progn (message "%s" (buffer-string)) (kill-buffer buffer))
+          (error "%s" (with-current-buffer buffer (buffer-string))))
       ((error) (warn "%s" err) (delete-directory repo 'recursive))))
   (unless (require 'elpaca-autoloads nil t)
     (require 'elpaca)
@@ -168,9 +168,9 @@
 (setq ibuffer-expert t)
 
 (add-hook 'ibuffer-mode-hook
-	  #'(lambda ()
-	      (ibuffer-auto-mode 1)
-	      (ibuffer-switch-to-saved-filter-groups "home")))
+          #'(lambda ()
+              (ibuffer-auto-mode 1)
+              (ibuffer-switch-to-saved-filter-groups "home")))
 
 ;;;;; = savehist - last commands used
 ;; Persist emacs minibuffer history
@@ -188,7 +188,7 @@
 (setq kill-buffer-query-functions nil)
 
 (add-to-list 'display-buffer-alist
-	     (cons "\\*Async Shell Command\\*.*" (cons #'display-buffer-no-window nil)))
+             (cons "\\*Async Shell Command\\*.*" (cons #'display-buffer-no-window nil)))
 
 (defun make-parent-directory ()
   "Make sure the directory of `buffer-file-name' exists."
@@ -197,14 +197,14 @@
 
 (defun nuke-all-buffers ()
   "Kill all the open buffers except the current one.
-	Leave *scratch*, *dashboard* and *Messages* alone too."
+        Leave *scratch*, *dashboard* and *Messages* alone too."
   (interactive)
   (mapc
    (lambda (buffer)
      (unless (or
-	      (string= (buffer-name buffer) "*scratch*")
-	      (string= (buffer-name buffer) "*Org Agenda*")
-	      (string= (buffer-name buffer) "*Messages*"))
+              (string= (buffer-name buffer) "*scratch*")
+              (string= (buffer-name buffer) "*Org Agenda*")
+              (string= (buffer-name buffer) "*Messages*"))
        (kill-buffer buffer)))
    (buffer-list))
   (delete-other-windows)
@@ -265,10 +265,10 @@
   (unless (= 2 (count-windows))
     (error "There are not 2 windows."))
   (let* ((windows (window-list))
-	 (w1 (car windows))
-	 (w2 (nth 1 windows))
-	 (w1b (window-buffer w1))
-	 (w2b (window-buffer w2)))
+         (w1 (car windows))
+         (w2 (nth 1 windows))
+         (w1b (window-buffer w1))
+         (w2b (window-buffer w2)))
     (set-window-buffer w1 w2b)
     (set-window-buffer w2 w1b)))
 
@@ -276,26 +276,26 @@
   (interactive)
   (if (= (count-windows) 2)
       (let* ((this-win-buffer (window-buffer))
-	     (next-win-buffer (window-buffer (next-window)))
-	     (this-win-edges (window-edges (selected-window)))
-	     (next-win-edges (window-edges (next-window)))
-	     (this-win-2nd (not (and (<= (car this-win-edges)
-					 (car next-win-edges))
-				     (<= (cadr this-win-edges)
-					 (cadr next-win-edges)))))
-	     (splitter
-	      (if (= (car this-win-edges)
-		     (car (window-edges (next-window))))
-		  'split-window-horizontally
-		'split-window-vertically)))
-	(delete-other-windows)
-	(let ((first-win (selected-window)))
-	  (funcall splitter)
-	  (if this-win-2nd (other-window 1))
-	  (set-window-buffer (selected-window) this-win-buffer)
-	  (set-window-buffer (next-window) next-win-buffer)
-	  (select-window first-win)
-	  (if this-win-2nd (other-window 1))))))
+             (next-win-buffer (window-buffer (next-window)))
+             (this-win-edges (window-edges (selected-window)))
+             (next-win-edges (window-edges (next-window)))
+             (this-win-2nd (not (and (<= (car this-win-edges)
+                                         (car next-win-edges))
+                                     (<= (cadr this-win-edges)
+                                         (cadr next-win-edges)))))
+             (splitter
+              (if (= (car this-win-edges)
+                     (car (window-edges (next-window))))
+                  'split-window-horizontally
+                'split-window-vertically)))
+        (delete-other-windows)
+        (let ((first-win (selected-window)))
+          (funcall splitter)
+          (if this-win-2nd (other-window 1))
+          (set-window-buffer (selected-window) this-win-buffer)
+          (set-window-buffer (next-window) next-win-buffer)
+          (select-window first-win)
+          (if this-win-2nd (other-window 1))))))
 
 (defun toggle-frame-maximized-undecorated () (interactive) (let* ((frame (selected-frame)) (on? (and (frame-parameter frame 'undecorated) (eq (frame-parameter frame 'fullscreen) 'maximized))) (geom (frame-monitor-attribute 'geometry)) (x (nth 0 geom)) (y (nth 1 geom)) (display-height (nth 3 geom)) (display-width (nth 2 geom)) (cut (if on? (if ns-auto-hide-menu-bar 26 50) (if ns-auto-hide-menu-bar 4 26)))) (set-frame-position frame x y) (set-frame-parameter frame 'fullscreen-restore 'maximized) (set-frame-parameter nil 'fullscreen 'maximized) (set-frame-parameter frame 'undecorated (not on?)) (set-frame-height frame (- display-height cut) nil t) (set-frame-width frame (- display-width 20) nil t) (set-frame-position frame x y)))
 
@@ -305,39 +305,39 @@ If there are only two windows, jump directly to the other window."
   (interactive)
   (let* ((window-list (window-list nil 'no-mini)))
     (if (< (length window-list) 3)
-	;; If only one window, switch to previous buffer. If only two, jump directly to other window.
+        ;; If only one window, switch to previous buffer. If only two, jump directly to other window.
       (if (one-window-p)
-	    (switch-to-buffer nil)
-	  (other-window 1))
+            (switch-to-buffer nil)
+          (other-window 1))
       ;; Otherwise, show the key selection interface.
       (let* ((my/quick-window-overlays nil)
-	     (sorted-windows (sort window-list
-				   (lambda (w1 w2)
-				     (let ((edges1 (window-edges w1))
-					   (edges2 (window-edges w2)))
-				       (or (< (car edges1) (car edges2))
-					   (and (= (car edges1) (car edges2))
-						(< (cadr edges1) (cadr edges2))))))))
-	     (window-keys (seq-take '("j" "k" "l" ";" "a" "s" "d" "f")
-				    (length sorted-windows)))
-	     (window-map (cl-pairlis window-keys sorted-windows)))
-	(setq my/quick-window-overlays
-	      (mapcar (lambda (entry)
-			(let* ((key (car entry))
-			       (window (cdr entry))
-			       (start (window-start window))
-			       (overlay (make-overlay start start (window-buffer window))))
-			  (overlay-put overlay 'after-string
-				       (propertize (format "[%s]" key)
-						   'face '(:foreground "white" :background "blue" :weight bold)))
-			  (overlay-put overlay 'window window)
-			  overlay))
-		      window-map))
-	(let ((key (read-key (format "Select window [%s]: " (string-join window-keys ", ")))))
-	  (mapc #'delete-overlay my/quick-window-overlays)
-	  (setq my/quick-window-overlays nil)
-	  (when-let ((selected-window (cdr (assoc (char-to-string key) window-map))))
-	    (select-window selected-window)))))))
+             (sorted-windows (sort window-list
+                                   (lambda (w1 w2)
+                                     (let ((edges1 (window-edges w1))
+                                           (edges2 (window-edges w2)))
+                                       (or (< (car edges1) (car edges2))
+                                           (and (= (car edges1) (car edges2))
+                                                (< (cadr edges1) (cadr edges2))))))))
+             (window-keys (seq-take '("j" "k" "l" ";" "a" "s" "d" "f")
+                                    (length sorted-windows)))
+             (window-map (cl-pairlis window-keys sorted-windows)))
+        (setq my/quick-window-overlays
+              (mapcar (lambda (entry)
+                        (let* ((key (car entry))
+                               (window (cdr entry))
+                               (start (window-start window))
+                               (overlay (make-overlay start start (window-buffer window))))
+                          (overlay-put overlay 'after-string
+                                       (propertize (format "[%s]" key)
+                                                   'face '(:foreground "white" :background "blue" :weight bold)))
+                          (overlay-put overlay 'window window)
+                          overlay))
+                      window-map))
+        (let ((key (read-key (format "Select window [%s]: " (string-join window-keys ", ")))))
+          (mapc #'delete-overlay my/quick-window-overlays)
+          (setq my/quick-window-overlays nil)
+          (when-let ((selected-window (cdr (assoc (char-to-string key) window-map))))
+            (select-window selected-window)))))))
 
 ;; Main typeface
 (set-face-attribute 'default nil :family "SF Mono" :height 160 :weight 'medium)
@@ -349,7 +349,7 @@ If there are only two windows, jump directly to the other window."
 (setq-default line-spacing 0.25)
 
 (set-face-attribute 'mode-line nil
-		    :foreground "black" :background "wheat3" :box '(:line-width 1 :color "black"))
+                    :foreground "black" :background "wheat3" :box '(:line-width 1 :color "black"))
 
 (setq display-time-24hr-format t)
 (display-time-mode)
@@ -395,10 +395,10 @@ If there are only two windows, jump directly to the other window."
   (interactive)
   (let
       ((display-buffer-alist
-	(list
-	 (cons
-	  "\\*Async Shell Command\\*.*"
-	  (cons #'display-buffer-no-window nil)))))
+        (list
+         (cons
+          "\\*Async Shell Command\\*.*"
+          (cons #'display-buffer-no-window nil)))))
     (async-shell-command
      command)))
 
@@ -410,9 +410,9 @@ If there are only two windows, jump directly to the other window."
     " tell application \"iTerm2\"\n"
     "   tell the current session of current window\n"
     (format "     write text \"cd %s\" \n"
-	    ;; string escaping madness for applescript
-	    (replace-regexp-in-string "\\\\" "\\\\\\\\"
-				      (shell-quote-argument (or default-directory "~"))))
+            ;; string escaping madness for applescript
+            (replace-regexp-in-string "\\\\" "\\\\\\\\"
+                                      (shell-quote-argument (or default-directory "~"))))
     "   end tell\n"
     " end tell\n"
     " do shell script \"open -a iTerm\"\n"
@@ -456,15 +456,15 @@ If there are only two windows, jump directly to the other window."
     (let ((use-hard-newlines 't))
       ;; Loop over each sentence in the paragraph.
       (while (< (point) end-of-paragraph)
-	;; Move to end of sentence.
-	(forward-sentence)
-	;; Delete spaces after sentence.
+        ;; Move to end of sentence.
+        (forward-sentence)
+        ;; Delete spaces after sentence.
       (just-one-space)
       ;; Delete preceding space.
-	(delete-char -1)
-	;; Insert a newline before the next sentence.
-	(insert "\n")
-	))))
+        (delete-char -1)
+        ;; Insert a newline before the next sentence.
+        (insert "\n")
+        ))))
 
 (defun dos2unix ()
   "Replace DOS eolns CR LF with Unix eolns CR"
@@ -529,25 +529,25 @@ If there are only two windows, jump directly to the other window."
   :general
   ("s-." #'casual-editkit-main-tmenu)
   (:keymaps 'reb-mode-map
-	    "s-." #'casual-re-builder-tmenu)
+            "s-." #'casual-re-builder-tmenu)
   (:keymaps 'calc-mode-map
-	    "s-." #'casual-calc-tmenu)
+            "s-." #'casual-calc-tmenu)
   (:keymaps 'dired-mode-map
-	    "s-." #'casual-dired-tmenu)
+            "s-." #'casual-dired-tmenu)
   (:keymaps 'isearch-mode-map
-	    "s-." #'casual-isearch-tmenu)
+            "s-." #'casual-isearch-tmenu)
   (:keymaps 'ibuffer-mode-map
-	    "s-." #'casual-ibuffer-tmenu
-	    "F" #'casual-ibuffer-filter-tmenu
-	    "s" #'casual-ibuffer-sortby-tmenu)
+            "s-." #'casual-ibuffer-tmenu
+            "F" #'casual-ibuffer-filter-tmenu
+            "s" #'casual-ibuffer-sortby-tmenu)
   (:keymaps 'bookmark-bemenu-mode-map
-	    "s-." #'casual-bookmarks-tmenu)
+            "s-." #'casual-bookmarks-tmenu)
   (:keymaps 'org-agenda-mode-map
-	    "s-." #'casual-agenda-tmenu)
+            "s-." #'casual-agenda-tmenu)
   (:keymaps 'Info-mode-map
-	    "s-." #'casual-info-tmenu)
+            "s-." #'casual-info-tmenu)
   (:keymaps 'calendar-mode-map
-	    "s-." #'casual-calendar-tmenu)
+            "s-." #'casual-calendar-tmenu)
   )
 
 (use-package casual-avy
@@ -557,13 +557,13 @@ If there are only two windows, jump directly to the other window."
 (use-package cape
   :commands (cape-file)
   :general (:prefix "M-p"
-		    "p" 'completion-at-point ;; capf
-		    "d" 'cape-dabbrev        ;; or dabbrev-completion
-		    "a" 'cape-abbrev
-		    "w" 'cape-dict
-		    "\\" 'cape-tex
-		    "_" 'cape-tex
-		    "^" 'cape-tex)
+                    "p" 'completion-at-point ;; capf
+                    "d" 'cape-dabbrev        ;; or dabbrev-completion
+                    "a" 'cape-abbrev
+                    "w" 'cape-dict
+                    "\\" 'cape-tex
+                    "_" 'cape-tex
+                    "^" 'cape-tex)
   :init
   ;; Add to the global default value of `completion-at-point-functions' which is
   ;; used by `completion-at-point'.  The order of the functions matters, the
@@ -577,8 +577,8 @@ If there are only two windows, jump directly to the other window."
 
 (use-package citar
   :bind (("C-c C-b" . citar-insert-citation)
-	 :map minibuffer-local-map
-	 ("M-b" . citar-insert-preset))
+         :map minibuffer-local-map
+         ("M-b" . citar-insert-preset))
   :custom
   (org-cite-global-bibliography '("~/Dropbox/bibtex/rlr.bib"))
   (citar-bibliography '("~/Dropbox/bibtex/rlr.bib"))
@@ -644,8 +644,8 @@ If there are only two windows, jump directly to the other window."
       (cons 'side 'left)
       (cons 'window-width rlr/agenda-dashboard-sidebar-width)
       (cons 'window-parameters (list (cons 'no-delete-other-windows t)
-				     (cons 'no-other-window nil)
-				     (cons 'mode-line-format 'none)))))
+                                     (cons 'no-other-window nil)
+                                     (cons 'mode-line-format 'none)))))
     (switch-to-buffer-other-window (get-file-buffer rlr/agenda-dashboard-file))
     (read-only-mode 1)
     (dashboard-mode)
@@ -701,20 +701,20 @@ If there are only two windows, jump directly to the other window."
   )
 
 (let ((safe-commands '(
-		       org-agenda-list
-		       org-clock-goto
-		       org-goto-calendar
-		       org-tags-view
-		       org-todo-list
-		       agenda-home
-		       rlr/intro
-		       rlr/religion
-		       rlr/ethics
-		       rlr/epistemology
-		       rlr/medieval
-		       rlr/logic
-		       )
-		     )
+                       org-agenda-list
+                       org-clock-goto
+                       org-goto-calendar
+                       org-tags-view
+                       org-todo-list
+                       agenda-home
+                       rlr/intro
+                       rlr/religion
+                       rlr/ethics
+                       rlr/epistemology
+                       rlr/medieval
+                       rlr/logic
+                       )
+                     )
       )
   (setq org-link-elisp-skip-confirm-regexp
       (concat "\\`\\(" (mapconcat #'symbol-name safe-commands "\\|") "\\)\\'")))
@@ -769,17 +769,17 @@ If there are only two windows, jump directly to the other window."
     (goto-char (point-min))
     (while (re-search-forward dired-subdir-regexp nil t)
       (let* ((match-bounds (cons (match-beginning 1) (match-end 1)))
-	     (path (file-name-directory (buffer-substring (car match-bounds)
-							  (cdr match-bounds))))
-	     (path-start (car match-bounds))
-	     (path-end (+ (car match-bounds) (length path)))
-	     (inhibit-read-only t))
-	(put-text-property path-start path-end
-			   'invisible 'dired-hide-details-information)))))
+             (path (file-name-directory (buffer-substring (car match-bounds)
+                                                          (cdr match-bounds))))
+             (path-start (car match-bounds))
+             (path-end (+ (car match-bounds) (length path)))
+             (inhibit-read-only t))
+        (put-text-property path-start path-end
+                           'invisible 'dired-hide-details-information)))))
 
 (use-feature dired
   :hook ((dired-mode . dired-hide-details-mode)
-	 (dired-after-readin . hide-dired-details-include-all-subdir-paths)))
+         (dired-after-readin . hide-dired-details-include-all-subdir-paths)))
 
 (use-package diredfl
   :ensure t
@@ -793,7 +793,7 @@ If there are only two windows, jump directly to the other window."
     (setq dired-omit-verbose nil)
     ;; toggle `dired-omit-mode' with C-x M-o
     (setq dired-omit-files
-	  (concat dired-omit-files "\\|^.DS_STORE$\\|^.projectile$\\|^\\..+$"))
+          (concat dired-omit-files "\\|^.DS_STORE$\\|^.projectile$\\|^\\..+$"))
     (setq-default dired-omit-extensions '(".fdb_latexmk" ".aux" ".bbl" ".blg" ".fls" ".glo" ".idx" ".ilg" ".ind" ".ist" ".log" ".out" ".gz" ".DS_Store" ".xml" ".bcf" ".nav" ".snm" ".toc"))))
 
 (with-after-elpaca-init
@@ -834,10 +834,10 @@ If there are only two windows, jump directly to the other window."
   (:host codeberg
        :repo "akib/emacs-eat"
        :files ("*.el" ("term" "term/*.el") "*.texi"
-	       "*.ti" ("terminfo/e" "terminfo/e/*")
-	       ("terminfo/65" "terminfo/65/*")
-	       ("integration" "integration/*")
-	       (:exclude ".dir-locals.el" "*-tests.el"))))
+               "*.ti" ("terminfo/e" "terminfo/e/*")
+               ("terminfo/65" "terminfo/65/*")
+               ("integration" "integration/*")
+               (:exclude ".dir-locals.el" "*-tests.el"))))
 
 (use-package ebib
   :config
@@ -857,9 +857,9 @@ If there are only two windows, jump directly to the other window."
   (setq prefix-help-command #'embark-prefix-help-command)
   :config
   (add-to-list 'display-buffer-alist
-	       '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
-		 nil
-		 (window-parameters (mode-line-format . none)))))
+               '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+                 nil
+                 (window-parameters (mode-line-format . none)))))
 
 (use-package embark-consult
   :hook
@@ -868,9 +868,9 @@ If there are only two windows, jump directly to the other window."
 (use-package evil
   :init
   (setq evil-respect-visual-line-mode t
-	evil-track-eol nil
-	evil-want-fine-undo t
-	evil-disable-insert-state-bindings t)
+        evil-track-eol nil
+        evil-want-fine-undo t
+        evil-disable-insert-state-bindings t)
   :config
   (evil-mode -1))
 
@@ -886,7 +886,7 @@ If there are only two windows, jump directly to the other window."
     (setq-local shr-inhibit-images (not shr-inhibit-images))
     (eww-reload t)
     (message "Images are now %s"
-	     (if shr-inhibit-images "off" "on")))
+             (if shr-inhibit-images "off" "on")))
 
   (define-key eww-mode-map (kbd "I") #'my/eww-toggle-images)
   (define-key eww-link-keymap (kbd "I") #'my/eww-toggle-images)
@@ -912,47 +912,47 @@ If there are only two windows, jump directly to the other window."
    (unless (org-region-active-p)
      (let ((shr-width 80)) (eww-readable)))
    (let* ((start (if (org-region-active-p) (region-beginning) (point-min)))
-	  (end (if (org-region-active-p) (region-end) (point-max)))
-	  (buff (or dest (generate-new-buffer "*eww-to-org*")))
-	  (link (eww-current-url))
-	  (title (or (plist-get eww-data :title) "")))
+          (end (if (org-region-active-p) (region-end) (point-max)))
+          (buff (or dest (generate-new-buffer "*eww-to-org*")))
+          (link (eww-current-url))
+          (title (or (plist-get eww-data :title) "")))
      (with-current-buffer buff
        (insert "#+title: " title "\n#+link: " link "\n\n")
        (org-mode))
      (save-excursion
        (goto-char start)
        (while (< (point) end)
-	 (let* ((p (point))
-		(props (text-properties-at p))
-		(k (seq-find (lambda (x) (plist-get props x))
-			     '(shr-url image-url outline-level face)))
-		(prop (and k (list k (plist-get props k))))
-		(next (if prop
-			  (next-single-property-change p (car prop) nil end)
-			(next-property-change p nil end)))
-		(txt (buffer-substring (point) next))
-		(txt (replace-regexp-in-string "\\*" "·" txt)))
-	   (with-current-buffer buff
-	     (insert
-	      (pcase prop
-		((and (or `(shr-url ,url) `(image-url ,url))
-		      (guard (string-match-p "^http" url)))
-		 (let ((tt (replace-regexp-in-string "\n\\([^$]\\)" " \\1" txt)))
-		   (org-link-make-string url tt)))
-		(`(outline-level ,n)
-		 (concat (make-string (- (* 2 n) 1) ?*) " " txt "\n"))
-		('(face italic) (format "/%s/ " (string-trim txt)))
-		('(face bold) (format "*%s* " (string-trim txt)))
-		(_ txt))))
-	   (goto-char next))))
+         (let* ((p (point))
+                (props (text-properties-at p))
+                (k (seq-find (lambda (x) (plist-get props x))
+                             '(shr-url image-url outline-level face)))
+                (prop (and k (list k (plist-get props k))))
+                (next (if prop
+                          (next-single-property-change p (car prop) nil end)
+                        (next-property-change p nil end)))
+                (txt (buffer-substring (point) next))
+                (txt (replace-regexp-in-string "\\*" "·" txt)))
+           (with-current-buffer buff
+             (insert
+              (pcase prop
+                ((and (or `(shr-url ,url) `(image-url ,url))
+                      (guard (string-match-p "^http" url)))
+                 (let ((tt (replace-regexp-in-string "\n\\([^$]\\)" " \\1" txt)))
+                   (org-link-make-string url tt)))
+                (`(outline-level ,n)
+                 (concat (make-string (- (* 2 n) 1) ?*) " " txt "\n"))
+                ('(face italic) (format "/%s/ " (string-trim txt)))
+                ('(face bold) (format "*%s* " (string-trim txt)))
+                (_ txt))))
+           (goto-char next))))
      (pop-to-buffer buff)
      (goto-char (point-min)))))
 
 (use-package emmet-mode
   :general
   (:keymaps 'html-mode-map
-	    "C-M-S-s-<right>" #'emmet-next-edit-point
-	    "C-M-S-s-<left>" #'emmet-prev-edit-point))
+            "C-M-S-s-<right>" #'emmet-next-edit-point
+            "C-M-S-s-<left>" #'emmet-prev-edit-point))
 
 (use-package exec-path-from-shell
   :config
@@ -1344,14 +1344,14 @@ If there are only two windows, jump directly to the other window."
 
 (use-package auctex
   :ensure (auctex :pre-build (("./autogen.sh")
-			      ("./configure"
-			       "--without-texmf-dir"
-			       "--with-packagelispdir=./"
-			       "--with-packagedatadir=./")
-			      ("make"))
-		  :build (:not elpaca--compile-info) ;; Make will take care of this step
-		  :files ("*.el" "doc/*.info*" "etc" "images" "latex" "style")
-		  :version (lambda (_) (require 'tex-site) AUCTeX-version))
+                              ("./configure"
+                               "--without-texmf-dir"
+                               "--with-packagelispdir=./"
+                               "--with-packagedatadir=./")
+                              ("make"))
+                  :build (:not elpaca--compile-info) ;; Make will take care of this step
+                  :files ("*.el" "doc/*.info*" "etc" "images" "latex" "style")
+                  :version (lambda (_) (require 'tex-site) AUCTeX-version))
   :mode ("\\.tex\\'" . LaTeX-mode)
   :init
   (setq TeX-parse-self t
@@ -1411,9 +1411,9 @@ If there are only two windows, jump directly to the other window."
   (interactive)
   (let* ((this-file (buffer-file-name))
        (word-count
-	  (with-output-to-string
-	    (with-current-buffer standard-output
-	      (call-process "texcount" nil t nil "-brief" this-file)))))
+          (with-output-to-string
+            (with-current-buffer standard-output
+              (call-process "texcount" nil t nil "-brief" this-file)))))
     (string-match "\n$" word-count)
     (message (replace-match "" nil nil word-count))))
 
@@ -1425,14 +1425,14 @@ If there are only two windows, jump directly to the other window."
   :hook ((LaTeX-mode . math-delimiters-mode)
        (org-mode . math-delimiters-mode))
   :config (progn
-	    (setq math-delimiters-compressed-display-math nil)
-	    (define-minor-mode math-delimiters-mode
-	      "Math Delimeters"
-	      :init-value nil
-	      :lighter " MD"
-	      :keymap (let ((map (make-sparse-keymap)))
-		      (define-key map (kbd "$")  #'math-delimiters-insert)
-		      map))))
+            (setq math-delimiters-compressed-display-math nil)
+            (define-minor-mode math-delimiters-mode
+              "Math Delimeters"
+              :init-value nil
+              :lighter " MD"
+              :keymap (let ((map (make-sparse-keymap)))
+                      (define-key map (kbd "$")  #'math-delimiters-insert)
+                      map))))
 
 (use-package transient)
 (use-package hl-todo
@@ -1452,9 +1452,9 @@ If there are only two windows, jump directly to the other window."
 
 (use-package markdown-mode
   :mode (("README\\.md\\'" . gfm-mode)
-	 ("\\.md\\'" . markdown-mode)
-	 ("\\.Rmd\\'" . markdown-mode)
-	 ("\\.markdown\\'" . markdown-mode))
+         ("\\.md\\'" . markdown-mode)
+         ("\\.Rmd\\'" . markdown-mode)
+         ("\\.markdown\\'" . markdown-mode))
   :config
   (setq markdown-indent-on-enter 'indent-and-new-item)
   (setq markdown-asymmetric-header t))
@@ -1480,7 +1480,7 @@ installed."
   :config
   (mastodon-discover)
   (setq mastodon-instance-url "https://zirk.us/"
-	mastodon-active-user "randyridenour"))
+        mastodon-active-user "randyridenour"))
 
 (use-package modus-themes
   :demand
@@ -1532,9 +1532,7 @@ installed."
   ;; (app-switch)
   (shell-command "open -a ~/icloud/scripts/beep.app"))
 
-(use-package olivetti
-  :hook
-  (text-mode . olivetti-mode))
+(use-package olivetti)
 
 (use-package orderless
   :custom
@@ -1542,52 +1540,48 @@ installed."
   (completion-category-overrides '((file (styles partial-completion)))))
 
 (use-package org
-    :ensure nil
-    :init
-    ;; (setq org-directory "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/")
-    (setq org-directory "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/")
-    :config
-    (setq org-list-allow-alphabetical t)
-    (setq org-highlight-latex-and-related '(latex script entities))
-    (setq org-startup-indented t)
-    (setq org-adapt-indentation t)
-    (setq org-hide-leading-stars t)
-    (setq org-hide-emphasis-markers t)
-(dolist (face '((org-level-1 . 1.3)
-                (org-level-2 . 1.2)
-                (org-level-3 . 1.1)
-                (org-level-4 . 1.0)
-                (org-level-5 . 1.0)
-                (org-level-6 . 1.0)
-                (org-level-7 . 1.0)
-                (org-level-8 . 1.0)))
-  (set-face-attribute (car face) nil :weight 'bold :height (cdr face)))
+      :ensure nil
+      :init
+      ;; (setq org-directory "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/")
+      (setq org-directory "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/")
+      :config
+      (setq org-list-allow-alphabetical t)
+      (setq org-highlight-latex-and-related '(latex script entities))
+      (setq org-startup-indented nil)
+      (setq org-adapt-indentation nil)
+      (setq org-hide-leading-stars nil)
+      (setq org-hide-emphasis-markers t)
 
-;; Make the document title a bit bigger
-(set-face-attribute 'org-document-title nil :weight 'bold)
+(set-face-attribute 'org-level-1 nil :height 1.0 :weight 'bold)
+(set-face-attribute 'org-level-2 nil :height 1.0 :weight 'bold)
+(set-face-attribute 'org-level-3 nil :height 1.0 :weight 'bold)
 
-    (setq org-support-shift-select t)
-    (setq org-special-ctrl-a/e t)
-    ;; (setq org-footnote-section nil)
-    (setq org-html-validation-link nil)
-    (setq org-time-stamp-rounding-minutes '(0 15))
-    (setq org-agenda-skip-scheduled-if-deadline-is-shown t)
-    (setq org-agenda-skip-scheduled-if-done t)
-    (setq org-log-done t)
-    (setq org-todo-keyword-faces
-	'(("DONE" . "green4") ("TODO" . org-warning)))
-    (setq org-agenda-files '("/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/"))
-    (setq org-agenda-start-on-weekday nil)
-    (setq org-agenda-window-setup 'current-window)
-    (setq org-link-frame-setup
-	'((vm . vm-visit-folder-other-frame)
-	  (vm-imap . vm-visit-imap-folder-other-frame)
-	  (gnus . org-gnus-no-new-news)
-	  (file . find-file)
-	  (wl . wl-other-frame)))
-    (require 'org-tempo)
-    ;; Open directory links in Dired.
-    (add-to-list 'org-file-apps '(directory . emacs)))
+
+  ;; Make the document title a bit bigger
+  (set-face-attribute 'org-document-title nil :weight 'bold)
+
+      (setq org-support-shift-select t)
+      (setq org-special-ctrl-a/e t)
+      ;; (setq org-footnote-section nil)
+      (setq org-html-validation-link nil)
+      (setq org-time-stamp-rounding-minutes '(0 15))
+      (setq org-agenda-skip-scheduled-if-deadline-is-shown t)
+      (setq org-agenda-skip-scheduled-if-done t)
+      (setq org-log-done t)
+      (setq org-todo-keyword-faces
+          '(("DONE" . "green4") ("TODO" . org-warning)))
+      (setq org-agenda-files '("/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/"))
+      (setq org-agenda-start-on-weekday nil)
+      (setq org-agenda-window-setup 'current-window)
+      (setq org-link-frame-setup
+          '((vm . vm-visit-folder-other-frame)
+            (vm-imap . vm-visit-imap-folder-other-frame)
+            (gnus . org-gnus-no-new-news)
+            (file . find-file)
+            (wl . wl-other-frame)))
+      (require 'org-tempo)
+      ;; Open directory links in Dired.
+      (add-to-list 'org-file-apps '(directory . emacs)))
 
 (use-package mixed-pitch)
 
@@ -1597,58 +1591,50 @@ installed."
   :config
   (setq org-hide-emphasis-markers t)  ; Must be activated for org-appear to work
   (setq org-appear-autoemphasis   t   ; Show bold, italics, verbatim, etc.
-	org-appear-autolinks      t   ; Show links
-		org-appear-autosubmarkers t)) ; Show sub- and superscripts
-
-(use-package org-superstar
-  :config
-  ;; (setq org-superstar-special-todo-items t) ;; Makes TODO header bullets into boxes
-  ;; (setq org-superstar-todo-bullet-alist '(("TODO"  . 9744)
-					  ;; ("DONE"  . 9745)))
-  :hook
-  (org-mode . org-superstar-mode))
+        org-appear-autolinks      t   ; Show links
+                org-appear-autosubmarkers t)) ; Show sub- and superscripts
 
 (require 'ox-beamer)
 (with-eval-after-load 'ox-latex
   (add-to-list 'org-latex-classes
-	       '("org-article"
-	       "\\documentclass{article}
-			    [NO-DEFAULT-PACKAGES]
-			    [NO-PACKAGES]"
-	       ("\\section{%s}" . "\\section*{%s}")
-	       ("\\subsection{%s}" . "\\subsection*{%s}")
-	       ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-	       ("\\paragraph{%s}" . "\\paragraph*{%s}")
-	       ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+               '("org-article"
+               "\\documentclass{article}
+                            [NO-DEFAULT-PACKAGES]
+                            [NO-PACKAGES]"
+               ("\\section{%s}" . "\\section*{%s}")
+               ("\\subsection{%s}" . "\\subsection*{%s}")
+               ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+               ("\\paragraph{%s}" . "\\paragraph*{%s}")
+               ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
   (add-to-list 'org-latex-classes
-	       '("org-handout"
-	       "\\documentclass{pdfhandout}
-			    [NO-DEFAULT-PACKAGES]
-			    [NO-PACKAGES]"
-	       ("\\section{%s}" . "\\section*{%s}")
-	       ("\\subsection{%s}" . "\\subsection*{%s}")
-	       ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-	       ("\\paragraph{%s}" . "\\paragraph*{%s}")
-	       ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+               '("org-handout"
+               "\\documentclass{pdfhandout}
+                            [NO-DEFAULT-PACKAGES]
+                            [NO-PACKAGES]"
+               ("\\section{%s}" . "\\section*{%s}")
+               ("\\subsection{%s}" . "\\subsection*{%s}")
+               ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+               ("\\paragraph{%s}" . "\\paragraph*{%s}")
+               ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
   (add-to-list 'org-latex-classes
-	       '("org-beamer"
-	       "\\documentclass{beamer}
-			    [NO-DEFAULT-PACKAGES]
-			    [NO-PACKAGES]"
-	       ("\\section{%s}" . "\\section*{%s}")
-	       ("\\subsection{%s}" . "\\subsection*{%s}")
-	       ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-	       ("\\paragraph{%s}" . "\\paragraph*{%s}")
-	       ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))))
+               '("org-beamer"
+               "\\documentclass{beamer}
+                            [NO-DEFAULT-PACKAGES]
+                            [NO-PACKAGES]"
+               ("\\section{%s}" . "\\section*{%s}")
+               ("\\subsection{%s}" . "\\subsection*{%s}")
+               ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+               ("\\paragraph{%s}" . "\\paragraph*{%s}")
+               ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))))
 (setq org-export-with-smart-quotes t)
 (with-eval-after-load 'ox-latex
   (add-to-list 'org-export-smart-quotes-alist
-	       '("en-us"
-	       (primary-opening   :utf-8 "“" :html "&ldquo;" :latex "\\enquote{"  :texinfo "``")
-	       (primary-closing   :utf-8 "”" :html "&rdquo;" :latex "}"           :texinfo "''")
-	       (secondary-opening :utf-8 "‘" :html "&lsquo;" :latex "\\enquote*{" :texinfo "`")
-	       (secondary-closing :utf-8 "’" :html "&rsquo;" :latex "}"           :texinfo "'")
-	       (apostrophe        :utf-8 "’" :html "&rsquo;"))))
+               '("en-us"
+               (primary-opening   :utf-8 "“" :html "&ldquo;" :latex "\\enquote{"  :texinfo "``")
+               (primary-closing   :utf-8 "”" :html "&rdquo;" :latex "}"           :texinfo "''")
+               (secondary-opening :utf-8 "‘" :html "&lsquo;" :latex "\\enquote*{" :texinfo "`")
+               (secondary-closing :utf-8 "’" :html "&rsquo;" :latex "}"           :texinfo "'")
+               (apostrophe        :utf-8 "’" :html "&rsquo;"))))
 
 ;; (setq org-latex-pdf-process '("arara %f"))
 (setq org-latex-pdf-process '("mkpdf %f"))
@@ -1683,12 +1669,12 @@ installed."
   "Update existing date: timestamp on a Hugo post."
   (interactive)
   (save-excursion (
-		   goto-char 1)
-		  (re-search-forward "^#\\+date:")
-		  (let ((beg (point)))
-		    (end-of-line)
-		    (delete-region beg (point)))
-		  (insert (concat " " (format-time-string "%B %e, %Y")))))
+                   goto-char 1)
+                  (re-search-forward "^#\\+date:")
+                  (let ((beg (point)))
+                    (end-of-line)
+                    (delete-region beg (point)))
+                  (insert (concat " " (format-time-string "%B %e, %Y")))))
 
 (use-package org-auto-tangle
   :hook (org-mode . org-auto-tangle-mode))
@@ -1709,13 +1695,13 @@ installed."
 
 (with-eval-after-load 'org-capture
   (add-to-list 'org-capture-templates
-	       '("n" "New note (with Denote)" plain
-	       (file denote-last-path)
-	       #'denote-org-capture
-	       :no-save t
-	       :immediate-finish nil
-	       :kill-buffer t
-	       :jump-to-captured t)))
+               '("n" "New note (with Denote)" plain
+               (file denote-last-path)
+               #'denote-org-capture
+               :no-save t
+               :immediate-finish nil
+               :kill-buffer t
+               :jump-to-captured t)))
 
 (setq org-refile-targets '((org-agenda-files :maxlevel . 1)))
 
@@ -1726,28 +1712,28 @@ installed."
   :ensure t
   :config
   (setq org-agenda-skip-scheduled-if-done t
-	org-agenda-skip-deadline-if-done t
-	org-agenda-include-deadlines t
-	org-agenda-block-separator nil
-	org-agenda-compact-blocks t
-	org-agenda-start-day nil ;; i.e. today
-	org-agenda-span 1
-	org-agenda-window-setup "current-window"
-	org-agenda-include-diary nil
-	org-agenda-start-on-weekday nil)
+        org-agenda-skip-deadline-if-done t
+        org-agenda-include-deadlines t
+        org-agenda-block-separator nil
+        org-agenda-compact-blocks t
+        org-agenda-start-day nil ;; i.e. today
+        org-agenda-span 1
+        org-agenda-window-setup "current-window"
+        org-agenda-include-diary nil
+        org-agenda-start-on-weekday nil)
   (setq org-agenda-time-grid
-	'((daily today require-timed remove-match)
-	  ()
-	  "......"
-	  ""))
+        '((daily today require-timed remove-match)
+          ()
+          "......"
+          ""))
 
   (org-super-agenda-mode))
 
 (setq org-agenda-custom-commands
       '(("d" "Agenda for today" agenda ""
-	 ((org-agenda-overriding-header "Today's agenda")
-	  (org-agenda-span 'day)
-	  ))))
+         ((org-agenda-overriding-header "Today's agenda")
+          (org-agenda-span 'day)
+          ))))
 
 (defun today-agenda ()
   "Display today's agenda"
@@ -1761,34 +1747,34 @@ installed."
    'org-agenda-custom-commands
    `("c" "Today - Full View"
      ((agenda ""
-	      ((org-agenda-entry-types '(:timestamp :sexp))
-	       (org-agenda-overriding-header
-		(concat "CALENDAR Today "
-			(format-time-string "%a %d" (current-time))))
-	       (org-agenda-span 'day)))
+              ((org-agenda-entry-types '(:timestamp :sexp))
+               (org-agenda-overriding-header
+                (concat "CALENDAR Today "
+                        (format-time-string "%a %d" (current-time))))
+               (org-agenda-span 'day)))
       (tags-todo "LEVEL=1+inbox"
-		 ((org-agenda-overriding-header "INBOX (Unscheduled)")))
+                 ((org-agenda-overriding-header "INBOX (Unscheduled)")))
       (tags-todo "DEADLINE<\"<+1d>\"+DEADLINE>\"<-1d>\""
-		 ((org-agenda-overriding-header "DUE TODAY")
-		  (org-agenda-skip-function
-		   '(org-agenda-skip-entry-if 'notdeadline))
-		  (org-agenda-sorting-strategy '(priority-down))))
+                 ((org-agenda-overriding-header "DUE TODAY")
+                  (org-agenda-skip-function
+                   '(org-agenda-skip-entry-if 'notdeadline))
+                  (org-agenda-sorting-strategy '(priority-down))))
       (tags-todo "DEADLINE<\"<today>\""
-		 ((org-agenda-overriding-header "OVERDUE")
-		  (org-agenda-skip-function
-		   '(org-agenda-skip-entry-if 'notdeadline))
-		  (org-agenda-sorting-strategy '(priority-down))))
+                 ((org-agenda-overriding-header "OVERDUE")
+                  (org-agenda-skip-function
+                   '(org-agenda-skip-entry-if 'notdeadline))
+                  (org-agenda-sorting-strategy '(priority-down))))
       (agenda ""
-	      ((org-agenda-entry-types '(:scheduled))
-	       (org-agenda-overriding-header "SCHEDULED")
-	       (org-agenda-skip-function
-		'(org-agenda-skip-entry-if 'todo 'done))
-	       (org-agenda-sorting-strategy
-		'(priority-down time-down))
-	       (org-agenda-span 'day)
-	       (org-agenda-start-on-weekday nil)))
+              ((org-agenda-entry-types '(:scheduled))
+               (org-agenda-overriding-header "SCHEDULED")
+               (org-agenda-skip-function
+                '(org-agenda-skip-entry-if 'todo 'done))
+               (org-agenda-sorting-strategy
+                '(priority-down time-down))
+               (org-agenda-span 'day)
+               (org-agenda-start-on-weekday nil)))
       (todo "DONE"
-	    ((org-agenda-overriding-header "COMPLETED"))))
+            ((org-agenda-overriding-header "COMPLETED"))))
      ((org-agenda-format-date "")
       (org-agenda-start-with-clockreport-mode nil))) t))
 
@@ -1819,47 +1805,47 @@ installed."
 (defun my/org-toggle-emphasis (type)
   "Toggle org emphasis TYPE (a character) at point."
   (cl-labels ((in-emph (re)
-	      "See if in org emphasis given by RE."
-	      (and (org-in-regexp re 2)
-		   (>= (point) (match-beginning 3))
-		   (<= (point) (match-end 4))))
-	    (de-emphasize ()
-	      "Remove most recently matched org emphasis markers."
-	      (save-excursion
-		(replace-match "" nil nil nil 3)
-		(delete-region (match-end 4) (1+ (match-end 4))))))
+              "See if in org emphasis given by RE."
+              (and (org-in-regexp re 2)
+                   (>= (point) (match-beginning 3))
+                   (<= (point) (match-end 4))))
+            (de-emphasize ()
+              "Remove most recently matched org emphasis markers."
+              (save-excursion
+                (replace-match "" nil nil nil 3)
+                (delete-region (match-end 4) (1+ (match-end 4))))))
     (let* ((res (vector org-emph-re org-verbatim-re))
-	 (idx (cl-case type (?/ 0) (?* 0) (?_ 0) (?+ 0) (?= 1) (?~ 1)))
-	 (re (aref res idx))
-	 (other-re (aref res (- 1 idx)))
-	 (type-re (string-replace (if (= idx 1) "=~" "*/_+")
-				  (char-to-string type) re))
-	 add-bounds offset is-word)
+         (idx (cl-case type (?/ 0) (?* 0) (?_ 0) (?+ 0) (?= 1) (?~ 1)))
+         (re (aref res idx))
+         (other-re (aref res (- 1 idx)))
+         (type-re (string-replace (if (= idx 1) "=~" "*/_+")
+                                  (char-to-string type) re))
+         add-bounds offset is-word)
       (save-match-data
       (if (region-active-p)
-	  (if (in-emph type-re) (de-emphasize) (org-emphasize type))
-	(if (eq (char-before) type) (backward-char))
-	(if (in-emph type-re)       ;nothing marked, in emph text?
-	    (de-emphasize)
-	  (setq add-bounds          ; check other flavors
-		(if (or (in-emph re) (in-emph other-re))
-		    (cons (match-beginning 4) (match-end 4))
-		  (setq is-word t)
-		  (bounds-of-thing-at-point 'symbol))))
-	(if add-bounds
-	    (let ((off (- (point) (car add-bounds)))
-		  (at-end (= (point) (cdr add-bounds))))
-	      (set-mark (car add-bounds))
-	      (goto-char (cdr add-bounds))
-	      (org-emphasize type)  ;deletes marked region!
-	      (unless is-word       ; delete extra spaces
-		(goto-char (car add-bounds))
-		(when (eq (char-after) ?\s) (delete-char 1))
-		(goto-char (+ 2 (cdr add-bounds)))
-		(when (eq (char-after) ?\s) (delete-char 1)))
-	      (goto-char (+ (car add-bounds) off
-			    (cond ((= off 0) 0) (at-end 2) (t 1)))))
-	  (if is-word (org-emphasize type))))))))
+          (if (in-emph type-re) (de-emphasize) (org-emphasize type))
+        (if (eq (char-before) type) (backward-char))
+        (if (in-emph type-re)       ;nothing marked, in emph text?
+            (de-emphasize)
+          (setq add-bounds          ; check other flavors
+                (if (or (in-emph re) (in-emph other-re))
+                    (cons (match-beginning 4) (match-end 4))
+                  (setq is-word t)
+                  (bounds-of-thing-at-point 'symbol))))
+        (if add-bounds
+            (let ((off (- (point) (car add-bounds)))
+                  (at-end (= (point) (cdr add-bounds))))
+              (set-mark (car add-bounds))
+              (goto-char (cdr add-bounds))
+              (org-emphasize type)  ;deletes marked region!
+              (unless is-word       ; delete extra spaces
+                (goto-char (car add-bounds))
+                (when (eq (char-after) ?\s) (delete-char 1))
+                (goto-char (+ 2 (cdr add-bounds)))
+                (when (eq (char-after) ?\s) (delete-char 1)))
+              (goto-char (+ (car add-bounds) off
+                            (cond ((= off 0) 0) (at-end 2) (t 1)))))
+          (if is-word (org-emphasize type))))))))
 
 (general-define-key
  :keymaps 'org-mode-map
@@ -1975,7 +1961,7 @@ installed."
   (interactive)
   (goto-char 1)
   (while (ignore-errors
-	   (re-search-forward "begin{frame}.*]"))
+           (re-search-forward "begin{frame}.*]"))
     (insert "\n \\frametitle")))
 
 (defun lecture-notes ()
@@ -2093,11 +2079,11 @@ installed."
   (search-backward ":END:")
   (next-line)
   (kill-ring-save (point)
-		  (progn
-		    (search-forward "** ")
-		    (beginning-of-line)
-		    (point))
-		  )
+                  (progn
+                    (search-forward "** ")
+                    (beginning-of-line)
+                    (point))
+                  )
   (yas-expand-snippet (yas-lookup-snippet "beamer article notes"))
   (yank))
 
@@ -2111,15 +2097,15 @@ installed."
     (insert "** ")
     (beginning-of-buffer)
     (while (ignore-errors
-	     (search-forward ":BEAMER_ENV: note"))
+             (search-forward ":BEAMER_ENV: note"))
       (next-line)
       (next-line)
       (kill-ring-save (point)
-		      (progn
-			(search-forward "** ")
-			(beginning-of-line)
-			(point))
-		      )
+                      (progn
+                        (search-forward "** ")
+                        (beginning-of-line)
+                        (point))
+                      )
       (yas-expand-snippet (yas-lookup-snippet "beamer article notes"))
       (yank))
     ;; Delete the blank slide that was added earlier.
@@ -2152,27 +2138,27 @@ installed."
       ;; convert multiple correct answer and essay questions
       (beginning-of-buffer)
       (while (re-search-forward "^[:space:]*-" nil t)
-	(replace-match ""))
+        (replace-match ""))
       ;; Change correct multiple answer options to "*"
       (beginning-of-buffer)
       (let ((case-fold-search nil))
-	(while (re-search-forward "\[X\]" nil t)
-	  (replace-match "*")))
+        (while (re-search-forward "\[X\]" nil t)
+          (replace-match "*")))
       ;; Mark short answer responses with "**"
       (beginning-of-buffer)
       (while (re-search-forward "+" nil t)
-	(replace-match "*"))
+        (replace-match "*"))
       ;; remove whitespace at beginning of lines
       (beginning-of-buffer)
       (while (re-search-forward "^\s-*" nil t)
-	(replace-match ""))
+        (replace-match ""))
       (beginning-of-buffer)
       (while (re-search-forward "\\(^[0-9]\\)" nil t)
-	(replace-match "\n\\1"))
+        (replace-match "\n\\1"))
       ;; move correct answer symbol to beginning of line
       (beginning-of-buffer)
       (while (re-search-forward "\\(^.*\\)\\(\*$\\)" nil t)
-	(replace-match "\*\\1"))
+        (replace-match "\*\\1"))
       (delete-trailing-whitespace)
       ;; delete empty line at end and beginning
       (end-of-buffer)
@@ -2225,14 +2211,14 @@ installed."
     (eval-buffer)
     (org-publish-all)
     (webfeeder-build "atom.xml"
-		     "./docs"
-		     "https://randyridenour.net/"
-		     (let ((default-directory (expand-file-name "./docs")))
-		       (remove "posts/index.html"
-			       (directory-files-recursively "posts"
-							    ".*\\.html$")))
-		     :title "Randy Ridenour"
-		     :description "Blog posts by Randy Ridenour")
+                     "./docs"
+                     "https://randyridenour.net/"
+                     (let ((default-directory (expand-file-name "./docs")))
+                       (remove "posts/index.html"
+                               (directory-files-recursively "posts"
+                                                            ".*\\.html$")))
+                     :title "Randy Ridenour"
+                     :description "Blog posts by Randy Ridenour")
     (kill-buffer))
   (message "Build complete!"))
 
@@ -2257,28 +2243,28 @@ installed."
 (defvar yt-iframe-format
   ;; You may want to change your width and height.
   (concat "<iframe width=\"440\""
-	  " height=\"335\""
-	  " src=\"https://www.youtube.com/embed/%s\""
-	  " frameborder=\"0\""
-	  " allowfullscreen>%s</iframe>"))
+          " height=\"335\""
+          " src=\"https://www.youtube.com/embed/%s\""
+          " frameborder=\"0\""
+          " allowfullscreen>%s</iframe>"))
 
 (org-add-link-type
  "yt"
  (lambda (handle)
    (browse-url
     (concat "https://www.youtube.com/embed/"
-	    handle)))
+            handle)))
  (lambda (path desc backend)
    (cl-case backend
      (html (format yt-iframe-format
-		   path (or desc "")))
+                   path (or desc "")))
      (latex (format "\href{%s}{%s}"
-		    path (or desc "video"))))))
+                    path (or desc "video"))))))
 
 (defun orgblog-all-tag-lines ()
   "Get filetag lines from all posts."
   (let ((post-dir orgblog-posts-directory)
-	(regex "^#\\+filetags:\\s([a-zA-Z]+)"))
+        (regex "^#\\+filetags:\\s([a-zA-Z]+)"))
     (shell-command-to-string
      (concat "rg --context 0 --no-filename --no-heading --replace \"\\$1\" -- " (shell-quote-argument regex) " " post-dir))))
 
@@ -2332,12 +2318,12 @@ installed."
   (interactive)
   (save-window-excursion
     (let* ((buf (org-export-to-buffer 'html "*Formatted Copy*" nil nil t t))
-	   (html (with-current-buffer buf (buffer-string))))
+           (html (with-current-buffer buf (buffer-string))))
       (with-current-buffer buf
-	(shell-command-on-region
-	 (point-min)
-	 (point-max)
-	 "textutil -stdin -format html -convert rtf -stdout | pbcopy"))
+        (shell-command-on-region
+         (point-min)
+         (point-max)
+         "textutil -stdin -format html -convert rtf -stdout | pbcopy"))
       (kill-buffer buf))))
 
 ;; (global-set-key (kbd "H-w") 'formatted-copy)
@@ -2354,14 +2340,14 @@ installed."
   (setq-default pdf-view-display-size 'fit-width)
   :general
   (:keymaps 'pdf-view-mode-map
-	    "C-s" #'isearch-forward)
+            "C-s" #'isearch-forward)
   )
 
 (defun unkillable-scratch-buffer ()
   (if (equal (buffer-name (current-buffer)) "*scratch*")
       (progn
-	(delete-region (point-min) (point-max))
-	nil)
+        (delete-region (point-min) (point-max))
+        nil)
     t))
 (add-hook 'kill-buffer-query-functions 'unkillable-scratch-buffer)
 
@@ -2464,16 +2450,16 @@ installed."
   ;;	    (t posframe)))
   (vertico-multiform-mode 1)
   (setq vertico-multiform-categories
-	'((file grid)
-	  (jinx grid (vertico-grid-annotate . 20))
-	  (citar buffer)))
+        '((file grid)
+          (jinx grid (vertico-grid-annotate . 20))
+          (citar buffer)))
   (setq vertico-cycle t) ;; enable cycling for 'vertico-next' and 'vertico-prev'
   :general
   (:keymaps 'vertico-map
-	    ;; keybindings to cycle through vertico results.
-	    "C-h" #'+minibuffer-up-dir
-	    "<backspace>" 'vertico-directory-delete-char
-	    "RET" 'vertico-directory-enter))
+            ;; keybindings to cycle through vertico results.
+            "C-h" #'+minibuffer-up-dir
+            "<backspace>" 'vertico-directory-delete-char
+            "RET" 'vertico-directory-enter))
 
 (use-package unfill)
 
@@ -2491,16 +2477,11 @@ installed."
 (use-package webfeeder)
 
 (use-package which-key
-  :demand
-  :init
-  (setq which-key-enable-extended-define-key t)
-  :config
-  (which-key-mode)
-  :custom
-  (which-key-side-window-location 'bottom)
-  (which-key-sort-order 'which-key-key-order-alpha)
-  (which-key-side-window-max-width 0.33)
-  (which-key-idle-delay 0.2))
+    :demand
+    :config
+(setq which-key-popup-type 'minibuffer)
+    (which-key-mode)
+)
 
 (use-package yankpad
   :init
