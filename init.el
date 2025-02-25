@@ -2431,6 +2431,8 @@ installed."
   :config
   (setq titlecase-style "chicago"))
 
+(use-package unfill)
+
 (use-package vertico
   :demand
   :custom (vertico-cycle t)
@@ -2461,8 +2463,6 @@ installed."
             "<backspace>" 'vertico-directory-delete-char
             "RET" 'vertico-directory-enter))
 
-(use-package unfill)
-
 (use-package visual-regexp
   :general
   ("C-c r" #'vr/replace)
@@ -2475,6 +2475,8 @@ installed."
   ("C-x u" . vundo))
 
 (use-package webfeeder)
+
+(use-package wgrep)
 
 (use-package which-key
     :demand

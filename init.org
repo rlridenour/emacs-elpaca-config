@@ -3647,6 +3647,13 @@ https://github.com/amno1/emacs-term-toggle
     (setq titlecase-style "chicago"))
 #+end_src
 
+** Unfill
+
+#+begin_src emacs-lisp
+  (use-package unfill)
+#+end_src
+
+
 ** Vertico
 
 #+begin_src emacs-lisp :lexical t
@@ -3681,11 +3688,6 @@ https://github.com/amno1/emacs-term-toggle
               "RET" 'vertico-directory-enter))
 #+end_src
 
-** Unfill
-
-#+begin_src emacs-lisp
-  (use-package unfill)
-#+end_src
 
 ** Visual-Regexp
 
@@ -3714,7 +3716,16 @@ This builds the RSS feed for the blog.
   (use-package webfeeder)
 #+end_src
 
-** TODO Which-Key
+
+** Wgrep
+
+#+begin_src emacs-lisp
+(use-package wgrep)
+#+end_src
+
+
+
+** Which-Key
 #+begin_quote
 which-key is a minor mode for Emacs that displays the key bindings following your currently entered incomplete command (a prefix) in a popup.
 
