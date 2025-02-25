@@ -3795,7 +3795,7 @@ Keybindings for files and buffers.
    "C-x c" #'save-buffers-kill-emacs
    "C-x C-b" #'ibuffer
    "s-o" #'find-file
-   "s-k" #'kill-this-buffer
+   "s-k" #'kill-current-buffer
    "M-s-k" #'kill-buffer-and-window
    "s-K" #'nuke-all-buffers
    "s-r" #'consult-buffer
