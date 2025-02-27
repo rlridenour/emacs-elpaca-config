@@ -15,6 +15,7 @@ eshell/
 eln-cache/
 custom.el
 recentf
+tramp
 .persistent-scratch
 transient/
 bookmarks
