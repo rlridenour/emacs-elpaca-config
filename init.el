@@ -369,6 +369,10 @@ If there are only two windows, jump directly to the other window."
       (tab-close)
       (error (delete-frame)))))
 
+(setq tab-bar-close-button-show nil
+	tab-bar-new-button-show nil)
+(setq tab-bar-show 1)
+
 (defun rlr/find-file-new-tab ()
   "Open new tab and select recent file."
   (interactive)

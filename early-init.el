@@ -65,8 +65,10 @@
 
 (add-hook 'server-after-make-frame-hook #'initd/bring-emacs-to-front)
 
-(setq-default cursor-in-non-selected-windows nil
-              frame-title-format '("%f [%m]"))
+(setq frame-title-format
+      '(buffer-file-name (:eval (abbreviate-file-name buffer-file-name))
+                         (dired-directory dired-directory
+                                          "%b")))
 
 (defun my/focus-new-client-frame ()
   (select-frame-set-input-focus (selected-frame)))

@@ -132,10 +132,21 @@ Bring new frame to front. From [[https://www.reddit.com/r/emacs/comments/1g2hkh8
 
 Set the frame title format.
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (setq-default cursor-in-non-selected-windows nil
                 frame-title-format '("%f [%m]"))
 #+end_src
+
+Set window title to file name.
+
+#+begin_src emacs-lisp
+(setq frame-title-format
+      '(buffer-file-name (:eval (abbreviate-file-name buffer-file-name))
+                         (dired-directory dired-directory
+                                          "%b")))
+#+end_src
+
+
 
 Focus new frames
 
@@ -562,6 +573,9 @@ Overwrite selected text.
 
 ** Windows
 
+
+
+
 #+begin_src emacs-lisp
   (defun delete-window-balance ()
     "Delete window and rebalance the remaining ones."
@@ -755,6 +769,13 @@ If more than one window, delete the window; if only one window, delete the tab; 
 #+end_src
 
 ** Tabs
+
+#+begin_src emacs-lisp
+  (setq tab-bar-close-button-show nil
+	tab-bar-new-button-show nil)
+  (setq tab-bar-show 1)
+#+end_src
+
 
 I can't imagine wanting the same buffer in two tabs, so this calls consult-buffer when opening a new tab.
 
