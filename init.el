@@ -32,33 +32,33 @@
 (defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
 (defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
 (defvar elpaca-order '(elpaca :repo "https://github.com/progfolio/elpaca.git"
-			      :ref nil :depth 1 :inherit ignore
-			      :files (:defaults "elpaca-test.el" (:exclude "extensions"))
-			      :build (:not elpaca--activate-package)))
+				:ref nil :depth 1 :inherit ignore
+				:files (:defaults "elpaca-test.el" (:exclude "extensions"))
+				:build (:not elpaca--activate-package)))
 (let* ((repo  (expand-file-name "elpaca/" elpaca-repos-directory))
-       (build (expand-file-name "elpaca/" elpaca-builds-directory))
-       (order (cdr elpaca-order))
-       (default-directory repo))
+	 (build (expand-file-name "elpaca/" elpaca-builds-directory))
+	 (order (cdr elpaca-order))
+	 (default-directory repo))
   (add-to-list 'load-path (if (file-exists-p build) build repo))
   (unless (file-exists-p repo)
     (make-directory repo t)
     (when (<= emacs-major-version 28) (require 'subr-x))
     (condition-case-unless-debug err
-	(if-let* ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
-		  ((zerop (apply #'call-process `("git" nil ,buffer t "clone"
-						  ,@(when-let* ((depth (plist-get order :depth)))
-						      (list (format "--depth=%d" depth) "--no-single-branch"))
-						  ,(plist-get order :repo) ,repo))))
-		  ((zerop (call-process "git" nil buffer t "checkout"
-					(or (plist-get order :ref) "--"))))
-		  (emacs (concat invocation-directory invocation-name))
-		  ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
-					"--eval" "(byte-recompile-directory \".\" 0 'force)")))
-		  ((require 'elpaca))
-		  ((elpaca-generate-autoloads "elpaca" repo)))
-	    (progn (message "%s" (buffer-string)) (kill-buffer buffer))
-	  (error "%s" (with-current-buffer buffer (buffer-string))))
-      ((error) (warn "%s" err) (delete-directory repo 'recursive))))
+	  (if-let* ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
+		    ((zerop (apply #'call-process `("git" nil ,buffer t "clone"
+						    ,@(when-let* ((depth (plist-get order :depth)))
+							(list (format "--depth=%d" depth) "--no-single-branch"))
+						    ,(plist-get order :repo) ,repo))))
+		    ((zerop (call-process "git" nil buffer t "checkout"
+					  (or (plist-get order :ref) "--"))))
+		    (emacs (concat invocation-directory invocation-name))
+		    ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
+					  "--eval" "(byte-recompile-directory \".\" 0 'force)")))
+		    ((require 'elpaca))
+		    ((elpaca-generate-autoloads "elpaca" repo)))
+	      (progn (message "%s" (buffer-string)) (kill-buffer buffer))
+	    (error "%s" (with-current-buffer buffer (buffer-string))))
+	((error) (warn "%s" err) (delete-directory repo 'recursive))))
   (unless (require 'elpaca-autoloads nil t)
     (require 'elpaca)
     (elpaca-generate-autoloads "elpaca" repo)
@@ -815,17 +815,11 @@ If there are only two windows, jump directly to the other window."
 
 (use-package doom-modeline
   :init
-  ;; (set-face-attribute 'mode-line nil :inherit '(variable-pitch))
-  ;; (set-face-attribute 'mode-line-inactive nil :inherit '(variable-pitch))
-  ;; (set-face-attribute 'mode-line nil :family "SF Pro")
-  ;; (set-face-attribute 'mode-line-inactive nil :family "SF Pro")
   :config
   (setq doom-modeline-enable-word-count t)
   (setq doom-modeline-continuous-word-count-modes '(markdown-mode gfm-mode org-mode))
   (setq display-time-day-and-date t)
   (setq doom-modeline-modal t)
-  (set-face-attribute 'mode-line nil :inherit '(variable-pitch))
-  (set-face-attribute 'mode-line-inactive nil :inherit '(variable-pitch))
   :hook
   (elpaca-after-init . doom-modeline-mode))
 
@@ -1485,11 +1479,11 @@ installed."
 
 (use-package modern-tab-bar
   :ensure
-(:host github :repo "aaronjensen/emacs-modern-tab-bar")
+  (:host github :repo "aaronjensen/emacs-modern-tab-bar")
   :init
   (setq tab-bar-show t
-	tab-bar-new-button nil
-	tab-bar-close-button-show nil)
+	  tab-bar-new-button nil
+	  tab-bar-close-button-show nil)
   (modern-tab-bar-mode))
 
 (defun rlr/find-file-new-tab ()
@@ -1504,6 +1498,7 @@ installed."
   ;; Add all your customizations prior to loading the themes
   (setq modus-themes-italic-constructs t
 	modus-themes-mixed-fonts t
+	modus-themes-variable-pitch-ui t
 	modus-themes-bold-constructs t)
 
   ;; Maybe define some palette overrides, such as by using our presets
@@ -1513,7 +1508,7 @@ installed."
   ;; Load the theme of your choice.
   (load-theme 'modus-operandi t)
   :general
-  ("<f9>" #'modus-themes-toggle))
+  ("<f9>" #'modus-themes-rotate))
 
 (defvar-keymap notepad-mode-map
   "C-c C-c" #'copy-kill-buffer)
@@ -1556,48 +1551,48 @@ installed."
   (completion-category-overrides '((file (styles partial-completion)))))
 
 (use-package org
-      :ensure nil
-      :init
-      ;; (setq org-directory "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/")
-      (setq org-directory "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/")
-      :config
-      (setq org-list-allow-alphabetical t)
-      (setq org-highlight-latex-and-related '(latex script entities))
-      (setq org-startup-indented nil)
-      (setq org-adapt-indentation nil)
-      (setq org-hide-leading-stars nil)
-      (setq org-hide-emphasis-markers t)
+  :ensure nil
+  :init
+  ;; (setq org-directory "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/")
+  (setq org-directory "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/")
+  :config
+  (setq org-list-allow-alphabetical t)
+  (setq org-highlight-latex-and-related '(latex script entities))
+  (setq org-startup-indented nil)
+  (setq org-adapt-indentation nil)
+  (setq org-hide-leading-stars nil)
+  (setq org-hide-emphasis-markers t)
 
-(set-face-attribute 'org-level-1 nil :height 1.0 :weight 'bold)
-(set-face-attribute 'org-level-2 nil :height 1.0 :weight 'bold)
-(set-face-attribute 'org-level-3 nil :height 1.0 :weight 'bold)
+  (set-face-attribute 'org-level-1 nil :height 1.0 :weight 'bold)
+  (set-face-attribute 'org-level-2 nil :height 1.0 :weight 'bold)
+  (set-face-attribute 'org-level-3 nil :height 1.0 :weight 'bold)
 
 
   ;; Make the document title a bit bigger
   (set-face-attribute 'org-document-title nil :weight 'bold)
 
-      (setq org-support-shift-select t)
-      (setq org-special-ctrl-a/e t)
-      ;; (setq org-footnote-section nil)
-      (setq org-html-validation-link nil)
-      (setq org-time-stamp-rounding-minutes '(0 15))
-      (setq org-agenda-skip-scheduled-if-deadline-is-shown t)
-      (setq org-agenda-skip-scheduled-if-done t)
-      (setq org-log-done t)
-      (setq org-todo-keyword-faces
+  (setq org-support-shift-select t)
+  (setq org-special-ctrl-a/e t)
+  ;; (setq org-footnote-section nil)
+  (setq org-html-validation-link nil)
+  (setq org-time-stamp-rounding-minutes '(0 15))
+  (setq org-agenda-skip-scheduled-if-deadline-is-shown t)
+  (setq org-agenda-skip-scheduled-if-done t)
+  (setq org-log-done t)
+  (setq org-todo-keyword-faces
 	  '(("DONE" . "green4") ("TODO" . org-warning)))
-      (setq org-agenda-files '("/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/"))
-      (setq org-agenda-start-on-weekday nil)
-      (setq org-agenda-window-setup 'current-window)
-      (setq org-link-frame-setup
+  (setq org-agenda-files '("/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/"))
+  (setq org-agenda-start-on-weekday nil)
+  (setq org-agenda-window-setup 'current-window)
+  (setq org-link-frame-setup
 	  '((vm . vm-visit-folder-other-frame)
 	    (vm-imap . vm-visit-imap-folder-other-frame)
 	    (gnus . org-gnus-no-new-news)
 	    (file . find-file)
 	    (wl . wl-other-frame)))
-      (require 'org-tempo)
-      ;; Open directory links in Dired.
-      (add-to-list 'org-file-apps '(directory . emacs)))
+  (require 'org-tempo)
+  ;; Open directory links in Dired.
+  (add-to-list 'org-file-apps '(directory . emacs)))
 
 (use-package mixed-pitch)
 
@@ -1607,8 +1602,8 @@ installed."
   :config
   (setq org-hide-emphasis-markers t)  ; Must be activated for org-appear to work
   (setq org-appear-autoemphasis   t   ; Show bold, italics, verbatim, etc.
-	org-appear-autolinks      t   ; Show links
-		org-appear-autosubmarkers t)) ; Show sub- and superscripts
+	  org-appear-autolinks      t   ; Show links
+	  org-appear-autosubmarkers t)) ; Show sub- and superscripts
 
 (require 'ox-beamer)
 (with-eval-after-load 'ox-latex
@@ -1823,45 +1818,45 @@ installed."
   (cl-labels ((in-emph (re)
 		"See if in org emphasis given by RE."
 		(and (org-in-regexp re 2)
-		     (>= (point) (match-beginning 3))
-		     (<= (point) (match-end 4))))
-	      (de-emphasize ()
+		       (>= (point) (match-beginning 3))
+		       (<= (point) (match-end 4))))
+		(de-emphasize ()
 		"Remove most recently matched org emphasis markers."
 		(save-excursion
-		  (replace-match "" nil nil nil 3)
-		  (delete-region (match-end 4) (1+ (match-end 4))))))
+		    (replace-match "" nil nil nil 3)
+		    (delete-region (match-end 4) (1+ (match-end 4))))))
     (let* ((res (vector org-emph-re org-verbatim-re))
-	   (idx (cl-case type (?/ 0) (?* 0) (?_ 0) (?+ 0) (?= 1) (?~ 1)))
-	   (re (aref res idx))
-	   (other-re (aref res (- 1 idx)))
-	   (type-re (string-replace (if (= idx 1) "=~" "*/_+")
-				    (char-to-string type) re))
-	   add-bounds offset is-word)
+	     (idx (cl-case type (?/ 0) (?* 0) (?_ 0) (?+ 0) (?= 1) (?~ 1)))
+	     (re (aref res idx))
+	     (other-re (aref res (- 1 idx)))
+	     (type-re (string-replace (if (= idx 1) "=~" "*/_+")
+				      (char-to-string type) re))
+	     add-bounds offset is-word)
 	(save-match-data
 	(if (region-active-p)
-	    (if (in-emph type-re) (de-emphasize) (org-emphasize type))
-	  (if (eq (char-before) type) (backward-char))
-	  (if (in-emph type-re)       ;nothing marked, in emph text?
-	      (de-emphasize)
-	    (setq add-bounds          ; check other flavors
-		  (if (or (in-emph re) (in-emph other-re))
-		      (cons (match-beginning 4) (match-end 4))
-		    (setq is-word t)
-		    (bounds-of-thing-at-point 'symbol))))
-	  (if add-bounds
-	      (let ((off (- (point) (car add-bounds)))
-		    (at-end (= (point) (cdr add-bounds))))
+	      (if (in-emph type-re) (de-emphasize) (org-emphasize type))
+	    (if (eq (char-before) type) (backward-char))
+	    (if (in-emph type-re)       ;nothing marked, in emph text?
+		(de-emphasize)
+	      (setq add-bounds          ; check other flavors
+		    (if (or (in-emph re) (in-emph other-re))
+			(cons (match-beginning 4) (match-end 4))
+		      (setq is-word t)
+		      (bounds-of-thing-at-point 'symbol))))
+	    (if add-bounds
+		(let ((off (- (point) (car add-bounds)))
+		      (at-end (= (point) (cdr add-bounds))))
 		(set-mark (car add-bounds))
 		(goto-char (cdr add-bounds))
 		(org-emphasize type)  ;deletes marked region!
 		(unless is-word       ; delete extra spaces
-		  (goto-char (car add-bounds))
-		  (when (eq (char-after) ?\s) (delete-char 1))
-		  (goto-char (+ 2 (cdr add-bounds)))
-		  (when (eq (char-after) ?\s) (delete-char 1)))
+		    (goto-char (car add-bounds))
+		    (when (eq (char-after) ?\s) (delete-char 1))
+		    (goto-char (+ 2 (cdr add-bounds)))
+		    (when (eq (char-after) ?\s) (delete-char 1)))
 		(goto-char (+ (car add-bounds) off
-			      (cond ((= off 0) 0) (at-end 2) (t 1)))))
-	    (if is-word (org-emphasize type))))))))
+				(cond ((= off 0) 0) (at-end 2) (t 1)))))
+	      (if is-word (org-emphasize type))))))))
 
 (general-define-key
  :keymaps 'org-mode-map
@@ -2456,16 +2451,16 @@ installed."
   (setf (car vertico-multiline) "\n") ;; don't replace newlines
   (vertico-mode)
   ;; (setq vertico-multiform-commands
-  ;;	'((consult-line
-  ;;	     posframe
-  ;;	     (vertico-posframe-poshandler . posframe-poshandler-frame-top-center)
-  ;;	     (vertico-posframe-border-width . 10)
-  ;;	     ;; NOTE: This is useful when emacs is used in both in X and
-  ;;	     ;; terminal, for posframe do not work well in terminal, so
-  ;;	     ;; vertico-buffer-mode will be used as fallback at the
-  ;;	     ;; moment.
-  ;;	     (vertico-posframe-fallback-mode . vertico-buffer-mode))
-  ;;	    (t posframe)))
+  ;;  '((consult-line
+  ;;       posframe
+  ;;       (vertico-posframe-poshandler . posframe-poshandler-frame-top-center)
+  ;;       (vertico-posframe-border-width . 10)
+  ;;       ;; NOTE: This is useful when emacs is used in both in X and
+  ;;       ;; terminal, for posframe do not work well in terminal, so
+  ;;       ;; vertico-buffer-mode will be used as fallback at the
+  ;;       ;; moment.
+  ;;       (vertico-posframe-fallback-mode . vertico-buffer-mode))
+  ;;      (t posframe)))
   (vertico-multiform-mode 1)
   (setq vertico-multiform-categories
 	  '((file grid)
@@ -2495,11 +2490,11 @@ installed."
 (use-package wgrep)
 
 (use-package which-key
-    :demand
-    :config
-(setq which-key-popup-type 'minibuffer)
-    (which-key-mode)
-)
+  :demand
+  :config
+  (setq which-key-popup-type 'minibuffer)
+  (which-key-mode)
+  )
 
 (use-package yankpad
   :init
@@ -2610,56 +2605,56 @@ installed."
   (dired "~/.config/fish/functions"))
 
 (general-define-key
-   :prefix "C-c"
-   ;; bind "C-c a" to #'org-agenda
+ :prefix "C-c"
+ ;; bind "C-c a" to #'org-agenda
 
-   "a" #'org-agenda
-   "b" #'consult-bookmark
-   "c" #'org-capture
+ "a" #'org-agenda
+ "b" #'consult-bookmark
+ "c" #'org-capture
 
-   "d s" #'insert-date-string
-   "d d" #'insert-standard-date
-   "d b" #'insert-blog-date
-   "D" #'crux-delete-file-and-buffer
+ "d s" #'insert-date-string
+ "d d" #'insert-standard-date
+ "d b" #'insert-blog-date
+ "D" #'crux-delete-file-and-buffer
 
-"f f" #'find-file
-   "f k" #'crux-kill-other-buffers
-   "f r" #'consult-buffer
-   "f R" #'crux-rename-file-and-buffer
-   "f P" #'open-emacs-config
-   "f S" #'open-fish-functions
+ "f f" #'find-file
+ "f k" #'crux-kill-other-buffers
+ "f r" #'consult-buffer
+ "f R" #'crux-rename-file-and-buffer
+ "f P" #'open-emacs-config
+ "f S" #'open-fish-functions
 
-   "g l" #'avy-goto-line
-   "g w" #'avy-goto-word-1
-   "g p" #'pdf-sync-forward-search
+ "g l" #'avy-goto-line
+ "g w" #'avy-goto-word-1
+ "g p" #'pdf-sync-forward-search
 
-   ;; "h" #'consult-history
+ ;; "h" #'consult-history
 
-   ;; Helpful
-   "H c" #'helpful-command
-   "H F" #'helpful-callable
-   "H h" #'helpful-at-point
-   "H f" #'helpful-function
-   "H v" #'helpful-variable
-   "H k" #'helpful-key
+ ;; Helpful
+ "H c" #'helpful-command
+ "H F" #'helpful-callable
+ "H h" #'helpful-at-point
+ "H f" #'helpful-function
+ "H v" #'helpful-variable
+ "H k" #'helpful-key
 
-   "k" #'crux-kill-other-buffers
-   "l" #'dictionary-search
-   "m" #'consult-mark
-   "n b" #'hugo-draft-post
-   "o" #'consult-outline
+ "k" #'crux-kill-other-buffers
+ "l" #'dictionary-search
+ "m" #'consult-mark
+ "n b" #'hugo-draft-post
+ "o" #'consult-outline
 
-   ;; Projects
-   "p f" #'consult-project-buffer
-   "p d" #'project-find-dired
+ ;; Projects
+ "p f" #'consult-project-buffer
+ "p d" #'project-find-dired
 
-   "r" #'crux-rename-file-and-buffer
-   ;; "s" #'rg-menu
-   "S" #'crux-cleanup-buffer-or-region
-   ;; "t" #'crux-visit-term-buffer
-   "u" #'unfill-paragraph
-   "w" #'kill-buffer-and-window
-   "z" #'reveal-in-osx-finder)
+ "r" #'crux-rename-file-and-buffer
+ ;; "s" #'rg-menu
+ "S" #'crux-cleanup-buffer-or-region
+ ;; "t" #'crux-visit-term-buffer
+ "u" #'unfill-paragraph
+ "w" #'kill-buffer-and-window
+ "z" #'reveal-in-osx-finder)
 
 (setq default-directory "~/")
 
