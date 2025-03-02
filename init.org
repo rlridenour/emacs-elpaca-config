@@ -396,7 +396,7 @@ World clock settings.
 
 Use MacOS SF Symbols
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (when (memq system-type '(darwin))
     (set-fontset-font t nil "SF Pro Display" nil 'append))
 #+end_src
@@ -2409,9 +2409,11 @@ Copy entire buffer then kill. I use this with temporary scratch buffers to write
     (setq org-hide-leading-stars nil)
     (setq org-hide-emphasis-markers t)
 
-    (set-face-attribute 'org-level-1 nil :height 1.2 :weight 'bold)
-    (set-face-attribute 'org-level-2 nil :height 1.1 :weight 'bold)
-    (set-face-attribute 'org-level-3 nil :height 1.05 :weight 'bold)
+    (set-face-attribute 'org-level-1 nil :height 1.3 :weight 'bold)
+    (set-face-attribute 'org-level-2 nil :height 1.2 :weight 'bold)
+    (set-face-attribute 'org-level-3 nil :height 1.1 :weight 'bold)
+
+(set-face-attribute 'org-document-title nil :weight 'bold :height 1.5)
 
 
     ;; Make the document title a bit bigger
@@ -2463,8 +2465,19 @@ Use variable pitch mode in Org and Markdown modes. Toggle with ~C-M-S-s-v~, boun
     (setq org-hide-emphasis-markers t)  ; Must be activated for org-appear to work
     (setq org-appear-autoemphasis   t   ; Show bold, italics, verbatim, etc.
 	  org-appear-autolinks      t   ; Show links
-	  org-appear-autosubmarkers t)) ; Show sub- and superscripts
+	  org-appear-autosubmarkers t)) ; Show sub and superscripts
 #+end_src
+
+
+*** Org Superstar
+
+#+begin_src emacs-lisp
+(use-package org-superstar
+:config
+(setq org-superstar-headline-bullets-list '("●" "○" "▶" "◈" "◇"))
+:hook (org-mode . org-superstar-mode))
+#+end_src
+
 
 
 *** Org LaTeX Export
@@ -2749,7 +2762,9 @@ Use Emacs appointment system for notifications.
 
 *** Org Bulletproof
 
-#+begin_src emacs-lisp
+I'm not sure what this doing anymore, so I'm going to disable it for now.
+
+#+begin_src emacs-lisp :tangle no
   (use-package org-bulletproof
     :after org
     :config

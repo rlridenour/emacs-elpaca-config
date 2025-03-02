@@ -132,9 +132,6 @@
 (setq hl-line-sticky-flag nil)
 (setq global-hl-line-sticky-flag nil)
 
-(when (memq system-type '(darwin))
-  (set-fontset-font t nil "SF Pro Display" nil 'append))
-
 ;; Where to save to backup file - in the backup dir
 (setq backup-directory-alist (list (cons "."  rr-backup-dir)))
 ;; Always backup by copying
@@ -1557,48 +1554,50 @@ installed."
   (completion-category-overrides '((file (styles partial-completion)))))
 
 (use-package org
-  :ensure nil
-  :init
-  ;; (setq org-directory "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/")
-  (setq org-directory "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/")
-  :config
-  (setq org-list-allow-alphabetical t)
-  (setq org-highlight-latex-and-related '(latex script entities))
-  (setq org-startup-indented nil)
-  (setq org-adapt-indentation nil)
-  (setq org-hide-leading-stars nil)
-  (setq org-hide-emphasis-markers t)
+    :ensure nil
+    :init
+    ;; (setq org-directory "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/")
+    (setq org-directory "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/")
+    :config
+    (setq org-list-allow-alphabetical t)
+    (setq org-highlight-latex-and-related '(latex script entities))
+    (setq org-startup-indented nil)
+    (setq org-adapt-indentation nil)
+    (setq org-hide-leading-stars nil)
+    (setq org-hide-emphasis-markers t)
 
-  (set-face-attribute 'org-level-1 nil :height 1.2 :weight 'bold)
-  (set-face-attribute 'org-level-2 nil :height 1.1 :weight 'bold)
-  (set-face-attribute 'org-level-3 nil :height 1.05 :weight 'bold)
+    (set-face-attribute 'org-level-1 nil :height 1.3 :weight 'bold)
+    (set-face-attribute 'org-level-2 nil :height 1.2 :weight 'bold)
+    (set-face-attribute 'org-level-3 nil :height 1.1 :weight 'bold)
+
+(set-face-attribute 'org-document-title nil :weight 'bold :height 1.5)
 
 
-  ;; Make the document title a bit bigger
-  (set-face-attribute 'org-document-title nil :weight 'bold)
+    ;; Make the document title a bit bigger
+    (set-face-attribute 'org-document-title nil :weight 'bold)
 
-  (setq org-support-shift-select t)
-  (setq org-special-ctrl-a/e t)
-  ;; (setq org-footnote-section nil)
-  (setq org-html-validation-link nil)
-  (setq org-time-stamp-rounding-minutes '(0 15))
-  (setq org-agenda-skip-scheduled-if-deadline-is-shown t)
-  (setq org-agenda-skip-scheduled-if-done t)
-  (setq org-log-done t)
-  (setq org-todo-keyword-faces
+    (setq org-support-shift-select t)
+    (setq org-special-ctrl-a/e t)
+    ;; (setq org-footnote-section nil)
+    (setq org-html-validation-link nil)
+    (setq org-time-stamp-rounding-minutes '(0 15))
+    (setq org-agenda-skip-scheduled-if-deadline-is-shown t)
+    (setq org-agenda-skip-scheduled-if-done t)
+    (setq org-log-done t)
+    (setq org-todo-keyword-faces
 	  '(("DONE" . "green4") ("TODO" . org-warning)))
-  (setq org-agenda-files '("/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/"))
-  (setq org-agenda-start-on-weekday nil)
-  (setq org-agenda-window-setup 'current-window)
-  (setq org-link-frame-setup
+    (setq org-agenda-files '("/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/"))
+    (setq org-agenda-start-on-weekday nil)
+    (setq org-agenda-window-setup 'current-window)
+    (setq org-link-frame-setup
 	  '((vm . vm-visit-folder-other-frame)
 	    (vm-imap . vm-visit-imap-folder-other-frame)
 	    (gnus . org-gnus-no-new-news)
 	    (file . find-file)
 	    (wl . wl-other-frame)))
-  (require 'org-tempo)
-  ;; Open directory links in Dired.
-  (add-to-list 'org-file-apps '(directory . emacs)))
+    (require 'org-tempo)
+    ;; Open directory links in Dired.
+    (add-to-list 'org-file-apps '(directory . emacs)))
 
 (add-hook 'org-mode-hook #'variable-pitch-mode)
 (add-hook 'markdown-mode-hook #'variable-pitch-mode)
@@ -1613,7 +1612,12 @@ installed."
   (setq org-hide-emphasis-markers t)  ; Must be activated for org-appear to work
   (setq org-appear-autoemphasis   t   ; Show bold, italics, verbatim, etc.
 	  org-appear-autolinks      t   ; Show links
-	  org-appear-autosubmarkers t)) ; Show sub- and superscripts
+	  org-appear-autosubmarkers t)) ; Show sub and superscripts
+
+(use-package org-superstar
+:config
+(setq org-superstar-headline-bullets-list '("●" "○" "▶" "◈" "◇"))
+:hook (org-mode . org-superstar-mode))
 
 (require 'ox-beamer)
 (with-eval-after-load 'ox-latex
@@ -1804,12 +1808,6 @@ installed."
 (org-agenda-to-appt) ;; generate the appt list from org agenda files on emacs launch
 (run-at-time "24:01" 3600 'org-agenda-to-appt) ;; update appt list hourly
 (add-hook 'org-finalize-agenda-hook 'org-agenda-to-appt) ;; update appt list on agenda view
-
-(use-package org-bulletproof
-  :after org
-  :config
-  (setq org-bulletproof-default-ordered-bullet "1.")
-  (global-org-bulletproof-mode +1))
 
 (use-package org-contrib
   :config
