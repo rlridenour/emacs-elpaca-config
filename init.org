@@ -2436,6 +2436,8 @@ Copy entire buffer then kill. I use this with temporary scratch buffers to write
     (add-to-list 'org-file-apps '(directory . emacs)))
 #+end_src
 
+Use variable pitch mode in Org and Markdown modes. Toggle with ~C-M-S-s-v~, bound to ~<Caps-Lock>-V~.
+
 #+begin_src emacs-lisp
 (add-hook 'org-mode-hook #'variable-pitch-mode)
 (add-hook 'markdown-mode-hook #'variable-pitch-mode)
