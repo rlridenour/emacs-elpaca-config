@@ -989,7 +989,7 @@ If there are only two windows, jump directly to the other window."
 	 ("i" aggressive-indent-mode "indent" :toggle t)
 	 ("f" auto-fill-mode "fill" :toggle t)
 	 ("l" display-line-numbers-mode "linum" :toggle t)
-	 ("m" mixed-pitch-mode "mixed-pitch" :toggle t)
+	 ("m" variable-pitch-mode "variable-pitch" :toggle t)
 	 ("p" electric-pair-mode "electric-pair" :toggle t)
 	 ("t" toggle-truncate-lines "truncate" :toggle t)
 	 ("s" whitespace-mode "whitespace" :toggle t))
@@ -1499,6 +1499,7 @@ installed."
   (setq modus-themes-italic-constructs t
 	modus-themes-mixed-fonts t
 	modus-themes-variable-pitch-ui t
+	modus-themes-italic-constructs t
 	modus-themes-bold-constructs t)
 
   ;; Maybe define some palette overrides, such as by using our presets
@@ -1594,7 +1595,11 @@ installed."
   ;; Open directory links in Dired.
   (add-to-list 'org-file-apps '(directory . emacs)))
 
-(use-package mixed-pitch)
+(add-hook 'org-mode-hook #'variable-pitch-mode)
+(add-hook 'markdown-mode-hook #'variable-pitch-mode)
+
+(general-define-key
+"C-M-S-s-v" #'variable-pitch-mode)
 
 (use-package org-appear
   :commands (org-appear-mode)
