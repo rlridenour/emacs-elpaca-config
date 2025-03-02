@@ -573,9 +573,6 @@ Overwrite selected text.
 
 ** Windows
 
-
-
-
 #+begin_src emacs-lisp
   (defun delete-window-balance ()
     "Delete window and rebalance the remaining ones."
@@ -935,7 +932,15 @@ Strip tracking elements from URL's using Brett Terpstra's stretchlink.cc.
        (concat "curl " "\"https://stretchlink.cc/api/1?u=" current-safari-url "&t=1&c=1&o=text\" | pbcopy"))
       (setq myurl (yank))
       (message myurl)))
+#+end_src
 
+Open Emacs init file in fixed-pitch.
+
+#+begin_src emacs-lisp
+  (defun rr/open-init-file ()
+    (interactive)
+    (progn (find-file "~/.config/emacs/init.org")
+	 (variable-pitch-mode -1)))
 #+end_src
 
 * Packages
@@ -1767,7 +1772,7 @@ From [[https://github.com/mickeynp/discover.el][mickeynp/discover.el: Discover m
 	 ("d" rlr/consult-rg "rg from dir")
 	 ("f" rlr/consult-fd "find from dir"))
 	"Files"
-	(("e" goto-emacs-init "Emacs init")
+	(("e" rr/open-init-file "Emacs init")
 	 ("s" goto-shell-init "Fish functions"))
 	))
      (pretty-hydra-define hydra-window

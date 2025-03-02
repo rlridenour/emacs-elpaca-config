@@ -475,6 +475,11 @@ If there are only two windows, jump directly to the other window."
     (setq myurl (yank))
     (message myurl)))
 
+(defun rr/open-init-file ()
+  (interactive)
+  (progn (find-file "~/.config/emacs/init.org")
+	 (variable-pitch-mode -1)))
+
 (use-package general
   :ensure (:wait t)
   :demand
@@ -1038,7 +1043,7 @@ If there are only two windows, jump directly to the other window."
 	 ("d" rlr/consult-rg "rg from dir")
 	 ("f" rlr/consult-fd "find from dir"))
 	"Files"
-	(("e" goto-emacs-init "Emacs init")
+	(("e" rr/open-init-file "Emacs init")
 	 ("s" goto-shell-init "Fish functions"))
 	))
    (pretty-hydra-define hydra-window
