@@ -336,15 +336,6 @@ If there are only two windows, jump directly to the other window."
 	    (when-let ((selected-window (cdr (assoc (char-to-string key) window-map))))
 	      (select-window selected-window)))))))
 
-;; Main typeface
-(set-face-attribute 'default nil :family "SF Mono" :height 160 :weight 'medium)
-;; Proportionately spaced typeface
-(set-face-attribute 'variable-pitch nil :family "SF Pro Text" :height 1.0 :weight 'medium)
-;; Monospaced typeface
-(set-face-attribute 'fixed-pitch nil :family "SF Mono" :height 1.0 :weight 'medium)
-
-(setq-default line-spacing 0.25)
-
 (set-face-attribute 'mode-line nil
 		      :foreground "black" :background "wheat3" :box '(:line-width 1 :color "black"))
 
@@ -365,6 +356,15 @@ If there are only two windows, jump directly to the other window."
     (condition-case nil
 	(tab-close)
 	(error (delete-frame)))))
+
+;; Main typeface
+(set-face-attribute 'default nil :family "SF Mono" :height 160 :weight 'medium)
+;; Proportionately spaced typeface
+(set-face-attribute 'variable-pitch nil :family "SF Pro Text" :height 1.0 :weight 'medium)
+;; Monospaced typeface
+(set-face-attribute 'fixed-pitch nil :family "SF Mono" :height 1.0 :weight 'medium)
+
+(setq-default line-spacing 0.25)
 
 (setq case-replace nil)
 
@@ -1571,7 +1571,6 @@ installed."
     (set-face-attribute 'org-level-3 nil :height 1.1 :weight 'bold)
 
 (set-face-attribute 'org-document-title nil :weight 'bold :height 1.5)
-
 
     ;; Make the document title a bit bigger
     (set-face-attribute 'org-document-title nil :weight 'bold)

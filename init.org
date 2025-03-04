@@ -146,8 +146,6 @@ Set window title to file name.
 					    "%b")))
 #+end_src
 
-
-
 Focus new frames
 
 #+begin_src emacs-lisp
@@ -705,23 +703,6 @@ If one window, switch to previous buffer. If two, then jump to other window. If 
 	      (select-window selected-window)))))))
 #+end_src
 
-Set font
-
-#+begin_src emacs-lisp
-  ;; Main typeface
-  (set-face-attribute 'default nil :family "SF Mono" :height 160 :weight 'medium)
-  ;; Proportionately spaced typeface
-  (set-face-attribute 'variable-pitch nil :family "SF Pro Text" :height 1.0 :weight 'medium)
-  ;; Monospaced typeface
-  (set-face-attribute 'fixed-pitch nil :family "SF Mono" :height 1.0 :weight 'medium)
-#+end_src
-
-Add some space between lines.
-
-#+begin_src emacs-lisp
-  (setq-default line-spacing 0.25)
-#+end_src
-
 Change color for active window.
 
 #+begin_src emacs-lisp
@@ -763,6 +744,25 @@ If more than one window, delete the window; if only one window, delete the tab; 
       (condition-case nil
 	(tab-close)
 	(error (delete-frame)))))
+#+end_src
+
+** Font
+
+Set font
+
+#+begin_src emacs-lisp
+  ;; Main typeface
+  (set-face-attribute 'default nil :family "SF Mono" :height 160 :weight 'medium)
+  ;; Proportionately spaced typeface
+  (set-face-attribute 'variable-pitch nil :family "SF Pro Text" :height 1.0 :weight 'medium)
+  ;; Monospaced typeface
+  (set-face-attribute 'fixed-pitch nil :family "SF Mono" :height 1.0 :weight 'medium)
+#+end_src
+
+Add some space between lines.
+
+#+begin_src emacs-lisp
+  (setq-default line-spacing 0.25)
 #+end_src
 
 ** Search
@@ -1480,9 +1480,6 @@ From [[https://github.com/mickeynp/discover.el][mickeynp/discover.el: Discover m
     :hook
     (elpaca-after-init . doom-modeline-mode))
 #+end_src
-
-
-
 
 ** Eat
 
@@ -2298,8 +2295,6 @@ I can't imagine wanting the same buffer in two tabs, so this calls consult-buffe
     (consult-buffer))
 #+end_src
 
-
-
 ** Modus Themes
 
 #+begin_src emacs-lisp
@@ -2415,7 +2410,6 @@ Copy entire buffer then kill. I use this with temporary scratch buffers to write
 
 (set-face-attribute 'org-document-title nil :weight 'bold :height 1.5)
 
-
     ;; Make the document title a bit bigger
     (set-face-attribute 'org-document-title nil :weight 'bold)
 
@@ -2453,8 +2447,6 @@ Use variable pitch mode in Org and Markdown modes. Toggle with ~C-M-S-s-v~, boun
 "C-M-S-s-v" #'variable-pitch-mode)
 #+end_src
 
-
-
 *** Org Appear
 
 #+begin_src emacs-lisp
@@ -2468,7 +2460,6 @@ Use variable pitch mode in Org and Markdown modes. Toggle with ~C-M-S-s-v~, boun
 	  org-appear-autosubmarkers t)) ; Show sub and superscripts
 #+end_src
 
-
 *** Org Superstar
 
 #+begin_src emacs-lisp
@@ -2477,8 +2468,6 @@ Use variable pitch mode in Org and Markdown modes. Toggle with ~C-M-S-s-v~, boun
 (setq org-superstar-headline-bullets-list '("●" "○" "▶" "◈" "◇"))
 :hook (org-mode . org-superstar-mode))
 #+end_src
-
-
 
 *** Org LaTeX Export
 
@@ -3552,7 +3541,6 @@ Use ~persistent-scratch~ to save scratch file between sessions.
     (persistent-scratch-setup-default))
 #+end_src
 
-
 ** Project.el
 
 #+begin_src emacs-lisp
@@ -3710,7 +3698,6 @@ https://github.com/amno1/emacs-term-toggle
   (use-package unfill)
 #+end_src
 
-
 ** Vertico
 
 #+begin_src emacs-lisp :lexical t
@@ -3745,7 +3732,6 @@ https://github.com/amno1/emacs-term-toggle
 	      "RET" 'vertico-directory-enter))
 #+end_src
 
-
 ** Visual-Regexp
 
 #+begin_src emacs-lisp
@@ -3773,14 +3759,11 @@ This builds the RSS feed for the blog.
   (use-package webfeeder)
 #+end_src
 
-
 ** Wgrep
 
 #+begin_src emacs-lisp
   (use-package wgrep)
 #+end_src
-
-
 
 ** Which-Key
 #+begin_quote
