@@ -1571,6 +1571,7 @@ installed."
   (setq org-adapt-indentation nil)
   (setq org-hide-leading-stars nil)
   (setq org-hide-emphasis-markers t)
+  (setq org-list-indent-offset 2)
 
   (set-face-attribute 'org-level-1 nil :height 1.3 :weight 'bold :inherit 'fixed-pitch)
   (set-face-attribute 'org-level-2 nil :height 1.2 :weight 'bold :inherit 'fixed-pitch)
