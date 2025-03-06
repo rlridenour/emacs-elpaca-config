@@ -319,6 +319,15 @@ Use single space after sentences.
   (setq sentence-end-double-space nil)
 #+end_src
 
+Set default tab width.
+
+#+begin_src emacs-lisp
+(setq-default tab-width 10)
+#+end_src
+
+
+
+
 Use GNU ls to avoid "Listing directory failed but 'access-file' worked" error.
 
 #+begin_src emacs-lisp

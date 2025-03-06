@@ -91,6 +91,8 @@
 
 (setq sentence-end-double-space nil)
 
+(setq-default tab-width 10)
+
 (setq insert-directory-program "gls")
 
 (setq message-kill-buffer-on-exit t)
