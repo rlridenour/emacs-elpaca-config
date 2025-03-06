@@ -2557,7 +2557,7 @@ installed."
  "S-C-<up>" #'enlarge-window
  "C-x w" #'delete-frame
  "M-o" #'crux-other-window-or-switch-buffer
- "M-o" #'rr/quick-window-jump
+ "M-o" #'my/quick-window-jump
  "s-\"" #'previous-window-any-frame)
 
 (general-define-key
