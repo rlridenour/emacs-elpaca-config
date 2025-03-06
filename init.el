@@ -463,7 +463,7 @@ If there are only two windows, jump directly to the other window."
   (goto-char (point-min))
   (while (search-forward (string ?\C-m) nil t) (replace-match "\n")))
 
-(defun my/stretchlink-cc ()
+(defun rr/stretchlink-cc ()
   (interactive)
   (progn
     (setq current-safari-url (do-applescript "tell application \"Safari\" to return URL of document 1"))
@@ -476,6 +476,12 @@ If there are only two windows, jump directly to the other window."
   (interactive)
   (progn (find-file "~/.config/emacs/init.org")
 	 (variable-pitch-mode -1)))
+
+(defun delete-extra-blank-lines () 
+(interactive) 
+(save-excursion)
+(beginning-of-buffer)
+(replace-regexp "^\n\n+" "\n"))
 
 (use-package general
   :ensure (:wait t)
@@ -877,7 +883,7 @@ If there are only two windows, jump directly to the other window."
 
 (use-feature eww
   :config
-  (defun my/eww-toggle-images ()
+  (defun rr/eww-toggle-images ()
     "Toggle whether images are loaded and reload the current page from cache."
     (interactive)
     (setq-local shr-inhibit-images (not shr-inhibit-images))
@@ -885,8 +891,8 @@ If there are only two windows, jump directly to the other window."
     (message "Images are now %s"
 	       (if shr-inhibit-images "off" "on")))
 
-  (define-key eww-mode-map (kbd "I") #'my/eww-toggle-images)
-  (define-key eww-link-keymap (kbd "I") #'my/eww-toggle-images)
+  (define-key eww-mode-map (kbd "I") #'rr/eww-toggle-images)
+  (define-key eww-link-keymap (kbd "I") #'rr/eww-toggle-images)
 
   ;; minimal rendering by default
   (setq-default shr-inhibit-images t)   ; toggle with `I`
@@ -970,7 +976,7 @@ If there are only two windows, jump directly to the other window."
   :config
   (global-hungry-delete-mode))
 
-(defun my/insert-unicode (unicode-name)
+(defun rr/insert-unicode (unicode-name)
   "Same as C-x 8 enter UNICODE-NAME."
   (insert-char (gethash unicode-name (ucs-names))))
 
@@ -1087,22 +1093,22 @@ If there are only two windows, jump directly to the other window."
      (:color pink :quit-key "0" :title "Logic")
      ("Operators"
 	(
-	 ;; ("1" (my/insert-unicode "NOT SIGN") "¬")
-	 ("1" (my/insert-unicode "TILDE OPERATOR") "∼")
-	 ;; ("2" (my/insert-unicode "AMPERSAND") "&")
-	 ("2" (my/insert-unicode "BULLET") "•")
-	 ("3" (my/insert-unicode "LOGICAL OR") "v")
-	 ("4" (my/insert-unicode "SUPERSET OF") "⊃")
-	 ;; ("4" (my/insert-unicode "RIGHTWARDS ARROW") "→")
-	 ("5" (my/insert-unicode "IDENTICAL TO") "≡")
-	 ;; ("5" (my/insert-unicode "LEFT RIGHT ARROW") "↔")
-	 ("6" (my/insert-unicode "THERE EXISTS") "∃")
-	 ("7" (my/insert-unicode "FOR ALL") "∀")
-	 ("8" (my/insert-unicode "WHITE MEDIUM SQUARE") "□")
-	 ("9" (my/insert-unicode "LOZENGE") "◊")
-	 ("`" (my/insert-unicode "NOT EQUAL TO") "≠"))
+	 ;; ("1" (rr/insert-unicode "NOT SIGN") "¬")
+	 ("1" (rr/insert-unicode "TILDE OPERATOR") "∼")
+	 ;; ("2" (rr/insert-unicode "AMPERSAND") "&")
+	 ("2" (rr/insert-unicode "BULLET") "•")
+	 ("3" (rr/insert-unicode "LOGICAL OR") "v")
+	 ("4" (rr/insert-unicode "SUPERSET OF") "⊃")
+	 ;; ("4" (rr/insert-unicode "RIGHTWARDS ARROW") "→")
+	 ("5" (rr/insert-unicode "IDENTICAL TO") "≡")
+	 ;; ("5" (rr/insert-unicode "LEFT RIGHT ARROW") "↔")
+	 ("6" (rr/insert-unicode "THERE EXISTS") "∃")
+	 ("7" (rr/insert-unicode "FOR ALL") "∀")
+	 ("8" (rr/insert-unicode "WHITE MEDIUM SQUARE") "□")
+	 ("9" (rr/insert-unicode "LOZENGE") "◊")
+	 ("`" (rr/insert-unicode "NOT EQUAL TO") "≠"))
 	"Space"
-	(("?" (my/insert-unicode "MEDIUM MATHEMATICAL SPACE") "Narrow space"))
+	(("?" (rr/insert-unicode "MEDIUM MATHEMATICAL SPACE") "Narrow space"))
 	"Quit"
 	(("0" quit-window "quit" :color blue))
 	))
@@ -1110,25 +1116,25 @@ If there are only two windows, jump directly to the other window."
    (pretty-hydra-define hydra-math
      (:color pink :quit-key "?" :title "Math")
      ("Operators"
-	(("1" (my/insert-unicode "NOT SIGN") "¬")
-	 ("2" (my/insert-unicode "AMPERSAND") "&")
-	 ("3" (my/insert-unicode "LOGICAL OR") "v")
-	 ("4" (my/insert-unicode "RIGHTWARDS ARROW") "→")
-	 ("5" (my/insert-unicode "LEFT RIGHT ARROW") "↔")
-	 ("6" (my/insert-unicode "THERE EXISTS") "∃")
-	 ("7" (my/insert-unicode "FOR ALL") "∀")
-	 ("8" (my/insert-unicode "WHITE MEDIUM SQUARE") "□")
-	 ("9" (my/insert-unicode "LOZENGE") "◊"))
+	(("1" (rr/insert-unicode "NOT SIGN") "¬")
+	 ("2" (rr/insert-unicode "AMPERSAND") "&")
+	 ("3" (rr/insert-unicode "LOGICAL OR") "v")
+	 ("4" (rr/insert-unicode "RIGHTWARDS ARROW") "→")
+	 ("5" (rr/insert-unicode "LEFT RIGHT ARROW") "↔")
+	 ("6" (rr/insert-unicode "THERE EXISTS") "∃")
+	 ("7" (rr/insert-unicode "FOR ALL") "∀")
+	 ("8" (rr/insert-unicode "WHITE MEDIUM SQUARE") "□")
+	 ("9" (rr/insert-unicode "LOZENGE") "◊"))
 	"Sets"
-	(("R" (my/insert-unicode "DOUBLE-STRUCK CAPITAL R") "ℝ real")
-	 ("N" (my/insert-unicode "DOUBLE-STRUCK CAPITAL N") "ℕ natural")
-	 ("Z" (my/insert-unicode "DOUBLE-STRUCK CAPITAL Z") "ℤ integer")
-	 ("Q" (my/insert-unicode "DOUBLE-STRUCK CAPITAL Q") "ℚ rational")
-	 ("Q" (my/insert-unicode "DOUBLE-STRUCK CAPITAL Q") "ℚ rational")
-	 ("Q" (my/insert-unicode "DOUBLE-STRUCK CAPITAL Q") "ℚ rational")
+	(("R" (rr/insert-unicode "DOUBLE-STRUCK CAPITAL R") "ℝ real")
+	 ("N" (rr/insert-unicode "DOUBLE-STRUCK CAPITAL N") "ℕ natural")
+	 ("Z" (rr/insert-unicode "DOUBLE-STRUCK CAPITAL Z") "ℤ integer")
+	 ("Q" (rr/insert-unicode "DOUBLE-STRUCK CAPITAL Q") "ℚ rational")
+	 ("Q" (rr/insert-unicode "DOUBLE-STRUCK CAPITAL Q") "ℚ rational")
+	 ("Q" (rr/insert-unicode "DOUBLE-STRUCK CAPITAL Q") "ℚ rational")
 	 )
 	"Space"
-	(("?" (my/insert-unicode "MEDIUM MATHEMATICAL SPACE") "Narrow space"))
+	(("?" (rr/insert-unicode "MEDIUM MATHEMATICAL SPACE") "Narrow space"))
 	"Quit"
 	(("?" quit-window "quit" :color blue))
 	))
@@ -2551,7 +2557,7 @@ installed."
  "S-C-<up>" #'enlarge-window
  "C-x w" #'delete-frame
  "M-o" #'crux-other-window-or-switch-buffer
- "M-o" #'my/quick-window-jump
+ "M-o" #'rr/quick-window-jump
  "s-\"" #'previous-window-any-frame)
 
 (general-define-key

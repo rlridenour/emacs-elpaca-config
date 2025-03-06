@@ -70,10 +70,10 @@
 			   (dired-directory dired-directory
 					    "%b")))
 
-(defun my/focus-new-client-frame ()
+(defun rr/focus-new-client-frame ()
   (select-frame-set-input-focus (selected-frame)))
 
-(add-hook 'server-after-make-frame-hook #'my/focus-new-client-frame)
+(add-hook 'server-after-make-frame-hook #'rr/focus-new-client-frame)
 
 (set-face-attribute 'default nil :height 160)
 
