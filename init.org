@@ -325,9 +325,6 @@ Set default tab width.
 (setq-default tab-width 10)
 #+end_src
 
-
-
-
 Use GNU ls to avoid "Listing directory failed but 'access-file' worked" error.
 
 #+begin_src emacs-lisp
@@ -2495,15 +2492,11 @@ Use variable pitch mode in Org and Markdown modes. Toggle with ~C-M-S-s-v~, boun
 :hook (org-mode . org-superstar-mode))
 #+end_src
 
-
 *** Org Modern
 
 #+begin_src emacs-lisp :tangle no
 (use-package org-modern)
 #+end_src
-
-
-
 
 *** Org LaTeX Export
 
