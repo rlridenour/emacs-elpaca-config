@@ -853,6 +853,15 @@ If there are only two windows, jump directly to the other window."
   :custom
   (ebib-preload-bib-files '("~/Dropbox/bibtex/rlr.bib")))
 
+(use-package elfeed)
+
+(use-package elfeed-org
+    :init
+    (setq rmh-elfeed-org-files (list "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/rss-feeds.org"))
+    :config
+(setq rmh-elfeed-org-auto-ignore-invalid-feeds t)
+    (elfeed-org))
+
 (use-package embark
   :general
   ("C-." #'embark-act)
@@ -973,15 +982,15 @@ If there are only two windows, jump directly to the other window."
     ;; Don't forget to set keybinds!
   :config
   (setq fzf/args "-x --color bw --print-query --margin=1,0 --no-hscroll"
-        fzf/executable "fzf"
-        fzf/git-grep-args "-i --line-number %s"
-        ;; command used for `fzf-grep-*` functions
-        ;; example usage for ripgrep:
-        fzf/grep-command "rg --no-heading -nH"
-        ;; fzf/grep-command "grep -nrH"
-        ;; If nil, the fzf buffer will appear at the top of the window
-        fzf/position-bottom t
-        fzf/window-height 15))
+	fzf/executable "fzf"
+	fzf/git-grep-args "-i --line-number %s"
+	;; command used for `fzf-grep-*` functions
+	;; example usage for ripgrep:
+	fzf/grep-command "rg --no-heading -nH"
+	;; fzf/grep-command "grep -nrH"
+	;; If nil, the fzf buffer will appear at the top of the window
+	fzf/position-bottom t
+	fzf/window-height 15))
 
 (use-package helpful)
 
@@ -1181,10 +1190,13 @@ If there are only two windows, jump directly to the other window."
    (major-mode-hydra-define org-agenda-mode
      (:quit-key "q")
      ("Open"
-	(("m" consult-bookmark "bookmarks")
+	(
 	 ("a" consult-org-agenda "consult-agenda")
+	 ("b" consult-bookmark "bookmarks")
+	 ("e" elfeed "elfeed")
+	 ("m" mu4e "mu4e")
 	 ("t" (find-file "/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/tasks.org") "open tasks")
-	 ("b" (find-file "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/bookmarks.org") "web bookmarks"))
+	 ("w" (find-file "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/bookmarks.org") "web bookmarks"))
 	"Classes"
 	(("1" (dired "~/icloud/teaching/intro/lectures") "Intro")
 	 ("2" (dired "~/icloud/teaching/medieval/lectures") "Medieval")
@@ -1642,6 +1654,55 @@ installed."
   (setq org-appear-autoemphasis   t   ; Show bold, italics, verbatim, etc.
 	  org-appear-autolinks      t   ; Show links
 	  org-appear-autosubmarkers t)) ; Show sub and superscripts
+
+(use-feature mu4e
+  :commands (mu4e mu4e-update-mail-and-index)
+  :bind (:map mu4e-headers-mode-map
+	      ("q" . kill-current-buffer))
+  :after org
+  :config
+  (setq
+   mu4e-headers-skip-duplicates  t
+   mu4e-view-show-images t
+   mu4e-view-show-addresses t
+   mu4e-use-fancy-chars t
+   mu4e-compose-format-flowed nil
+   mu4e-date-format "%y/%m/%d"
+   mu4e-headers-date-format "%Y/%m/%d"
+   mu4e-change-filenames-when-moving t
+   mu4e-attachments-dir "~/Downloads"
+   mu4e-maildir       "~/Maildir/"   ;; top-level Maildir
+   ;; note that these folders below must start with /
+   ;; the paths are relative to maildir root
+
+   ;; this setting allows to re-sync and re-index mail
+   ;; by pressing U
+   mu4e-get-mail-command "mbsync -a"
+
+   mu4e-completing-read-function 'completing-read
+   mu4e-context-policy 'pick-first
+   mu4e-contexts (list
+		  (make-mu4e-context
+		   :name "fastmail"
+		   :match-func
+		   (lambda (msg)
+		     (when msg
+		       (string-prefix-p "/fastmail" (mu4e-message-field msg :maildir))))
+		   :vars '((user-mail-address . "rlridenour@fastmail.com")
+			   (user-full-name    . "Randy Ridenour")
+			   (mu4e-drafts-folder  . "/fastmail/Drafts")
+			   (mu4e-sent-folder  . "/fastmail/Sent")
+			   (mu4e-refile-folder  . "/fastmail/Archive")
+			   (sendmail-program . "msmtp")
+			   (send-mail-function . smtpmail-send-it)
+			   (message-sendmail-f-is-evil . t)
+			   (message-sendmail-extra-arguments . ("--read-envelope-from"))
+			   (message-send-mail-function . message-send-mail-with-sendmail)
+			   (smtpmail-default-smtp-server . "smtp.fastmail.com")
+			   (smtpmail-smtp-server  . "smtp.fastmail.com")
+			   (mu4e-trash-folder  . "/fastmail/Trash")))))
+
+  (display-line-numbers-mode -1))
 
 (require 'ox-beamer)
 (with-eval-after-load 'ox-latex
@@ -2428,6 +2489,8 @@ installed."
   (rg-enable-default-bindings))
 
 (use-package shrink-whitespace)
+
+(use-package sly)
 
 (use-package smartparens
   :hook (prog-mode text-mode markdown-mode) ;; add `smartparens-mode` to these hooks
