@@ -1367,7 +1367,7 @@ This will avoid needing to confirm when activating the link. Just add the functi
 
 Search notes with the xapian syntax (+word -word AND NOT etc), <tab> to preview, <enter> to open the file in the same buffer.
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package xeft
     :commands (xeft)
     :config
@@ -1380,6 +1380,16 @@ Search notes with the xapian syntax (+word -word AND NOT etc), <tab> to preview,
     (xeft-directory rr-notes-dir)
     ;; Only parse the root directory
     (xeft-recursive nil))
+#+end_src
+
+#+begin_src emacs-lisp
+(use-package denote-search
+:ensure (:host github :repo "lmq-10/denote-search")
+  :custom
+  ;; Disable help string (set it once you learn the commands)
+  ;; (denote-search-help-string "")
+  ;; Display keywords in results buffer
+  (denote-search-format-heading-function #'denote-search-format-heading-with-keywords))
 #+end_src
 
 ** Devil Mode
@@ -4127,7 +4137,13 @@ Open fish functions directory.
    ;; "t" #'crux-visit-term-buffer
    "u" #'unfill-paragraph
    "w" #'kill-buffer-and-window
-   "z" #'reveal-in-osx-finder)
+   "z" #'reveal-in-osx-finder
+
+   ;; Search
+   "s s" #'denote-search
+   "s d" #'denote-search-marked-dired-files
+   "s r" #'denote-search-files-referenced-in-region
+   )
 #+end_src
 
 * Finish

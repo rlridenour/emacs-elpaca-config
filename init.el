@@ -747,18 +747,13 @@ If there are only two windows, jump directly to the other window."
 (use-package denote-menu
   :after denote)
 
-(use-package xeft
-  :commands (xeft)
-  :config
-  (custom-set-faces '(xeft-excerpt-title ((t (:weight bold)))))
-  (custom-set-faces '(xeft-excerpt-body ((t (:height 150)))))
+(use-package denote-search
+:ensure (:host github :repo "lmq-10/denote-search")
   :custom
-  ;; Default extension for files created with xeft
-  (xeft-default-extension "org")
-  ;; Where is my search source
-  (xeft-directory rr-notes-dir)
-  ;; Only parse the root directory
-  (xeft-recursive nil))
+  ;; Disable help string (set it once you learn the commands)
+  ;; (denote-search-help-string "")
+  ;; Display keywords in results buffer
+  (denote-search-format-heading-function #'denote-search-format-heading-with-keywords))
 
 (use-package devil
   :init
@@ -2749,7 +2744,13 @@ installed."
  ;; "t" #'crux-visit-term-buffer
  "u" #'unfill-paragraph
  "w" #'kill-buffer-and-window
- "z" #'reveal-in-osx-finder)
+ "z" #'reveal-in-osx-finder
+
+ ;; Search
+ "s s" #'denote-search
+ "s d" #'denote-search-marked-dired-files
+ "s r" #'denote-search-files-referenced-in-region
+ )
 
 (setq default-directory "~/")
 
