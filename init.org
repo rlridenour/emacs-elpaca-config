@@ -1382,6 +1382,8 @@ Search notes with the xapian syntax (+word -word AND NOT etc), <tab> to preview,
     (xeft-recursive nil))
 #+end_src
 
+[[https://github.com/lmq-10/denote-search][Denote Search]] — [[https://github.com/lmq-10/denote-search/blob/main/README.org][manual]].
+
 #+begin_src emacs-lisp
 (use-package denote-search
 :ensure (:host github :repo "lmq-10/denote-search")
