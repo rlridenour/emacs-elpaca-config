@@ -748,7 +748,7 @@ If there are only two windows, jump directly to the other window."
   :after denote)
 
 (use-package denote-search
-:ensure (:host github :repo "lmq-10/denote-search")
+  :ensure (:host github :repo "lmq-10/denote-search")
   :custom
   ;; Disable help string (set it once you learn the commands)
   ;; (denote-search-help-string "")
@@ -832,12 +832,12 @@ If there are only two windows, jump directly to the other window."
   :demand
   :ensure
   (:host codeberg
-	 :repo "akib/emacs-eat"
-	 :files ("*.el" ("term" "term/*.el") "*.texi"
-		 "*.ti" ("terminfo/e" "terminfo/e/*")
-		 ("terminfo/65" "terminfo/65/*")
-		 ("integration" "integration/*")
-		 (:exclude ".dir-locals.el" "*-tests.el"))))
+	   :repo "akib/emacs-eat"
+	   :files ("*.el" ("term" "term/*.el") "*.texi"
+		   "*.ti" ("terminfo/e" "terminfo/e/*")
+		   ("terminfo/65" "terminfo/65/*")
+		   ("integration" "integration/*")
+		   (:exclude ".dir-locals.el" "*-tests.el"))))
 
 (use-package ebib
   :config
@@ -851,11 +851,12 @@ If there are only two windows, jump directly to the other window."
 (use-package elfeed)
 
 (use-package elfeed-org
-    :init
-    (setq rmh-elfeed-org-files (list "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/rss-feeds.org"))
-    :config
-(setq rmh-elfeed-org-auto-ignore-invalid-feeds t)
-    (elfeed-org))
+  :after elfeed
+  :init
+  (setq rmh-elfeed-org-files (list "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/rss-feeds.org"))
+  :config
+  (setq rmh-elfeed-org-auto-ignore-invalid-feeds t)
+  (elfeed-org))
 
 (use-package embark
   :general

@@ -1358,7 +1358,7 @@ This will avoid needing to confirm when activating the link. Just add the functi
     :config
     (citar-denote-mode)
     (setq citar-open-always-create-notes t))
-#+end_src
+  #+end_src
 
 #+begin_src emacs-lisp
   (use-package denote-menu
@@ -1385,13 +1385,13 @@ Search notes with the xapian syntax (+word -word AND NOT etc), <tab> to preview,
 [[https://github.com/lmq-10/denote-search][Denote Search]] — [[https://github.com/lmq-10/denote-search/blob/main/README.org][manual]].
 
 #+begin_src emacs-lisp
-(use-package denote-search
-:ensure (:host github :repo "lmq-10/denote-search")
-  :custom
-  ;; Disable help string (set it once you learn the commands)
-  ;; (denote-search-help-string "")
-  ;; Display keywords in results buffer
-  (denote-search-format-heading-function #'denote-search-format-heading-with-keywords))
+  (use-package denote-search
+    :ensure (:host github :repo "lmq-10/denote-search")
+    :custom
+    ;; Disable help string (set it once you learn the commands)
+    ;; (denote-search-help-string "")
+    ;; Display keywords in results buffer
+    (denote-search-format-heading-function #'denote-search-format-heading-with-keywords))
 #+end_src
 
 ** Devil Mode
@@ -1518,12 +1518,12 @@ From [[https://github.com/mickeynp/discover.el][mickeynp/discover.el: Discover m
     :demand
     :ensure
     (:host codeberg
-	 :repo "akib/emacs-eat"
-	 :files ("*.el" ("term" "term/*.el") "*.texi"
-		 "*.ti" ("terminfo/e" "terminfo/e/*")
-		 ("terminfo/65" "terminfo/65/*")
-		 ("integration" "integration/*")
-		 (:exclude ".dir-locals.el" "*-tests.el"))))
+	   :repo "akib/emacs-eat"
+	   :files ("*.el" ("term" "term/*.el") "*.texi"
+		   "*.ti" ("terminfo/e" "terminfo/e/*")
+		   ("terminfo/65" "terminfo/65/*")
+		   ("integration" "integration/*")
+		   (:exclude ".dir-locals.el" "*-tests.el"))))
 #+end_src
 
 ** Ebib
@@ -1542,15 +1542,16 @@ From [[https://github.com/mickeynp/discover.el][mickeynp/discover.el: Discover m
 ** Elfeed
 
 #+begin_src emacs-lisp
-(use-package elfeed)
+  (use-package elfeed)
 #+end_src
 
 #+begin_src emacs-lisp
   (use-package elfeed-org
+    :after elfeed
     :init
     (setq rmh-elfeed-org-files (list "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/rss-feeds.org"))
     :config
-(setq rmh-elfeed-org-auto-ignore-invalid-feeds t)
+    (setq rmh-elfeed-org-auto-ignore-invalid-feeds t)
     (elfeed-org))
 #+end_src
 
