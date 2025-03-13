@@ -997,7 +997,7 @@ Load general before the remaining packages so they can make use of the ~:general
 
 ** Ace Link
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package ace-link
     :init
     (ace-link-setup-default))
@@ -1549,11 +1549,21 @@ From [[https://github.com/mickeynp/discover.el][mickeynp/discover.el: Discover m
   (use-package elfeed-org
     :after elfeed
     :init
+    (elfeed-org)
     (setq rmh-elfeed-org-files (list "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/rss-feeds.org"))
     :config
     (setq rmh-elfeed-org-auto-ignore-invalid-feeds t)
-    (elfeed-org))
+)
 #+end_src
+
+#+begin_src emacs-lisp :tangle no
+(use-package elfeed-goodies
+:after elfeed
+:init
+(elfeed-goodies/setup))
+#+end_src
+
+
 
 ** Embark
 
@@ -2265,6 +2275,19 @@ Display suggestions in grid.
 			(define-key map (kbd "$")  #'math-delimiters-insert)
 			map))))
 #+end_src
+
+
+*** Link Hint
+
+#+begin_src emacs-lisp
+  (use-package link-hint
+    :general
+    ("s-," #'link-hint-open-link
+     "C-c l o" #'link-hint-open-link
+     "C-c l c" #'link-hint-copy-link))
+#+end_src
+
+
 
 ** Magit
 
@@ -4101,6 +4124,7 @@ Open fish functions directory.
    "d s" #'insert-date-string
    "d d" #'insert-standard-date
    "d b" #'insert-blog-date
+   "d l" #'dictionary-search
    "D" #'crux-delete-file-and-buffer
 
    "f f" #'find-file
@@ -4125,7 +4149,7 @@ Open fish functions directory.
    "H k" #'helpful-key
 
    "k" #'crux-kill-other-buffers
-   "l" #'dictionary-search
+
    "m" #'consult-mark
    "n b" #'hugo-draft-post
    "o" #'consult-outline

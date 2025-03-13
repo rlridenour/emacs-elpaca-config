@@ -506,10 +506,6 @@ If there are only two windows, jump directly to the other window."
   :config
   (load "~/Dropbox/emacs/my-emacs-abbrev"))
 
-(use-package ace-link
-  :init
-  (ace-link-setup-default))
-
 (use-package aggressive-indent
   :config
   (global-aggressive-indent-mode 1))
@@ -851,12 +847,13 @@ If there are only two windows, jump directly to the other window."
 (use-package elfeed)
 
 (use-package elfeed-org
-  :after elfeed
-  :init
-  (setq rmh-elfeed-org-files (list "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/rss-feeds.org"))
-  :config
-  (setq rmh-elfeed-org-auto-ignore-invalid-feeds t)
-  (elfeed-org))
+    :after elfeed
+    :init
+    (elfeed-org)
+    (setq rmh-elfeed-org-files (list "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/rss-feeds.org"))
+    :config
+    (setq rmh-elfeed-org-auto-ignore-invalid-feeds t)
+)
 
 (use-package embark
   :general
@@ -1461,6 +1458,12 @@ If there are only two windows, jump directly to the other window."
 		:keymap (let ((map (make-sparse-keymap)))
 			(define-key map (kbd "$")  #'math-delimiters-insert)
 			map))))
+
+(use-package link-hint
+  :general
+  ("s-," #'link-hint-open-link
+   "C-c l o" #'link-hint-open-link
+   "C-c l c" #'link-hint-copy-link))
 
 (use-package transient)
 (use-package hl-todo
@@ -2706,6 +2709,7 @@ installed."
  "d s" #'insert-date-string
  "d d" #'insert-standard-date
  "d b" #'insert-blog-date
+ "d l" #'dictionary-search
  "D" #'crux-delete-file-and-buffer
 
  "f f" #'find-file
@@ -2730,7 +2734,7 @@ installed."
  "H k" #'helpful-key
 
  "k" #'crux-kill-other-buffers
- "l" #'dictionary-search
+
  "m" #'consult-mark
  "n b" #'hugo-draft-post
  "o" #'consult-outline
