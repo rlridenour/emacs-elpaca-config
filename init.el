@@ -844,13 +844,32 @@ If there are only two windows, jump directly to the other window."
   :custom
   (ebib-preload-bib-files '("~/Dropbox/bibtex/rlr.bib")))
 
-(use-package elfeed)
+(use-package elfeed
+  :demand
+  :init
+  (setq elfeed-db-directory "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/elfeed")
+  :config
+  :general
+  (:keymaps 'elfeed-search-mode-map
+	      "q" #'rlr/elfeed-save-db-and-quit
+	      ))
+
+(defun rlr/elfeed-load-db-and-open ()
+  (interactive)
+  (elfeed-db-load)
+  (elfeed)
+  (elfeed-search-update--force))
+
+(defun rlr/elfeed-save-db-and-quit ()
+  (interactive)
+  (elfeed-db-save)
+  (quit-window))
 
 (use-package elfeed-org
     :after elfeed
     :init
     (elfeed-org)
-    (setq rmh-elfeed-org-files (list "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/rss-feeds.org"))
+    (setq rmh-elfeed-org-files (list "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/elfeed/elfeed.org"))
     :config
     (setq rmh-elfeed-org-auto-ignore-invalid-feeds t)
 )
@@ -1186,7 +1205,7 @@ If there are only two windows, jump directly to the other window."
 	(
 	 ("a" consult-org-agenda "consult-agenda")
 	 ("b" consult-bookmark "bookmarks")
-	 ("e" elfeed "elfeed")
+	 ("e" rlr/elfeed-load-db-and-open "elfeed")
 	 ("m" mu4e "mu4e")
 	 ("t" (find-file "/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/tasks.org") "open tasks")
 	 ("w" (find-file "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/bookmarks.org") "web bookmarks"))
@@ -1655,53 +1674,97 @@ installed."
 	  org-appear-autosubmarkers t)) ; Show sub and superscripts
 
 (use-feature mu4e
-  :commands (mu4e mu4e-update-mail-and-index)
-  :bind (:map mu4e-headers-mode-map
-	      ("q" . kill-current-buffer))
-  :after org
-  :config
-  (setq
-   mu4e-headers-skip-duplicates  t
-   mu4e-view-show-images t
-   mu4e-view-show-addresses t
-   mu4e-use-fancy-chars t
-   mu4e-compose-format-flowed nil
-   mu4e-date-format "%y/%m/%d"
-   mu4e-headers-date-format "%Y/%m/%d"
-   mu4e-change-filenames-when-moving t
-   mu4e-attachments-dir "~/Downloads"
-   mu4e-maildir       "~/Maildir/"   ;; top-level Maildir
-   ;; note that these folders below must start with /
-   ;; the paths are relative to maildir root
+    :commands (mu4e mu4e-update-mail-and-index)
+    :bind (:map mu4e-headers-mode-map
+		("q" . kill-current-buffer))
+    :after org
+    :config
+    (setq
+     mu4e-index-update-error-warning nil
+     mu4e-headers-skip-duplicates  t
+     mu4e-view-show-images t
+     mu4e-view-show-addresses t
+     mu4e-use-fancy-chars t
+     mu4e-compose-format-flowed nil
+     mu4e-date-format "%y/%m/%d"
+     mu4e-headers-date-format "%Y/%m/%d"
+     mu4e-change-filenames-when-moving t
+     mu4e-attachments-dir "~/Downloads"
+     mu4e-maildir       "~/Maildir/"   ;; top-level Maildir
+     ;; note that these folders below must start with /
+     ;; the paths are relative to maildir root
 
-   ;; this setting allows to re-sync and re-index mail
-   ;; by pressing U
-   mu4e-get-mail-command "mbsync -a"
+     ;; this setting allows to re-sync and re-index mail
+     ;; by pressing U
+     mu4e-get-mail-command "mbsync -a"
 
-   mu4e-completing-read-function 'completing-read
-   mu4e-context-policy 'pick-first
-   mu4e-contexts (list
-		  (make-mu4e-context
-		   :name "fastmail"
-		   :match-func
-		   (lambda (msg)
-		     (when msg
-		       (string-prefix-p "/fastmail" (mu4e-message-field msg :maildir))))
-		   :vars '((user-mail-address . "rlridenour@fastmail.com")
-			   (user-full-name    . "Randy Ridenour")
-			   (mu4e-drafts-folder  . "/fastmail/Drafts")
-			   (mu4e-sent-folder  . "/fastmail/Sent")
-			   (mu4e-refile-folder  . "/fastmail/Archive")
-			   (sendmail-program . "msmtp")
-			   (send-mail-function . smtpmail-send-it)
-			   (message-sendmail-f-is-evil . t)
-			   (message-sendmail-extra-arguments . ("--read-envelope-from"))
-			   (message-send-mail-function . message-send-mail-with-sendmail)
-			   (smtpmail-default-smtp-server . "smtp.fastmail.com")
-			   (smtpmail-smtp-server  . "smtp.fastmail.com")
-			   (mu4e-trash-folder  . "/fastmail/Trash")))))
+     mu4e-completing-read-function 'completing-read
+     mu4e-context-policy 'pick-first
+     mu4e-contexts (list
+		    (make-mu4e-context
+		     :name "fastmail"
+		     :match-func
+		     (lambda (msg)
+		 (when msg
+		   (string-prefix-p "/fastmail" (mu4e-message-field msg :maildir))))
+		     :vars '((user-mail-address . "rlridenour@fastmail.com")
+			     (user-full-name    . "Randy Ridenour")
+			     (mu4e-drafts-folder  . "/fastmail/Drafts")
+			     (mu4e-sent-folder  . "/fastmail/Sent")
+			     (mu4e-trash-folder  . "/fastmail/Trash")
+			     (mu4e-refile-folder  . "/fastmail/Archive")
+			     (sendmail-program . "msmtp")
+			     (send-mail-function . smtpmail-send-it)
+			     (message-sendmail-f-is-evil . t)
+			     (message-sendmail-extra-arguments . ("--read-envelope-from"))
+			     (message-send-mail-function . message-send-mail-with-sendmail)
+			     (smtpmail-default-smtp-server . "smtp.fastmail.com")
+			     (smtpmail-smtp-server  . "smtp.fastmail.com")
+))
+		    (make-mu4e-context
+		     :name "obu"
+		     :match-func
+		     (lambda (msg)
+		 (when msg
+		   (string-prefix-p "/obu" (mu4e-message-field msg :maildir))))
+		     :vars '((user-mail-address . "randy.ridenour@okbu.edu")
+			     (user-full-name    . "Randy Ridenour")
+			     (mu4e-drafts-folder  . "/obu/Drafts")
+			     (mu4e-sent-folder  . "/obu/Sent")
+			     (mu4e-trash-folder . "/obu/Trash")
+			     (mu4e-refile-folder  . "/obu/Archive")
+			     ;; (sendmail-program . "msmtp")
+			     (send-mail-function . smtpmail-send-it)
+			     (message-sendmail-f-is-evil . t)
+			     (message-sendmail-extra-arguments . ("--read-envelope-from"))
+			     (message-send-mail-function . message-send-mail-with-sendmail)
+			     (smtpmail-smtp-server  . "localhost")
+		       (smtpmail-smtp-user . "randy.ridenour@okbu.edu")
+		       (smtpmail-stream-type . plain)
+		       (smtpmail-smtp-service . 1025)
+		       ))))
+    (display-line-numbers-mode -1))
 
-  (display-line-numbers-mode -1))
+(defun obu-signature ()
+  (interactive)
+  (insert (concat
+	 "\n\n"
+	 "--\n"
+	 "Randy Ridenour, Ph.D.\n"
+	 "Professor of Philosophy\n"
+	 "Oklahoma Baptist University\n\n"
+	 "500 W. University St.\n"
+	 "Shawnee, OK  74804\n"
+	 "Office: (405) 585-4432\n")
+	))
+
+(defun informal-signature ()
+  (interactive)
+  (insert (concat
+	 "\n\n"
+	 "--\n"
+	 "Randy"
+	 )))
 
 (require 'ox-beamer)
 (with-eval-after-load 'ox-latex
