@@ -1674,76 +1674,76 @@ installed."
 	  org-appear-autosubmarkers t)) ; Show sub and superscripts
 
 (use-feature mu4e
-    :commands (mu4e mu4e-update-mail-and-index)
-    :bind (:map mu4e-headers-mode-map
-		("q" . kill-current-buffer))
-    :after org
-    :config
-    (setq
-     mu4e-index-update-error-warning nil
-     mu4e-headers-skip-duplicates  t
-     mu4e-view-show-images t
-     mu4e-view-show-addresses t
-     mu4e-use-fancy-chars t
-     mu4e-compose-format-flowed nil
-     mu4e-date-format "%y/%m/%d"
-     mu4e-headers-date-format "%Y/%m/%d"
-     mu4e-change-filenames-when-moving t
-     mu4e-attachments-dir "~/Downloads"
-     mu4e-maildir       "~/Maildir/"   ;; top-level Maildir
-     ;; note that these folders below must start with /
-     ;; the paths are relative to maildir root
+  :commands (mu4e mu4e-update-mail-and-index)
+  :bind (:map mu4e-headers-mode-map
+	          ("q" . kill-current-buffer))
+  :after org
+  :config
+  (setq
+   mu4e-index-update-error-warning nil
+   mu4e-headers-skip-duplicates  t
+   mu4e-view-show-images t
+   mu4e-view-show-addresses t
+   mu4e-use-fancy-chars t
+   mu4e-compose-format-flowed nil
+   mu4e-date-format "%y/%m/%d"
+   mu4e-headers-date-format "%Y/%m/%d"
+   mu4e-change-filenames-when-moving t
+   mu4e-attachments-dir "~/Downloads"
+   mu4e-maildir       "~/Maildir/"   ;; top-level Maildir
+   ;; note that these folders below must start with /
+   ;; the paths are relative to maildir root
 
-     ;; this setting allows to re-sync and re-index mail
-     ;; by pressing U
-     mu4e-get-mail-command "mbsync -a"
-
-     mu4e-completing-read-function 'completing-read
-     mu4e-context-policy 'pick-first
-     mu4e-contexts (list
-		    (make-mu4e-context
-		     :name "fastmail"
-		     :match-func
-		     (lambda (msg)
-		 (when msg
-		   (string-prefix-p "/fastmail" (mu4e-message-field msg :maildir))))
-		     :vars '((user-mail-address . "rlridenour@fastmail.com")
-			     (user-full-name    . "Randy Ridenour")
-			     (mu4e-drafts-folder  . "/fastmail/Drafts")
-			     (mu4e-sent-folder  . "/fastmail/Sent")
-			     (mu4e-trash-folder  . "/fastmail/Trash")
-			     (mu4e-refile-folder  . "/fastmail/Archive")
-			     (sendmail-program . "msmtp")
-			     (send-mail-function . smtpmail-send-it)
-			     (message-sendmail-f-is-evil . t)
-			     (message-sendmail-extra-arguments . ("--read-envelope-from"))
-			     (message-send-mail-function . message-send-mail-with-sendmail)
-			     (smtpmail-default-smtp-server . "smtp.fastmail.com")
-			     (smtpmail-smtp-server  . "smtp.fastmail.com")
-))
-		    (make-mu4e-context
-		     :name "obu"
-		     :match-func
-		     (lambda (msg)
-		 (when msg
-		   (string-prefix-p "/obu" (mu4e-message-field msg :maildir))))
-		     :vars '((user-mail-address . "randy.ridenour@okbu.edu")
-			     (user-full-name    . "Randy Ridenour")
-			     (mu4e-drafts-folder  . "/obu/Drafts")
-			     (mu4e-sent-folder  . "/obu/Sent")
-			     (mu4e-trash-folder . "/obu/Trash")
-			     (mu4e-refile-folder  . "/obu/Archive")
-			     ;; (sendmail-program . "msmtp")
-			     (send-mail-function . smtpmail-send-it)
-			     (message-sendmail-f-is-evil . t)
-			     (message-sendmail-extra-arguments . ("--read-envelope-from"))
-			     (message-send-mail-function . message-send-mail-with-sendmail)
-			     (smtpmail-smtp-server  . "localhost")
-		       (smtpmail-smtp-user . "randy.ridenour@okbu.edu")
-		       (smtpmail-stream-type . plain)
-		       (smtpmail-smtp-service . 1025)
-		       ))))
-    (display-line-numbers-mode -1))
+   ;; this setting allows to re-sync and re-index mail
+   ;; by pressing U
+   mu4e-get-mail-command "mbsync -a"
+   ;; mu4e-update-interval 300 ;; update every 5 minutes
+   mu4e-completing-read-function 'completing-read
+   mu4e-context-policy 'pick-first
+   mu4e-contexts (list
+				(make-mu4e-context
+				 :name "fastmail"
+				 :match-func
+				 (lambda (msg)
+			 (when msg
+			   (string-prefix-p "/fastmail" (mu4e-message-field msg :maildir))))
+				 :vars '((user-mail-address . "rlridenour@fastmail.com")
+			       (user-full-name    . "Randy Ridenour")
+			       (mu4e-drafts-folder  . "/fastmail/Drafts")
+			       (mu4e-sent-folder  . "/fastmail/Sent")
+			       (mu4e-trash-folder  . "/fastmail/Trash")
+			       (mu4e-refile-folder  . "/fastmail/Archive")
+			       (sendmail-program . "msmtp")
+			       (send-mail-function . smtpmail-send-it)
+			       (message-sendmail-f-is-evil . t)
+			       (message-sendmail-extra-arguments . ("--read-envelope-from"))
+			       (message-send-mail-function . message-send-mail-with-sendmail)
+			       (smtpmail-default-smtp-server . "smtp.fastmail.com")
+			       (smtpmail-smtp-server  . "smtp.fastmail.com")
+			       ))
+				(make-mu4e-context
+				 :name "obu"
+				 :match-func
+				 (lambda (msg)
+			 (when msg
+			   (string-prefix-p "/obu" (mu4e-message-field msg :maildir))))
+				 :vars '((user-mail-address . "randy.ridenour@okbu.edu")
+			       (user-full-name    . "Randy Ridenour")
+			       (mu4e-drafts-folder  . "/obu/Drafts")
+			       (mu4e-sent-folder  . "/obu/Sent")
+			       (mu4e-trash-folder . "/obu/Trash")
+			       (mu4e-refile-folder  . "/obu/Archive")
+			       ;; (sendmail-program . "msmtp")
+			       (send-mail-function . smtpmail-send-it)
+			       (message-sendmail-f-is-evil . t)
+			       (message-sendmail-extra-arguments . ("--read-envelope-from"))
+			       (message-send-mail-function . message-send-mail-with-sendmail)
+			       (smtpmail-smtp-server  . "localhost")
+			       (smtpmail-smtp-user . "randy.ridenour@okbu.edu")
+			       (smtpmail-stream-type . plain)
+			       (smtpmail-smtp-service . 1025)
+			       ))))
+  (display-line-numbers-mode -1))
 
 (defun obu-signature ()
   (interactive)
@@ -2575,11 +2575,13 @@ installed."
   (super-save-mode +1))
 
 (use-package terminal-here
-  :config
-  (setq terminal-here-mac-terminal-command 'kitty)
-  :general
-  ("C-`" #'terminal-here-launch)
-  )
+:ensure
+(:host github :repo "davidshepherd7/terminal-here")
+    :config
+    (setq terminal-here-mac-terminal-command 'ghostty)
+    :general
+    ("C-`" #'terminal-here-launch)
+    )
 
 (use-package term-toggle
   :demand
@@ -2809,7 +2811,7 @@ installed."
  "r" #'crux-rename-file-and-buffer
  ;; "s" #'rg-menu
  "S" #'crux-cleanup-buffer-or-region
- ;; "t" #'crux-visit-term-buffer
+ "t" #'terminal-here-launch
  "u" #'unfill-paragraph
  "w" #'kill-buffer-and-window
  "z" #'reveal-in-osx-finder
