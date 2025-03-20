@@ -871,10 +871,10 @@ If there are only two windows, jump directly to the other window."
     (interactive "P")
     (let ((entries (elfeed-search-selected)))
       (cl-loop for entry in entries
-               do (funcall (if (elfeed-tagged-p ,mytag entry)
-                               #'elfeed-untag #'elfeed-tag)
-                           entry ,mytag)
-               do (elfeed-untag entry 'unread))
+	       do (funcall (if (elfeed-tagged-p ,mytag entry)
+			       #'elfeed-untag #'elfeed-tag)
+			   entry ,mytag)
+	       do (elfeed-untag entry 'unread))
       (mapc #'elfeed-search-update-entry entries)
       (unless (use-region-p) (forward-line)))))
 
@@ -883,9 +883,6 @@ If there are only two windows, jump directly to the other window."
 "l" (elfeed-tag-selection-as 'readlater)
 "d" (elfeed-tag-selection-as 'junk)
 "s" (elfeed-tag-selection-as 'starred))
-
-(define-key 'elfeed-search-mode-map "l" (elfeed-tag-selection-as 'readlater))
-(define-key 'elfeed-search-mode-map "d" (elfeed-tag-selection-as 'junk))
 
 (use-package elfeed-org
     :after elfeed
@@ -1702,6 +1699,7 @@ installed."
   :after org
   :config
   (setq
+   mu4e-split-view 'vertical
    mu4e-index-update-error-warning nil
    mu4e-headers-skip-duplicates  t
    mu4e-view-show-images t
@@ -1719,7 +1717,7 @@ installed."
    ;; this setting allows to re-sync and re-index mail
    ;; by pressing U
    mu4e-get-mail-command "mbsync -a"
-   mu4e-update-interval 300 ;; update every 5 minutes
+   ;; mu4e-update-interval 300 ;; update every 5 minutes
    ;; mu4e-headers-auto-update
    mu4e-completing-read-function 'completing-read
    mu4e-context-policy 'pick-first

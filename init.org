@@ -1577,10 +1577,10 @@ Tag items — from [[https://www.reddit.com/r/emacs/comments/go5d0v/using_emacs_
     (interactive "P")
     (let ((entries (elfeed-search-selected)))
       (cl-loop for entry in entries
-               do (funcall (if (elfeed-tagged-p ,mytag entry)
-                               #'elfeed-untag #'elfeed-tag)
-                           entry ,mytag)
-               do (elfeed-untag entry 'unread))
+	       do (funcall (if (elfeed-tagged-p ,mytag entry)
+			       #'elfeed-untag #'elfeed-tag)
+			   entry ,mytag)
+	       do (elfeed-untag entry 'unread))
       (mapc #'elfeed-search-update-entry entries)
       (unless (use-region-p) (forward-line)))))
 
@@ -1589,9 +1589,6 @@ Tag items — from [[https://www.reddit.com/r/emacs/comments/go5d0v/using_emacs_
 "l" (elfeed-tag-selection-as 'readlater)
 "d" (elfeed-tag-selection-as 'junk)
 "s" (elfeed-tag-selection-as 'starred))
-
-(define-key 'elfeed-search-mode-map "l" (elfeed-tag-selection-as 'readlater))
-(define-key 'elfeed-search-mode-map "d" (elfeed-tag-selection-as 'junk))
 #+end_src
 
 #+begin_src emacs-lisp
@@ -2624,6 +2621,7 @@ Use variable pitch mode in Org and Markdown modes. Toggle with ~C-M-S-s-v~, boun
     :after org
     :config
     (setq
+     mu4e-split-view 'vertical
      mu4e-index-update-error-warning nil
      mu4e-headers-skip-duplicates  t
      mu4e-view-show-images t
@@ -2641,7 +2639,7 @@ Use variable pitch mode in Org and Markdown modes. Toggle with ~C-M-S-s-v~, boun
      ;; this setting allows to re-sync and re-index mail
      ;; by pressing U
      mu4e-get-mail-command "mbsync -a"
-     mu4e-update-interval 300 ;; update every 5 minutes
+     ;; mu4e-update-interval 300 ;; update every 5 minutes
      ;; mu4e-headers-auto-update
      mu4e-completing-read-function 'completing-read
      mu4e-context-policy 'pick-first
