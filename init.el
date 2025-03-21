@@ -1698,7 +1698,7 @@ installed."
 (use-feature mu4e
   :commands (mu4e mu4e-update-mail-and-index)
   :bind (:map mu4e-headers-mode-map
-	    ("q" . kill-current-buffer))
+	        ("q" . kill-current-buffer))
   :after org
   :config
   (setq
@@ -1729,44 +1729,44 @@ installed."
 	         :name "fastmail"
 	         :match-func
 	         (lambda (msg)
-		 (when msg
-		   (string-prefix-p "/fastmail" (mu4e-message-field msg :maildir))))
+		       (when msg
+		         (string-prefix-p "/fastmail" (mu4e-message-field msg :maildir))))
 	         :vars '((user-mail-address . "rlridenour@fastmail.com")
-		       (user-full-name    . "Randy Ridenour")
-		       (mu4e-drafts-folder  . "/fastmail/Drafts")
-		       (mu4e-sent-folder  . "/fastmail/Sent")
-		       (mu4e-trash-folder  . "/fastmail/Trash")
-		       (mu4e-refile-folder  . "/fastmail/Archive")
-		       (sendmail-program . "msmtp")
-		       (send-mail-function . smtpmail-send-it)
-		       (message-sendmail-f-is-evil . t)
-		       (message-sendmail-extra-arguments . ("--read-envelope-from"))
-		       (message-send-mail-function . message-send-mail-with-sendmail)
-		       (smtpmail-default-smtp-server . "smtp.fastmail.com")
-		       (smtpmail-smtp-server  . "smtp.fastmail.com")
-		       ))
+		             (user-full-name    . "Randy Ridenour")
+		             (mu4e-drafts-folder  . "/fastmail/Drafts")
+		             (mu4e-sent-folder  . "/fastmail/Sent")
+		             (mu4e-trash-folder  . "/fastmail/Trash")
+		             (mu4e-refile-folder  . "/fastmail/Archive")
+		             (sendmail-program . "msmtp")
+		             (send-mail-function . smtpmail-send-it)
+		             (message-sendmail-f-is-evil . t)
+		             (message-sendmail-extra-arguments . ("--read-envelope-from"))
+		             (message-send-mail-function . message-send-mail-with-sendmail)
+		             (smtpmail-default-smtp-server . "smtp.fastmail.com")
+		             (smtpmail-smtp-server  . "smtp.fastmail.com")
+		             ))
 	        (make-mu4e-context
 	         :name "obu"
 	         :match-func
 	         (lambda (msg)
-		 (when msg
-		   (string-prefix-p "/obu" (mu4e-message-field msg :maildir))))
+		       (when msg
+		         (string-prefix-p "/obu" (mu4e-message-field msg :maildir))))
 	         :vars '((user-mail-address . "randy.ridenour@okbu.edu")
-		       (user-full-name    . "Randy Ridenour")
-		       (mu4e-drafts-folder  . "/obu/Drafts")
-		       (mu4e-sent-folder  . "/obu/Sent")
-		       (mu4e-trash-folder . "/obu/Trash")
-		       (mu4e-refile-folder  . "/obu/Archive")
-		       ;; (sendmail-program . "msmtp")
-		       (send-mail-function . smtpmail-send-it)
-		       (message-sendmail-f-is-evil . t)
-		       (message-sendmail-extra-arguments . ("--read-envelope-from"))
-		       (message-send-mail-function . message-send-mail-with-sendmail)
-		       (smtpmail-smtp-server  . "localhost")
-		       (smtpmail-smtp-user . "randy.ridenour@okbu.edu")
-		       (smtpmail-stream-type . plain)
-		       (smtpmail-smtp-service . 1025)
-		       ))))
+		             (user-full-name    . "Randy Ridenour")
+		             (mu4e-drafts-folder  . "/obu/Drafts")
+		             (mu4e-sent-folder  . "/obu/Sent")
+		             (mu4e-trash-folder . "/obu/Trash")
+		             (mu4e-refile-folder  . "/obu/Archive")
+		             ;; (sendmail-program . "msmtp")
+		             (send-mail-function . smtpmail-send-it)
+		             (message-sendmail-f-is-evil . t)
+		             (message-sendmail-extra-arguments . ("--read-envelope-from"))
+		             (message-send-mail-function . message-send-mail-with-sendmail)
+		             (smtpmail-smtp-server  . "localhost")
+		             (smtpmail-smtp-user . "randy.ridenour@okbu.edu")
+		             (smtpmail-stream-type . plain)
+		             (smtpmail-smtp-service . 1025)
+		             ))))
   (display-line-numbers-mode -1))
 
 (defun obu-signature ()
