@@ -882,7 +882,10 @@ If there are only two windows, jump directly to the other window."
 :keymaps 'elfeed-search-mode-map
 "l" (elfeed-tag-selection-as 'readlater)
 "d" (elfeed-tag-selection-as 'junk)
-"s" (elfeed-tag-selection-as 'starred))
+"m" (elfeed-tag-selection-as 'starred)
+"M" (lambda () (interactive) (elfeed-search-set-filter "@6-months-ago +starred"))
+"L" (lambda () (interactive) (elfeed-search-set-filter "+readlater"))
+)
 
 (use-package elfeed-org
     :after elfeed
