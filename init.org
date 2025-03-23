@@ -1923,7 +1923,9 @@ Tag items — from [[https://www.reddit.com/r/emacs/comments/go5d0v/using_emacs_
 
      (pretty-hydra-define hydra-new
        (:color teal :quit-key "q" title: "New")
-       ("Denote"
+("Frame"
+(("f" make-frame-command "new frame"))
+       "Denote"
 	(("c" org-capture "capture")
 	 ("n" denote "note")
 	 ("v" denote-menu-list-notes "view notes")
@@ -2019,8 +2021,7 @@ Tag items — from [[https://www.reddit.com/r/emacs/comments/go5d0v/using_emacs_
 	(
 	 ("a" consult-org-agenda "consult-agenda")
 	 ("b" consult-bookmark "bookmarks")
-	 ("e" rlr/elfeed-load-db-and-open "elfeed")
-	 ("m" mu4e "mu4e")
+	 ("m" mu4e "rlr/read-mail-news")
 	 ("t" (find-file "/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/tasks.org") "open tasks")
 	 ("w" (find-file "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/bookmarks.org") "web bookmarks"))
 	"Classes"
@@ -2642,7 +2643,7 @@ Use variable pitch mode in Org and Markdown modes. Toggle with ~C-M-S-s-v~, boun
      ;; this setting allows to re-sync and re-index mail
      ;; by pressing U
      mu4e-get-mail-command "mbsync -a"
-     ;; mu4e-update-interval 300 ;; update every 5 minutes
+     mu4e-update-interval 300 ;; update every 5 minutes
      ;; mu4e-headers-auto-update
      mu4e-completing-read-function 'completing-read
      mu4e-context-policy 'pick-first
@@ -2692,6 +2693,17 @@ Use variable pitch mode in Org and Markdown modes. Toggle with ~C-M-S-s-v~, boun
     (display-line-numbers-mode -1))
 #+end_src
 
+Mu4e-alert
+
+#+begin_src emacs-lisp
+(use-package mu4e-alert
+:config 
+(mu4e-alert-enable-mode-line-display))
+#+end_src
+
+
+
+
 #+begin_src emacs-lisp :tangle no
   (defun my-mu4e-choose-signature ()
     "Insert one of a number of sigs"
@@ -2733,6 +2745,28 @@ Use variable pitch mode in Org and Markdown modes. Toggle with ~C-M-S-s-v~, boun
 	 "Randy"
 	 )))
 #+end_src
+
+Open mu4e and elfeed in new frame.
+
+#+begin_src emacs-lisp
+(defun rlr/read-mail-news ()
+(interactive)
+(make-frame-command)
+(agenda-home)
+(tab-new)
+(rlr/elfeed-load-db-and-open)
+(elfeed-update)
+(tab-new)
+(mu4e)
+(mu4e-update-mail-and-index 1)
+)
+
+(general-define-key
+"C-M-s-r" #'rlr/read-mail-news)
+#+end_src
+
+
+
 
 *** Org Modern
 

@@ -1046,10 +1046,10 @@ If there are only two windows, jump directly to the other window."
   ("s-m" #'major-mode-hydra))
 
 (with-after-elpaca-init
- (progn
-   (pretty-hydra-define hydra-toggle
-     (:color teal :quit-key "q" :title "Toggle")
-     (" "
+   (progn
+     (pretty-hydra-define hydra-toggle
+       (:color teal :quit-key "q" :title "Toggle")
+       (" "
 	(("a" abbrev-mode "abbrev" :toggle t)
 	 ("b" toggle-debug-on-error "debug" (default value 'debug-on-error))
 	 ("d" global-devil-mode "devil" :toggle t)
@@ -1069,9 +1069,9 @@ If there are only two windows, jump directly to the other window."
 	 ("W" wc-mode "word-count" :toggle t)
 	 ("S" auto-save-visited-mode "auto-save" :toggle t)
 	 ("C" cua-selection-mode "rectangle" :toggle t))))
-   (pretty-hydra-define hydra-buffer
-     (:color teal :quit-key "q" :title "Buffers and Files")
-     ("Open"
+     (pretty-hydra-define hydra-buffer
+       (:color teal :quit-key "q" :title "Buffers and Files")
+       ("Open"
 	(("b" ibuffer "ibuffer")
 	 ("m" consult-bookmark "bookmark")
 	 ("w" consult-buffer-other-window "other window")
@@ -1090,9 +1090,9 @@ If there are only two windows, jump directly to the other window."
 	 ("i" crux-find-user-init-file "init.el")
 	 ("s" crux-find-shell-init-file "fish config"))
 	))
-   (pretty-hydra-define hydra-locate
-     (:color teal :quit-key "q" title: "Search")
-     ("Buffer"
+     (pretty-hydra-define hydra-locate
+       (:color teal :quit-key "q" title: "Search")
+       ("Buffer"
 	(("c" pulsar-highlight-dwim "find cursor")
 	 ("h" consult-org-heading "org heading")
 	 ("l" consult-goto-line "goto-line")
@@ -1109,9 +1109,9 @@ If there are only two windows, jump directly to the other window."
 	(("e" rr/open-init-file "Emacs init")
 	 ("s" goto-shell-init "Fish functions"))
 	))
-   (pretty-hydra-define hydra-window
-     (:color teal :quit-key "q" title: "Windows")
-     ("Windows"
+     (pretty-hydra-define hydra-window
+       (:color teal :quit-key "q" title: "Windows")
+       ("Windows"
 	(("w" other-window "cycle windows" :exit nil)
 	 ("a" ace-window "ace window")
 	 ("m" minimize-window "minimize window")
@@ -1133,9 +1133,11 @@ If there are only two windows, jump directly to the other window."
 	(("W" writeroom-mode "toggle writeroom")
 	 ("M" writeroom-toggle-mode-line "toggle modeline"))))
 
-   (pretty-hydra-define hydra-new
-     (:color teal :quit-key "q" title: "New")
-     ("Denote"
+     (pretty-hydra-define hydra-new
+       (:color teal :quit-key "q" title: "New")
+("Frame"
+(("f" make-frame-command "new frame"))
+       "Denote"
 	(("c" org-capture "capture")
 	 ("n" denote "note")
 	 ("v" denote-menu-list-notes "view notes")
@@ -1149,9 +1151,9 @@ If there are only two windows, jump directly to the other window."
 	 ("s" rlrt-new-syllabus "syllabus"))
 	))
 
-   (pretty-hydra-define hydra-logic
-     (:color pink :quit-key "0" :title "Logic")
-     ("Operators"
+     (pretty-hydra-define hydra-logic
+       (:color pink :quit-key "0" :title "Logic")
+       ("Operators"
 	(
 	 ;; ("1" (rr/insert-unicode "NOT SIGN") "¬")
 	 ("1" (rr/insert-unicode "TILDE OPERATOR") "∼")
@@ -1173,9 +1175,9 @@ If there are only two windows, jump directly to the other window."
 	(("0" quit-window "quit" :color blue))
 	))
 
-   (pretty-hydra-define hydra-math
-     (:color pink :quit-key "?" :title "Math")
-     ("Operators"
+     (pretty-hydra-define hydra-math
+       (:color pink :quit-key "?" :title "Math")
+       ("Operators"
 	(("1" (rr/insert-unicode "NOT SIGN") "¬")
 	 ("2" (rr/insert-unicode "AMPERSAND") "&")
 	 ("3" (rr/insert-unicode "LOGICAL OR") "v")
@@ -1199,9 +1201,9 @@ If there are only two windows, jump directly to the other window."
 	(("?" quit-window "quit" :color blue))
 	))
 
-   (pretty-hydra-define hydra-hydras
-     (:color teal :quit-key "q" :title "Hydras")
-     ("System"
+     (pretty-hydra-define hydra-hydras
+       (:color teal :quit-key "q" :title "Hydras")
+       ("System"
 	(("t" hydra-toggle/body)
 	 ("b" hydra-buffer/body)
 	 ("h" hydra-hugo/body)
@@ -1209,7 +1211,7 @@ If there are only two windows, jump directly to the other window."
 	"Unicode"
 	(("l" hydra-logic/body "logic")
 	 ("m" hydra-math/body))))
-   ))
+     ))
 
 (with-after-elpaca-init
  (progn
@@ -1227,8 +1229,7 @@ If there are only two windows, jump directly to the other window."
 	(
 	 ("a" consult-org-agenda "consult-agenda")
 	 ("b" consult-bookmark "bookmarks")
-	 ("e" rlr/elfeed-load-db-and-open "elfeed")
-	 ("m" mu4e "mu4e")
+	 ("m" mu4e "rlr/read-mail-news")
 	 ("t" (find-file "/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/tasks.org") "open tasks")
 	 ("w" (find-file "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/bookmarks.org") "web bookmarks"))
 	"Classes"
@@ -1720,7 +1721,7 @@ installed."
    ;; this setting allows to re-sync and re-index mail
    ;; by pressing U
    mu4e-get-mail-command "mbsync -a"
-   ;; mu4e-update-interval 300 ;; update every 5 minutes
+   mu4e-update-interval 300 ;; update every 5 minutes
    ;; mu4e-headers-auto-update
    mu4e-completing-read-function 'completing-read
    mu4e-context-policy 'pick-first
@@ -1769,6 +1770,10 @@ installed."
 		             ))))
   (display-line-numbers-mode -1))
 
+(use-package mu4e-alert
+:config 
+(mu4e-alert-enable-mode-line-display))
+
 (defun obu-signature ()
   (interactive)
   (insert (concat
@@ -1789,6 +1794,21 @@ installed."
 	 "--\n"
 	 "Randy"
 	 )))
+
+(defun rlr/read-mail-news ()
+(interactive)
+(make-frame-command)
+(agenda-home)
+(tab-new)
+(rlr/elfeed-load-db-and-open)
+(elfeed-update)
+(tab-new)
+(mu4e)
+(mu4e-update-mail-and-index 1)
+)
+
+(general-define-key
+"C-M-s-r" #'rlr/read-mail-news)
 
 (require 'ox-beamer)
 (with-eval-after-load 'ox-latex
