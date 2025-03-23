@@ -23,8 +23,8 @@
 #+LaTeX_HEADER: \usepackage{enumitem}
 #+LaTeX_HEADER: \setlist{nosep}
 #+LaTeX_HEADER: \setlist[itemize]{label=\textbullet}
-#+LaTeX_HEADER: \usepackage{MinionPro}
-#+LaTeX_HEADER: \usepackage{MyriadPro}
+#+LaTeX_HEADER: \usepackage{newpxtext}
+#+LaTeX_HEADER: \usepackage{newpxmath}
 #+LaTeX_HEADER: \usepackage[T1]{fontenc}
 #+LaTeX_HEADER: \usepackage{hyperref}
 # #+LaTeX_HEADER: \renewcommand{\land}{\mathbin{\&}}
