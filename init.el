@@ -2070,6 +2070,12 @@ installed."
 
 (use-package org-mac-link)
 
+(use-package org-publish-rss
+:ensure
+(:type git :sourcehut :repo ~taingram/org-publish-rss))
+
+(use-package org-web-tools)
+
 (defvar rlrt-filename)
 
 (defun rlrt-make-filename (string)

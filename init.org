@@ -105,6 +105,13 @@ Remove unnecessary GUI elements.
   (setq use-dialog-box nil)
 #+end_src
 
+Make scrolling smoother.
+
+#+begin_src emacs-lisp
+(setq scroll-conservatively 10
+      scroll-margin 15)
+#+end_src
+
 *** Initial Frame
 
 Set initial frame size to fullheight.
@@ -3152,6 +3159,25 @@ I'm not sure what this doing anymore, so I'm going to disable it for now.
 
 #+begin_src emacs-lisp
   (use-package org-mac-link)
+#+end_src
+
+
+*** Org Publish RSS
+
+[[https://git.sr.ht/~taingram/org-publish-rss][~taingram/org-publish-rss - Automatically generate RSS feeds for org-publish projects - sourcehut git]]
+
+#+begin_src emacs-lisp
+(use-package org-publish-rss
+:ensure
+(:type git :sourcehut :repo ~taingram/org-publish-rss))
+#+end_src
+
+
+
+*** Org Web Tools
+
+#+begin_src emacs-lisp
+(use-package org-web-tools)
 #+end_src
 
 *** Teaching
