@@ -744,7 +744,7 @@ If there are only two windows, jump directly to the other window."
   :after denote)
 
 (use-package denote-search
-  :ensure (:host github :repo "lmq-10/denote-search")
+  :ensure (:host github :repo "lmq-10/denote-search")	
   :custom
   ;; Disable help string (set it once you learn the commands)
   ;; (denote-search-help-string "")
@@ -2687,6 +2687,9 @@ installed."
   :general
   ("C-c r" #'vr/replace)
   ("C-c q" #'vr/query-replace))
+
+(use-package votd
+  :ensure (:type git :host github :repo "kristjoc/votd"))
 
 (use-package vundo
   :custom

@@ -1393,7 +1393,7 @@ Search notes with the xapian syntax (+word -word AND NOT etc), <tab> to preview,
 
 #+begin_src emacs-lisp
   (use-package denote-search
-    :ensure (:host github :repo "lmq-10/denote-search")
+    :ensure (:host github :repo "lmq-10/denote-search")	
     :custom
     ;; Disable help string (set it once you learn the commands)
     ;; (denote-search-help-string "")
@@ -4079,6 +4079,18 @@ https://github.com/amno1/emacs-term-toggle
     ("C-c r" #'vr/replace)
     ("C-c q" #'vr/query-replace))
 #+end_src
+
+** VOTD
+
+Bible verse of the day from Bible Gateway.
+
+#+begin_src emacs-lisp
+(use-package votd
+  :ensure (:type git :host github :repo "kristjoc/votd"))
+#+end_src
+
+
+
 
 ** Vundo
 
