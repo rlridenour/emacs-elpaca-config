@@ -1405,8 +1405,8 @@ Functions for syncing the database between machines.
 
   (defun rlr/elfeed-save-db-and-quit ()
     (interactive)
-    (elfeed-db-save)
-    (quit-window))
+    (elfeed-search-quit-window)
+    (rlr/delete-tab-or-frame))
 #+end_src
 
 Tag items — from [[https://www.reddit.com/r/emacs/comments/go5d0v/using_emacs_72_customizing_elfeed/][Karthink]]
@@ -2461,8 +2461,11 @@ Use variable pitch mode in Org and Markdown modes. Toggle with ~C-M-S-s-v~, boun
 #+begin_src emacs-lisp
   (use-feature mu4e
     :commands (mu4e mu4e-update-mail-and-index)
-    :bind (:map mu4e-headers-mode-map
-		("q" . kill-current-buffer))
+    :general
+    (:keymaps 'mu4e-headers-mode-map
+	       "q"  #'kill-current-buffer)
+    (:keymaps 'mu4e-main-mode-map
+	       "q"  #'rlr/quit-mu4e)
     :after org
     :config
     (setq
@@ -2489,57 +2492,70 @@ Use variable pitch mode in Org and Markdown modes. Toggle with ~C-M-S-s-v~, boun
      mu4e-completing-read-function 'completing-read
      mu4e-context-policy 'pick-first
      mu4e-contexts (list
-		(make-mu4e-context
-		 :name "fastmail"
-		 :match-func
-		 (lambda (msg)
-		       (when msg
-			 (string-prefix-p "/fastmail" (mu4e-message-field msg :maildir))))
-		 :vars '((user-mail-address . "rlridenour@fastmail.com")
-			     (user-full-name    . "Randy Ridenour")
-			     (mu4e-drafts-folder  . "/fastmail/Drafts")
-			     (mu4e-sent-folder  . "/fastmail/Sent")
-			     (mu4e-trash-folder  . "/fastmail/Trash")
-			     (mu4e-refile-folder  . "/fastmail/Archive")
-			     (sendmail-program . "msmtp")
-			     (send-mail-function . smtpmail-send-it)
-			     (message-sendmail-f-is-evil . t)
-			     (message-sendmail-extra-arguments . ("--read-envelope-from"))
-			     (message-send-mail-function . message-send-mail-with-sendmail)
-			     (smtpmail-default-smtp-server . "smtp.fastmail.com")
-			     (smtpmail-smtp-server  . "smtp.fastmail.com")
-			     ))
-		(make-mu4e-context
-		 :name "obu"
-		 :match-func
-		 (lambda (msg)
-		       (when msg
-			 (string-prefix-p "/obu" (mu4e-message-field msg :maildir))))
-		 :vars '((user-mail-address . "randy.ridenour@okbu.edu")
-			     (user-full-name    . "Randy Ridenour")
-			     (mu4e-drafts-folder  . "/obu/Drafts")
-			     (mu4e-sent-folder  . "/obu/Sent")
-			     (mu4e-trash-folder . "/obu/Trash")
-			     (mu4e-refile-folder  . "/obu/Archive")
-			     ;; (sendmail-program . "msmtp")
-			     (send-mail-function . smtpmail-send-it)
-			     (message-sendmail-f-is-evil . t)
-			     (message-sendmail-extra-arguments . ("--read-envelope-from"))
-			     (message-send-mail-function . message-send-mail-with-sendmail)
-			     (smtpmail-smtp-server  . "localhost")
-			     (smtpmail-smtp-user . "randy.ridenour@okbu.edu")
-			     (smtpmail-stream-type . plain)
-			     (smtpmail-smtp-service . 1025)
-			     ))))
+		     (make-mu4e-context
+		      :name "fastmail"
+		      :match-func
+		      (lambda (msg)
+		        (when msg
+		          (string-prefix-p "/fastmail" (mu4e-message-field msg :maildir))))
+		      :vars '((user-mail-address . "rlridenour@fastmail.com")
+		              (user-full-name    . "Randy Ridenour")
+		              (mu4e-drafts-folder  . "/fastmail/Drafts")
+		              (mu4e-sent-folder  . "/fastmail/Sent")
+		              (mu4e-trash-folder  . "/fastmail/Trash")
+		              (mu4e-refile-folder  . "/fastmail/Archive")
+		              (sendmail-program . "msmtp")
+		              (send-mail-function . smtpmail-send-it)
+		              (message-sendmail-f-is-evil . t)
+		              (message-sendmail-extra-arguments . ("--read-envelope-from"))
+		              (message-send-mail-function . message-send-mail-with-sendmail)
+		              (smtpmail-default-smtp-server . "smtp.fastmail.com")
+		              (smtpmail-smtp-server  . "smtp.fastmail.com")
+		              ))
+		     (make-mu4e-context
+		      :name "obu"
+		      :match-func
+		      (lambda (msg)
+		        (when msg
+		          (string-prefix-p "/obu" (mu4e-message-field msg :maildir))))
+		      :vars '((user-mail-address . "randy.ridenour@okbu.edu")
+		              (user-full-name    . "Randy Ridenour")
+		              (mu4e-drafts-folder  . "/obu/Drafts")
+		              (mu4e-sent-folder  . "/obu/Sent")
+		              (mu4e-trash-folder . "/obu/Trash")
+		              (mu4e-refile-folder  . "/obu/Archive")
+		              ;; (sendmail-program . "msmtp")
+		              (send-mail-function . smtpmail-send-it)
+		              (message-sendmail-f-is-evil . t)
+		              (message-sendmail-extra-arguments . ("--read-envelope-from"))
+		              (message-send-mail-function . message-send-mail-with-sendmail)
+		              (smtpmail-smtp-server  . "localhost")
+		              (smtpmail-smtp-user . "randy.ridenour@okbu.edu")
+		              (smtpmail-stream-type . plain)
+		              (smtpmail-smtp-service . 1025)
+		              ))))
     (display-line-numbers-mode -1))
+    #+end_src
+
+Quit Mu4e and close tab.
+
+#+begin_src emacs-lisp
+  (defun rlr/quit-mu4e ()
+    (interactive)
+    (mu4e-quit)
+    (rlr/delete-tab-or-frame))
 #+end_src
+
+
+
+
 
 Mu4e-alert
 
 #+begin_src emacs-lisp
-(use-package mu4e-alert
-:config
-(mu4e-alert-enable-mode-line-display))
+  (use-package mu4e-alert
+    :config
+    (mu4e-alert-enable-mode-line-display))
 #+end_src
 
 #+begin_src emacs-lisp :tangle no
@@ -2548,7 +2564,7 @@ Mu4e-alert
     (interactive)
     (let ((message-signature
 	   (mu4e-read-option "Signature:"
-		       '(("formal" .
+			     '(("formal" .
 			(concat
 			 "Randy Ridenour, Ph.D.\n"
 			 "Professor of Philosophy\n"
@@ -2587,20 +2603,20 @@ Mu4e-alert
 Open mu4e and elfeed in new frame.
 
 #+begin_src emacs-lisp
-(defun rlr/read-mail-news ()
-(interactive)
-(make-frame-command)
-(agenda-home)
-(tab-new)
-(rlr/elfeed-load-db-and-open)
-(elfeed-update)
-(tab-new)
-(mu4e)
-(mu4e-update-mail-and-index 1)
-)
+  (defun rlr/read-mail-news ()
+    (interactive)
+    ;; (make-frame-command)
+    ;; (agenda-home)
+    (tab-new)
+    (rlr/elfeed-load-db-and-open)
+    (elfeed-update)
+    (tab-new)
+    (mu4e)
+    (mu4e-update-mail-and-index 1)
+    )
 
-(general-define-key
-"C-M-s-r" #'rlr/read-mail-news)
+  (general-define-key
+   "C-M-s-r" #'rlr/read-mail-news)
 #+end_src
 
 *** Org Modern

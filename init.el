@@ -758,8 +758,8 @@ If there are only two windows, jump directly to the other window."
 
 (defun rlr/elfeed-save-db-and-quit ()
   (interactive)
-  (elfeed-db-save)
-  (quit-window))
+  (elfeed-search-quit-window)
+  (rlr/delete-tab-or-frame))
 
 (defmacro elfeed-tag-selection-as (mytag)
   "Tag elfeed entry as MYTAG"
@@ -1594,8 +1594,11 @@ installed."
 
 (use-feature mu4e
   :commands (mu4e mu4e-update-mail-and-index)
-  :bind (:map mu4e-headers-mode-map
-		("q" . kill-current-buffer))
+  :general
+  (:keymaps 'mu4e-headers-mode-map
+	       "q"  #'kill-current-buffer)
+  (:keymaps 'mu4e-main-mode-map
+	       "q"  #'rlr/quit-mu4e)
   :after org
   :config
   (setq
@@ -1622,53 +1625,58 @@ installed."
    mu4e-completing-read-function 'completing-read
    mu4e-context-policy 'pick-first
    mu4e-contexts (list
-		(make-mu4e-context
-		 :name "fastmail"
-		 :match-func
-		 (lambda (msg)
-		       (when msg
-			 (string-prefix-p "/fastmail" (mu4e-message-field msg :maildir))))
-		 :vars '((user-mail-address . "rlridenour@fastmail.com")
-			     (user-full-name    . "Randy Ridenour")
-			     (mu4e-drafts-folder  . "/fastmail/Drafts")
-			     (mu4e-sent-folder  . "/fastmail/Sent")
-			     (mu4e-trash-folder  . "/fastmail/Trash")
-			     (mu4e-refile-folder  . "/fastmail/Archive")
-			     (sendmail-program . "msmtp")
-			     (send-mail-function . smtpmail-send-it)
-			     (message-sendmail-f-is-evil . t)
-			     (message-sendmail-extra-arguments . ("--read-envelope-from"))
-			     (message-send-mail-function . message-send-mail-with-sendmail)
-			     (smtpmail-default-smtp-server . "smtp.fastmail.com")
-			     (smtpmail-smtp-server  . "smtp.fastmail.com")
-			     ))
-		(make-mu4e-context
-		 :name "obu"
-		 :match-func
-		 (lambda (msg)
-		       (when msg
-			 (string-prefix-p "/obu" (mu4e-message-field msg :maildir))))
-		 :vars '((user-mail-address . "randy.ridenour@okbu.edu")
-			     (user-full-name    . "Randy Ridenour")
-			     (mu4e-drafts-folder  . "/obu/Drafts")
-			     (mu4e-sent-folder  . "/obu/Sent")
-			     (mu4e-trash-folder . "/obu/Trash")
-			     (mu4e-refile-folder  . "/obu/Archive")
-			     ;; (sendmail-program . "msmtp")
-			     (send-mail-function . smtpmail-send-it)
-			     (message-sendmail-f-is-evil . t)
-			     (message-sendmail-extra-arguments . ("--read-envelope-from"))
-			     (message-send-mail-function . message-send-mail-with-sendmail)
-			     (smtpmail-smtp-server  . "localhost")
-			     (smtpmail-smtp-user . "randy.ridenour@okbu.edu")
-			     (smtpmail-stream-type . plain)
-			     (smtpmail-smtp-service . 1025)
-			     ))))
+		     (make-mu4e-context
+		      :name "fastmail"
+		      :match-func
+		      (lambda (msg)
+		        (when msg
+		          (string-prefix-p "/fastmail" (mu4e-message-field msg :maildir))))
+		      :vars '((user-mail-address . "rlridenour@fastmail.com")
+		              (user-full-name    . "Randy Ridenour")
+		              (mu4e-drafts-folder  . "/fastmail/Drafts")
+		              (mu4e-sent-folder  . "/fastmail/Sent")
+		              (mu4e-trash-folder  . "/fastmail/Trash")
+		              (mu4e-refile-folder  . "/fastmail/Archive")
+		              (sendmail-program . "msmtp")
+		              (send-mail-function . smtpmail-send-it)
+		              (message-sendmail-f-is-evil . t)
+		              (message-sendmail-extra-arguments . ("--read-envelope-from"))
+		              (message-send-mail-function . message-send-mail-with-sendmail)
+		              (smtpmail-default-smtp-server . "smtp.fastmail.com")
+		              (smtpmail-smtp-server  . "smtp.fastmail.com")
+		              ))
+		     (make-mu4e-context
+		      :name "obu"
+		      :match-func
+		      (lambda (msg)
+		        (when msg
+		          (string-prefix-p "/obu" (mu4e-message-field msg :maildir))))
+		      :vars '((user-mail-address . "randy.ridenour@okbu.edu")
+		              (user-full-name    . "Randy Ridenour")
+		              (mu4e-drafts-folder  . "/obu/Drafts")
+		              (mu4e-sent-folder  . "/obu/Sent")
+		              (mu4e-trash-folder . "/obu/Trash")
+		              (mu4e-refile-folder  . "/obu/Archive")
+		              ;; (sendmail-program . "msmtp")
+		              (send-mail-function . smtpmail-send-it)
+		              (message-sendmail-f-is-evil . t)
+		              (message-sendmail-extra-arguments . ("--read-envelope-from"))
+		              (message-send-mail-function . message-send-mail-with-sendmail)
+		              (smtpmail-smtp-server  . "localhost")
+		              (smtpmail-smtp-user . "randy.ridenour@okbu.edu")
+		              (smtpmail-stream-type . plain)
+		              (smtpmail-smtp-service . 1025)
+		              ))))
   (display-line-numbers-mode -1))
 
+(defun rlr/quit-mu4e ()
+  (interactive)
+  (mu4e-quit)
+  (rlr/delete-tab-or-frame))
+
 (use-package mu4e-alert
-:config
-(mu4e-alert-enable-mode-line-display))
+  :config
+  (mu4e-alert-enable-mode-line-display))
 
 (defun obu-signature ()
   (interactive)
@@ -1692,19 +1700,19 @@ installed."
 	 )))
 
 (defun rlr/read-mail-news ()
-(interactive)
-(make-frame-command)
-(agenda-home)
-(tab-new)
-(rlr/elfeed-load-db-and-open)
-(elfeed-update)
-(tab-new)
-(mu4e)
-(mu4e-update-mail-and-index 1)
-)
+  (interactive)
+  ;; (make-frame-command)
+  ;; (agenda-home)
+  (tab-new)
+  (rlr/elfeed-load-db-and-open)
+  (elfeed-update)
+  (tab-new)
+  (mu4e)
+  (mu4e-update-mail-and-index 1)
+  )
 
 (general-define-key
-"C-M-s-r" #'rlr/read-mail-news)
+ "C-M-s-r" #'rlr/read-mail-news)
 
 (use-package org-modern
 :config
