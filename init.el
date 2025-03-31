@@ -614,111 +614,6 @@ If there are only two windows, jump directly to the other window."
   :general
   ("s-p" #'crux-create-scratch-buffer))
 
-(define-derived-mode dashboard-mode
-  org-mode "Dashboard"
-  "Major mode for Dashboard buffers."
-  )
-
-(defun agenda-home ()
-  (interactive)
-  (org-agenda-list 1)
-  (delete-other-windows))
-
-(add-hook 'server-after-make-frame-hook 'agenda-home)
-
-(defcustom rlr/agenda-dashboard-file "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/start.org"
-  "Path to the dashboard org file."
-  :type 'string)
-
-(defcustom rlr/agenda-dashboard-sidebar-width 40
-  "Width of the dashboard sidebar."
-  :type 'integer)
-
-(defun rlr/agenda-dashboard ()
-  (interactive)
-  (progn
-    (agenda-home)
-    (display-buffer-in-side-window
-     (find-file-noselect rlr/agenda-dashboard-file)
-     (list
-	(cons 'side 'left)
-	(cons 'window-width rlr/agenda-dashboard-sidebar-width)
-	(cons 'window-parameters (list (cons 'no-delete-other-windows t)
-				       (cons 'no-other-window nil)
-				       (cons 'mode-line-format 'none)))))
-    (switch-to-buffer-other-window (get-file-buffer rlr/agenda-dashboard-file))
-    (read-only-mode 1)
-    (dashboard-mode)
-    )
-  )
-
-(general-define-key
- "s-d" #'agenda-home)
-
-(defun rlr/intro ()
-  (interactive)
-  (progn
-    (kill-this-buffer)
-    (dired "~/icloud/teaching/intro/lectures")
-    (delete-other-windows)))
-
-(defun rlr/religion ()
-  (interactive)
-  (progn
-    (kill-this-buffer)
-    (dired "~/icloud/teaching/religion/lectures")
-    (delete-other-windows)))
-
-(defun rlr/ethics ()
-  (interactive)
-  (progn
-    (kill-this-buffer)
-    (dired "~/icloud/teaching/ethics/lectures")
-    (delete-other-windows)))
-
-(defun rlr/epistemology ()
-  (interactive)
-  (progn
-    (kill-this-buffer)
-    (dired "~/icloud/teaching/epistemology/lectures")
-    (delete-other-windows)))
-
-(defun rlr/medieval ()
-  (interactive)
-  (progn
-    (kill-this-buffer)
-    (dired "~/icloud/teaching/medieval/lectures")
-    (delete-other-windows)))
-
-(defun rlr/logic ()
-  (interactive)
-  (progn
-    (kill-this-buffer)
-    (dired "~/icloud/teaching/logic/lectures")
-    (delete-other-windows)))
-
-(defvar-keymap dashboard-mode-map
-  )
-
-(let ((safe-commands '(
-			 org-agenda-list
-			 org-clock-goto
-			 org-goto-calendar
-			 org-tags-view
-			 org-todo-list
-			 agenda-home
-			 rlr/intro
-			 rlr/religion
-			 rlr/ethics
-			 rlr/epistemology
-			 rlr/medieval
-			 rlr/logic
-			 )
-		       )
-	)
-  (setq org-link-elisp-skip-confirm-regexp
-	(concat "\\`\\(" (mapconcat #'symbol-name safe-commands "\\|") "\\)\\'")))
-
 (use-package deadgrep)
 
 (use-package denote
@@ -744,7 +639,7 @@ If there are only two windows, jump directly to the other window."
   :after denote)
 
 (use-package denote-search
-  :ensure (:host github :repo "lmq-10/denote-search")	
+  :ensure (:host github :repo "lmq-10/denote-search")
   :custom
   ;; Disable help string (set it once you learn the commands)
   ;; (denote-search-help-string "")
@@ -1699,7 +1594,7 @@ installed."
 (use-feature mu4e
   :commands (mu4e mu4e-update-mail-and-index)
   :bind (:map mu4e-headers-mode-map
-	        ("q" . kill-current-buffer))
+		("q" . kill-current-buffer))
   :after org
   :config
   (setq
@@ -1726,52 +1621,52 @@ installed."
    mu4e-completing-read-function 'completing-read
    mu4e-context-policy 'pick-first
    mu4e-contexts (list
-	        (make-mu4e-context
-	         :name "fastmail"
-	         :match-func
-	         (lambda (msg)
+		(make-mu4e-context
+		 :name "fastmail"
+		 :match-func
+		 (lambda (msg)
 		       (when msg
-		         (string-prefix-p "/fastmail" (mu4e-message-field msg :maildir))))
-	         :vars '((user-mail-address . "rlridenour@fastmail.com")
-		             (user-full-name    . "Randy Ridenour")
-		             (mu4e-drafts-folder  . "/fastmail/Drafts")
-		             (mu4e-sent-folder  . "/fastmail/Sent")
-		             (mu4e-trash-folder  . "/fastmail/Trash")
-		             (mu4e-refile-folder  . "/fastmail/Archive")
-		             (sendmail-program . "msmtp")
-		             (send-mail-function . smtpmail-send-it)
-		             (message-sendmail-f-is-evil . t)
-		             (message-sendmail-extra-arguments . ("--read-envelope-from"))
-		             (message-send-mail-function . message-send-mail-with-sendmail)
-		             (smtpmail-default-smtp-server . "smtp.fastmail.com")
-		             (smtpmail-smtp-server  . "smtp.fastmail.com")
-		             ))
-	        (make-mu4e-context
-	         :name "obu"
-	         :match-func
-	         (lambda (msg)
+			 (string-prefix-p "/fastmail" (mu4e-message-field msg :maildir))))
+		 :vars '((user-mail-address . "rlridenour@fastmail.com")
+			     (user-full-name    . "Randy Ridenour")
+			     (mu4e-drafts-folder  . "/fastmail/Drafts")
+			     (mu4e-sent-folder  . "/fastmail/Sent")
+			     (mu4e-trash-folder  . "/fastmail/Trash")
+			     (mu4e-refile-folder  . "/fastmail/Archive")
+			     (sendmail-program . "msmtp")
+			     (send-mail-function . smtpmail-send-it)
+			     (message-sendmail-f-is-evil . t)
+			     (message-sendmail-extra-arguments . ("--read-envelope-from"))
+			     (message-send-mail-function . message-send-mail-with-sendmail)
+			     (smtpmail-default-smtp-server . "smtp.fastmail.com")
+			     (smtpmail-smtp-server  . "smtp.fastmail.com")
+			     ))
+		(make-mu4e-context
+		 :name "obu"
+		 :match-func
+		 (lambda (msg)
 		       (when msg
-		         (string-prefix-p "/obu" (mu4e-message-field msg :maildir))))
-	         :vars '((user-mail-address . "randy.ridenour@okbu.edu")
-		             (user-full-name    . "Randy Ridenour")
-		             (mu4e-drafts-folder  . "/obu/Drafts")
-		             (mu4e-sent-folder  . "/obu/Sent")
-		             (mu4e-trash-folder . "/obu/Trash")
-		             (mu4e-refile-folder  . "/obu/Archive")
-		             ;; (sendmail-program . "msmtp")
-		             (send-mail-function . smtpmail-send-it)
-		             (message-sendmail-f-is-evil . t)
-		             (message-sendmail-extra-arguments . ("--read-envelope-from"))
-		             (message-send-mail-function . message-send-mail-with-sendmail)
-		             (smtpmail-smtp-server  . "localhost")
-		             (smtpmail-smtp-user . "randy.ridenour@okbu.edu")
-		             (smtpmail-stream-type . plain)
-		             (smtpmail-smtp-service . 1025)
-		             ))))
+			 (string-prefix-p "/obu" (mu4e-message-field msg :maildir))))
+		 :vars '((user-mail-address . "randy.ridenour@okbu.edu")
+			     (user-full-name    . "Randy Ridenour")
+			     (mu4e-drafts-folder  . "/obu/Drafts")
+			     (mu4e-sent-folder  . "/obu/Sent")
+			     (mu4e-trash-folder . "/obu/Trash")
+			     (mu4e-refile-folder  . "/obu/Archive")
+			     ;; (sendmail-program . "msmtp")
+			     (send-mail-function . smtpmail-send-it)
+			     (message-sendmail-f-is-evil . t)
+			     (message-sendmail-extra-arguments . ("--read-envelope-from"))
+			     (message-send-mail-function . message-send-mail-with-sendmail)
+			     (smtpmail-smtp-server  . "localhost")
+			     (smtpmail-smtp-user . "randy.ridenour@okbu.edu")
+			     (smtpmail-stream-type . plain)
+			     (smtpmail-smtp-service . 1025)
+			     ))))
   (display-line-numbers-mode -1))
 
 (use-package mu4e-alert
-:config 
+:config
 (mu4e-alert-enable-mode-line-display))
 
 (defun obu-signature ()
@@ -1809,6 +1704,11 @@ installed."
 
 (general-define-key
 "C-M-s-r" #'rlr/read-mail-news)
+
+(use-package org-modern
+:config
+(add-hook 'org-agenda-finalize-hook #'org-modern-agenda)
+)
 
 (require 'ox-beamer)
 (with-eval-after-load 'ox-latex
@@ -1994,6 +1894,33 @@ installed."
      ((org-agenda-format-date "")
 	(org-agenda-start-with-clockreport-mode nil))) t))
 
+(defun agenda-home ()
+  (interactive)
+  (org-agenda-list 1)
+  (delete-other-windows))
+
+(add-hook 'server-after-make-frame-hook 'agenda-home)
+
+(general-define-key
+ "s-d" #'agenda-home)
+
+(defun rr/agenda-links ()
+    (end-of-buffer)
+    (insert-file-contents "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/agenda-links.org")
+    (while (org-activate-links (point-max))
+      (goto-char (match-end 0)))
+;; (end-of-buffer)
+;; (insert (concat "\n\n" (get-votd)))
+    (beginning-of-buffer))
+
+  (add-hook 'org-agenda-finalize-hook #'rr/agenda-links)
+
+(setq org-return-follows-link t)
+
+(general-define-key
+ :keymaps 'org-agenda-mode-map
+ "<SPC>" #'link-hint-open-link)
+
 (setq appt-time-msg-list nil)    ;; clear existing appt list
 ;; (setq appt-message-warning-time '15)  ;; send first warning 15 minutes before appointment
 (org-agenda-to-appt) ;; generate the appt list from org agenda files on emacs launch
@@ -2015,13 +1942,13 @@ installed."
 (defun my/org-toggle-emphasis (type)
   "Toggle org emphasis TYPE (a character) at point."
   (cl-labels ((in-emph (re)
-		"See if in org emphasis given by RE."
-		(and (org-in-regexp re 2)
+		  "See if in org emphasis given by RE."
+		  (and (org-in-regexp re 2)
 		       (>= (point) (match-beginning 3))
 		       (<= (point) (match-end 4))))
 		(de-emphasize ()
-		"Remove most recently matched org emphasis markers."
-		(save-excursion
+		  "Remove most recently matched org emphasis markers."
+		  (save-excursion
 		    (replace-match "" nil nil nil 3)
 		    (delete-region (match-end 4) (1+ (match-end 4))))))
     (let* ((res (vector org-emph-re org-verbatim-re))
@@ -2032,7 +1959,7 @@ installed."
 				      (char-to-string type) re))
 	     add-bounds offset is-word)
 	(save-match-data
-	(if (region-active-p)
+	  (if (region-active-p)
 	      (if (in-emph type-re) (de-emphasize) (org-emphasize type))
 	    (if (eq (char-before) type) (backward-char))
 	    (if (in-emph type-re)       ;nothing marked, in emph text?
@@ -2045,15 +1972,15 @@ installed."
 	    (if add-bounds
 		(let ((off (- (point) (car add-bounds)))
 		      (at-end (= (point) (cdr add-bounds))))
-		(set-mark (car add-bounds))
-		(goto-char (cdr add-bounds))
-		(org-emphasize type)  ;deletes marked region!
-		(unless is-word       ; delete extra spaces
+		  (set-mark (car add-bounds))
+		  (goto-char (cdr add-bounds))
+		  (org-emphasize type)  ;deletes marked region!
+		  (unless is-word       ; delete extra spaces
 		    (goto-char (car add-bounds))
 		    (when (eq (char-after) ?\s) (delete-char 1))
 		    (goto-char (+ 2 (cdr add-bounds)))
 		    (when (eq (char-after) ?\s) (delete-char 1)))
-		(goto-char (+ (car add-bounds) off
+		  (goto-char (+ (car add-bounds) off
 				(cond ((= off 0) 0) (at-end 2) (t 1)))))
 	      (if is-word (org-emphasize type))))))))
 
@@ -2069,10 +1996,6 @@ installed."
  "C-c e +" (lambda () (interactive) (my/org-toggle-emphasis ?+)))
 
 (use-package org-mac-link)
-
-(use-package org-publish-rss
-:ensure
-(:type git :sourcehut :repo ~taingram/org-publish-rss))
 
 (use-package org-web-tools)
 
@@ -2625,13 +2548,13 @@ installed."
   (super-save-mode +1))
 
 (use-package terminal-here
-:ensure
-(:host github :repo "davidshepherd7/terminal-here")
-    :config
-    (setq terminal-here-mac-terminal-command 'ghostty)
-    :general
-    ("C-`" #'terminal-here-launch)
-    )
+  :ensure
+  (:host github :repo "davidshepherd7/terminal-here")
+  :config
+  (setq terminal-here-mac-terminal-command 'ghostty)
+  :general
+  ("C-`" #'terminal-here-launch)
+  )
 
 (use-package term-toggle
   :demand
@@ -2689,7 +2612,10 @@ installed."
   ("C-c q" #'vr/query-replace))
 
 (use-package votd
-  :ensure (:type git :host github :repo "kristjoc/votd"))
+    :demand
+:custom
+(votd-bible-version "NRSVUE")
+    :ensure (:type git :host github :repo "kristjoc/votd"))
 
 (use-package vundo
   :custom
