@@ -740,14 +740,15 @@ If there are only two windows, jump directly to the other window."
   (ebib-preload-bib-files '("~/Dropbox/bibtex/rlr.bib")))
 
 (use-package elfeed
-  :demand
-  :init
-  (setq elfeed-db-directory "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/elfeed")
-  :config
-  :general
-  (:keymaps 'elfeed-search-mode-map
-	      "q" #'rlr/elfeed-save-db-and-quit
-	      ))
+    :demand
+    :init
+    (setq elfeed-db-directory "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/elfeed")
+    :config
+    :general
+    (:keymaps 'elfeed-search-mode-map
+	  "q" #'rlr/elfeed-save-db-and-quit)
+(:keymaps 'elfeed-show-mode-map
+	  "S-<SPC>" #'scroll-down))
 
 (defun rlr/elfeed-load-db-and-open ()
   (interactive)
@@ -763,33 +764,33 @@ If there are only two windows, jump directly to the other window."
 (defmacro elfeed-tag-selection-as (mytag)
   "Tag elfeed entry as MYTAG"
   `(lambda (&optional user-generic-p)
-    (interactive "P")
-    (let ((entries (elfeed-search-selected)))
-      (cl-loop for entry in entries
-	       do (funcall (if (elfeed-tagged-p ,mytag entry)
-			       #'elfeed-untag #'elfeed-tag)
-			   entry ,mytag)
-	       do (elfeed-untag entry 'unread))
-      (mapc #'elfeed-search-update-entry entries)
-      (unless (use-region-p) (forward-line)))))
+     (interactive "P")
+     (let ((entries (elfeed-search-selected)))
+	 (cl-loop for entry in entries
+		  do (funcall (if (elfeed-tagged-p ,mytag entry)
+				  #'elfeed-untag #'elfeed-tag)
+			      entry ,mytag)
+		  do (elfeed-untag entry 'unread))
+	 (mapc #'elfeed-search-update-entry entries)
+	 (unless (use-region-p) (forward-line)))))
 
 (general-define-key
-:keymaps 'elfeed-search-mode-map
-"l" (elfeed-tag-selection-as 'readlater)
-"d" (elfeed-tag-selection-as 'junk)
-"m" (elfeed-tag-selection-as 'starred)
-"M" (lambda () (interactive) (elfeed-search-set-filter "@6-months-ago +starred"))
-"L" (lambda () (interactive) (elfeed-search-set-filter "+readlater"))
-)
+ :keymaps 'elfeed-search-mode-map
+ "l" (elfeed-tag-selection-as 'readlater)
+ "d" (elfeed-tag-selection-as 'junk)
+ "m" (elfeed-tag-selection-as 'starred)
+ "M" (lambda () (interactive) (elfeed-search-set-filter "@6-months-ago +starred"))
+ "L" (lambda () (interactive) (elfeed-search-set-filter "+readlater"))
+ )
 
 (use-package elfeed-org
-    :after elfeed
-    :init
-    (elfeed-org)
-    (setq rmh-elfeed-org-files (list "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/elfeed/elfeed.org"))
-    :config
-    (setq rmh-elfeed-org-auto-ignore-invalid-feeds t)
-)
+  :after elfeed
+  :init
+  (elfeed-org)
+  (setq rmh-elfeed-org-files (list "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/elfeed/elfeed.org"))
+  :config
+  (setq rmh-elfeed-org-auto-ignore-invalid-feeds t)
+  )
 
 (use-package embark
   :general
@@ -908,18 +909,18 @@ If there are only two windows, jump directly to the other window."
 
 (use-package fzf
   :bind
-    ;; Don't forget to set keybinds!
+  ;; Don't forget to set keybinds!
   :config
   (setq fzf/args "-x --color bw --print-query --margin=1,0 --no-hscroll"
-	fzf/executable "fzf"
-	fzf/git-grep-args "-i --line-number %s"
-	;; command used for `fzf-grep-*` functions
-	;; example usage for ripgrep:
-	fzf/grep-command "rg --no-heading -nH"
-	;; fzf/grep-command "grep -nrH"
-	;; If nil, the fzf buffer will appear at the top of the window
-	fzf/position-bottom t
-	fzf/window-height 15))
+	  fzf/executable "fzf"
+	  fzf/git-grep-args "-i --line-number %s"
+	  ;; command used for `fzf-grep-*` functions
+	  ;; example usage for ripgrep:
+	  fzf/grep-command "rg --no-heading -nH"
+	  ;; fzf/grep-command "grep -nrH"
+	  ;; If nil, the fzf buffer will appear at the top of the window
+	  fzf/position-bottom t
+	  fzf/window-height 15))
 
 (use-package helpful)
 
@@ -941,10 +942,10 @@ If there are only two windows, jump directly to the other window."
   ("s-m" #'major-mode-hydra))
 
 (with-after-elpaca-init
-   (progn
-     (pretty-hydra-define hydra-toggle
-       (:color teal :quit-key "q" :title "Toggle")
-       (" "
+ (progn
+   (pretty-hydra-define hydra-toggle
+     (:color teal :quit-key "q" :title "Toggle")
+     (" "
 	(("a" abbrev-mode "abbrev" :toggle t)
 	 ("b" toggle-debug-on-error "debug" (default value 'debug-on-error))
 	 ("d" global-devil-mode "devil" :toggle t)
@@ -964,9 +965,9 @@ If there are only two windows, jump directly to the other window."
 	 ("W" wc-mode "word-count" :toggle t)
 	 ("S" auto-save-visited-mode "auto-save" :toggle t)
 	 ("C" cua-selection-mode "rectangle" :toggle t))))
-     (pretty-hydra-define hydra-buffer
-       (:color teal :quit-key "q" :title "Buffers and Files")
-       ("Open"
+   (pretty-hydra-define hydra-buffer
+     (:color teal :quit-key "q" :title "Buffers and Files")
+     ("Open"
 	(("b" ibuffer "ibuffer")
 	 ("m" consult-bookmark "bookmark")
 	 ("w" consult-buffer-other-window "other window")
@@ -985,9 +986,9 @@ If there are only two windows, jump directly to the other window."
 	 ("i" crux-find-user-init-file "init.el")
 	 ("s" crux-find-shell-init-file "fish config"))
 	))
-     (pretty-hydra-define hydra-locate
-       (:color teal :quit-key "q" title: "Search")
-       ("Buffer"
+   (pretty-hydra-define hydra-locate
+     (:color teal :quit-key "q" title: "Search")
+     ("Buffer"
 	(("c" pulsar-highlight-dwim "find cursor")
 	 ("h" consult-org-heading "org heading")
 	 ("l" consult-goto-line "goto-line")
@@ -1004,9 +1005,9 @@ If there are only two windows, jump directly to the other window."
 	(("e" rr/open-init-file "Emacs init")
 	 ("s" goto-shell-init "Fish functions"))
 	))
-     (pretty-hydra-define hydra-window
-       (:color teal :quit-key "q" title: "Windows")
-       ("Windows"
+   (pretty-hydra-define hydra-window
+     (:color teal :quit-key "q" title: "Windows")
+     ("Windows"
 	(("w" other-window "cycle windows" :exit nil)
 	 ("a" ace-window "ace window")
 	 ("m" minimize-window "minimize window")
@@ -1028,11 +1029,11 @@ If there are only two windows, jump directly to the other window."
 	(("W" writeroom-mode "toggle writeroom")
 	 ("M" writeroom-toggle-mode-line "toggle modeline"))))
 
-     (pretty-hydra-define hydra-new
-       (:color teal :quit-key "q" title: "New")
-("Frame"
-(("f" make-frame-command "new frame"))
-       "Denote"
+   (pretty-hydra-define hydra-new
+     (:color teal :quit-key "q" title: "New")
+     ("Frame"
+	(("f" make-frame-command "new frame"))
+	"Denote"
 	(("c" org-capture "capture")
 	 ("n" denote "note")
 	 ("v" denote-menu-list-notes "view notes")
@@ -1046,9 +1047,9 @@ If there are only two windows, jump directly to the other window."
 	 ("s" rlrt-new-syllabus "syllabus"))
 	))
 
-     (pretty-hydra-define hydra-logic
-       (:color pink :quit-key "0" :title "Logic")
-       ("Operators"
+   (pretty-hydra-define hydra-logic
+     (:color pink :quit-key "0" :title "Logic")
+     ("Operators"
 	(
 	 ;; ("1" (rr/insert-unicode "NOT SIGN") "¬")
 	 ("1" (rr/insert-unicode "TILDE OPERATOR") "∼")
@@ -1070,9 +1071,9 @@ If there are only two windows, jump directly to the other window."
 	(("0" quit-window "quit" :color blue))
 	))
 
-     (pretty-hydra-define hydra-math
-       (:color pink :quit-key "?" :title "Math")
-       ("Operators"
+   (pretty-hydra-define hydra-math
+     (:color pink :quit-key "?" :title "Math")
+     ("Operators"
 	(("1" (rr/insert-unicode "NOT SIGN") "¬")
 	 ("2" (rr/insert-unicode "AMPERSAND") "&")
 	 ("3" (rr/insert-unicode "LOGICAL OR") "v")
@@ -1096,9 +1097,9 @@ If there are only two windows, jump directly to the other window."
 	(("?" quit-window "quit" :color blue))
 	))
 
-     (pretty-hydra-define hydra-hydras
-       (:color teal :quit-key "q" :title "Hydras")
-       ("System"
+   (pretty-hydra-define hydra-hydras
+     (:color teal :quit-key "q" :title "Hydras")
+     ("System"
 	(("t" hydra-toggle/body)
 	 ("b" hydra-buffer/body)
 	 ("h" hydra-hugo/body)
@@ -1106,7 +1107,7 @@ If there are only two windows, jump directly to the other window."
 	"Unicode"
 	(("l" hydra-logic/body "logic")
 	 ("m" hydra-math/body))))
-     ))
+   ))
 
 (with-after-elpaca-init
  (progn
@@ -1317,18 +1318,18 @@ If there are only two windows, jump directly to the other window."
   :mode ("\\.tex\\'" . LaTeX-mode)
   :init
   (setq TeX-parse-self t
-	TeX-auto-save t
-	TeX-electric-math nil
-	LaTeX-electric-left-right-brace nil
-	TeX-electric-sub-and-superscript nil
-	LaTeX-item-indent 0
-	TeX-quote-after-quote nil
-	TeX-clean-confirm nil
-	TeX-source-correlate-mode t
-	TeX-source-correlate-method 'synctex
-	TeX-view-program-selection '((output-pdf "PDF Viewer"))
-	TeX-view-program-list
-	'(("PDF Viewer" "/Applications/Skim.app/Contents/SharedSupport/displayline -b -g %n %o %b"))))
+	  TeX-auto-save t
+	  TeX-electric-math nil
+	  LaTeX-electric-left-right-brace nil
+	  TeX-electric-sub-and-superscript nil
+	  LaTeX-item-indent 0
+	  TeX-quote-after-quote nil
+	  TeX-clean-confirm nil
+	  TeX-source-correlate-mode t
+	  TeX-source-correlate-method 'synctex
+	  TeX-view-program-selection '((output-pdf "PDF Viewer"))
+	  TeX-view-program-list
+	  '(("PDF Viewer" "/Applications/Skim.app/Contents/SharedSupport/displayline -b -g %n %o %b"))))
 
 (defun raise-emacs-on-aqua()
   (shell-command "osascript -e 'tell application \"Emacs\" to activate' "))
@@ -1372,7 +1373,7 @@ If there are only two windows, jump directly to the other window."
 (defun latex-word-count ()
   (interactive)
   (let* ((this-file (buffer-file-name))
-	 (word-count
+	   (word-count
 	    (with-output-to-string
 	      (with-current-buffer standard-output
 		(call-process "texcount" nil t nil "-brief" this-file)))))
@@ -1385,7 +1386,7 @@ If there are only two windows, jump directly to the other window."
   :after (:any org latex)
   :commands (math-delimiters-no-dollars math-delimiters-mode)
   :hook ((LaTeX-mode . math-delimiters-mode)
-	 (org-mode . math-delimiters-mode))
+	   (org-mode . math-delimiters-mode))
   :config (progn
 	      (setq math-delimiters-compressed-display-math nil)
 	      (define-minor-mode math-delimiters-mode
@@ -1393,8 +1394,8 @@ If there are only two windows, jump directly to the other window."
 		:init-value nil
 		:lighter " MD"
 		:keymap (let ((map (make-sparse-keymap)))
-			(define-key map (kbd "$")  #'math-delimiters-insert)
-			map))))
+			  (define-key map (kbd "$")  #'math-delimiters-insert)
+			  map))))
 
 (use-package link-hint
   :general

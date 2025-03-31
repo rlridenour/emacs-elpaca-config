@@ -1389,49 +1389,50 @@ From [[https://github.com/mickeynp/discover.el][mickeynp/discover.el: Discover m
     :config
     :general
     (:keymaps 'elfeed-search-mode-map
-	      "q" #'rlr/elfeed-save-db-and-quit
-	      ))
+	  "q" #'rlr/elfeed-save-db-and-quit)
+(:keymaps 'elfeed-show-mode-map
+	  "S-<SPC>" #'scroll-down))
 #+end_src
 
 Functions for syncing the database between machines.
 
 #+begin_src emacs-lisp
-    (defun rlr/elfeed-load-db-and-open ()
-      (interactive)
-      (elfeed-db-load)
-      (elfeed)
-      (elfeed-search-update--force))
+  (defun rlr/elfeed-load-db-and-open ()
+    (interactive)
+    (elfeed-db-load)
+    (elfeed)
+    (elfeed-search-update--force))
 
-    (defun rlr/elfeed-save-db-and-quit ()
-      (interactive)
-      (elfeed-db-save)
-      (quit-window))
+  (defun rlr/elfeed-save-db-and-quit ()
+    (interactive)
+    (elfeed-db-save)
+    (quit-window))
 #+end_src
 
 Tag items — from [[https://www.reddit.com/r/emacs/comments/go5d0v/using_emacs_72_customizing_elfeed/][Karthink]]
 
 #+begin_src emacs-lisp
-(defmacro elfeed-tag-selection-as (mytag)
-  "Tag elfeed entry as MYTAG"
-  `(lambda (&optional user-generic-p)
-    (interactive "P")
-    (let ((entries (elfeed-search-selected)))
-      (cl-loop for entry in entries
-	       do (funcall (if (elfeed-tagged-p ,mytag entry)
-			       #'elfeed-untag #'elfeed-tag)
-			   entry ,mytag)
-	       do (elfeed-untag entry 'unread))
-      (mapc #'elfeed-search-update-entry entries)
-      (unless (use-region-p) (forward-line)))))
+  (defmacro elfeed-tag-selection-as (mytag)
+    "Tag elfeed entry as MYTAG"
+    `(lambda (&optional user-generic-p)
+       (interactive "P")
+       (let ((entries (elfeed-search-selected)))
+	 (cl-loop for entry in entries
+		  do (funcall (if (elfeed-tagged-p ,mytag entry)
+				  #'elfeed-untag #'elfeed-tag)
+			      entry ,mytag)
+		  do (elfeed-untag entry 'unread))
+	 (mapc #'elfeed-search-update-entry entries)
+	 (unless (use-region-p) (forward-line)))))
 
-(general-define-key
-:keymaps 'elfeed-search-mode-map
-"l" (elfeed-tag-selection-as 'readlater)
-"d" (elfeed-tag-selection-as 'junk)
-"m" (elfeed-tag-selection-as 'starred)
-"M" (lambda () (interactive) (elfeed-search-set-filter "@6-months-ago +starred"))
-"L" (lambda () (interactive) (elfeed-search-set-filter "+readlater"))
-)
+  (general-define-key
+   :keymaps 'elfeed-search-mode-map
+   "l" (elfeed-tag-selection-as 'readlater)
+   "d" (elfeed-tag-selection-as 'junk)
+   "m" (elfeed-tag-selection-as 'starred)
+   "M" (lambda () (interactive) (elfeed-search-set-filter "@6-months-ago +starred"))
+   "L" (lambda () (interactive) (elfeed-search-set-filter "+readlater"))
+   )
 #+end_src
 
 #+begin_src emacs-lisp
@@ -1442,19 +1443,19 @@ Tag items — from [[https://www.reddit.com/r/emacs/comments/go5d0v/using_emacs_
     (setq rmh-elfeed-org-files (list "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/elfeed/elfeed.org"))
     :config
     (setq rmh-elfeed-org-auto-ignore-invalid-feeds t)
-)
+    )
 #+end_src
 
 #+begin_src emacs-lisp :tangle no
-(use-package elfeed-curate
-  :after elfeed)
+  (use-package elfeed-curate
+    :after elfeed)
 #+end_src
 
 #+begin_src emacs-lisp :tangle no
-(use-package elfeed-goodies
-:after elfeed
-:init
-(elfeed-goodies/setup))
+  (use-package elfeed-goodies
+    :after elfeed
+    :init
+    (elfeed-goodies/setup))
 #+end_src
 
 ** Embark
@@ -1611,20 +1612,20 @@ Tag items — from [[https://www.reddit.com/r/emacs/comments/go5d0v/using_emacs_
 ** FZF
 
 #+begin_src emacs-lisp
-(use-package fzf
-  :bind
+  (use-package fzf
+    :bind
     ;; Don't forget to set keybinds!
-  :config
-  (setq fzf/args "-x --color bw --print-query --margin=1,0 --no-hscroll"
-	fzf/executable "fzf"
-	fzf/git-grep-args "-i --line-number %s"
-	;; command used for `fzf-grep-*` functions
-	;; example usage for ripgrep:
-	fzf/grep-command "rg --no-heading -nH"
-	;; fzf/grep-command "grep -nrH"
-	;; If nil, the fzf buffer will appear at the top of the window
-	fzf/position-bottom t
-	fzf/window-height 15))
+    :config
+    (setq fzf/args "-x --color bw --print-query --margin=1,0 --no-hscroll"
+	  fzf/executable "fzf"
+	  fzf/git-grep-args "-i --line-number %s"
+	  ;; command used for `fzf-grep-*` functions
+	  ;; example usage for ripgrep:
+	  fzf/grep-command "rg --no-heading -nH"
+	  ;; fzf/grep-command "grep -nrH"
+	  ;; If nil, the fzf buffer will appear at the top of the window
+	  fzf/position-bottom t
+	  fzf/window-height 15))
 #+end_src
 
 ** Helpful
@@ -1763,9 +1764,9 @@ Tag items — from [[https://www.reddit.com/r/emacs/comments/go5d0v/using_emacs_
 
      (pretty-hydra-define hydra-new
        (:color teal :quit-key "q" title: "New")
-("Frame"
-(("f" make-frame-command "new frame"))
-       "Denote"
+       ("Frame"
+	(("f" make-frame-command "new frame"))
+	"Denote"
 	(("c" org-capture "capture")
 	 ("n" denote "note")
 	 ("v" denote-menu-list-notes "view notes")
@@ -2081,18 +2082,18 @@ Display suggestions in grid.
     :mode ("\\.tex\\'" . LaTeX-mode)
     :init
     (setq TeX-parse-self t
-	TeX-auto-save t
-	TeX-electric-math nil
-	LaTeX-electric-left-right-brace nil
-	TeX-electric-sub-and-superscript nil
-	LaTeX-item-indent 0
-	TeX-quote-after-quote nil
-	TeX-clean-confirm nil
-	TeX-source-correlate-mode t
-	TeX-source-correlate-method 'synctex
-	TeX-view-program-selection '((output-pdf "PDF Viewer"))
-	TeX-view-program-list
-	'(("PDF Viewer" "/Applications/Skim.app/Contents/SharedSupport/displayline -b -g %n %o %b"))))
+	  TeX-auto-save t
+	  TeX-electric-math nil
+	  LaTeX-electric-left-right-brace nil
+	  TeX-electric-sub-and-superscript nil
+	  LaTeX-item-indent 0
+	  TeX-quote-after-quote nil
+	  TeX-clean-confirm nil
+	  TeX-source-correlate-mode t
+	  TeX-source-correlate-method 'synctex
+	  TeX-view-program-selection '((output-pdf "PDF Viewer"))
+	  TeX-view-program-list
+	  '(("PDF Viewer" "/Applications/Skim.app/Contents/SharedSupport/displayline -b -g %n %o %b"))))
 #+end_src
 
 *** LaTeX Build Functions
@@ -2140,7 +2141,7 @@ Display suggestions in grid.
   (defun latex-word-count ()
     (interactive)
     (let* ((this-file (buffer-file-name))
-	 (word-count
+	   (word-count
 	    (with-output-to-string
 	      (with-current-buffer standard-output
 		(call-process "texcount" nil t nil "-brief" this-file)))))
@@ -2157,7 +2158,7 @@ Display suggestions in grid.
     :after (:any org latex)
     :commands (math-delimiters-no-dollars math-delimiters-mode)
     :hook ((LaTeX-mode . math-delimiters-mode)
-	 (org-mode . math-delimiters-mode))
+	   (org-mode . math-delimiters-mode))
     :config (progn
 	      (setq math-delimiters-compressed-display-math nil)
 	      (define-minor-mode math-delimiters-mode
@@ -2165,8 +2166,8 @@ Display suggestions in grid.
 		:init-value nil
 		:lighter " MD"
 		:keymap (let ((map (make-sparse-keymap)))
-			(define-key map (kbd "$")  #'math-delimiters-insert)
-			map))))
+			  (define-key map (kbd "$")  #'math-delimiters-insert)
+			  map))))
 #+end_src
 
 *** Link Hint
