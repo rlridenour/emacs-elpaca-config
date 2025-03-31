@@ -2620,11 +2620,57 @@ installed."
   ("C-c r" #'vr/replace)
   ("C-c q" #'vr/query-replace))
 
-(use-package votd
-    :demand
-:custom
-(votd-bible-version "NRSVUE")
-    :ensure (:type git :host github :repo "kristjoc/votd"))
+(defun rlr/votd ()
+  (interactive)
+  (switch-to-buffer (generate-new-buffer-name "*Verse of the Day*"))
+  (insert (concat "Verse of the Day — " (format-time-string "%B %e, %Y") "\n\n" (rlr/get-votd))))
+
+(defun decode-html-entities (text)
+  "Decode HTML entities in TEXT."
+  (when text
+    (let ((entity-map '(("&ldquo;" . "\"")
+                        ("&rdquo;" . "\"")
+                        ("&#8212;" . "--")
+                        ("&#8217;" . "'")
+                        ("&#8220;" . "\"")
+                        ("&#8221;" . "\"")))
+          (decoded text))
+      (dolist (entity entity-map)
+        (setq decoded (replace-regexp-in-string (car entity) (cdr entity) decoded)))
+      decoded)))
+
+(defun rlr/fetch-daily-bible-verse ()
+(interactive)
+    "Fetch the daily Bible verse from BibleGateway API."
+    (let ((url-request-method "GET")
+	  (url "https://www.biblegateway.com/votd/get/?format=json&version=NRSVUE"))
+      (with-current-buffer (url-retrieve-synchronously url t t)
+	(goto-char (point-min))
+	(when (search-forward "\n\n" nil t)
+	  (let* ((json-string (buffer-substring-no-properties (point) (point-max)))
+		 (json-object-type 'hash-table)
+		 (json-array-type 'list)
+		 (json-key-type 'string)
+		 (json-data (json-read-from-string json-string))
+		 (votd (gethash "votd" json-data))
+		 (raw-text (gethash "text" votd))
+		 (verse-text (decode-html-entities raw-text))
+		 (clean-verse (replace-regexp-in-string "[\"]" "" verse-text))
+		 ;; (formatted-verse (format-verse-text clean-verse))
+		 (verse-reference (gethash "display_ref" votd))
+		 (fill-width 80))
+	    (format "%s\n%s"
+		    clean-verse
+		    (let ((ref-text verse-reference))
+		      (concat "\n" (make-string (- fill-width (length ref-text)) ?\s)
+			      ref-text " (NRSVue)"))))))))
+
+(defun rlr/get-votd ()
+  "Get the daily verse and handle errors."
+  (condition-case err
+      (rlr/fetch-daily-bible-verse)
+    (error
+     (format "Today's verse could not be fetched: %s" (error-message-string err)))))
 
 (use-package vundo
   :custom
