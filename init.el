@@ -758,6 +758,7 @@ If there are only two windows, jump directly to the other window."
 
 (defun rlr/elfeed-save-db-and-quit ()
   (interactive)
+  (elfeed-db-save)
   (elfeed-search-quit-window)
   (rlr/delete-tab-or-frame))
 
@@ -1471,14 +1472,14 @@ installed."
   :config
   ;; Add all your customizations prior to loading the themes
   (setq modus-themes-italic-constructs t
-	modus-themes-mixed-fonts t
-	modus-themes-variable-pitch-ui t
-	modus-themes-italic-constructs t
-	modus-themes-bold-constructs t)
+	  modus-themes-mixed-fonts t
+	  modus-themes-variable-pitch-ui t
+	  modus-themes-italic-constructs t
+	  modus-themes-bold-constructs t)
 
   ;; Maybe define some palette overrides, such as by using our presets
   (setq modus-themes-common-palette-overrides
-	modus-themes-preset-overrides-faint)
+	  modus-themes-preset-overrides-faint)
 
   ;; Load the theme of your choice.
   (load-theme 'modus-operandi t)
@@ -1563,16 +1564,16 @@ installed."
   (setq org-agenda-skip-scheduled-if-done t)
   (setq org-log-done t)
   (setq org-todo-keyword-faces
-	'(("DONE" . "green4") ("TODO" . org-warning)))
+	  '(("DONE" . "green4") ("TODO" . org-warning)))
   (setq org-agenda-files '("/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/"))
   (setq org-agenda-start-on-weekday nil)
   (setq org-agenda-window-setup 'current-window)
   (setq org-link-frame-setup
-	'((vm . vm-visit-folder-other-frame)
-	  (vm-imap . vm-visit-imap-folder-other-frame)
-	  (gnus . org-gnus-no-new-news)
-	  (file . find-file)
-	  (wl . wl-other-frame)))
+	  '((vm . vm-visit-folder-other-frame)
+	(vm-imap . vm-visit-imap-folder-other-frame)
+	(gnus . org-gnus-no-new-news)
+	(file . find-file)
+	(wl . wl-other-frame)))
   (require 'org-tempo)
   ;; Open directory links in Dired.
   (add-to-list 'org-file-apps '(directory . emacs)))
@@ -1581,7 +1582,7 @@ installed."
 (add-hook 'markdown-mode-hook #'variable-pitch-mode)
 
 (general-define-key
-"C-M-S-s-v" #'variable-pitch-mode)
+ "C-M-S-s-v" #'variable-pitch-mode)
 
 (use-package org-appear
   :commands (org-appear-mode)
@@ -1596,13 +1597,13 @@ installed."
   :commands (mu4e mu4e-update-mail-and-index)
   :general
   (:keymaps 'mu4e-headers-mode-map
-	       "q"  #'kill-current-buffer)
+	      "q"  #'kill-current-buffer)
   (:keymaps 'mu4e-main-mode-map
-	       "q"  #'rlr/quit-mu4e)
+	      "q"  #'rlr/quit-mu4e)
   :after org
   :config
   (setq
-   mu4e-split-view 'vertical
+   mu4e-split-view 'horizontal
    mu4e-index-update-error-warning nil
    mu4e-headers-skip-duplicates  t
    mu4e-view-show-images t
@@ -1625,48 +1626,48 @@ installed."
    mu4e-completing-read-function 'completing-read
    mu4e-context-policy 'pick-first
    mu4e-contexts (list
-		     (make-mu4e-context
-		      :name "fastmail"
-		      :match-func
-		      (lambda (msg)
-		        (when msg
-		          (string-prefix-p "/fastmail" (mu4e-message-field msg :maildir))))
-		      :vars '((user-mail-address . "rlridenour@fastmail.com")
-		              (user-full-name    . "Randy Ridenour")
-		              (mu4e-drafts-folder  . "/fastmail/Drafts")
-		              (mu4e-sent-folder  . "/fastmail/Sent")
-		              (mu4e-trash-folder  . "/fastmail/Trash")
-		              (mu4e-refile-folder  . "/fastmail/Archive")
-		              (sendmail-program . "msmtp")
-		              (send-mail-function . smtpmail-send-it)
-		              (message-sendmail-f-is-evil . t)
-		              (message-sendmail-extra-arguments . ("--read-envelope-from"))
-		              (message-send-mail-function . message-send-mail-with-sendmail)
-		              (smtpmail-default-smtp-server . "smtp.fastmail.com")
-		              (smtpmail-smtp-server  . "smtp.fastmail.com")
-		              ))
-		     (make-mu4e-context
-		      :name "obu"
-		      :match-func
-		      (lambda (msg)
-		        (when msg
-		          (string-prefix-p "/obu" (mu4e-message-field msg :maildir))))
-		      :vars '((user-mail-address . "randy.ridenour@okbu.edu")
-		              (user-full-name    . "Randy Ridenour")
-		              (mu4e-drafts-folder  . "/obu/Drafts")
-		              (mu4e-sent-folder  . "/obu/Sent")
-		              (mu4e-trash-folder . "/obu/Trash")
-		              (mu4e-refile-folder  . "/obu/Archive")
-		              ;; (sendmail-program . "msmtp")
-		              (send-mail-function . smtpmail-send-it)
-		              (message-sendmail-f-is-evil . t)
-		              (message-sendmail-extra-arguments . ("--read-envelope-from"))
-		              (message-send-mail-function . message-send-mail-with-sendmail)
-		              (smtpmail-smtp-server  . "localhost")
-		              (smtpmail-smtp-user . "randy.ridenour@okbu.edu")
-		              (smtpmail-stream-type . plain)
-		              (smtpmail-smtp-service . 1025)
-		              ))))
+		    (make-mu4e-context
+		     :name "fastmail"
+		     :match-func
+		     (lambda (msg)
+		       (when msg
+			 (string-prefix-p "/fastmail" (mu4e-message-field msg :maildir))))
+		     :vars '((user-mail-address . "rlridenour@fastmail.com")
+			     (user-full-name    . "Randy Ridenour")
+			     (mu4e-drafts-folder  . "/fastmail/Drafts")
+			     (mu4e-sent-folder  . "/fastmail/Sent")
+			     (mu4e-trash-folder  . "/fastmail/Trash")
+			     (mu4e-refile-folder  . "/fastmail/Archive")
+			     (sendmail-program . "msmtp")
+			     (send-mail-function . smtpmail-send-it)
+			     (message-sendmail-f-is-evil . t)
+			     (message-sendmail-extra-arguments . ("--read-envelope-from"))
+			     (message-send-mail-function . message-send-mail-with-sendmail)
+			     (smtpmail-default-smtp-server . "smtp.fastmail.com")
+			     (smtpmail-smtp-server  . "smtp.fastmail.com")
+			     ))
+		    (make-mu4e-context
+		     :name "obu"
+		     :match-func
+		     (lambda (msg)
+		       (when msg
+			 (string-prefix-p "/obu" (mu4e-message-field msg :maildir))))
+		     :vars '((user-mail-address . "randy.ridenour@okbu.edu")
+			     (user-full-name    . "Randy Ridenour")
+			     (mu4e-drafts-folder  . "/obu/Drafts")
+			     (mu4e-sent-folder  . "/obu/Sent")
+			     (mu4e-trash-folder . "/obu/Trash")
+			     (mu4e-refile-folder  . "/obu/Archive")
+			     ;; (sendmail-program . "msmtp")
+			     (send-mail-function . smtpmail-send-it)
+			     (message-sendmail-f-is-evil . t)
+			     (message-sendmail-extra-arguments . ("--read-envelope-from"))
+			     (message-send-mail-function . message-send-mail-with-sendmail)
+			     (smtpmail-smtp-server  . "localhost")
+			     (smtpmail-smtp-user . "randy.ridenour@okbu.edu")
+			     (smtpmail-stream-type . plain)
+			     (smtpmail-smtp-service . 1025)
+			     ))))
   (display-line-numbers-mode -1))
 
 (defun rlr/quit-mu4e ()
@@ -1715,51 +1716,51 @@ installed."
  "C-M-s-r" #'rlr/read-mail-news)
 
 (use-package org-modern
-:config
-(add-hook 'org-agenda-finalize-hook #'org-modern-agenda)
-)
+  :config
+  (add-hook 'org-agenda-finalize-hook #'org-modern-agenda)
+  )
 
 (require 'ox-beamer)
 (with-eval-after-load 'ox-latex
   (add-to-list 'org-latex-classes
 		 '("org-article"
-		 "\\documentclass{article}
+		   "\\documentclass{article}
 			      [NO-DEFAULT-PACKAGES]
 			      [NO-PACKAGES]"
-		 ("\\section{%s}" . "\\section*{%s}")
-		 ("\\subsection{%s}" . "\\subsection*{%s}")
-		 ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-		 ("\\paragraph{%s}" . "\\paragraph*{%s}")
-		 ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+		   ("\\section{%s}" . "\\section*{%s}")
+		   ("\\subsection{%s}" . "\\subsection*{%s}")
+		   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+		   ("\\paragraph{%s}" . "\\paragraph*{%s}")
+		   ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
   (add-to-list 'org-latex-classes
 		 '("org-handout"
-		 "\\documentclass{pdfhandout}
+		   "\\documentclass{pdfhandout}
 			      [NO-DEFAULT-PACKAGES]
 			      [NO-PACKAGES]"
-		 ("\\section{%s}" . "\\section*{%s}")
-		 ("\\subsection{%s}" . "\\subsection*{%s}")
-		 ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-		 ("\\paragraph{%s}" . "\\paragraph*{%s}")
-		 ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+		   ("\\section{%s}" . "\\section*{%s}")
+		   ("\\subsection{%s}" . "\\subsection*{%s}")
+		   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+		   ("\\paragraph{%s}" . "\\paragraph*{%s}")
+		   ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
   (add-to-list 'org-latex-classes
 		 '("org-beamer"
-		 "\\documentclass{beamer}
+		   "\\documentclass{beamer}
 			      [NO-DEFAULT-PACKAGES]
 			      [NO-PACKAGES]"
-		 ("\\section{%s}" . "\\section*{%s}")
-		 ("\\subsection{%s}" . "\\subsection*{%s}")
-		 ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-		 ("\\paragraph{%s}" . "\\paragraph*{%s}")
-		 ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))))
+		   ("\\section{%s}" . "\\section*{%s}")
+		   ("\\subsection{%s}" . "\\subsection*{%s}")
+		   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+		   ("\\paragraph{%s}" . "\\paragraph*{%s}")
+		   ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))))
 (setq org-export-with-smart-quotes t)
 (with-eval-after-load 'ox-latex
   (add-to-list 'org-export-smart-quotes-alist
 		 '("en-us"
-		 (primary-opening   :utf-8 "“" :html "&ldquo;" :latex "\\enquote{"  :texinfo "``")
-		 (primary-closing   :utf-8 "”" :html "&rdquo;" :latex "}"           :texinfo "''")
-		 (secondary-opening :utf-8 "‘" :html "&lsquo;" :latex "\\enquote*{" :texinfo "`")
-		 (secondary-closing :utf-8 "’" :html "&rsquo;" :latex "}"           :texinfo "'")
-		 (apostrophe        :utf-8 "’" :html "&rsquo;"))))
+		   (primary-opening   :utf-8 "“" :html "&ldquo;" :latex "\\enquote{"  :texinfo "``")
+		   (primary-closing   :utf-8 "”" :html "&rdquo;" :latex "}"           :texinfo "''")
+		   (secondary-opening :utf-8 "‘" :html "&lsquo;" :latex "\\enquote*{" :texinfo "`")
+		   (secondary-closing :utf-8 "’" :html "&rsquo;" :latex "}"           :texinfo "'")
+		   (apostrophe        :utf-8 "’" :html "&rsquo;"))))
 
 ;; (setq org-latex-pdf-process '("arara %f"))
 (setq org-latex-pdf-process '("mkpdf %f"))
@@ -1807,26 +1808,26 @@ installed."
 ;; Org-capture
 (setq org-capture-templates
 	'(
-	("t" "Todo" entry (file+headline "/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/tasks.org" "Inbox")
-	 "** TODO %?\n  %i\n  %a")
-	("e" "Event" entry (file+headline "/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/events.org" "Future")
-	 "** %? %T")
-	("b" "Bookmark" entry (file+headline "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/bookmarks.org" "Bookmarks")
-	 "* %?\n:PROPERTIES:\n:CREATED: %U\n:END:\n\n" :empty-lines 1)
-	("c" "Quick note" entry (file+headline "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/Documents/notes/quick-notes.org" "Notes")
-	 "* %?\n:PROPERTIES:\n:CREATED: %U\n:END:\n\n" :empty-lines 1)
-	)
+	  ("t" "Todo" entry (file+headline "/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/tasks.org" "Inbox")
+	   "** TODO %?\n  %i\n  %a")
+	  ("e" "Event" entry (file+headline "/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/events.org" "Future")
+	   "** %? %T")
+	  ("b" "Bookmark" entry (file+headline "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/bookmarks.org" "Bookmarks")
+	   "* %?\n:PROPERTIES:\n:CREATED: %U\n:END:\n\n" :empty-lines 1)
+	  ("c" "Quick note" entry (file+headline "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/Documents/notes/quick-notes.org" "Notes")
+	   "* %?\n:PROPERTIES:\n:CREATED: %U\n:END:\n\n" :empty-lines 1)
+	  )
 	)
 
 (with-eval-after-load 'org-capture
   (add-to-list 'org-capture-templates
 		 '("n" "New note (with Denote)" plain
-		 (file denote-last-path)
-		 #'denote-org-capture
-		 :no-save t
-		 :immediate-finish nil
-		 :kill-buffer t
-		 :jump-to-captured t)))
+		   (file denote-last-path)
+		   #'denote-org-capture
+		   :no-save t
+		   :immediate-finish nil
+		   :kill-buffer t
+		   :jump-to-captured t)))
 
 (setq org-refile-targets '((org-agenda-files :maxlevel . 1)))
 
@@ -1914,15 +1915,15 @@ installed."
  "s-d" #'agenda-home)
 
 (defun rr/agenda-links ()
-    (end-of-buffer)
-    (insert-file-contents "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/agenda-links.org")
-    (while (org-activate-links (point-max))
-      (goto-char (match-end 0)))
-;; (end-of-buffer)
-;; (insert (concat "\n\n" (get-votd)))
-    (beginning-of-buffer))
+  (end-of-buffer)
+  (insert-file-contents "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/agenda-links.org")
+  (while (org-activate-links (point-max))
+    (goto-char (match-end 0)))
+  ;; (end-of-buffer)
+  ;; (insert (concat "\n\n" (get-votd)))
+  (beginning-of-buffer))
 
-  (add-hook 'org-agenda-finalize-hook #'rr/agenda-links)
+(add-hook 'org-agenda-finalize-hook #'rr/agenda-links)
 
 (setq org-return-follows-link t)
 
@@ -2629,22 +2630,22 @@ installed."
   "Decode HTML entities in TEXT."
   (when text
     (let ((entity-map '(("&ldquo;" . "\"")
-                        ("&rdquo;" . "\"")
-                        ("&#8212;" . "--")
-                        ("&#8217;" . "'")
-                        ("&#8220;" . "\"")
-                        ("&#8221;" . "\"")))
-          (decoded text))
-      (dolist (entity entity-map)
-        (setq decoded (replace-regexp-in-string (car entity) (cdr entity) decoded)))
-      decoded)))
+			  ("&rdquo;" . "\"")
+			  ("&#8212;" . "--")
+			  ("&#8217;" . "'")
+			  ("&#8220;" . "\"")
+			  ("&#8221;" . "\"")))
+	    (decoded text))
+	(dolist (entity entity-map)
+	  (setq decoded (replace-regexp-in-string (car entity) (cdr entity) decoded)))
+	decoded)))
 
 (defun rlr/fetch-daily-bible-verse ()
-(interactive)
-    "Fetch the daily Bible verse from BibleGateway API."
-    (let ((url-request-method "GET")
+  (interactive)
+  "Fetch the daily Bible verse from BibleGateway API."
+  (let ((url-request-method "GET")
 	  (url "https://www.biblegateway.com/votd/get/?format=json&version=NRSVUE"))
-      (with-current-buffer (url-retrieve-synchronously url t t)
+    (with-current-buffer (url-retrieve-synchronously url t t)
 	(goto-char (point-min))
 	(when (search-forward "\n\n" nil t)
 	  (let* ((json-string (buffer-substring-no-properties (point) (point-max)))
@@ -2656,14 +2657,14 @@ installed."
 		 (raw-text (gethash "text" votd))
 		 (verse-text (decode-html-entities raw-text))
 		 (clean-verse (replace-regexp-in-string "[\"]" "" verse-text))
-		 ;; (formatted-verse (format-verse-text clean-verse))
-		 (verse-reference (gethash "display_ref" votd))
-		 (fill-width 80))
-	    (format "%s\n%s"
-		    clean-verse
-		    (let ((ref-text verse-reference))
-		      (concat "\n" (make-string (- fill-width (length ref-text)) ?\s)
-			      ref-text " (NRSVue)"))))))))
+	     ;; (formatted-verse (format-verse-text clean-verse))
+	     (verse-reference (gethash "display_ref" votd))
+	     (fill-width 80))
+	(format "%s\n%s"
+		clean-verse
+		(let ((ref-text verse-reference))
+		(concat "\n" (make-string (- fill-width (length ref-text)) ?\s)
+			ref-text " (NRSVue)"))))))))
 
 (defun rlr/get-votd ()
   "Get the daily verse and handle errors."
