@@ -50,7 +50,8 @@ Raise max lisp nesting depth.
        (setq file-name-handler-alist default-file-name-handler-alist
 	     gc-cons-percentage 0.1
 	     gc-cons-threshold 100000000)
-       (message "gc-cons-threshold & file-name-handler-alist restored")
+(let ((inhibit-message t))       
+(message "gc-cons-threshold & file-name-handler-alist restored"))
        (when (boundp 'after-focus-change-function)
 	 (add-function :after after-focus-change-function #'+gc-after-focus-change)))))
 
@@ -1398,10 +1399,12 @@ Functions for syncing the database between machines.
 
 #+begin_src emacs-lisp
   (defun rlr/elfeed-load-db-and-open ()
+    "Load elfeed db before opening"
     (interactive)
     (elfeed-db-load)
     (elfeed)
-    (elfeed-search-update--force))
+    (elfeed-search-update--force)
+    (elfeed-update))
 
   (defun rlr/elfeed-save-db-and-quit ()
     (interactive)
@@ -3071,6 +3074,26 @@ I'm not sure what this doing anymore, so I'm going to disable it for now.
 #+begin_src emacs-lisp
   (use-package org-web-tools)
 #+end_src
+
+#+begin_src emacs-lisp
+(defun rlr/save-web-page-as-org-file ()
+(interactive)
+(org-mac-link-safari-get-frontmost-url)
+(setq rlr-org-link (current-kill 0 t))
+(setq rlr-org-link (s-chop-left 2 rlr-org-link))
+(setq rlr-org-link (s-chop-right 2 rlr-org-link))
+(setq rlr-org-link (s-split "\\]\\[" rlr-org-link))
+(setq rlr-org-url (pop rlr-org-link))
+(setq rlr-org-title (pop rlr-org-link))
+(setq rlr-org-title (s-replace-all '(("." . "") (":" . "") ("/" . "")) rlr-org-title))
+(setq rlr-org-filename (s-dashed-words rlr-org-title))
+(org-web-tools-read-url-as-org rlr-org-url)
+(write-file (concat "~/icloud/web-saves/" rlr-org-title ".org")))
+#+end_src
+
+
+
+
 
 *** Teaching
 

@@ -751,10 +751,12 @@ If there are only two windows, jump directly to the other window."
 	  "S-<SPC>" #'scroll-down))
 
 (defun rlr/elfeed-load-db-and-open ()
+  "Load elfeed db before opening"
   (interactive)
   (elfeed-db-load)
   (elfeed)
-  (elfeed-search-update--force))
+  (elfeed-search-update--force)
+  (elfeed-update))
 
 (defun rlr/elfeed-save-db-and-quit ()
   (interactive)
@@ -2008,6 +2010,20 @@ installed."
 (use-package org-mac-link)
 
 (use-package org-web-tools)
+
+(defun rlr/save-web-page-as-org-file ()
+(interactive)
+(org-mac-link-safari-get-frontmost-url)
+(setq rlr-org-link (current-kill 0 t))
+(setq rlr-org-link (s-chop-left 2 rlr-org-link))
+(setq rlr-org-link (s-chop-right 2 rlr-org-link))
+(setq rlr-org-link (s-split "\\]\\[" rlr-org-link))
+(setq rlr-org-url (pop rlr-org-link))
+(setq rlr-org-title (pop rlr-org-link))
+(setq rlr-org-title (s-replace-all '(("." . "") (":" . "") ("/" . "")) rlr-org-title))
+(setq rlr-org-filename (s-dashed-words rlr-org-title))
+(org-web-tools-read-url-as-org rlr-org-url)
+(write-file (concat "~/icloud/web-saves/" rlr-org-title ".org")))
 
 (defvar rlrt-filename)
 
