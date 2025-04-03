@@ -1608,7 +1608,6 @@ Tag items — from [[https://www.reddit.com/r/emacs/comments/go5d0v/using_emacs_
 (eww rlr-org-url))
 #+end_src
 
-
 ** Emmet
 
 #+begin_src emacs-lisp
@@ -1902,6 +1901,9 @@ Tag items — from [[https://www.reddit.com/r/emacs/comments/go5d0v/using_emacs_
 	 ("3" (dired "~/icloud/teaching/logic/lectures") "Logic")
 	 ("4" (dired "~/icloud/teaching/language/lectures") "Language")
 	 )
+"Actions"
+(("s" rlr/save-web-page-as-org-file "Save Safari page as Org")
+("s" rlr/open-safari-page-in-eww "Open Safari page in EWW"))
 	))
 
      (major-mode-hydra-define eww-mode
@@ -2577,10 +2579,6 @@ Quit Mu4e and close tab.
     (mu4e-quit)
     (rlr/delete-tab-or-frame))
 #+end_src
-
-
-
-
 
 Mu4e-alert
 
