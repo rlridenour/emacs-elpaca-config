@@ -827,29 +827,43 @@ If there are only two windows, jump directly to the other window."
 
 (use-feature eww
   :config
-  (defun rr/eww-toggle-images ()
+  (defun rlr/open-eww-link-new-buffer ()
+    (interactive)
+    (link-hint-copy-link)
+    (tab-new)
+    (setq new-buffer-url (current-kill 0 t))
+    (switch-to-buffer (generate-new-buffer "*eww*"))
+    (eww-mode)
+    (eww new-buffer-url))
+  (defun rlr/eww-toggle-images ()
     "Toggle whether images are loaded and reload the current page from cache."
     (interactive)
     (setq-local shr-inhibit-images (not shr-inhibit-images))
     (eww-reload t)
     (message "Images are now %s"
 	       (if shr-inhibit-images "off" "on")))
-
-  (define-key eww-mode-map (kbd "I") #'rr/eww-toggle-images)
-  (define-key eww-link-keymap (kbd "I") #'rr/eww-toggle-images)
-
+  ;; (define-key eww-mode-map (kbd "I") #'rlr/eww-toggle-images)
+  ;; (define-key eww-link-keymap (kbd "I") #'rlr/eww-toggle-images)
   ;; minimal rendering by default
   (setq-default shr-inhibit-images t)   ; toggle with `I`
-  (setq-default shr-use-fonts nil)      ; toggle with `F`
+  (setq-default shr-use-fonts t)      ; toggle with `F`
   (defun rrnet ()
     (interactive)
     (eww-browse-url "randyridenour.net")
     )
-
   (defun sep ()
     (interactive)
     (eww-browse-url "plato.stanford.edu")
-    ))
+    )
+  :general
+  (:keymaps 'eww-mode-map
+	  "I" #'rlr/eww-toggle-images
+	  "f" #'link-hint-open-link
+	  "F" #'rlr/open-eww-link-new-buffer
+	  "T" #'eww-toggle-fonts)
+  (:keymaps 'eww-link-keymap
+	  "I" #'rlr/eww-toggle-images)
+  )
 
 (with-after-elpaca-init
  (defun jao-eww-to-org (&optional dest)
@@ -894,6 +908,16 @@ If there are only two windows, jump directly to the other window."
 	     (goto-char next))))
      (pop-to-buffer buff)
      (goto-char (point-min)))))
+
+(defun rlr/open-safari-page-in-eww ()
+(interactive)
+(org-mac-link-safari-get-frontmost-url)
+(setq rlr-org-link (current-kill 0 t))
+(setq rlr-org-link (s-chop-left 2 rlr-org-link))
+(setq rlr-org-link (s-chop-right 2 rlr-org-link))
+(setq rlr-org-link (s-split "\\]\\[" rlr-org-link))
+(setq rlr-org-url (pop rlr-org-link))
+(eww rlr-org-url))
 
 (use-package emmet-mode
   :general
@@ -1231,7 +1255,8 @@ If there are only two windows, jump directly to the other window."
 	 ("c" tex-clean "clean aux")
 	 ("C" tex-clean-all "clean all"))
 	"Edit"
-	(("dd" org-deadline "deadline")
+	(("a" org-appear-mode :toggle t)
+	 ("dd" org-deadline "deadline")
 	 ("ds" org-schedule "schedule")
 	 ("r" org-refile "refile")
 	 ("du" rlr/org-date "update date stamp")
@@ -1588,7 +1613,7 @@ installed."
 
 (use-package org-appear
   :commands (org-appear-mode)
-  :hook     (org-mode . org-appear-mode)
+  ;; :hook     (org-mode . org-appear-mode)
   :config
   (setq org-hide-emphasis-markers t)  ; Must be activated for org-appear to work
   (setq org-appear-autoemphasis   t   ; Show bold, italics, verbatim, etc.
