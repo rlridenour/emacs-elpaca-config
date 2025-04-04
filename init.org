@@ -1901,9 +1901,9 @@ Tag items — from [[https://www.reddit.com/r/emacs/comments/go5d0v/using_emacs_
 	 ("3" (dired "~/icloud/teaching/logic/lectures") "Logic")
 	 ("4" (dired "~/icloud/teaching/language/lectures") "Language")
 	 )
-"Actions"
-(("s" rlr/save-web-page-as-org-file "Save Safari page as Org")
-("s" rlr/open-safari-page-in-eww "Open Safari page in EWW"))
+	"Actions"
+	(("s" rlr/save-web-page-as-org-file "Save Safari page as Org")
+	 ("e" rlr/open-safari-page-in-eww "Open Safari page in EWW"))
 	))
 
      (major-mode-hydra-define eww-mode
@@ -2055,7 +2055,16 @@ Tag items — from [[https://www.reddit.com/r/emacs/comments/go5d0v/using_emacs_
 	(("f" denote-menu-filter "Filter by regex")
 	 ("k" denote-menu-filter-by-keyword "Filter by keyword")
 	 ("c" denote-menu-clear-filters "Clear filters")
-	 ("d" denote-menu-export-to-dired "Dired"))))))
+	 ("d" denote-menu-export-to-dired "Dired"))))
+
+(major-mode-hydra-define mu4e-view-mode
+       (:quit-key "q")
+       ("Message"
+	(("r" mu4e-compose-reply "Reply")
+	 ("a"  mu4e-compose-wide-reply "Reply All"))))
+
+     )
+   )
 #+end_src
 
 #+begin_src emacs-lisp :tangle no
@@ -3102,19 +3111,19 @@ I'm not sure what this doing anymore, so I'm going to disable it for now.
 #+end_src
 
 #+begin_src emacs-lisp
-(defun rlr/save-web-page-as-org-file ()
-(interactive)
-(org-mac-link-safari-get-frontmost-url)
-(setq rlr-org-link (current-kill 0 t))
-(setq rlr-org-link (s-chop-left 2 rlr-org-link))
-(setq rlr-org-link (s-chop-right 2 rlr-org-link))
-(setq rlr-org-link (s-split "\\]\\[" rlr-org-link))
-(setq rlr-org-url (pop rlr-org-link))
-(setq rlr-org-title (pop rlr-org-link))
-(setq rlr-org-title (s-replace-all '(("." . "") (":" . "") ("/" . "")) rlr-org-title))
-(setq rlr-org-filename (s-dashed-words rlr-org-title))
-(org-web-tools-read-url-as-org rlr-org-url)
-(write-file (concat "~/icloud/web-saves/" rlr-org-title ".org")))
+  (defun rlr/save-web-page-as-org-file ()
+    (interactive)
+    (org-mac-link-safari-get-frontmost-url)
+    (setq rlr-org-link (current-kill 0 t))
+    (setq rlr-org-link (s-chop-left 2 rlr-org-link))
+    (setq rlr-org-link (s-chop-right 2 rlr-org-link))
+    (setq rlr-org-link (s-split "\\]\\[" rlr-org-link))
+    (setq rlr-org-url (pop rlr-org-link))
+    (setq rlr-org-title (pop rlr-org-link))
+    (setq rlr-org-title (s-replace-all '(("." . "") (":" . "") ("/" . "")) rlr-org-title))
+    (setq rlr-org-filename (s-dashed-words rlr-org-title))
+    (org-web-tools-read-url-as-org rlr-org-url)
+    (write-file (concat "~/icloud/web-saves/" rlr-org-title ".org")))
 #+end_src
 
 *** Teaching
@@ -4072,23 +4081,23 @@ Modified votd.el from [[https://github.com/kristjoc/votd/tree/main][kristjoc/vot
 		 (raw-text (gethash "text" votd))
 		 (verse-text (decode-html-entities raw-text))
 		 (clean-verse (replace-regexp-in-string "[\"]" "" verse-text))
-	     ;; (formatted-verse (format-verse-text clean-verse))
-	     (verse-reference (gethash "display_ref" votd))
-	     (fill-width 80))
+		 ;; (formatted-verse (format-verse-text clean-verse))
+		 (verse-reference (gethash "display_ref" votd))
+		 (fill-width 80))
 	(format "%s\n%s"
-		clean-verse
-		(let ((ref-text verse-reference))
+		    clean-verse
+		    (let ((ref-text verse-reference))
 		(concat "\n" (make-string (- fill-width (length ref-text)) ?\s)
-			ref-text " (NRSVue)"))))))))
+			      ref-text " (NRSVue)"))))))))
 #+end_src
 
 #+begin_src emacs-lisp
-(defun rlr/get-votd ()
-  "Get the daily verse and handle errors."
-  (condition-case err
-      (rlr/fetch-daily-bible-verse)
-    (error
-     (format "Today's verse could not be fetched: %s" (error-message-string err)))))
+  (defun rlr/get-votd ()
+    "Get the daily verse and handle errors."
+    (condition-case err
+	(rlr/fetch-daily-bible-verse)
+      (error
+       (format "Today's verse could not be fetched: %s" (error-message-string err)))))
 #+end_src
 
 ** Vundo
