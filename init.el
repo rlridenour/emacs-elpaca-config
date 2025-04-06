@@ -195,20 +195,26 @@
 (add-hook 'find-file-not-found-functions #'make-parent-directory)
 
 (defun nuke-all-buffers ()
-  "Kill all the open buffers except the current one.
+    "Kill all the open buffers except the current one.
 	  Leave *scratch*, *dashboard* and *Messages* alone too."
-  (interactive)
-  (mapc
-   (lambda (buffer)
-     (unless (or
+    (interactive)
+    (mapc
+     (lambda (buffer)
+       (unless (or
 		(string= (buffer-name buffer) "*scratch*")
 		(string= (buffer-name buffer) "*Org Agenda*")
 		(string= (buffer-name buffer) "*Messages*"))
 	 (kill-buffer buffer)))
-   (buffer-list))
-  (delete-other-windows)
-  ;; (goto-dashboard)
-  )
+     (buffer-list))
+    (delete-other-windows)
+(tab-bar-close-other-tabs)
+    ;; (goto-dashboard)
+    )
+
+(defun rlr/kill-other-buffers ()
+(interactive)
+(crux-kill-other-buffers)
+(tab-bar-close-other-tabs))
 
 (defun goto-emacs-init ()
   (interactive)
@@ -574,6 +580,8 @@ If there are only two windows, jump directly to the other window."
   (add-hook 'completion-at-point-functions #'cape-elisp-block)
   (add-hook 'completion-at-point-functions #'cape-history)
   )
+
+(use-package chordpro-mode)
 
 (use-package citar
   :bind (("C-c C-b" . citar-insert-citation)
@@ -1004,7 +1012,7 @@ If there are only two windows, jump directly to the other window."
 	"Actions"
 	(("D" crux-delete-file-and-buffer "delete file")
 	 ("R" crux-rename-file-and-buffer "rename file")
-	 ("K" crux-kill-other-buffers "kill other buffers")
+	 ("K" rlr/kill-other-buffers "kill other buffers")
 	 ("N" nuke-all-buffers "Kill all buffers")
 	 ("c" crux-cleanup-buffer-or-region "fix indentation"))
 	"Misc"
@@ -1184,7 +1192,7 @@ If there are only two windows, jump directly to the other window."
 	 );end theme
 	"B"
 	(
-	 ("T" endless/toggle-image-display "Toggle Image Display")
+	 ("T" rlr/eww-toggle-images "Toggle Image Display")
 	 (">" shr-next-link "Shr Next Link")
 	 ("<" shr-previous-link "Shr Previous Link")
 	 ("n" scroll-down-command "Scroll Down")
@@ -2866,7 +2874,7 @@ installed."
  "D" #'crux-delete-file-and-buffer
 
  "f f" #'find-file
- "f k" #'crux-kill-other-buffers
+ "f k" #'rlr/kill-other-buffers
  "f r" #'consult-buffer
  "f R" #'crux-rename-file-and-buffer
  "f P" #'open-emacs-config
@@ -2886,7 +2894,7 @@ installed."
  "H v" #'helpful-variable
  "H k" #'helpful-key
 
- "k" #'crux-kill-other-buffers
+ "k" #'rlr/kill-other-buffers
 
  "m" #'consult-mark
  "n b" #'hugo-draft-post

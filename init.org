@@ -546,9 +546,21 @@ Kills all open buffers except scratch, dashboard and messages. From https://gith
 	 (kill-buffer buffer)))
      (buffer-list))
     (delete-other-windows)
+(tab-bar-close-other-tabs)
     ;; (goto-dashboard)
     )
 #+end_src
+
+Kill other buffers and tabs.
+
+#+begin_src emacs-lisp
+(defun rlr/kill-other-buffers ()
+(interactive)
+(crux-kill-other-buffers)
+(tab-bar-close-other-tabs))
+#+end_src
+
+
 
 #+begin_src emacs-lisp
   (defun goto-emacs-init ()
@@ -1112,6 +1124,14 @@ Load general before the remaining packages so they can make use of the ~:general
     (add-hook 'completion-at-point-functions #'cape-history)
     )
 #+end_src
+
+** ChordPro
+
+#+begin_src emacs-lisp
+(use-package chordpro-mode)
+#+end_src
+
+
 
 ** Citar
 
@@ -1740,7 +1760,7 @@ Tag items — from [[https://www.reddit.com/r/emacs/comments/go5d0v/using_emacs_
 	"Actions"
 	(("D" crux-delete-file-and-buffer "delete file")
 	 ("R" crux-rename-file-and-buffer "rename file")
-	 ("K" crux-kill-other-buffers "kill other buffers")
+	 ("K" rlr/kill-other-buffers "kill other buffers")
 	 ("N" nuke-all-buffers "Kill all buffers")
 	 ("c" crux-cleanup-buffer-or-region "fix indentation"))
 	"Misc"
@@ -1924,7 +1944,7 @@ Tag items — from [[https://www.reddit.com/r/emacs/comments/go5d0v/using_emacs_
 	 );end theme
 	"B"
 	(
-	 ("T" endless/toggle-image-display "Toggle Image Display")
+	 ("T" rlr/eww-toggle-images "Toggle Image Display")
 	 (">" shr-next-link "Shr Next Link")
 	 ("<" shr-previous-link "Shr Previous Link")
 	 ("n" scroll-down-command "Scroll Down")
@@ -4326,7 +4346,7 @@ Open fish functions directory.
    "D" #'crux-delete-file-and-buffer
 
    "f f" #'find-file
-   "f k" #'crux-kill-other-buffers
+   "f k" #'rlr/kill-other-buffers
    "f r" #'consult-buffer
    "f R" #'crux-rename-file-and-buffer
    "f P" #'open-emacs-config
@@ -4346,7 +4366,7 @@ Open fish functions directory.
    "H v" #'helpful-variable
    "H k" #'helpful-key
 
-   "k" #'crux-kill-other-buffers
+   "k" #'rlr/kill-other-buffers
 
    "m" #'consult-mark
    "n b" #'hugo-draft-post
