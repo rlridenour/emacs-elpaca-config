@@ -2803,7 +2803,8 @@ installed."
  "s-\"" #'previous-window-any-frame)
 
 (general-define-key
- "s-t" #'rlr/find-file-new-tab
+ "s-t" #'tab-new
+ "s-T" #'rlr/find-file-new-tab
  "s-w" #'rlr/delete-tab-or-frame)
 
 (general-define-key
