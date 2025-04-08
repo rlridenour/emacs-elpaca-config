@@ -2693,8 +2693,7 @@ Open mu4e and elfeed in new frame.
     (tab-new)
     (mu4e)
     (mu4e-update-mail-and-index 1)
-    (tab-new)
-    (mastodon))
+)
 
   (general-define-key
    "C-M-s-r" #'rlr/read-mail-news)

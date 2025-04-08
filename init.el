@@ -1765,20 +1765,19 @@ installed."
   (mu4e-update-mail-and-index 1))
 
 (defun rlr/read-mail-news ()
-  (interactive)
-  ;; (make-frame-command)
-  ;; (agenda-home)
-  (tab-new)
-  (rlr/elfeed-load-db-and-open)
-  (elfeed-update)
-  (tab-new)
-  (mu4e)
-  (mu4e-update-mail-and-index 1)
-  (tab-new)
-  (mastodon))
+    (interactive)
+    ;; (make-frame-command)
+    ;; (agenda-home)
+    (tab-new)
+    (rlr/elfeed-load-db-and-open)
+    (elfeed-update)
+    (tab-new)
+    (mu4e)
+    (mu4e-update-mail-and-index 1)
+)
 
-(general-define-key
- "C-M-s-r" #'rlr/read-mail-news)
+  (general-define-key
+   "C-M-s-r" #'rlr/read-mail-news)
 
 (use-package org-modern
   :config
