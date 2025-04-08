@@ -560,8 +560,6 @@ Kill other buffers and tabs.
 (tab-bar-close-other-tabs))
 #+end_src
 
-
-
 #+begin_src emacs-lisp
   (defun goto-emacs-init ()
     (interactive)
@@ -1131,8 +1129,6 @@ Load general before the remaining packages so they can make use of the ~:general
 (use-package chordpro-mode)
 #+end_src
 
-
-
 ** Citar
 
 #+begin_src emacs-lisp
@@ -1431,7 +1427,6 @@ Functions for syncing the database between machines.
 (tab-new)
 (rlr/elfeed-load-db-and-open)
 (elfeed-update))
-
 
   (defun rlr/elfeed-save-db-and-quit ()
     (interactive)
@@ -2084,7 +2079,7 @@ Tag items — from [[https://www.reddit.com/r/emacs/comments/go5d0v/using_emacs_
 	 ("c" denote-menu-clear-filters "Clear filters")
 	 ("d" denote-menu-export-to-dired "Dired"))))
 
-(major-mode-hydra-define mu4e-view-mode
+     (major-mode-hydra-define mu4e-view-mode
        (:quit-key "q")
        ("Message"
 	(("r" mu4e-compose-reply "Reply")
@@ -2092,7 +2087,7 @@ Tag items — from [[https://www.reddit.com/r/emacs/comments/go5d0v/using_emacs_
 
      )
    )
-#+end_src
+	#+end_src
 
 #+begin_src emacs-lisp :tangle no
   (defhydra hydra-org (:color teal)
@@ -2325,10 +2320,10 @@ From [[http://yummymelon.com/devnull/converting-a-markdown-region-to-org-revisit
 Open Mastodon in a new tab
 
 #+begin_src emacs-lisp
-(defun rlr/open-mastodon ()
-(interactive)
-(tab-new)
-(mastodon))
+  (defun rlr/open-mastodon ()
+    (interactive)
+    (tab-new)
+    (mastodon))
 #+end_src
 
 ** Modern Tab Bar
@@ -2685,9 +2680,6 @@ Open mu4e in new tab.
     (mu4e-update-mail-and-index 1))
 #+end_src
 
-
-
-
 Open mu4e and elfeed in new frame.
 
 #+begin_src emacs-lisp
@@ -2701,7 +2693,8 @@ Open mu4e and elfeed in new frame.
     (tab-new)
     (mu4e)
     (mu4e-update-mail-and-index 1)
-    )
+    (tab-new)
+    (mastodon))
 
   (general-define-key
    "C-M-s-r" #'rlr/read-mail-news)
@@ -2979,8 +2972,6 @@ Set agenda links as safe.
 #+begin_src emacs-lisp
 (setopt org-link-elisp-skip-confirm-regexp "rlr.*")
 #+end_src
-
-
 
 #+begin_src emacs-lisp :tangle no
   (use-package org-super-agenda
