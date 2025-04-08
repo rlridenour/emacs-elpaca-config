@@ -759,18 +759,25 @@ If there are only two windows, jump directly to the other window."
 	  "S-<SPC>" #'scroll-down))
 
 (defun rlr/elfeed-load-db-and-open ()
-  "Load elfeed db before opening"
-  (interactive)
-  (elfeed-db-load)
-  (elfeed)
-  (elfeed-search-update--force)
-  (elfeed-update))
+    "Load elfeed db before opening"
+    (interactive)
+    (elfeed-db-load)
+    (elfeed)
+    (elfeed-search-update--force)
+    (elfeed-update))
 
-(defun rlr/elfeed-save-db-and-quit ()
-  (interactive)
-  (elfeed-db-save)
-  (elfeed-search-quit-window)
-  (rlr/delete-tab-or-frame))
+(defun rlr/open-elfeed-new-tab ()
+(interactive)
+(tab-new)
+(rlr/elfeed-load-db-and-open)
+(elfeed-update))
+
+
+  (defun rlr/elfeed-save-db-and-quit ()
+    (interactive)
+    (elfeed-db-save)
+    (elfeed-search-quit-window)
+    (rlr/delete-tab-or-frame))
 
 (defmacro elfeed-tag-selection-as (mytag)
   "Tag elfeed entry as MYTAG"
@@ -1499,6 +1506,11 @@ installed."
   (setq mastodon-instance-url "https://zirk.us/"
 	  mastodon-active-user "randyridenour"))
 
+(defun rlr/open-mastodon ()
+(interactive)
+(tab-new)
+(mastodon))
+
 (use-package modern-tab-bar
   :ensure
   (:host github :repo "aaronjensen/emacs-modern-tab-bar")
@@ -1747,6 +1759,12 @@ installed."
 	 "Randy"
 	 )))
 
+(defun rlr/open-mu4e-new-tab ()
+  (interactive)
+  (tab-new)
+  (mu4e)
+  (mu4e-update-mail-and-index 1))
+
 (defun rlr/read-mail-news ()
   (interactive)
   ;; (make-frame-command)
@@ -1977,6 +1995,8 @@ installed."
 (general-define-key
  :keymaps 'org-agenda-mode-map
  "<SPC>" #'link-hint-open-link)
+
+(setopt org-link-elisp-skip-confirm-regexp "rlr.*")
 
 (setq appt-time-msg-list nil)    ;; clear existing appt list
 ;; (setq appt-message-warning-time '15)  ;; send first warning 15 minutes before appointment
@@ -2666,17 +2686,17 @@ installed."
   ;;      (t posframe)))
   (vertico-multiform-mode 1)
   (setq vertico-multiform-categories
-        '((file grid)
-	(jinx grid (vertico-grid-annotate . 20))
-	(citar buffer)))
+	  '((file grid)
+	    (jinx grid (vertico-grid-annotate . 20))
+	    (citar buffer)))
   (setq vertico-cycle t) ;; enable cycling for 'vertico-next' and 'vertico-prev'
   (add-hook 'rfn-eshadow-update-overlay-hook #'vertico-directory-tidy)
   :general
   (:keymaps 'vertico-map
-	  ;; keybindings to cycle through vertico results.
-	  "C-h" #'+minibuffer-up-dir
-	  "<backspace>" 'vertico-directory-delete-char
-	  "RET" 'vertico-directory-enter))
+	      ;; keybindings to cycle through vertico results.
+	      "C-h" #'+minibuffer-up-dir
+	      "<backspace>" 'vertico-directory-delete-char
+	      "RET" 'vertico-directory-enter))
 
 (use-package visual-regexp
   :general

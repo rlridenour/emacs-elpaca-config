@@ -1426,6 +1426,13 @@ Functions for syncing the database between machines.
     (elfeed-search-update--force)
     (elfeed-update))
 
+(defun rlr/open-elfeed-new-tab ()
+(interactive)
+(tab-new)
+(rlr/elfeed-load-db-and-open)
+(elfeed-update))
+
+
   (defun rlr/elfeed-save-db-and-quit ()
     (interactive)
     (elfeed-db-save)
@@ -2315,6 +2322,15 @@ From [[http://yummymelon.com/devnull/converting-a-markdown-region-to-org-revisit
 	  mastodon-active-user "randyridenour"))
 #+end_src
 
+Open Mastodon in a new tab
+
+#+begin_src emacs-lisp
+(defun rlr/open-mastodon ()
+(interactive)
+(tab-new)
+(mastodon))
+#+end_src
+
 ** Modern Tab Bar
 
 #+begin_src emacs-lisp
@@ -2659,6 +2675,19 @@ Mu4e-alert
 	 )))
 #+end_src
 
+Open mu4e in new tab.
+
+#+begin_src emacs-lisp
+  (defun rlr/open-mu4e-new-tab ()
+    (interactive)
+    (tab-new)
+    (mu4e)
+    (mu4e-update-mail-and-index 1))
+#+end_src
+
+
+
+
 Open mu4e and elfeed in new frame.
 
 #+begin_src emacs-lisp
@@ -2944,6 +2973,14 @@ Use space key to show link hints.
    :keymaps 'org-agenda-mode-map
    "<SPC>" #'link-hint-open-link)
 #+end_src
+
+Set agenda links as safe.
+
+#+begin_src emacs-lisp
+(setopt org-link-elisp-skip-confirm-regexp "rlr.*")
+#+end_src
+
+
 
 #+begin_src emacs-lisp :tangle no
   (use-package org-super-agenda
@@ -4025,17 +4062,17 @@ https://github.com/amno1/emacs-term-toggle
     ;;      (t posframe)))
     (vertico-multiform-mode 1)
     (setq vertico-multiform-categories
-          '((file grid)
-  	(jinx grid (vertico-grid-annotate . 20))
-  	(citar buffer)))
+	  '((file grid)
+	    (jinx grid (vertico-grid-annotate . 20))
+	    (citar buffer)))
     (setq vertico-cycle t) ;; enable cycling for 'vertico-next' and 'vertico-prev'
     (add-hook 'rfn-eshadow-update-overlay-hook #'vertico-directory-tidy)
     :general
     (:keymaps 'vertico-map
-  	  ;; keybindings to cycle through vertico results.
-  	  "C-h" #'+minibuffer-up-dir
-  	  "<backspace>" 'vertico-directory-delete-char
-  	  "RET" 'vertico-directory-enter))
+	      ;; keybindings to cycle through vertico results.
+	      "C-h" #'+minibuffer-up-dir
+	      "<backspace>" 'vertico-directory-delete-char
+	      "RET" 'vertico-directory-enter))
 #+end_src
 
 ** Visual-Regexp
