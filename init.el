@@ -2666,16 +2666,17 @@ installed."
   ;;      (t posframe)))
   (vertico-multiform-mode 1)
   (setq vertico-multiform-categories
-	  '((file grid)
-	    (jinx grid (vertico-grid-annotate . 20))
-	    (citar buffer)))
+        '((file grid)
+	(jinx grid (vertico-grid-annotate . 20))
+	(citar buffer)))
   (setq vertico-cycle t) ;; enable cycling for 'vertico-next' and 'vertico-prev'
+  (add-hook 'rfn-eshadow-update-overlay-hook #'vertico-directory-tidy)
   :general
   (:keymaps 'vertico-map
-	      ;; keybindings to cycle through vertico results.
-	      "C-h" #'+minibuffer-up-dir
-	      "<backspace>" 'vertico-directory-delete-char
-	      "RET" 'vertico-directory-enter))
+	  ;; keybindings to cycle through vertico results.
+	  "C-h" #'+minibuffer-up-dir
+	  "<backspace>" 'vertico-directory-delete-char
+	  "RET" 'vertico-directory-enter))
 
 (use-package visual-regexp
   :general
