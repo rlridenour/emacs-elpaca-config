@@ -230,6 +230,8 @@
 
 (setq initial-major-mode 'org-mode)
 
+(setq default-input-method 'TeX)
+
 (delete-selection-mode 1)
 
 (defun delete-window-balance ()
