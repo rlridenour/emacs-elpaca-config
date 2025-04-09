@@ -808,7 +808,7 @@ If there are only two windows, jump directly to the other window."
   (elfeed-org)
   (setq rmh-elfeed-org-files (list "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/elfeed/elfeed.org"))
   :config
-  (setq rmh-elfeed-org-auto-ignore-invalid-feeds t)
+  ;; (setq rmh-elfeed-org-auto-ignore-invalid-feeds t)
   )
 
 (use-package embark
