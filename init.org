@@ -4186,6 +4186,23 @@ This builds the RSS feed for the blog.
   (use-package webfeeder)
 #+end_src
 
+** Website2org
+
+#+begin_src emacs-lisp
+(use-package website2org
+  :ensure (:host github :repo "rtrppl/website2org")
+  :config
+  (setq website2org-directory "~/icloud/web-saves/website2org/") ;; if needed, see below
+(setq website2org-additional-meta nil)
+  :bind
+  (:map global-map)
+  ("C-M-s-<down>" . website2org)
+  ("C-M-s-<up>" . website2org-temp))
+#+end_src
+
+
+
+
 ** Wgrep
 
 #+begin_src emacs-lisp

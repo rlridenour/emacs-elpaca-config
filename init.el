@@ -2771,6 +2771,16 @@ installed."
 
 (use-package webfeeder)
 
+(use-package website2org
+  :ensure (:host github :repo "rtrppl/website2org")
+  :config
+  (setq website2org-directory "~/icloud/web-saves/website2org/") ;; if needed, see below
+(setq website2org-additional-meta nil)
+  :bind
+  (:map global-map)
+  ("C-M-s-<down>" . website2org)
+  ("C-M-s-<up>" . website2org-temp))
+
 (use-package wgrep)
 
 (use-package which-key
