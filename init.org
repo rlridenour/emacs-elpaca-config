@@ -1667,6 +1667,20 @@ Tag items — from [[https://www.reddit.com/r/emacs/comments/go5d0v/using_emacs_
   (use-package fish-mode)
 #+end_src
 
+*** Emacs Fish Completion
+
+#+begin_src emacs-lisp
+  (use-package fish-completion
+    :ensure (:type git :host github :repo "LemonBreezes/emacs-fish-completion")
+    :config
+    (when (and (executable-find "fish")
+	       (require 'fish-completion nil t))
+      (global-fish-completion-mode)))
+#+end_src
+
+
+
+
 ** FZF
 
 #+begin_src emacs-lisp

@@ -950,6 +950,13 @@ If there are only two windows, jump directly to the other window."
 
 (use-package fish-mode)
 
+(use-package fish-completion
+  :ensure (:type git :host github :repo "LemonBreezes/emacs-fish-completion")
+  :config
+  (when (and (executable-find "fish")
+	       (require 'fish-completion nil t))
+    (global-fish-completion-mode)))
+
 (use-package fzf
   :bind
   ;; Don't forget to set keybinds!
