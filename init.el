@@ -99,6 +99,8 @@
 
 (setf use-short-answers t)
 
+(global-set-key (kbd "<escape>") 'keyboard-escape-quit)
+
 (setq ns-function-modifier 'hyper)
 ;; ns-right-command-modifier 'hyper)
 

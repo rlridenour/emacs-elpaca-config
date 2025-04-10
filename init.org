@@ -351,6 +351,12 @@ Use "y" and "n" in confirmation dialogs.
   (setf use-short-answers t)
 #+end_src
 
+Escape quits everything.
+
+#+begin_src emacs-lisp
+(global-set-key (kbd "<escape>") 'keyboard-escape-quit)
+#+end_src
+
 Set Mac right command key as Emacs hyper key. The fn key with A, F, H, E, C, N, and Q are used by the system. Maybe I can find a way to disable some of those keyboard shortcuts. On the new magic keyboard, the left control key is small and right by the fn key which I seem to always be reaching for. So, remap the fn key to control with Karabiner Elements.
 
 #+begin_src emacs-lisp
