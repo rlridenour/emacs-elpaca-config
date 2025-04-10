@@ -510,6 +510,12 @@ If there are only two windows, jump directly to the other window."
     "s-h"
     "s-,"))
 
+(use-package aas)
+
+(use-package laas
+:hook
+(LaTeX-mode . laas-mode))
+
 (use-feature abbrev
   :config
   (load "~/Dropbox/emacs/my-emacs-abbrev"))

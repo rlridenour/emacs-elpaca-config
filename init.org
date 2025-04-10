@@ -1011,6 +1011,22 @@ Load general before the remaining packages so they can make use of the ~:general
       "s-,"))
 #+end_src
 
+** AAS
+
+#+begin_src emacs-lisp
+(use-package aas)
+#+end_src
+
+*** LAAS
+
+#+begin_src emacs-lisp
+(use-package laas
+:hook
+(LaTeX-mode . laas-mode))
+#+end_src
+
+
+
 ** Abbrev
 
 #+begin_src emacs-lisp
