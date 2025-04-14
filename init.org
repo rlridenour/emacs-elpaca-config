@@ -2611,57 +2611,58 @@ Use variable pitch mode in Org and Markdown modes. Toggle with ~C-M-S-s-v~, boun
 		     :match-func
 		     (lambda (msg)
 		       (when msg
-		         (string-prefix-p "/fastmail" (mu4e-message-field msg :maildir))))
+			 (string-prefix-p "/fastmail" (mu4e-message-field msg :maildir))))
 		     :vars '((user-mail-address . "rlridenour@fastmail.com")
-		             (user-full-name    . "Randy Ridenour")
-		             (mu4e-drafts-folder  . "/fastmail/Drafts")
-		             (mu4e-sent-folder  . "/fastmail/Sent")
-		             (mu4e-trash-folder  . "/fastmail/Trash")
-		             (mu4e-refile-folder  . "/fastmail/Archive")
-		             (sendmail-program . "msmtp")
-		             (send-mail-function . smtpmail-send-it)
-		             (message-sendmail-f-is-evil . t)
-		             (message-sendmail-extra-arguments . ("--read-envelope-from"))
-		             (message-send-mail-function . message-send-mail-with-sendmail)
-		             (smtpmail-default-smtp-server . "smtp.fastmail.com")
-		             (smtpmail-smtp-server  . "smtp.fastmail.com")
-		             ))
+			     (user-full-name    . "Randy Ridenour")
+			     (mu4e-drafts-folder  . "/fastmail/Drafts")
+			     (mu4e-sent-folder  . "/fastmail/Sent")
+			     (mu4e-trash-folder  . "/fastmail/Trash")
+			     (mu4e-refile-folder  . "/fastmail/Archive")
+			     (sendmail-program . "msmtp")
+			     (send-mail-function . smtpmail-send-it)
+			     (message-sendmail-f-is-evil . t)
+			     (message-sendmail-extra-arguments . ("--read-envelope-from"))
+			     (message-send-mail-function . message-send-mail-with-sendmail)
+			     (smtpmail-default-smtp-server . "smtp.fastmail.com")
+			     (smtpmail-smtp-server  . "smtp.fastmail.com")
+			     ))
 		    (make-mu4e-context
 		     :name "obu"
 		     :match-func
 		     (lambda (msg)
 		       (when msg
-		         (string-prefix-p "/obu" (mu4e-message-field msg :maildir))))
+			 (string-prefix-p "/obu" (mu4e-message-field msg :maildir))))
 		     :vars '((user-mail-address . "randy.ridenour@okbu.edu")
-		             (user-full-name    . "Randy Ridenour")
-		             (mu4e-drafts-folder  . "/obu/Drafts")
-		             (mu4e-sent-folder  . "/obu/Sent")
-		             (mu4e-trash-folder . "/obu/Trash")
-		             (mu4e-refile-folder  . "/obu/Archive")
-		             ;; (sendmail-program . "msmtp")
-		             (send-mail-function . smtpmail-send-it)
-		             (message-sendmail-f-is-evil . t)
-		             (message-sendmail-extra-arguments . ("--read-envelope-from"))
-		             (message-send-mail-function . message-send-mail-with-sendmail)
-		             (smtpmail-smtp-server  . "localhost")
-		             (smtpmail-smtp-user . "randy.ridenour@okbu.edu")
-		             (smtpmail-stream-type . plain)
-		             (smtpmail-smtp-service . 1025)
-		             ))))
+			     (user-full-name    . "Randy Ridenour")
+			     (mu4e-drafts-folder  . "/obu/Drafts")
+			     (mu4e-sent-folder  . "/obu/Sent")
+			     (mu4e-trash-folder . "/obu/Trash")
+			     (mu4e-refile-folder  . "/obu/Archive")
+			     ;; (sendmail-program . "msmtp")
+			     (send-mail-function . smtpmail-send-it)
+			     (message-sendmail-f-is-evil . t)
+			     (message-sendmail-extra-arguments . ("--read-envelope-from"))
+			     (message-send-mail-function . message-send-mail-with-sendmail)
+			     (smtpmail-smtp-server  . "localhost")
+			     (smtpmail-smtp-user . "randy.ridenour@okbu.edu")
+			     (smtpmail-stream-type . plain)
+			     (smtpmail-smtp-service . 1025)
+			     ))))
     (display-line-numbers-mode -1)
+(require 'mu4e-transient)
     (add-to-list 'mu4e-bookmarks
-	         '( :name "OBU Inbox"
+		 '( :name "OBU Inbox"
 		    :query "maildir:/obu/INBOX AND NOT flag:trashed"
 		    :key ?o))
     (add-to-list 'mu4e-bookmarks
-	         '( :name "Fastmail Inbox"
+		 '( :name "Fastmail Inbox"
 		    :query "maildir:/fastmail/INBOX AND NOT flag:trashed"
 		    :key ?f))
     (setq gnus-blocked-images
 	  (lambda(&optional _ignore)
 	    (if (mu4e-message-contact-field-matches
-	         (mu4e-message-at-point) :from "store-news@woot.com")
-	        nil "."))))
+		 (mu4e-message-at-point) :from "store-news@woot.com")
+		nil "."))))
 #+end_src
 
 Quit Mu4e and close tab.
@@ -2746,10 +2747,11 @@ Open mu4e and elfeed in new frame.
     (tab-new)
     (mu4e)
     (mu4e-update-mail-and-index 1)
-)
+    )
 
   (general-define-key
-   "C-M-s-r" #'rlr/read-mail-news)
+   "C-M-s-r" #'rlr/read-mail-news
+   "H-m" #'mu4e-transient-menu)
 #+end_src
 
 **** Consult MU
