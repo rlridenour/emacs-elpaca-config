@@ -1672,7 +1672,10 @@ installed."
   :commands (mu4e mu4e-update-mail-and-index)
   :general
   (:keymaps 'mu4e-headers-mode-map
-	      "q"  #'kill-current-buffer)
+	      "q"  #'kill-current-buffer
+	      "C-<tab>" #'tab-next)
+  (:keymaps 'mu4e-thread-mode-map
+	      "C-<tab>" #'tab-next)
   (:keymaps 'mu4e-main-mode-map
 	      "q"  #'rlr/quit-mu4e)
   :after org
@@ -1684,11 +1687,11 @@ installed."
    mu4e-view-show-images t
    mu4e-view-show-addresses t
    mu4e-use-fancy-chars t
-   mu4e-compose-format-flowed nil
+   mu4e-compose-format-flowed t
    mu4e-date-format "%y/%m/%d"
    mu4e-headers-date-format "%Y/%m/%d"
    mu4e-change-filenames-when-moving t
-   mu4e-attachments-dir "~/Downloads"
+   mu4e-attachment-dir "~/Downloads"
    mu4e-maildir       "~/Maildir/"   ;; top-level Maildir
    ;; note that these folders below must start with /
    ;; the paths are relative to maildir root
@@ -1706,44 +1709,57 @@ installed."
 		     :match-func
 		     (lambda (msg)
 		       (when msg
-			 (string-prefix-p "/fastmail" (mu4e-message-field msg :maildir))))
+		         (string-prefix-p "/fastmail" (mu4e-message-field msg :maildir))))
 		     :vars '((user-mail-address . "rlridenour@fastmail.com")
-			     (user-full-name    . "Randy Ridenour")
-			     (mu4e-drafts-folder  . "/fastmail/Drafts")
-			     (mu4e-sent-folder  . "/fastmail/Sent")
-			     (mu4e-trash-folder  . "/fastmail/Trash")
-			     (mu4e-refile-folder  . "/fastmail/Archive")
-			     (sendmail-program . "msmtp")
-			     (send-mail-function . smtpmail-send-it)
-			     (message-sendmail-f-is-evil . t)
-			     (message-sendmail-extra-arguments . ("--read-envelope-from"))
-			     (message-send-mail-function . message-send-mail-with-sendmail)
-			     (smtpmail-default-smtp-server . "smtp.fastmail.com")
-			     (smtpmail-smtp-server  . "smtp.fastmail.com")
-			     ))
+		             (user-full-name    . "Randy Ridenour")
+		             (mu4e-drafts-folder  . "/fastmail/Drafts")
+		             (mu4e-sent-folder  . "/fastmail/Sent")
+		             (mu4e-trash-folder  . "/fastmail/Trash")
+		             (mu4e-refile-folder  . "/fastmail/Archive")
+		             (sendmail-program . "msmtp")
+		             (send-mail-function . smtpmail-send-it)
+		             (message-sendmail-f-is-evil . t)
+		             (message-sendmail-extra-arguments . ("--read-envelope-from"))
+		             (message-send-mail-function . message-send-mail-with-sendmail)
+		             (smtpmail-default-smtp-server . "smtp.fastmail.com")
+		             (smtpmail-smtp-server  . "smtp.fastmail.com")
+		             ))
 		    (make-mu4e-context
 		     :name "obu"
 		     :match-func
 		     (lambda (msg)
 		       (when msg
-			 (string-prefix-p "/obu" (mu4e-message-field msg :maildir))))
+		         (string-prefix-p "/obu" (mu4e-message-field msg :maildir))))
 		     :vars '((user-mail-address . "randy.ridenour@okbu.edu")
-			     (user-full-name    . "Randy Ridenour")
-			     (mu4e-drafts-folder  . "/obu/Drafts")
-			     (mu4e-sent-folder  . "/obu/Sent")
-			     (mu4e-trash-folder . "/obu/Trash")
-			     (mu4e-refile-folder  . "/obu/Archive")
-			     ;; (sendmail-program . "msmtp")
-			     (send-mail-function . smtpmail-send-it)
-			     (message-sendmail-f-is-evil . t)
-			     (message-sendmail-extra-arguments . ("--read-envelope-from"))
-			     (message-send-mail-function . message-send-mail-with-sendmail)
-			     (smtpmail-smtp-server  . "localhost")
-			     (smtpmail-smtp-user . "randy.ridenour@okbu.edu")
-			     (smtpmail-stream-type . plain)
-			     (smtpmail-smtp-service . 1025)
-			     ))))
-  (display-line-numbers-mode -1))
+		             (user-full-name    . "Randy Ridenour")
+		             (mu4e-drafts-folder  . "/obu/Drafts")
+		             (mu4e-sent-folder  . "/obu/Sent")
+		             (mu4e-trash-folder . "/obu/Trash")
+		             (mu4e-refile-folder  . "/obu/Archive")
+		             ;; (sendmail-program . "msmtp")
+		             (send-mail-function . smtpmail-send-it)
+		             (message-sendmail-f-is-evil . t)
+		             (message-sendmail-extra-arguments . ("--read-envelope-from"))
+		             (message-send-mail-function . message-send-mail-with-sendmail)
+		             (smtpmail-smtp-server  . "localhost")
+		             (smtpmail-smtp-user . "randy.ridenour@okbu.edu")
+		             (smtpmail-stream-type . plain)
+		             (smtpmail-smtp-service . 1025)
+		             ))))
+  (display-line-numbers-mode -1)
+  (add-to-list 'mu4e-bookmarks
+	         '( :name "OBU Inbox"
+		    :query "maildir:/obu/INBOX AND NOT flag:trashed"
+		    :key ?o))
+  (add-to-list 'mu4e-bookmarks
+	         '( :name "Fastmail Inbox"
+		    :query "maildir:/fastmail/INBOX AND NOT flag:trashed"
+		    :key ?f))
+  (setq gnus-blocked-images
+	  (lambda(&optional _ignore)
+	    (if (mu4e-message-contact-field-matches
+	         (mu4e-message-at-point) :from "store-news@woot.com")
+	        nil "."))))
 
 (defun rlr/quit-mu4e ()
   (interactive)
@@ -1795,6 +1811,44 @@ installed."
 
   (general-define-key
    "C-M-s-r" #'rlr/read-mail-news)
+
+(use-package consult-mu
+  :ensure (:type git :host github :repo "armindarvish/consult-mu" :branch "main" :files (:defaults "extras/*.el"))
+  :after (consult mu4e)
+  :custom
+  ;;maximum number of results shown in minibuffer
+  (consult-mu-maxnum 200)
+  ;;show preview when pressing any keys
+  (consult-mu-preview-key 'any)
+  ;;do not mark email as read when previewed. If you turn this to t, be aware that the auto-loaded preview if the preview-key above is 'any would also get marked as read!
+  (consult-mu-mark-previewed-as-read nil)
+  ;;mark email as read when selected.
+  (consult-mu-mark-viewed-as-read t)
+  ;;use reply to all when composing reply emails
+  (consult-mu-use-wide-reply nil)
+  ;; define a template for headers view in minibuffer. The example below adjusts the width based on the width of the screen.
+  (consult-mu-headers-template (lambda () (concat "%f" (number-to-string (floor (* (frame-width) 0.15))) "%s" (number-to-string (floor (* (frame-width) 0.5))) "%d13" "%g" "%x")))
+  :config
+  ;;create a list of saved searches for quick access using `histroy-next-element' with `M-n' in minibuffer. Note the "#" character at the beginning of each query! Change these according to
+  (setq consult-mu-saved-searches-dynamics '("#flag:unread"))
+  (setq consult-mu-saved-searches-async '("#flag:unread"))
+  ;; require embark actions for marking, replying, forwarding, etc. directly from minibuffer
+  (require 'consult-mu-embark)
+  ;; require extra module for composing (e.g. for interactive attachment) as well as embark actions
+  (require 'consult-mu-compose)
+  (require 'consult-mu-compose-embark)
+  ;; require extra module for searching contacts and runing embark actions on contacts
+  (require 'consult-mu-contacts)
+  (require 'consult-mu-contacts-embark)
+  ;; change the prefiew key for compose so you don't open a preview of every file when selecting files to attach
+  (setq consult-mu-compose-preview-key "M-o")
+  ;; pick a key to bind to consult-mu-compose-attach in embark-file-map
+  (setq consult-mu-embark-attach-file-key "C-a")
+  (setq consult-mu-contacts-ignore-list '("^.*no.*reply.*"))
+  (setq consult-mu-contacts-ignore-case-fold-search t)
+  (consult-mu-compose-embark-bind-attach-file-key)
+  ;; choose if you want to use dired for attaching files (choice of 'always, 'in-dired, or nil)
+  (setq consult-mu-compose-use-dired-attachment 'in-dired))
 
 (use-package org-modern
   :config
