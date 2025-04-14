@@ -2760,6 +2760,7 @@ Open mu4e and elfeed in new frame.
   (use-package consult-mu
     :ensure (:type git :host github :repo "armindarvish/consult-mu" :branch "main" :files (:defaults "extras/*.el"))
     :after (consult mu4e)
+:commands (consult-mu)
     :custom
     ;;maximum number of results shown in minibuffer
     (consult-mu-maxnum 200)
@@ -4011,7 +4012,7 @@ Increase number of recent files shown.
 #+begin_src emacs-lisp :tangle no
   (use-package selected
     :ensure
-    :commands selected-minor-mode
+    :commands (selected-minor-mode)
     :config
     (selected-global-mode)
     :general
