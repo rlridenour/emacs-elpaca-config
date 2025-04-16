@@ -32,9 +32,9 @@
 (defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
 (defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
 (defvar elpaca-order '(elpaca :repo "https://github.com/progfolio/elpaca.git"
-                              :ref nil :depth 1 :inherit ignore
-                              :files (:defaults "elpaca-test.el" (:exclude "extensions"))
-                              :build (:not elpaca--activate-package)))
+			      :ref nil :depth 1 :inherit ignore
+			      :files (:defaults "elpaca-test.el" (:exclude "extensions"))
+			      :build (:not elpaca--activate-package)))
 (let* ((repo  (expand-file-name "elpaca/" elpaca-repos-directory))
        (build (expand-file-name "elpaca/" elpaca-builds-directory))
        (order (cdr elpaca-order))
@@ -44,20 +44,20 @@
     (make-directory repo t)
     (when (<= emacs-major-version 28) (require 'subr-x))
     (condition-case-unless-debug err
-        (if-let* ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
-                  ((zerop (apply #'call-process `("git" nil ,buffer t "clone"
-                                                  ,@(when-let* ((depth (plist-get order :depth)))
-                                                      (list (format "--depth=%d" depth) "--no-single-branch"))
-                                                  ,(plist-get order :repo) ,repo))))
-                  ((zerop (call-process "git" nil buffer t "checkout"
-                                        (or (plist-get order :ref) "--"))))
-                  (emacs (concat invocation-directory invocation-name))
-                  ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
-                                        "--eval" "(byte-recompile-directory \".\" 0 'force)")))
-                  ((require 'elpaca))
-                  ((elpaca-generate-autoloads "elpaca" repo)))
-            (progn (message "%s" (buffer-string)) (kill-buffer buffer))
-          (error "%s" (with-current-buffer buffer (buffer-string))))
+	(if-let* ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
+		  ((zerop (apply #'call-process `("git" nil ,buffer t "clone"
+						  ,@(when-let* ((depth (plist-get order :depth)))
+						      (list (format "--depth=%d" depth) "--no-single-branch"))
+						  ,(plist-get order :repo) ,repo))))
+		  ((zerop (call-process "git" nil buffer t "checkout"
+					(or (plist-get order :ref) "--"))))
+		  (emacs (concat invocation-directory invocation-name))
+		  ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
+					"--eval" "(byte-recompile-directory \".\" 0 'force)")))
+		  ((require 'elpaca))
+		  ((elpaca-generate-autoloads "elpaca" repo)))
+	    (progn (message "%s" (buffer-string)) (kill-buffer buffer))
+	  (error "%s" (with-current-buffer buffer (buffer-string))))
       ((error) (warn "%s" err) (delete-directory repo 'recursive))))
   (unless (require 'elpaca-autoloads nil t)
     (require 'elpaca)
@@ -640,8 +640,52 @@ If there are only two windows, jump directly to the other window."
   (setq denote-infer-keywords t)
   (setq denote-sort-keywords t)
   (setq denote-prompts '(title keywords))
-  (setq denote-date-format nil)
-  (require 'denote-journal-extras))
+  (setq denote-date-format nil))
+
+(use-package consult-denote
+  :general
+  ("C-c n f"  #'consult-denote-find)
+  ("C-c n g"  #'consult-denote-grep)
+  :config
+  (consult-denote-mode 1))
+
+(use-package denote-org
+  :ensure (:type git :host github :repo "protesilaos/denote-org")
+  :commands
+  ;; I list the commands here so that you can discover them more
+  ;; easily.  You might want to bind the most frequently used ones to
+  ;; the `org-mode-map'.
+  ( denote-org-link-to-heading
+    denote-org-backlinks-for-heading
+
+    denote-org-extract-org-subtree
+
+    denote-org-convert-links-to-file-type
+    denote-org-convert-links-to-denote-type
+
+    denote-org-dblock-insert-files
+    denote-org-dblock-insert-links
+    denote-org-dblock-insert-backlinks
+    denote-org-dblock-insert-missing-links
+    denote-org-dblock-insert-files-as-headings))
+
+(use-package denote-journal
+  :ensure (:type git :host github :repo "protesilaos/denote-journal")
+  ;; Bind those to some key for your convenience.
+  :commands ( denote-journal-new-entry
+		denote-journal-new-or-existing-entry
+		denote-journal-link-or-create-entry )
+  :hook (calendar-mode . denote-journal-calendar-mode)
+  :config
+  ;; Use the "journal" subdirectory of the `denote-directory'.  Set this
+  ;; to nil to use the `denote-directory' instead.
+  (setq denote-journal-directory
+	  (expand-file-name "journal" denote-directory))
+  ;; Default keyword for new journal entries. It can also be a list of
+  ;; strings.
+  (setq denote-journal-keyword "journal")
+  ;; Read the doc string of `denote-journal-title-format'.
+  (setq denote-journal-title-format 'day-date-month-year))
 
 (use-package consult-notes
   :config
