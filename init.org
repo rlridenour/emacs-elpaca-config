@@ -4172,6 +4172,14 @@ https://github.com/amno1/emacs-term-toggle
     (setq titlecase-style "chicago"))
 #+end_src
 
+** TLDR
+
+#+begin_src emacs-lisp
+(use-package tldr)
+#+end_src
+
+
+
 ** Unfill
 
 #+begin_src emacs-lisp

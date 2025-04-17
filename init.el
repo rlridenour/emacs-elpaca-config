@@ -2782,6 +2782,8 @@ installed."
   :config
   (setq titlecase-style "chicago"))
 
+(use-package tldr)
+
 (use-package unfill)
 
 (use-package vertico

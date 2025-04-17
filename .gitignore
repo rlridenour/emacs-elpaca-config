@@ -23,5 +23,6 @@ projects
 elpa/
 *desktop*
 persist/
-/url/
+url/
 *.plstore
+tldr/
