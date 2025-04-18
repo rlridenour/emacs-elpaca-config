@@ -1212,18 +1212,18 @@ If there are only two windows, jump directly to the other window."
    ))
 
 (with-after-elpaca-init
- (progn
-   (major-mode-hydra-define dashboard-mode
-     (:quit-key "q")
-     ("Open"
+   (progn
+     (major-mode-hydra-define dashboard-mode
+       (:quit-key "q")
+       ("Open"
 	(("m" consult-bookmark "bookmarks")
 	 ("a" consult-org-agenda "consult-agenda")
 	 ("t" (find-file "/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/tasks.org") "open tasks")
 	 ("b" (find-file "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/bookmarks.org") "web bookmarks"))))
 
-   (major-mode-hydra-define org-agenda-mode
-     (:quit-key "q")
-     ("Open"
+     (major-mode-hydra-define org-agenda-mode
+       (:quit-key "q")
+       ("Open"
 	(
 	 ("a" consult-org-agenda "consult-agenda")
 	 ("b" consult-bookmark "bookmarks")
@@ -1241,9 +1241,9 @@ If there are only two windows, jump directly to the other window."
 	 ("e" rlr/open-safari-page-in-eww "Open Safari page in EWW"))
 	))
 
-   (major-mode-hydra-define eww-mode
-     (:quit-key "q")
-     ("A"
+     (major-mode-hydra-define eww-mode
+       (:quit-key "q")
+       ("A"
 	(
 	 ;; ("G" eww "Eww Open Browser")
 	 ("g" eww-reload "Eww Reload")
@@ -1288,9 +1288,9 @@ If there are only two windows, jump directly to the other window."
 	 );end other
 	))
 
-   (major-mode-hydra-define markdown-mode
-     (:quit-key "q")
-     ("Format"
+     (major-mode-hydra-define markdown-mode
+       (:quit-key "q")
+       ("Format"
 	(("h" markdown-insert-header-dwim "header")
 	 ("l" markdown-insert-link "link")
 	 ("u" markdown-insert-uri "url")
@@ -1300,9 +1300,9 @@ If there are only two windows, jump directly to the other window."
 	 ("n" markdown-cleanup-list-numbers "clean-lists")
 	 ("c" markdown-complete-buffer "complete"))))
 
-   (major-mode-hydra-define LaTeX-mode
-     (:quit-key "q")
-     ("Bibtex"
+     (major-mode-hydra-define LaTeX-mode
+       (:quit-key "q")
+       ("Bibtex"
 	(("r" citar-insert-citation "citation"))
 	"LaTeXmk"
 	(("m" rlr/tex-mkpdf "PDFLaTeX")
@@ -1313,9 +1313,9 @@ If there are only two windows, jump directly to the other window."
 	 ("C" tex-clean-all "clean all")
 	 ("n" latex-word-count "word count"))))
 
-   (major-mode-hydra-define org-mode
-     (:quit-key "q")
-     ("Export"
+     (major-mode-hydra-define org-mode
+       (:quit-key "q")
+       ("Export"
 	(("m" rlr/org-mkpdf "Make PDF with PDFLaTeX")
 	 ("p" rlr/org-open-pdf "View PDF")
 	 ("h" make-html "HTML")
@@ -1358,9 +1358,9 @@ If there are only two windows, jump directly to the other window."
 	"Notes"
 	(("1" denote-link "link to note"))))
 
-   (major-mode-hydra-define dired-mode
-     (:quit-key "q")
-     ("New"
+     (major-mode-hydra-define dired-mode
+       (:quit-key "q")
+       ("New"
 	(("a" rlrt-new-article "article")
 	 ("l" rlrt-new-lecture "lecture")
 	 ("h" rlrt-new-handout "handout")
@@ -1376,30 +1376,42 @@ If there are only two windows, jump directly to the other window."
 	 ("bs" orgblog-serve "Serve Site")
 	 ("bd" orgblog-push "Push to Github"))))
 
-   (major-mode-hydra-define css-mode
-     (:quit-key "q")
-     ("Blog"
+     (major-mode-hydra-define css-mode
+       (:quit-key "q")
+       ("Blog"
 	(("bn" rlrt-new-post "New draft")
 	 ("bb" orgblog-build "Build Site")
 	 ("bs" orgblog-serve "Serve Site")
 	 ("bd" orgblog-push "Push to Github"))))
 
-   (major-mode-hydra-define denote-menu-mode
-     (:quit-key "q")
-     ("Tools"
+     (major-mode-hydra-define denote-menu-mode
+       (:quit-key "q")
+       ("Tools"
 	(("f" denote-menu-filter "Filter by regex")
 	 ("k" denote-menu-filter-by-keyword "Filter by keyword")
 	 ("c" denote-menu-clear-filters "Clear filters")
 	 ("d" denote-menu-export-to-dired "Dired"))))
 
-   (major-mode-hydra-define mu4e-view-mode
-     (:quit-key "q")
-     ("Message"
+     (major-mode-hydra-define mu4e-main-mode
+       (:quit-key "q")
+       ("Message"
 	(("r" mu4e-compose-reply "Reply")
 	 ("a"  mu4e-compose-wide-reply "Reply All"))))
 
+(major-mode-hydra-define mu4e-headers-mode
+       (:quit-key "q")
+       ("Message"
+	(("r" mu4e-compose-reply "Reply")
+	 ("a"  mu4e-compose-wide-reply "Reply All"))))
+
+(major-mode-hydra-define mu4e-view-mode
+       (:quit-key "q")
+       ("Message"
+	(("r" mu4e-compose-reply "Reply")
+	 ("a"  mu4e-compose-wide-reply "Reply All"))))
+
+     )
    )
- )
 
 (general-define-key
  "s-h" #'hydra-hydras/body
@@ -1559,17 +1571,6 @@ installed."
   (shell-command-on-region
    start end
    "pandoc -f markdown -t org --wrap=preserve" t t))
-
-(use-package mastodon
-  :config
-  (mastodon-discover)
-  (setq mastodon-instance-url "https://zirk.us/"
-	  mastodon-active-user "randyridenour"))
-
-(defun rlr/open-mastodon ()
-  (interactive)
-  (tab-new)
-  (mastodon))
 
 (use-package modern-tab-bar
   :ensure
@@ -1983,6 +1984,10 @@ installed."
 		      (end-of-line)
 		      (delete-region beg (point)))
 		    (insert (concat " " (format-time-string "%B %e, %Y")))))
+
+(setopt
+ org-latex-to-html-convert-command "latexmlc literal:%i --profile=math 2>/dev/null"
+ org-html-with-latex 'html)
 
 (use-package org-auto-tangle
   :hook (org-mode . org-auto-tangle-mode))

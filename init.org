@@ -2166,7 +2166,19 @@ Tag items — from [[https://www.reddit.com/r/emacs/comments/go5d0v/using_emacs_
 	 ("c" denote-menu-clear-filters "Clear filters")
 	 ("d" denote-menu-export-to-dired "Dired"))))
 
-     (major-mode-hydra-define mu4e-view-mode
+     (major-mode-hydra-define mu4e-main-mode
+       (:quit-key "q")
+       ("Message"
+	(("r" mu4e-compose-reply "Reply")
+	 ("a"  mu4e-compose-wide-reply "Reply All"))))
+
+(major-mode-hydra-define mu4e-headers-mode
+       (:quit-key "q")
+       ("Message"
+	(("r" mu4e-compose-reply "Reply")
+	 ("a"  mu4e-compose-wide-reply "Reply All"))))
+
+(major-mode-hydra-define mu4e-view-mode
        (:quit-key "q")
        ("Message"
 	(("r" mu4e-compose-reply "Reply")
@@ -2396,7 +2408,7 @@ From [[http://yummymelon.com/devnull/converting-a-markdown-region-to-org-revisit
 
 ** Mastodon
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package mastodon
     :config
     (mastodon-discover)
@@ -2406,7 +2418,7 @@ From [[http://yummymelon.com/devnull/converting-a-markdown-region-to-org-revisit
 
 Open Mastodon in a new tab
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (defun rlr/open-mastodon ()
     (interactive)
     (tab-new)
@@ -2944,6 +2956,17 @@ Open mu4e and elfeed in new frame.
 		    (insert (concat " " (format-time-string "%B %e, %Y")))))
 
 #+end_src
+
+Use [[https://math.nist.gov/~BMiller/LaTeXML/ussage.html][latexml]] to export latex to html. Load additional packages by adding --preload= flags.
+
+#+begin_src emacs-lisp
+(setopt
+ org-latex-to-html-convert-command "latexmlc literal:%i --profile=math 2>/dev/null"
+ org-html-with-latex 'html)
+#+end_src
+
+
+
 
 *** Org Auto Tangle
 
