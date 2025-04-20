@@ -52,6 +52,7 @@ Raise max lisp nesting depth.
 	     gc-cons-threshold 100000000)
 (let ((inhibit-message t))
 (message "gc-cons-threshold & file-name-handler-alist restored"))
+(message "ELPACA LOADING COMPLETE: %s" (emacs-init-time))
        (when (boundp 'after-focus-change-function)
 	 (add-function :after after-focus-change-function #'+gc-after-focus-change)))))
 
@@ -2761,9 +2762,6 @@ Use variable pitch mode in Org and Markdown modes. Toggle with ~C-M-S-s-v~, boun
 )
 #+end_src
 
-
-
-
 Quit Mu4e and close tab.
 
 #+begin_src emacs-lisp
@@ -2853,7 +2851,6 @@ Open mu4e and elfeed in new frame.
    "H-m" #'mu4e-transient-menu)
 #+end_src
 
-
 **** Mu4e-Views
 
 #+begin_src emacs-lisp :tangle no
@@ -2876,8 +2873,6 @@ Open mu4e and elfeed in new frame.
 	  "i" #'mu4e-views-mu4e-view-as-nonblocked-html ;; show currently selected email with all remote content
 	  ))
 #+end_src
-
-
 
 **** Consult MU
 
@@ -2922,7 +2917,6 @@ Open mu4e and elfeed in new frame.
     (setq consult-mu-compose-use-dired-attachment 'in-dired))
 #+end_src
 
-
 **** Browser
 
 Functions for setting default browser,
@@ -2952,8 +2946,6 @@ Functions for setting default browser,
 (general-define-key
 "C-M-S-s-b" #'rlr/select-browser)
 #+end_src
-
-
 
 *** Org Modern
 
@@ -3060,9 +3052,6 @@ Use [[https://math.nist.gov/~BMiller/LaTeXML/ussage.html][latexml]] to export la
  org-latex-to-html-convert-command "latexmlc literal:%i --profile=math 2>/dev/null"
  org-html-with-latex 'html)
 #+end_src
-
-
-
 
 *** Org Auto Tangle
 
@@ -4296,8 +4285,6 @@ https://github.com/amno1/emacs-term-toggle
 #+begin_src emacs-lisp
 (use-package tldr)
 #+end_src
-
-
 
 ** Unfill
 

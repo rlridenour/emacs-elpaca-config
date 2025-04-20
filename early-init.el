@@ -23,6 +23,7 @@
 	     gc-cons-threshold 100000000)
 (let ((inhibit-message t))
 (message "gc-cons-threshold & file-name-handler-alist restored"))
+(message "ELPACA LOADING COMPLETE: %s" (emacs-init-time))
        (when (boundp 'after-focus-change-function)
 	 (add-function :after after-focus-change-function #'+gc-after-focus-change)))))
 
