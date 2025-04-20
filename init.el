@@ -515,6 +515,7 @@ If there are only two windows, jump directly to the other window."
 (use-package aas)
 
 (use-package laas
+:after auctex
 :hook
 (LaTeX-mode . laas-mode))
 

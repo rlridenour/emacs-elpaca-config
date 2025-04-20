@@ -1027,6 +1027,7 @@ Load general before the remaining packages so they can make use of the ~:general
 
 #+begin_src emacs-lisp
 (use-package laas
+:after auctex
 :hook
 (LaTeX-mode . laas-mode))
 #+end_src
