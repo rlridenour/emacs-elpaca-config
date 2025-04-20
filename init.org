@@ -605,39 +605,6 @@ Overwrite selected text.
   (delete-selection-mode 1)
 #+end_src
 
-
-*** Browser
-
-Functions for setting default browser,
-
-#+begin_src emacs-lisp
-(defun rlr/browser-default ()
-  (interactive)
-  (setq browse-url-browser-function 'browse-url-default-browser))
-
-(defun rlr/browser-qutebrowser ()
-  (interactive)
-  (setq browse-url-browser-function 'browse-url-generic
-        browse-url-generic-program "qutebrowser"))
-
-(defun rlr/browser-eww ()
-  (interactive)
-  (setq browse-url-browser-function 'eww-browse-url))
-
-(defun rlr/select-browser ()
-  (interactive)
-  (let* ((choices '(("System Default" . rlr/browser-default)
-		 ("Qutebrowser" . rlr/browser-qutebrowser)
- 		 ("EWW" . rlr/browser-eww)))
-		       (choice   (completing-read "Choose one: " choices)))
-    (call-interactively (cdr (assoc choice choices)))))
-
-(general-define-key
-"C-M-S-s-b" #'rlr/select-browser)
-#+end_src
-
-
-
 ** Windows
 
 #+begin_src emacs-lisp
@@ -2953,6 +2920,38 @@ Open mu4e and elfeed in new frame.
     ;; choose if you want to use dired for attaching files (choice of 'always, 'in-dired, or nil)
     (setq consult-mu-compose-use-dired-attachment 'in-dired))
 #+end_src
+
+
+**** Browser
+
+Functions for setting default browser,
+
+#+begin_src emacs-lisp
+(defun rlr/browser-default ()
+  (interactive)
+  (setq browse-url-browser-function 'browse-url-default-browser))
+
+(defun rlr/browser-qutebrowser ()
+  (interactive)
+  (setq browse-url-browser-function 'browse-url-generic
+        browse-url-generic-program "qutebrowser"))
+
+(defun rlr/browser-eww ()
+  (interactive)
+  (setq browse-url-browser-function 'eww-browse-url))
+
+(defun rlr/select-browser ()
+  (interactive)
+  (let* ((choices '(("System Default" . rlr/browser-default)
+		 ("Qutebrowser" . rlr/browser-qutebrowser)
+ 		 ("EWW" . rlr/browser-eww)))
+		       (choice   (completing-read "Choose one: " choices)))
+    (call-interactively (cdr (assoc choice choices)))))
+
+(general-define-key
+"C-M-S-s-b" #'rlr/select-browser)
+#+end_src
+
 
 
 *** Org Modern

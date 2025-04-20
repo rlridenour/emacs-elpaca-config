@@ -236,30 +236,6 @@
 
 (delete-selection-mode 1)
 
-(defun rlr/browser-default ()
-  (interactive)
-  (setq browse-url-browser-function 'browse-url-default-browser))
-
-(defun rlr/browser-qutebrowser ()
-  (interactive)
-  (setq browse-url-browser-function 'browse-url-generic
-        browse-url-generic-program "qutebrowser"))
-
-(defun rlr/browser-eww ()
-  (interactive)
-  (setq browse-url-browser-function 'eww-browse-url))
-
-(defun rlr/select-browser ()
-  (interactive)
-  (let* ((choices '(("System Default" . rlr/browser-default)
-		 ("Qutebrowser" . rlr/browser-qutebrowser)
- 		 ("EWW" . rlr/browser-eww)))
-		       (choice   (completing-read "Choose one: " choices)))
-    (call-interactively (cdr (assoc choice choices)))))
-
-(general-define-key
-"C-M-S-s-b" #'rlr/select-browser)
-
 (defun delete-window-balance ()
   "Delete window and rebalance the remaining ones."
   (interactive)
@@ -1950,6 +1926,30 @@ installed."
     (consult-mu-compose-embark-bind-attach-file-key)
     ;; choose if you want to use dired for attaching files (choice of 'always, 'in-dired, or nil)
     (setq consult-mu-compose-use-dired-attachment 'in-dired))
+
+(defun rlr/browser-default ()
+  (interactive)
+  (setq browse-url-browser-function 'browse-url-default-browser))
+
+(defun rlr/browser-qutebrowser ()
+  (interactive)
+  (setq browse-url-browser-function 'browse-url-generic
+        browse-url-generic-program "qutebrowser"))
+
+(defun rlr/browser-eww ()
+  (interactive)
+  (setq browse-url-browser-function 'eww-browse-url))
+
+(defun rlr/select-browser ()
+  (interactive)
+  (let* ((choices '(("System Default" . rlr/browser-default)
+		 ("Qutebrowser" . rlr/browser-qutebrowser)
+ 		 ("EWW" . rlr/browser-eww)))
+		       (choice   (completing-read "Choose one: " choices)))
+    (call-interactively (cdr (assoc choice choices)))))
+
+(general-define-key
+"C-M-S-s-b" #'rlr/select-browser)
 
 (use-package org-modern
   :config
