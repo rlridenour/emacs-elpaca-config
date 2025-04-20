@@ -236,6 +236,30 @@
 
 (delete-selection-mode 1)
 
+(defun rlr/browser-default ()
+  (interactive)
+  (setq browse-url-browser-function 'browse-url-default-browser))
+
+(defun rlr/browser-qutebrowser ()
+  (interactive)
+  (setq browse-url-browser-function 'browse-url-generic
+        browse-url-generic-program "qutebrowser"))
+
+(defun rlr/browser-eww ()
+  (interactive)
+  (setq browse-url-browser-function 'eww-browse-url))
+
+(defun rlr/select-browser ()
+  (interactive)
+  (let* ((choices '(("System Default" . rlr/browser-default)
+		 ("Qutebrowser" . rlr/browser-qutebrowser)
+ 		 ("EWW" . rlr/browser-eww)))
+		       (choice   (completing-read "Choose one: " choices)))
+    (call-interactively (cdr (assoc choice choices)))))
+
+(general-define-key
+"C-M-S-s-b" #'rlr/select-browser)
+
 (defun delete-window-balance ()
   "Delete window and rebalance the remaining ones."
   (interactive)
@@ -1395,20 +1419,41 @@ If there are only two windows, jump directly to the other window."
      (major-mode-hydra-define mu4e-main-mode
        (:quit-key "q")
        ("Message"
-	(("r" mu4e-compose-reply "Reply")
-	 ("a"  mu4e-compose-wide-reply "Reply All"))))
+	(
+	 ("n" mu4e-compose-mail "New")
+	 )))
 
-(major-mode-hydra-define mu4e-headers-mode
+     (major-mode-hydra-define mu4e-headers-mode
        (:quit-key "q")
        ("Message"
-	(("r" mu4e-compose-reply "Reply")
-	 ("a"  mu4e-compose-wide-reply "Reply All"))))
+	(
+	 ("n" mu4e-compose-mail "New")
+	 ("r" mu4e-compose-reply "Reply")
+	 ("a"  mu4e-compose-wide-reply "Reply All")
+	 )))
 
-(major-mode-hydra-define mu4e-view-mode
+     (major-mode-hydra-define mu4e-view-mode
        (:quit-key "q")
        ("Message"
-	(("r" mu4e-compose-reply "Reply")
-	 ("a"  mu4e-compose-wide-reply "Reply All"))))
+	(
+	 ("n" mu4e-compose-mail "New")
+	 ("r" mu4e-compose-reply "Reply")
+	 ("a"  mu4e-compose-wide-reply "Reply All")
+	 )
+"Browser"
+(
+("bd" rlr/browser-default "System default")
+("bq" rlr/browser-qutebrowser "Qutebrowser")
+("be" rlr/browser-eww "EWW")
+)))
+
+(major-mode-hydra-define mu4e-compose-mode
+       (:quit-key "q")
+       ("Compose with Org"
+	(
+	 ("o" org-mime-edit-mail-in-org-mode "Edit in org")
+	 ("r" org-mime-htmlize "Org to HTML")
+	 )))
 
      )
    )
@@ -1806,6 +1851,14 @@ installed."
 	    (if (mu4e-message-contact-field-matches
 		 (mu4e-message-at-point) :from "store-news@woot.com")
 		nil "."))))
+
+(use-package org-mime
+:commands (org-mime-edit-mail-in-org-mode)
+:config
+(setq org-mime-export-options '(:section-numbers nil
+                                :with-author nil
+                                :with-toc nil))
+)
 
 (defun rlr/quit-mu4e ()
   (interactive)

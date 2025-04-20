@@ -605,6 +605,39 @@ Overwrite selected text.
   (delete-selection-mode 1)
 #+end_src
 
+
+*** Browser
+
+Functions for setting default browser,
+
+#+begin_src emacs-lisp
+(defun rlr/browser-default ()
+  (interactive)
+  (setq browse-url-browser-function 'browse-url-default-browser))
+
+(defun rlr/browser-qutebrowser ()
+  (interactive)
+  (setq browse-url-browser-function 'browse-url-generic
+        browse-url-generic-program "qutebrowser"))
+
+(defun rlr/browser-eww ()
+  (interactive)
+  (setq browse-url-browser-function 'eww-browse-url))
+
+(defun rlr/select-browser ()
+  (interactive)
+  (let* ((choices '(("System Default" . rlr/browser-default)
+		 ("Qutebrowser" . rlr/browser-qutebrowser)
+ 		 ("EWW" . rlr/browser-eww)))
+		       (choice   (completing-read "Choose one: " choices)))
+    (call-interactively (cdr (assoc choice choices)))))
+
+(general-define-key
+"C-M-S-s-b" #'rlr/select-browser)
+#+end_src
+
+
+
 ** Windows
 
 #+begin_src emacs-lisp
@@ -2169,20 +2202,41 @@ Tag items — from [[https://www.reddit.com/r/emacs/comments/go5d0v/using_emacs_
      (major-mode-hydra-define mu4e-main-mode
        (:quit-key "q")
        ("Message"
-	(("r" mu4e-compose-reply "Reply")
-	 ("a"  mu4e-compose-wide-reply "Reply All"))))
+	(
+	 ("n" mu4e-compose-mail "New")
+	 )))
 
-(major-mode-hydra-define mu4e-headers-mode
+     (major-mode-hydra-define mu4e-headers-mode
        (:quit-key "q")
        ("Message"
-	(("r" mu4e-compose-reply "Reply")
-	 ("a"  mu4e-compose-wide-reply "Reply All"))))
+	(
+	 ("n" mu4e-compose-mail "New")
+	 ("r" mu4e-compose-reply "Reply")
+	 ("a"  mu4e-compose-wide-reply "Reply All")
+	 )))
 
-(major-mode-hydra-define mu4e-view-mode
+     (major-mode-hydra-define mu4e-view-mode
        (:quit-key "q")
        ("Message"
-	(("r" mu4e-compose-reply "Reply")
-	 ("a"  mu4e-compose-wide-reply "Reply All"))))
+	(
+	 ("n" mu4e-compose-mail "New")
+	 ("r" mu4e-compose-reply "Reply")
+	 ("a"  mu4e-compose-wide-reply "Reply All")
+	 )
+"Browser"
+(
+("bd" rlr/browser-default "System default")
+("bq" rlr/browser-qutebrowser "Qutebrowser")
+("be" rlr/browser-eww "EWW")
+)))
+
+(major-mode-hydra-define mu4e-compose-mode
+       (:quit-key "q")
+       ("Compose with Org"
+	(
+	 ("o" org-mime-edit-mail-in-org-mode "Edit in org")
+	 ("r" org-mime-htmlize "Org to HTML")
+	 )))
 
      )
    )
@@ -2413,7 +2467,9 @@ From [[http://yummymelon.com/devnull/converting-a-markdown-region-to-org-revisit
     :config
     (mastodon-discover)
     (setq mastodon-instance-url "https://zirk.us/"
-	  mastodon-active-user "randyridenour"))
+	  mastodon-active-user "randyridenour"
+	  ;; mastodon-auth-use-auth-source nil
+	  epa-file-encrypt-to "677C0F5EA5535058"))
 #+end_src
 
 Open Mastodon in a new tab
@@ -2727,6 +2783,19 @@ Use variable pitch mode in Org and Markdown modes. Toggle with ~C-M-S-s-v~, boun
 		nil "."))))
 #+end_src
 
+#+begin_src emacs-lisp
+(use-package org-mime
+:commands (org-mime-edit-mail-in-org-mode)
+:config
+(setq org-mime-export-options '(:section-numbers nil
+                                :with-author nil
+                                :with-toc nil))
+)
+#+end_src
+
+
+
+
 Quit Mu4e and close tab.
 
 #+begin_src emacs-lisp
@@ -2816,6 +2885,32 @@ Open mu4e and elfeed in new frame.
    "H-m" #'mu4e-transient-menu)
 #+end_src
 
+
+**** Mu4e-Views
+
+#+begin_src emacs-lisp :tangle no
+  (use-package mu4e-views
+    :ensure (:type git :host github :repo "lordpretzel/mu4e-views")
+    :after mu4e
+    :config
+    (setq mu4e-views-default-view-method "html") ;; make xwidgets default
+    (mu4e-views-mu4e-use-view-msg-method "html") ;; select the default
+    (setq mu4e-views-next-previous-message-behaviour 'stick-to-current-window) ;; when pressing n and p stay in the current window
+    (setq mu4e-views-auto-view-selected-message t) ;; automatically open messages when moving in the headers view
+    :general
+    (:keymaps 'mu4e-headers-mode-map
+	  "v"  #'mu4e-views-mu4e-select-view-msg-method ;; select viewing method
+	  "M-n" #'mu4e-views-cursor-msg-view-window-down ;; from headers window scroll the email view
+	  "M-p" #'mu4e-views-cursor-msg-view-window-up ;; from headers window scroll the email view
+	  "<SPC<" #'mu4e-views-cursor-msg-view-window-down ;; from headers window scroll the email view
+	  "s-<SPC>" #'mu4e-views-cursor-msg-view-window-up ;; from headers window scroll the email view
+	  "f" #'mu4e-views-toggle-auto-view-selected-message ;; toggle opening messages automatically when moving in the headers view
+	  "i" #'mu4e-views-mu4e-view-as-nonblocked-html ;; show currently selected email with all remote content
+	  ))
+#+end_src
+
+
+
 **** Consult MU
 
 #+begin_src emacs-lisp
@@ -2858,6 +2953,7 @@ Open mu4e and elfeed in new frame.
     ;; choose if you want to use dired for attaching files (choice of 'always, 'in-dired, or nil)
     (setq consult-mu-compose-use-dired-attachment 'in-dired))
 #+end_src
+
 
 *** Org Modern
 
