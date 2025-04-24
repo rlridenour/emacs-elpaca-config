@@ -15,20 +15,20 @@
 (setq max-lisp-eval-depth 10000)
 
 (defun +reset-init-values ()
-    (run-with-idle-timer
-     1 nil
-     (lambda ()
-       (setq file-name-handler-alist default-file-name-handler-alist
+  (run-with-idle-timer
+   1 nil
+   (lambda ()
+     (setq file-name-handler-alist default-file-name-handler-alist
 	     gc-cons-percentage 0.1
 	     gc-cons-threshold 100000000)
-(let ((inhibit-message t))
-(message "gc-cons-threshold & file-name-handler-alist restored"))
-(message "ELPACA LOADING COMPLETE: %s" (emacs-init-time))
-       (when (boundp 'after-focus-change-function)
+     (let ((inhibit-message t))
+	 (message "gc-cons-threshold & file-name-handler-alist restored"))
+     (message "ELPACA LOADING COMPLETE: %s" (emacs-init-time))
+     (when (boundp 'after-focus-change-function)
 	 (add-function :after after-focus-change-function #'+gc-after-focus-change)))))
 
-  (with-eval-after-load 'elpaca
-    (add-hook 'elpaca-after-init-hook '+reset-init-values))
+(with-eval-after-load 'elpaca
+  (add-hook 'elpaca-after-init-hook '+reset-init-values))
 
 (customize-set-variable 'native-comp-speed 2)
 (customize-set-variable 'native-comp-deferred-compilation t)
@@ -53,7 +53,7 @@
 (setq use-dialog-box nil)
 
 (setq scroll-conservatively 10
-      scroll-margin 0)
+	scroll-margin 0)
 
 (setq frame-resize-pixelwise t)
 (add-to-list 'default-frame-alist '(fullscreen . maximized))

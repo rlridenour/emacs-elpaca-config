@@ -1,91 +1,3 @@
-;;; init.el --- Personal Emacs configuration file -*- lexical-binding: t; -*-
-
-(defconst rr-emacs-dir (expand-file-name user-emacs-directory)
-  "The path to the emacs.d directory.")
-
-(defconst rr-cache-dir "~/.cache/emacs/"
-  "The directory for Emacs activity files.")
-
-(defconst rr-backup-dir (concat rr-cache-dir "backup/")
-  "The directory for Emacs backup files.")
-
-(defconst rr-org-dir "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/"
-  "The directory for my org files.")
-
-(defconst rr-agenda-dir "/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/"
-  "The directory for RR-Emacs note storage.")
-
-(defconst rr-notes-dir "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/Documents/notes/"
-  "The directory for RR-Emacs note storage.")
-
-;;;; Create directories if non-existing
-(dolist (dir (list rr-cache-dir
-		     rr-backup-dir))
-  (unless (file-directory-p dir)
-    (make-directory dir t)))
-
-;; set load path
-(add-to-list 'load-path (concat rr-emacs-dir "elisp"))
-
-(defvar elpaca-installer-version 0.11)
-(defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
-(defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
-(defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
-(defvar elpaca-order '(elpaca :repo "https://github.com/progfolio/elpaca.git"
-			      :ref nil :depth 1 :inherit ignore
-			      :files (:defaults "elpaca-test.el" (:exclude "extensions"))
-			      :build (:not elpaca--activate-package)))
-(let* ((repo  (expand-file-name "elpaca/" elpaca-repos-directory))
-       (build (expand-file-name "elpaca/" elpaca-builds-directory))
-       (order (cdr elpaca-order))
-       (default-directory repo))
-  (add-to-list 'load-path (if (file-exists-p build) build repo))
-  (unless (file-exists-p repo)
-    (make-directory repo t)
-    (when (<= emacs-major-version 28) (require 'subr-x))
-    (condition-case-unless-debug err
-	(if-let* ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
-		  ((zerop (apply #'call-process `("git" nil ,buffer t "clone"
-						  ,@(when-let* ((depth (plist-get order :depth)))
-						      (list (format "--depth=%d" depth) "--no-single-branch"))
-						  ,(plist-get order :repo) ,repo))))
-		  ((zerop (call-process "git" nil buffer t "checkout"
-					(or (plist-get order :ref) "--"))))
-		  (emacs (concat invocation-directory invocation-name))
-		  ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
-					"--eval" "(byte-recompile-directory \".\" 0 'force)")))
-		  ((require 'elpaca))
-		  ((elpaca-generate-autoloads "elpaca" repo)))
-	    (progn (message "%s" (buffer-string)) (kill-buffer buffer))
-	  (error "%s" (with-current-buffer buffer (buffer-string))))
-      ((error) (warn "%s" err) (delete-directory repo 'recursive))))
-  (unless (require 'elpaca-autoloads nil t)
-    (require 'elpaca)
-    (elpaca-generate-autoloads "elpaca" repo)
-    (let ((load-source-file-function nil)) (load "./elpaca-autoloads"))))
-(add-hook 'after-init-hook #'elpaca-process-queues)
-(elpaca `(,@elpaca-order))
-
-(elpaca (org :wait t))
-
-(elpaca elpaca-use-package
-  (require 'elpaca-use-package)
-  (elpaca-use-package-mode)
-  (setq use-package-always-ensure t)
-  (setq use-package-always-defer t))
-
-(defmacro use-feature (name &rest args)
-  "Like `use-package' but accounting for asynchronous installation.
-  NAME and ARGS are in `use-package'."
-  (declare (indent defun))
-  `(use-package ,name
-     :ensure nil
-     ,@args))
-
-(defmacro with-after-elpaca-init (&rest body)
-  "Adds BODY to `elpaca-after-init-hook`"
-  `(add-hook 'elpaca-after-init-hook (lambda () ,@body)))
-
 (set-language-environment "UTF-8")
 (set-default-coding-systems 'utf-8)
 
@@ -111,11 +23,11 @@
 
 (setq world-clock-list
 	'(
-	("America/Chicago" "Oklahoma City")
-	("America/Los_Angeles" "Seattle")
-	("Pacific/Honolulu" "Honolulu")
-	("America/New_York" "New York")
-	("Etc/UTC" "UTC")))
+	  ("America/Chicago" "Oklahoma City")
+	  ("America/Los_Angeles" "Seattle")
+	  ("Pacific/Honolulu" "Honolulu")
+	  ("America/New_York" "New York")
+	  ("Etc/UTC" "UTC")))
 
 (setq world-clock-time-format "%a, %d %b %R %Z")
 
@@ -197,26 +109,26 @@
 (add-hook 'find-file-not-found-functions #'make-parent-directory)
 
 (defun nuke-all-buffers ()
-    "Kill all the open buffers except the current one.
-	  Leave *scratch*, *dashboard* and *Messages* alone too."
-    (interactive)
-    (mapc
-     (lambda (buffer)
-       (unless (or
+  "Kill all the open buffers except the current one.
+	    Leave *scratch*, *dashboard* and *Messages* alone too."
+  (interactive)
+  (mapc
+   (lambda (buffer)
+     (unless (or
 		(string= (buffer-name buffer) "*scratch*")
 		(string= (buffer-name buffer) "*Org Agenda*")
 		(string= (buffer-name buffer) "*Messages*"))
 	 (kill-buffer buffer)))
-     (buffer-list))
-    (delete-other-windows)
-(tab-bar-close-other-tabs)
-    ;; (goto-dashboard)
-    )
+   (buffer-list))
+  (delete-other-windows)
+  (tab-bar-close-other-tabs)
+  ;; (goto-dashboard)
+  )
 
 (defun rlr/kill-other-buffers ()
-(interactive)
-(crux-kill-other-buffers)
-(tab-bar-close-other-tabs))
+  (interactive)
+  (crux-kill-other-buffers)
+  (tab-bar-close-other-tabs))
 
 (defun goto-emacs-init ()
   (interactive)
@@ -315,7 +227,7 @@ If there are only two windows, jump directly to the other window."
   (let* ((window-list (window-list nil 'no-mini)))
     (if (< (length window-list) 3)
 	  ;; If only one window, switch to previous buffer. If only two, jump directly to other window.
-	(if (one-window-p)
+	  (if (one-window-p)
 	      (switch-to-buffer nil)
 	    (other-window 1))
 	;; Otherwise, show the key selection interface.
@@ -366,7 +278,7 @@ If there are only two windows, jump directly to the other window."
 	(not (one-window-p))
 	(delete-window)
     (condition-case nil
-	(tab-close)
+	  (tab-close)
 	(error (delete-frame)))))
 
 ;; Main typeface
@@ -462,8 +374,8 @@ If there are only two windows, jump directly to the other window."
 	  ;; Move to end of sentence.
 	  (forward-sentence)
 	  ;; Delete spaces after sentence.
-	(just-one-space)
-	;; Delete preceding space.
+	  (just-one-space)
+	  ;; Delete preceding space.
 	  (delete-char -1)
 	  ;; Insert a newline before the next sentence.
 	  (insert "\n")
@@ -487,13 +399,235 @@ If there are only two windows, jump directly to the other window."
 (defun rr/open-init-file ()
   (interactive)
   (progn (find-file "~/.config/emacs/init.org")
-	 (variable-pitch-mode -1)))
+	   (variable-pitch-mode -1)))
 
 (defun delete-extra-blank-lines ()
-(interactive)
-(save-excursion)
-(beginning-of-buffer)
-(replace-regexp "^\n\n+" "\n"))
+  (interactive)
+  (save-excursion)
+  (beginning-of-buffer)
+  (replace-regexp "^\n\n+" "\n"))
+
+(setq default-directory "~/")
+
+;; Local Variables:
+;; no-byte-compile: t
+;; no-native-compile: t
+;; no-update-autoloads: t
+;; End:
+
+(general-define-key
+ "C-+" #'text-scale-increase
+ "C--" #'text-scale-decrease)
+
+(global-set-key (kbd "<pinch>") 'ignore)
+(global-set-key (kbd "<C-wheel-up>") 'ignore)
+(global-set-key (kbd "<C-wheel-down>") 'ignore)
+
+(general-define-key
+ "C-x c" #'save-buffers-kill-emacs
+ "C-x C-b" #'ibuffer
+ "s-o" #'find-file
+ "s-k" #'kill-current-buffer
+ "M-s-k" #'kill-buffer-and-window
+ "s-K" #'nuke-all-buffers
+ "s-r" #'consult-buffer
+ "M-s-r" #'consult-buffer-other-window
+ "C-S-a" #'embark-act
+ "C-M-S-s-k" #'copy-kill-buffer
+ "C-M-S-s-s" #'goto-scratch)
+
+(general-define-key
+ "s-0" #'delete-window
+ "s-1" #'delete-other-windows
+ "s-2" #'rlr/find-file-below
+ "s-3" #'rlr/find-file-right
+ "s-4" #'split-window-below-focus
+ "s-5" #'split-window-right-focus
+ "s-6" #'toggle-window-split
+ "S-C-<left>" #'shrink-window-horizontally
+ "S-C-<right>" #'enlarge-window-horizontally
+ "S-C-<down>" #'shrink-window
+ "S-C-<up>" #'enlarge-window
+ "C-x w" #'delete-frame
+ "M-o" #'crux-other-window-or-switch-buffer
+ "M-o" #'my/quick-window-jump
+ "s-\"" #'previous-window-any-frame)
+
+(general-define-key
+ "s-t" #'tab-new
+ "s-T" #'rlr/find-file-new-tab
+ "s-w" #'rlr/delete-tab-or-frame)
+
+(general-define-key
+ "s-l" #'hydra-locate/body
+ "s-f" #'consult-line
+ "<f5>" #'deadgrep
+ ;; "C-s" #'consult-isearch
+ ;; "C-r" #'consult-isearch-reverse
+ )
+
+(general-define-key
+ "<s-up>" #'beginning-of-buffer
+ "<s-down>" #'end-of-buffer
+ "<s-right>" #'end-of-visual-line
+ "<s-left>" #'beginning-of-visual-line
+ "<M-down>" #'forward-paragraph
+ "<M-up>" #'backward-paragraph
+ "M-u" #'upcase-dwim
+ "M-l" #'downcase-dwim
+ "M-c" #'capitalize-dwim
+ "RET" #'newline-and-indent
+ "M-/" #'hippie-expand
+ "<s-backspace>" #'kill-whole-line
+ "s-j" #'crux-top-join-line
+ "<S-return>" #'crux-smart-open-line
+ "<C-S-return>" #'crux-smart-open-line-above
+ "<C-d d>" #'insert-standard-date
+
+ "M-y" #'consult-yank-pop
+
+ "M-q" #'reformat-paragraph
+ "M-#" #'dictionary-lookup-definition
+ "M-=" #'shrink-whitespace
+ "s-l" #'hydra-locate/body
+ "s-f" #'consult-line
+ "<f5>" #'deadgrep)
+
+(general-define-key
+ ;; Editing
+ ;; "s-/" #'avy-goto-char-timer
+ "C-x 4 b" #'consult-buffer-other-window
+ "C-x 5 b" #'consult-buffer-other-frame
+ "C-x r x" #'consult-register
+ "M-s m" #'consult-multi-occur
+ "<f8>" #'calendar
+ )
+
+(defun open-emacs-config ()
+  (interactive)
+  (find-file "~/.config/emacs/README.org"))
+
+(defun open-fish-functions ()
+  (interactive)
+  (dired "~/.config/fish/functions"))
+
+(general-define-key
+ :prefix "C-c"
+ ;; bind "C-c a" to #'org-agenda
+
+ "a" #'org-agenda
+ "b" #'consult-bookmark
+ "c" #'org-capture
+
+ "d s" #'insert-date-string
+ "d d" #'insert-standard-date
+ "d b" #'insert-blog-date
+ "d l" #'dictionary-search
+ "D" #'crux-delete-file-and-buffer
+
+ "f f" #'find-file
+ "f k" #'rlr/kill-other-buffers
+ "f r" #'consult-buffer
+ "f R" #'crux-rename-file-and-buffer
+ "f P" #'open-emacs-config
+ "f S" #'open-fish-functions
+
+ "g l" #'avy-goto-line
+ "g w" #'avy-goto-word-1
+ "g p" #'pdf-sync-forward-search
+
+ ;; "h" #'consult-history
+
+ ;; Helpful
+ "H c" #'helpful-command
+ "H F" #'helpful-callable
+ "H h" #'helpful-at-point
+ "H f" #'helpful-function
+ "H v" #'helpful-variable
+ "H k" #'helpful-key
+
+ "k" #'rlr/kill-other-buffers
+
+ "m" #'consult-mark
+ "n b" #'hugo-draft-post
+ "o" #'consult-outline
+
+ ;; Projects
+ "p f" #'consult-project-buffer
+ "p d" #'project-find-dired
+
+ "r" #'crux-rename-file-and-buffer
+ ;; "s" #'rg-menu
+ "S" #'crux-cleanup-buffer-or-region
+ "t" #'terminal-here-launch
+ "u" #'unfill-paragraph
+ "w" #'kill-buffer-and-window
+ "z" #'reveal-in-osx-finder
+
+ ;; Search
+ "s s" #'denote-search
+ "s d" #'denote-search-marked-dired-files
+ "s r" #'denote-search-files-referenced-in-region
+ )
+
+(defvar elpaca-installer-version 0.11)
+(defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
+(defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
+(defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
+(defvar elpaca-order '(elpaca :repo "https://github.com/progfolio/elpaca.git"
+				:ref nil :depth 1 :inherit ignore
+				:files (:defaults "elpaca-test.el" (:exclude "extensions"))
+				:build (:not elpaca--activate-package)))
+(let* ((repo  (expand-file-name "elpaca/" elpaca-repos-directory))
+	 (build (expand-file-name "elpaca/" elpaca-builds-directory))
+	 (order (cdr elpaca-order))
+	 (default-directory repo))
+  (add-to-list 'load-path (if (file-exists-p build) build repo))
+  (unless (file-exists-p repo)
+    (make-directory repo t)
+    (when (<= emacs-major-version 28) (require 'subr-x))
+    (condition-case-unless-debug err
+	  (if-let* ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
+		    ((zerop (apply #'call-process `("git" nil ,buffer t "clone"
+						    ,@(when-let* ((depth (plist-get order :depth)))
+							(list (format "--depth=%d" depth) "--no-single-branch"))
+						    ,(plist-get order :repo) ,repo))))
+		    ((zerop (call-process "git" nil buffer t "checkout"
+					  (or (plist-get order :ref) "--"))))
+		    (emacs (concat invocation-directory invocation-name))
+		    ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
+					  "--eval" "(byte-recompile-directory \".\" 0 'force)")))
+		    ((require 'elpaca))
+		    ((elpaca-generate-autoloads "elpaca" repo)))
+	      (progn (message "%s" (buffer-string)) (kill-buffer buffer))
+	    (error "%s" (with-current-buffer buffer (buffer-string))))
+	((error) (warn "%s" err) (delete-directory repo 'recursive))))
+  (unless (require 'elpaca-autoloads nil t)
+    (require 'elpaca)
+    (elpaca-generate-autoloads "elpaca" repo)
+    (let ((load-source-file-function nil)) (load "./elpaca-autoloads"))))
+(add-hook 'after-init-hook #'elpaca-process-queues)
+(elpaca `(,@elpaca-order))
+
+(elpaca (org :wait t))
+
+(elpaca elpaca-use-package
+  (require 'elpaca-use-package)
+  (elpaca-use-package-mode)
+  (setq use-package-always-ensure t)
+  (setq use-package-always-defer t))
+
+(defmacro use-feature (name &rest args)
+  "Like `use-package' but accounting for asynchronous installation.
+  NAME and ARGS are in `use-package'."
+  (declare (indent defun))
+  `(use-package ,name
+     :ensure nil
+     ,@args))
+
+(defmacro with-after-elpaca-init (&rest body)
+  "Adds BODY to `elpaca-after-init-hook`"
+  `(add-hook 'elpaca-after-init-hook (lambda () ,@body)))
 
 (use-package general
   :ensure (:wait t)
@@ -515,9 +649,9 @@ If there are only two windows, jump directly to the other window."
 (use-package aas)
 
 (use-package laas
-:after auctex
-:hook
-(LaTeX-mode . laas-mode))
+  :after auctex
+  :hook
+  (LaTeX-mode . laas-mode))
 
 (use-feature abbrev
   :config
@@ -803,35 +937,35 @@ If there are only two windows, jump directly to the other window."
   (ebib-preload-bib-files '("~/Dropbox/bibtex/rlr.bib")))
 
 (use-package elfeed
-    :demand
-    :init
-    (setq elfeed-db-directory "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/elfeed")
-    :config
-    :general
-    (:keymaps 'elfeed-search-mode-map
-	  "q" #'rlr/elfeed-save-db-and-quit)
-(:keymaps 'elfeed-show-mode-map
-	  "S-<SPC>" #'scroll-down))
+  :demand
+  :init
+  (setq elfeed-db-directory "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/elfeed")
+  :config
+  :general
+  (:keymaps 'elfeed-search-mode-map
+	      "q" #'rlr/elfeed-save-db-and-quit)
+  (:keymaps 'elfeed-show-mode-map
+	      "S-<SPC>" #'scroll-down))
 
 (defun rlr/elfeed-load-db-and-open ()
-    "Load elfeed db before opening"
-    (interactive)
-    (elfeed-db-load)
-    (elfeed)
-    (elfeed-search-update--force)
-    (elfeed-update))
+  "Load elfeed db before opening"
+  (interactive)
+  (elfeed-db-load)
+  (elfeed)
+  (elfeed-search-update--force)
+  (elfeed-update))
 
 (defun rlr/open-elfeed-new-tab ()
-(interactive)
-(tab-new)
-(rlr/elfeed-load-db-and-open)
-(elfeed-update))
+  (interactive)
+  (tab-new)
+  (rlr/elfeed-load-db-and-open)
+  (elfeed-update))
 
-  (defun rlr/elfeed-save-db-and-quit ()
-    (interactive)
-    (elfeed-db-save)
-    (elfeed-search-quit-window)
-    (rlr/delete-tab-or-frame))
+(defun rlr/elfeed-save-db-and-quit ()
+  (interactive)
+  (elfeed-db-save)
+  (elfeed-search-quit-window)
+  (rlr/delete-tab-or-frame))
 
 (defmacro elfeed-tag-selection-as (mytag)
   "Tag elfeed entry as MYTAG"
@@ -979,14 +1113,14 @@ If there are only two windows, jump directly to the other window."
      (goto-char (point-min)))))
 
 (defun rlr/open-safari-page-in-eww ()
-(interactive)
-(org-mac-link-safari-get-frontmost-url)
-(setq rlr-org-link (current-kill 0 t))
-(setq rlr-org-link (s-chop-left 2 rlr-org-link))
-(setq rlr-org-link (s-chop-right 2 rlr-org-link))
-(setq rlr-org-link (s-split "\\]\\[" rlr-org-link))
-(setq rlr-org-url (pop rlr-org-link))
-(eww rlr-org-url))
+  (interactive)
+  (org-mac-link-safari-get-frontmost-url)
+  (setq rlr-org-link (current-kill 0 t))
+  (setq rlr-org-link (s-chop-left 2 rlr-org-link))
+  (setq rlr-org-link (s-chop-right 2 rlr-org-link))
+  (setq rlr-org-link (s-split "\\]\\[" rlr-org-link))
+  (setq rlr-org-url (pop rlr-org-link))
+  (eww rlr-org-url))
 
 (use-package emmet-mode
   :general
@@ -1213,18 +1347,18 @@ If there are only two windows, jump directly to the other window."
    ))
 
 (with-after-elpaca-init
-   (progn
-     (major-mode-hydra-define dashboard-mode
-       (:quit-key "q")
-       ("Open"
+ (progn
+   (major-mode-hydra-define dashboard-mode
+     (:quit-key "q")
+     ("Open"
 	(("m" consult-bookmark "bookmarks")
 	 ("a" consult-org-agenda "consult-agenda")
 	 ("t" (find-file "/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/tasks.org") "open tasks")
 	 ("b" (find-file "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/bookmarks.org") "web bookmarks"))))
 
-     (major-mode-hydra-define org-agenda-mode
-       (:quit-key "q")
-       ("Open"
+   (major-mode-hydra-define org-agenda-mode
+     (:quit-key "q")
+     ("Open"
 	(
 	 ("a" consult-org-agenda "consult-agenda")
 	 ("b" consult-bookmark "bookmarks")
@@ -1242,9 +1376,9 @@ If there are only two windows, jump directly to the other window."
 	 ("e" rlr/open-safari-page-in-eww "Open Safari page in EWW"))
 	))
 
-     (major-mode-hydra-define eww-mode
-       (:quit-key "q")
-       ("A"
+   (major-mode-hydra-define eww-mode
+     (:quit-key "q")
+     ("A"
 	(
 	 ;; ("G" eww "Eww Open Browser")
 	 ("g" eww-reload "Eww Reload")
@@ -1289,9 +1423,9 @@ If there are only two windows, jump directly to the other window."
 	 );end other
 	))
 
-     (major-mode-hydra-define markdown-mode
-       (:quit-key "q")
-       ("Format"
+   (major-mode-hydra-define markdown-mode
+     (:quit-key "q")
+     ("Format"
 	(("h" markdown-insert-header-dwim "header")
 	 ("l" markdown-insert-link "link")
 	 ("u" markdown-insert-uri "url")
@@ -1301,9 +1435,9 @@ If there are only two windows, jump directly to the other window."
 	 ("n" markdown-cleanup-list-numbers "clean-lists")
 	 ("c" markdown-complete-buffer "complete"))))
 
-     (major-mode-hydra-define LaTeX-mode
-       (:quit-key "q")
-       ("Bibtex"
+   (major-mode-hydra-define LaTeX-mode
+     (:quit-key "q")
+     ("Bibtex"
 	(("r" citar-insert-citation "citation"))
 	"LaTeXmk"
 	(("m" rlr/tex-mkpdf "PDFLaTeX")
@@ -1314,9 +1448,9 @@ If there are only two windows, jump directly to the other window."
 	 ("C" tex-clean-all "clean all")
 	 ("n" latex-word-count "word count"))))
 
-     (major-mode-hydra-define org-mode
-       (:quit-key "q")
-       ("Export"
+   (major-mode-hydra-define org-mode
+     (:quit-key "q")
+     ("Export"
 	(("m" rlr/org-mkpdf "Make PDF with PDFLaTeX")
 	 ("p" rlr/org-open-pdf "View PDF")
 	 ("h" make-html "HTML")
@@ -1359,9 +1493,9 @@ If there are only two windows, jump directly to the other window."
 	"Notes"
 	(("1" denote-link "link to note"))))
 
-     (major-mode-hydra-define dired-mode
-       (:quit-key "q")
-       ("New"
+   (major-mode-hydra-define dired-mode
+     (:quit-key "q")
+     ("New"
 	(("a" rlrt-new-article "article")
 	 ("l" rlrt-new-lecture "lecture")
 	 ("h" rlrt-new-handout "handout")
@@ -1377,63 +1511,63 @@ If there are only two windows, jump directly to the other window."
 	 ("bs" orgblog-serve "Serve Site")
 	 ("bd" orgblog-push "Push to Github"))))
 
-     (major-mode-hydra-define css-mode
-       (:quit-key "q")
-       ("Blog"
+   (major-mode-hydra-define css-mode
+     (:quit-key "q")
+     ("Blog"
 	(("bn" rlrt-new-post "New draft")
 	 ("bb" orgblog-build "Build Site")
 	 ("bs" orgblog-serve "Serve Site")
 	 ("bd" orgblog-push "Push to Github"))))
 
-     (major-mode-hydra-define denote-menu-mode
-       (:quit-key "q")
-       ("Tools"
+   (major-mode-hydra-define denote-menu-mode
+     (:quit-key "q")
+     ("Tools"
 	(("f" denote-menu-filter "Filter by regex")
 	 ("k" denote-menu-filter-by-keyword "Filter by keyword")
 	 ("c" denote-menu-clear-filters "Clear filters")
 	 ("d" denote-menu-export-to-dired "Dired"))))
 
-     (major-mode-hydra-define mu4e-main-mode
-       (:quit-key "q")
-       ("Message"
+   (major-mode-hydra-define mu4e-main-mode
+     (:quit-key "q")
+     ("Message"
 	(
 	 ("n" mu4e-compose-mail "New")
 	 )))
 
-     (major-mode-hydra-define mu4e-headers-mode
-       (:quit-key "q")
-       ("Message"
+   (major-mode-hydra-define mu4e-headers-mode
+     (:quit-key "q")
+     ("Message"
 	(
 	 ("n" mu4e-compose-mail "New")
 	 ("r" mu4e-compose-reply "Reply")
 	 ("a"  mu4e-compose-wide-reply "Reply All")
 	 )))
 
-     (major-mode-hydra-define mu4e-view-mode
-       (:quit-key "q")
-       ("Message"
+   (major-mode-hydra-define mu4e-view-mode
+     (:quit-key "q")
+     ("Message"
 	(
 	 ("n" mu4e-compose-mail "New")
 	 ("r" mu4e-compose-reply "Reply")
 	 ("a"  mu4e-compose-wide-reply "Reply All")
 	 )
-"Browser"
-(
-("bd" rlr/browser-default "System default")
-("bq" rlr/browser-qutebrowser "Qutebrowser")
-("be" rlr/browser-eww "EWW")
-)))
+	"Browser"
+	(
+	 ("bd" rlr/browser-default "System default")
+	 ("bq" rlr/browser-qutebrowser "Qutebrowser")
+	 ("be" rlr/browser-eww "EWW")
+	 )))
 
-(major-mode-hydra-define mu4e-compose-mode
-       (:quit-key "q")
-       ("Compose with Org"
+   (major-mode-hydra-define mu4e-compose-mode
+     (:quit-key "q")
+     ("Compose with Org"
 	(
 	 ("o" org-mime-edit-mail-in-org-mode "Edit in org")
 	 ("r" org-mime-htmlize "Org to HTML")
 	 )))
 
-     )
    )
+ )
 
 (general-define-key
  "s-h" #'hydra-hydras/body
@@ -1736,41 +1870,41 @@ installed."
 	  org-appear-autosubmarkers t)) ; Show sub and superscripts
 
 (use-feature mu4e
-    :commands (mu4e mu4e-update-mail-and-index)
-    :general
-    (:keymaps 'mu4e-headers-mode-map
+  :commands (mu4e mu4e-update-mail-and-index)
+  :general
+  (:keymaps 'mu4e-headers-mode-map
 	      "q"  #'kill-current-buffer
 	      "C-<tab>" #'tab-next)
-    (:keymaps 'mu4e-thread-mode-map
+  (:keymaps 'mu4e-thread-mode-map
 	      "C-<tab>" #'tab-next)
-    (:keymaps 'mu4e-main-mode-map
+  (:keymaps 'mu4e-main-mode-map
 	      "q"  #'rlr/quit-mu4e)
-    :after org
-    :config
-    (setq
-     mu4e-split-view 'horizontal
-     mu4e-index-update-error-warning nil
-     mu4e-headers-skip-duplicates  t
-     mu4e-view-show-images t
-     mu4e-view-show-addresses t
-     mu4e-use-fancy-chars t
-     mu4e-compose-format-flowed t
-     mu4e-date-format "%y/%m/%d"
-     mu4e-headers-date-format "%Y/%m/%d"
-     mu4e-change-filenames-when-moving t
-     mu4e-attachment-dir "~/Downloads"
-     mu4e-maildir       "~/Maildir/"   ;; top-level Maildir
-     ;; note that these folders below must start with /
-     ;; the paths are relative to maildir root
+  :after org
+  :config
+  (setq
+   mu4e-split-view 'horizontal
+   mu4e-index-update-error-warning nil
+   mu4e-headers-skip-duplicates  t
+   mu4e-view-show-images t
+   mu4e-view-show-addresses t
+   mu4e-use-fancy-chars t
+   mu4e-compose-format-flowed t
+   mu4e-date-format "%y/%m/%d"
+   mu4e-headers-date-format "%Y/%m/%d"
+   mu4e-change-filenames-when-moving t
+   mu4e-attachment-dir "~/Downloads"
+   mu4e-maildir       "~/Maildir/"   ;; top-level Maildir
+   ;; note that these folders below must start with /
+   ;; the paths are relative to maildir root
 
-     ;; this setting allows to re-sync and re-index mail
-     ;; by pressing U
-     mu4e-get-mail-command "mbsync -a"
-     mu4e-update-interval 300 ;; update every 5 minutes
-     ;; mu4e-headers-auto-update
-     mu4e-completing-read-function 'completing-read
-     mu4e-context-policy 'pick-first
-     mu4e-contexts (list
+   ;; this setting allows to re-sync and re-index mail
+   ;; by pressing U
+   mu4e-get-mail-command "mbsync -a"
+   mu4e-update-interval 300 ;; update every 5 minutes
+   ;; mu4e-headers-auto-update
+   mu4e-completing-read-function 'completing-read
+   mu4e-context-policy 'pick-first
+   mu4e-contexts (list
 		    (make-mu4e-context
 		     :name "fastmail"
 		     :match-func
@@ -1813,29 +1947,29 @@ installed."
 			     (smtpmail-stream-type . plain)
 			     (smtpmail-smtp-service . 1025)
 			     ))))
-    (display-line-numbers-mode -1)
-(require 'mu4e-transient)
-    (add-to-list 'mu4e-bookmarks
+  (display-line-numbers-mode -1)
+  (require 'mu4e-transient)
+  (add-to-list 'mu4e-bookmarks
 		 '( :name "OBU Inbox"
 		    :query "maildir:/obu/INBOX AND NOT flag:trashed"
 		    :key ?o))
-    (add-to-list 'mu4e-bookmarks
+  (add-to-list 'mu4e-bookmarks
 		 '( :name "Fastmail Inbox"
 		    :query "maildir:/fastmail/INBOX AND NOT flag:trashed"
 		    :key ?f))
-    (setq gnus-blocked-images
+  (setq gnus-blocked-images
 	  (lambda(&optional _ignore)
 	    (if (mu4e-message-contact-field-matches
 		 (mu4e-message-at-point) :from "store-news@woot.com")
 		nil "."))))
 
 (use-package org-mime
-:commands (org-mime-edit-mail-in-org-mode)
-:config
-(setq org-mime-export-options '(:section-numbers nil
-                                :with-author nil
-                                :with-toc nil))
-)
+  :commands (org-mime-edit-mail-in-org-mode)
+  :config
+  (setq org-mime-export-options '(:section-numbers nil
+					 :with-author nil
+					 :with-toc nil))
+  )
 
 (defun rlr/quit-mu4e ()
   (interactive)
@@ -1890,43 +2024,43 @@ installed."
  "H-m" #'mu4e-transient-menu)
 
 (use-package consult-mu
-    :ensure (:type git :host github :repo "armindarvish/consult-mu" :branch "main" :files (:defaults "extras/*.el"))
-    :after (consult mu4e)
-:commands (consult-mu)
-    :custom
-    ;;maximum number of results shown in minibuffer
-    (consult-mu-maxnum 200)
-    ;;show preview when pressing any keys
-    (consult-mu-preview-key 'any)
-    ;;do not mark email as read when previewed. If you turn this to t, be aware that the auto-loaded preview if the preview-key above is 'any would also get marked as read!
-    (consult-mu-mark-previewed-as-read nil)
-    ;;mark email as read when selected.
-    (consult-mu-mark-viewed-as-read t)
-    ;;use reply to all when composing reply emails
-    (consult-mu-use-wide-reply nil)
-    ;; define a template for headers view in minibuffer. The example below adjusts the width based on the width of the screen.
-    (consult-mu-headers-template (lambda () (concat "%f" (number-to-string (floor (* (frame-width) 0.15))) "%s" (number-to-string (floor (* (frame-width) 0.5))) "%d13" "%g" "%x")))
-    :config
-    ;;create a list of saved searches for quick access using `histroy-next-element' with `M-n' in minibuffer. Note the "#" character at the beginning of each query! Change these according to
-    (setq consult-mu-saved-searches-dynamics '("#flag:unread"))
-    (setq consult-mu-saved-searches-async '("#flag:unread"))
-    ;; require embark actions for marking, replying, forwarding, etc. directly from minibuffer
-    (require 'consult-mu-embark)
-    ;; require extra module for composing (e.g. for interactive attachment) as well as embark actions
-    (require 'consult-mu-compose)
-    (require 'consult-mu-compose-embark)
-    ;; require extra module for searching contacts and runing embark actions on contacts
-    (require 'consult-mu-contacts)
-    (require 'consult-mu-contacts-embark)
-    ;; change the prefiew key for compose so you don't open a preview of every file when selecting files to attach
-    (setq consult-mu-compose-preview-key "M-o")
-    ;; pick a key to bind to consult-mu-compose-attach in embark-file-map
-    (setq consult-mu-embark-attach-file-key "C-a")
-    (setq consult-mu-contacts-ignore-list '("^.*no.*reply.*"))
-    (setq consult-mu-contacts-ignore-case-fold-search t)
-    (consult-mu-compose-embark-bind-attach-file-key)
-    ;; choose if you want to use dired for attaching files (choice of 'always, 'in-dired, or nil)
-    (setq consult-mu-compose-use-dired-attachment 'in-dired))
+  :ensure (:type git :host github :repo "armindarvish/consult-mu" :branch "main" :files (:defaults "extras/*.el"))
+  :after (consult mu4e)
+  :commands (consult-mu)
+  :custom
+  ;;maximum number of results shown in minibuffer
+  (consult-mu-maxnum 200)
+  ;;show preview when pressing any keys
+  (consult-mu-preview-key 'any)
+  ;;do not mark email as read when previewed. If you turn this to t, be aware that the auto-loaded preview if the preview-key above is 'any would also get marked as read!
+  (consult-mu-mark-previewed-as-read nil)
+  ;;mark email as read when selected.
+  (consult-mu-mark-viewed-as-read t)
+  ;;use reply to all when composing reply emails
+  (consult-mu-use-wide-reply nil)
+  ;; define a template for headers view in minibuffer. The example below adjusts the width based on the width of the screen.
+  (consult-mu-headers-template (lambda () (concat "%f" (number-to-string (floor (* (frame-width) 0.15))) "%s" (number-to-string (floor (* (frame-width) 0.5))) "%d13" "%g" "%x")))
+  :config
+  ;;create a list of saved searches for quick access using `histroy-next-element' with `M-n' in minibuffer. Note the "#" character at the beginning of each query! Change these according to
+  (setq consult-mu-saved-searches-dynamics '("#flag:unread"))
+  (setq consult-mu-saved-searches-async '("#flag:unread"))
+  ;; require embark actions for marking, replying, forwarding, etc. directly from minibuffer
+  (require 'consult-mu-embark)
+  ;; require extra module for composing (e.g. for interactive attachment) as well as embark actions
+  (require 'consult-mu-compose)
+  (require 'consult-mu-compose-embark)
+  ;; require extra module for searching contacts and runing embark actions on contacts
+  (require 'consult-mu-contacts)
+  (require 'consult-mu-contacts-embark)
+  ;; change the prefiew key for compose so you don't open a preview of every file when selecting files to attach
+  (setq consult-mu-compose-preview-key "M-o")
+  ;; pick a key to bind to consult-mu-compose-attach in embark-file-map
+  (setq consult-mu-embark-attach-file-key "C-a")
+  (setq consult-mu-contacts-ignore-list '("^.*no.*reply.*"))
+  (setq consult-mu-contacts-ignore-case-fold-search t)
+  (consult-mu-compose-embark-bind-attach-file-key)
+  ;; choose if you want to use dired for attaching files (choice of 'always, 'in-dired, or nil)
+  (setq consult-mu-compose-use-dired-attachment 'in-dired))
 
 (defun rlr/browser-default ()
   (interactive)
@@ -1935,7 +2069,7 @@ installed."
 (defun rlr/browser-qutebrowser ()
   (interactive)
   (setq browse-url-browser-function 'browse-url-generic
-        browse-url-generic-program "qutebrowser"))
+	  browse-url-generic-program "qutebrowser"))
 
 (defun rlr/browser-eww ()
   (interactive)
@@ -1944,13 +2078,13 @@ installed."
 (defun rlr/select-browser ()
   (interactive)
   (let* ((choices '(("System Default" . rlr/browser-default)
-		 ("Qutebrowser" . rlr/browser-qutebrowser)
- 		 ("EWW" . rlr/browser-eww)))
-		       (choice   (completing-read "Choose one: " choices)))
+		("Qutebrowser" . rlr/browser-qutebrowser)
+		("EWW" . rlr/browser-eww)))
+	   (choice   (completing-read "Choose one: " choices)))
     (call-interactively (cdr (assoc choice choices)))))
 
 (general-define-key
-"C-M-S-s-b" #'rlr/select-browser)
+ "C-M-S-s-b" #'rlr/select-browser)
 
 (use-package org-modern
   :config
@@ -2055,7 +2189,7 @@ installed."
 	   "** %? %T")
 	  ("b" "Bookmark" entry (file+headline "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/bookmarks.org" "Bookmarks")
 	   "* %?\n:PROPERTIES:\n:CREATED: %U\n:END:\n\n" :empty-lines 1)
-	  ("c" "Quick note" entry (file+headline "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/Documents/notes/quick-notes.org" "Notes")
+	  ("c" "Quick note" entry (file "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/Documents/notes/quick-notes.org")
 	   "* %?\n:PROPERTIES:\n:CREATED: %U\n:END:\n\n" :empty-lines 1)
 	  )
 	)
@@ -2073,6 +2207,13 @@ installed."
 (setq org-refile-targets '((org-agenda-files :maxlevel . 1)))
 
 (define-key global-map "\C-cc" 'org-capture)
+
+(defun rlr/org-sort ()
+    (mark-whole-buffer)
+    (org-sort-entries nil ?a))
+
+(add-to-list 'safe-local-variable-values
+             '(before-save-hook . (rlr/org-sort)))
 
 (use-package org-super-agenda
   :after org
@@ -2973,165 +3114,31 @@ installed."
   :hook
   (elpaca-after-init . yas-global-mode))
 
-(general-define-key
- "C-+" #'text-scale-increase
- "C--" #'text-scale-decrease)
+;;; init.el --- Personal Emacs configuration file -*- lexical-binding: t; -*-
 
-(global-set-key (kbd "<pinch>") 'ignore)
-(global-set-key (kbd "<C-wheel-up>") 'ignore)
-(global-set-key (kbd "<C-wheel-down>") 'ignore)
+(defconst rr-emacs-dir (expand-file-name user-emacs-directory)
+  "The path to the emacs.d directory.")
 
-(general-define-key
- "C-x c" #'save-buffers-kill-emacs
- "C-x C-b" #'ibuffer
- "s-o" #'find-file
- "s-k" #'kill-current-buffer
- "M-s-k" #'kill-buffer-and-window
- "s-K" #'nuke-all-buffers
- "s-r" #'consult-buffer
- "M-s-r" #'consult-buffer-other-window
- "C-S-a" #'embark-act
- "C-M-S-s-k" #'copy-kill-buffer
- "C-M-S-s-s" #'goto-scratch)
+(defconst rr-cache-dir "~/.cache/emacs/"
+  "The directory for Emacs activity files.")
 
-(general-define-key
- "s-0" #'delete-window
- "s-1" #'delete-other-windows
- "s-2" #'rlr/find-file-below
- "s-3" #'rlr/find-file-right
- "s-4" #'split-window-below-focus
- "s-5" #'split-window-right-focus
- "s-6" #'toggle-window-split
- "S-C-<left>" #'shrink-window-horizontally
- "S-C-<right>" #'enlarge-window-horizontally
- "S-C-<down>" #'shrink-window
- "S-C-<up>" #'enlarge-window
- "C-x w" #'delete-frame
- "M-o" #'crux-other-window-or-switch-buffer
- "M-o" #'my/quick-window-jump
- "s-\"" #'previous-window-any-frame)
+(defconst rr-backup-dir (concat rr-cache-dir "backup/")
+  "The directory for Emacs backup files.")
 
-(general-define-key
- "s-t" #'tab-new
- "s-T" #'rlr/find-file-new-tab
- "s-w" #'rlr/delete-tab-or-frame)
+(defconst rr-org-dir "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/"
+  "The directory for my org files.")
 
-(general-define-key
- "s-l" #'hydra-locate/body
- "s-f" #'consult-line
- "<f5>" #'deadgrep
- ;; "C-s" #'consult-isearch
- ;; "C-r" #'consult-isearch-reverse
- )
+(defconst rr-agenda-dir "/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/"
+  "The directory for RR-Emacs note storage.")
 
-(general-define-key
- "<s-up>" #'beginning-of-buffer
- "<s-down>" #'end-of-buffer
- "<s-right>" #'end-of-visual-line
- "<s-left>" #'beginning-of-visual-line
- "<M-down>" #'forward-paragraph
- "<M-up>" #'backward-paragraph
- "M-u" #'upcase-dwim
- "M-l" #'downcase-dwim
- "M-c" #'capitalize-dwim
- "RET" #'newline-and-indent
- "M-/" #'hippie-expand
- "<s-backspace>" #'kill-whole-line
- "s-j" #'crux-top-join-line
- "<S-return>" #'crux-smart-open-line
- "<C-S-return>" #'crux-smart-open-line-above
- "<C-d d>" #'insert-standard-date
+(defconst rr-notes-dir "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/Documents/notes/"
+  "The directory for RR-Emacs note storage.")
 
- "M-y" #'consult-yank-pop
+;;;; Create directories if non-existing
+(dolist (dir (list rr-cache-dir
+		     rr-backup-dir))
+  (unless (file-directory-p dir)
+    (make-directory dir t)))
 
- "M-q" #'reformat-paragraph
- "M-#" #'dictionary-lookup-definition
- "M-=" #'shrink-whitespace
- "s-l" #'hydra-locate/body
- "s-f" #'consult-line
- "<f5>" #'deadgrep)
-
-(general-define-key
- ;; Editing
- ;; "s-/" #'avy-goto-char-timer
- "C-x 4 b" #'consult-buffer-other-window
- "C-x 5 b" #'consult-buffer-other-frame
- "C-x r x" #'consult-register
- "M-s m" #'consult-multi-occur
- "<f8>" #'calendar
- )
-
-(defun open-emacs-config ()
-  (interactive)
-  (find-file "~/.config/emacs/README.org"))
-
-(defun open-fish-functions ()
-  (interactive)
-  (dired "~/.config/fish/functions"))
-
-(general-define-key
- :prefix "C-c"
- ;; bind "C-c a" to #'org-agenda
-
- "a" #'org-agenda
- "b" #'consult-bookmark
- "c" #'org-capture
-
- "d s" #'insert-date-string
- "d d" #'insert-standard-date
- "d b" #'insert-blog-date
- "d l" #'dictionary-search
- "D" #'crux-delete-file-and-buffer
-
- "f f" #'find-file
- "f k" #'rlr/kill-other-buffers
- "f r" #'consult-buffer
- "f R" #'crux-rename-file-and-buffer
- "f P" #'open-emacs-config
- "f S" #'open-fish-functions
-
- "g l" #'avy-goto-line
- "g w" #'avy-goto-word-1
- "g p" #'pdf-sync-forward-search
-
- ;; "h" #'consult-history
-
- ;; Helpful
- "H c" #'helpful-command
- "H F" #'helpful-callable
- "H h" #'helpful-at-point
- "H f" #'helpful-function
- "H v" #'helpful-variable
- "H k" #'helpful-key
-
- "k" #'rlr/kill-other-buffers
-
- "m" #'consult-mark
- "n b" #'hugo-draft-post
- "o" #'consult-outline
-
- ;; Projects
- "p f" #'consult-project-buffer
- "p d" #'project-find-dired
-
- "r" #'crux-rename-file-and-buffer
- ;; "s" #'rg-menu
- "S" #'crux-cleanup-buffer-or-region
- "t" #'terminal-here-launch
- "u" #'unfill-paragraph
- "w" #'kill-buffer-and-window
- "z" #'reveal-in-osx-finder
-
- ;; Search
- "s s" #'denote-search
- "s d" #'denote-search-marked-dired-files
- "s r" #'denote-search-files-referenced-in-region
- )
-
-(setq default-directory "~/")
-
-;; Local Variables:
-;; no-byte-compile: t
-;; no-native-compile: t
-;; no-update-autoloads: t
-;; End:
+;; set load path
+(add-to-list 'load-path (concat rr-emacs-dir "elisp"))
