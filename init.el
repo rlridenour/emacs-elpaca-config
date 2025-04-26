@@ -1,3 +1,91 @@
+;;; init.el --- Personal Emacs configuration file -*- lexical-binding: t; -*-
+
+(defconst rr-emacs-dir (expand-file-name user-emacs-directory)
+  "The path to the emacs.d directory.")
+
+(defconst rr-cache-dir "~/.cache/emacs/"
+  "The directory for Emacs activity files.")
+
+(defconst rr-backup-dir (concat rr-cache-dir "backup/")
+  "The directory for Emacs backup files.")
+
+(defconst rr-org-dir "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/"
+  "The directory for my org files.")
+
+(defconst rr-agenda-dir "/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/"
+  "The directory for RR-Emacs note storage.")
+
+(defconst rr-notes-dir "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/Documents/notes/"
+  "The directory for RR-Emacs note storage.")
+
+;;;; Create directories if non-existing
+(dolist (dir (list rr-cache-dir
+		     rr-backup-dir))
+  (unless (file-directory-p dir)
+    (make-directory dir t)))
+
+;; set load path
+(add-to-list 'load-path (concat rr-emacs-dir "elisp"))
+
+(defvar elpaca-installer-version 0.11)
+(defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
+(defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
+(defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
+(defvar elpaca-order '(elpaca :repo "https://github.com/progfolio/elpaca.git"
+				:ref nil :depth 1 :inherit ignore
+				:files (:defaults "elpaca-test.el" (:exclude "extensions"))
+				:build (:not elpaca--activate-package)))
+(let* ((repo  (expand-file-name "elpaca/" elpaca-repos-directory))
+	 (build (expand-file-name "elpaca/" elpaca-builds-directory))
+	 (order (cdr elpaca-order))
+	 (default-directory repo))
+  (add-to-list 'load-path (if (file-exists-p build) build repo))
+  (unless (file-exists-p repo)
+    (make-directory repo t)
+    (when (<= emacs-major-version 28) (require 'subr-x))
+    (condition-case-unless-debug err
+	  (if-let* ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
+		    ((zerop (apply #'call-process `("git" nil ,buffer t "clone"
+						    ,@(when-let* ((depth (plist-get order :depth)))
+							(list (format "--depth=%d" depth) "--no-single-branch"))
+						    ,(plist-get order :repo) ,repo))))
+		    ((zerop (call-process "git" nil buffer t "checkout"
+					  (or (plist-get order :ref) "--"))))
+		    (emacs (concat invocation-directory invocation-name))
+		    ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
+					  "--eval" "(byte-recompile-directory \".\" 0 'force)")))
+		    ((require 'elpaca))
+		    ((elpaca-generate-autoloads "elpaca" repo)))
+	      (progn (message "%s" (buffer-string)) (kill-buffer buffer))
+	    (error "%s" (with-current-buffer buffer (buffer-string))))
+	((error) (warn "%s" err) (delete-directory repo 'recursive))))
+  (unless (require 'elpaca-autoloads nil t)
+    (require 'elpaca)
+    (elpaca-generate-autoloads "elpaca" repo)
+    (let ((load-source-file-function nil)) (load "./elpaca-autoloads"))))
+(add-hook 'after-init-hook #'elpaca-process-queues)
+(elpaca `(,@elpaca-order))
+
+(elpaca (org :wait t))
+
+(elpaca elpaca-use-package
+  (require 'elpaca-use-package)
+  (elpaca-use-package-mode)
+  (setq use-package-always-ensure t)
+  (setq use-package-always-defer t))
+
+(defmacro use-feature (name &rest args)
+  "Like `use-package' but accounting for asynchronous installation.
+  NAME and ARGS are in `use-package'."
+  (declare (indent defun))
+  `(use-package ,name
+     :ensure nil
+     ,@args))
+
+(defmacro with-after-elpaca-init (&rest body)
+  "Adds BODY to `elpaca-after-init-hook`"
+  `(add-hook 'elpaca-after-init-hook (lambda () ,@body)))
+
 (set-language-environment "UTF-8")
 (set-default-coding-systems 'utf-8)
 
@@ -406,228 +494,6 @@ If there are only two windows, jump directly to the other window."
   (save-excursion)
   (beginning-of-buffer)
   (replace-regexp "^\n\n+" "\n"))
-
-(setq default-directory "~/")
-
-;; Local Variables:
-;; no-byte-compile: t
-;; no-native-compile: t
-;; no-update-autoloads: t
-;; End:
-
-(general-define-key
- "C-+" #'text-scale-increase
- "C--" #'text-scale-decrease)
-
-(global-set-key (kbd "<pinch>") 'ignore)
-(global-set-key (kbd "<C-wheel-up>") 'ignore)
-(global-set-key (kbd "<C-wheel-down>") 'ignore)
-
-(general-define-key
- "C-x c" #'save-buffers-kill-emacs
- "C-x C-b" #'ibuffer
- "s-o" #'find-file
- "s-k" #'kill-current-buffer
- "M-s-k" #'kill-buffer-and-window
- "s-K" #'nuke-all-buffers
- "s-r" #'consult-buffer
- "M-s-r" #'consult-buffer-other-window
- "C-S-a" #'embark-act
- "C-M-S-s-k" #'copy-kill-buffer
- "C-M-S-s-s" #'goto-scratch)
-
-(general-define-key
- "s-0" #'delete-window
- "s-1" #'delete-other-windows
- "s-2" #'rlr/find-file-below
- "s-3" #'rlr/find-file-right
- "s-4" #'split-window-below-focus
- "s-5" #'split-window-right-focus
- "s-6" #'toggle-window-split
- "S-C-<left>" #'shrink-window-horizontally
- "S-C-<right>" #'enlarge-window-horizontally
- "S-C-<down>" #'shrink-window
- "S-C-<up>" #'enlarge-window
- "C-x w" #'delete-frame
- "M-o" #'crux-other-window-or-switch-buffer
- "M-o" #'my/quick-window-jump
- "s-\"" #'previous-window-any-frame)
-
-(general-define-key
- "s-t" #'tab-new
- "s-T" #'rlr/find-file-new-tab
- "s-w" #'rlr/delete-tab-or-frame)
-
-(general-define-key
- "s-l" #'hydra-locate/body
- "s-f" #'consult-line
- "<f5>" #'deadgrep
- ;; "C-s" #'consult-isearch
- ;; "C-r" #'consult-isearch-reverse
- )
-
-(general-define-key
- "<s-up>" #'beginning-of-buffer
- "<s-down>" #'end-of-buffer
- "<s-right>" #'end-of-visual-line
- "<s-left>" #'beginning-of-visual-line
- "<M-down>" #'forward-paragraph
- "<M-up>" #'backward-paragraph
- "M-u" #'upcase-dwim
- "M-l" #'downcase-dwim
- "M-c" #'capitalize-dwim
- "RET" #'newline-and-indent
- "M-/" #'hippie-expand
- "<s-backspace>" #'kill-whole-line
- "s-j" #'crux-top-join-line
- "<S-return>" #'crux-smart-open-line
- "<C-S-return>" #'crux-smart-open-line-above
- "<C-d d>" #'insert-standard-date
-
- "M-y" #'consult-yank-pop
-
- "M-q" #'reformat-paragraph
- "M-#" #'dictionary-lookup-definition
- "M-=" #'shrink-whitespace
- "s-l" #'hydra-locate/body
- "s-f" #'consult-line
- "<f5>" #'deadgrep)
-
-(general-define-key
- ;; Editing
- ;; "s-/" #'avy-goto-char-timer
- "C-x 4 b" #'consult-buffer-other-window
- "C-x 5 b" #'consult-buffer-other-frame
- "C-x r x" #'consult-register
- "M-s m" #'consult-multi-occur
- "<f8>" #'calendar
- )
-
-(defun open-emacs-config ()
-  (interactive)
-  (find-file "~/.config/emacs/README.org"))
-
-(defun open-fish-functions ()
-  (interactive)
-  (dired "~/.config/fish/functions"))
-
-(general-define-key
- :prefix "C-c"
- ;; bind "C-c a" to #'org-agenda
-
- "a" #'org-agenda
- "b" #'consult-bookmark
- "c" #'org-capture
-
- "d s" #'insert-date-string
- "d d" #'insert-standard-date
- "d b" #'insert-blog-date
- "d l" #'dictionary-search
- "D" #'crux-delete-file-and-buffer
-
- "f f" #'find-file
- "f k" #'rlr/kill-other-buffers
- "f r" #'consult-buffer
- "f R" #'crux-rename-file-and-buffer
- "f P" #'open-emacs-config
- "f S" #'open-fish-functions
-
- "g l" #'avy-goto-line
- "g w" #'avy-goto-word-1
- "g p" #'pdf-sync-forward-search
-
- ;; "h" #'consult-history
-
- ;; Helpful
- "H c" #'helpful-command
- "H F" #'helpful-callable
- "H h" #'helpful-at-point
- "H f" #'helpful-function
- "H v" #'helpful-variable
- "H k" #'helpful-key
-
- "k" #'rlr/kill-other-buffers
-
- "m" #'consult-mark
- "n b" #'hugo-draft-post
- "o" #'consult-outline
-
- ;; Projects
- "p f" #'consult-project-buffer
- "p d" #'project-find-dired
-
- "r" #'crux-rename-file-and-buffer
- ;; "s" #'rg-menu
- "S" #'crux-cleanup-buffer-or-region
- "t" #'terminal-here-launch
- "u" #'unfill-paragraph
- "w" #'kill-buffer-and-window
- "z" #'reveal-in-osx-finder
-
- ;; Search
- "s s" #'denote-search
- "s d" #'denote-search-marked-dired-files
- "s r" #'denote-search-files-referenced-in-region
- )
-
-(defvar elpaca-installer-version 0.11)
-(defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
-(defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
-(defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
-(defvar elpaca-order '(elpaca :repo "https://github.com/progfolio/elpaca.git"
-				:ref nil :depth 1 :inherit ignore
-				:files (:defaults "elpaca-test.el" (:exclude "extensions"))
-				:build (:not elpaca--activate-package)))
-(let* ((repo  (expand-file-name "elpaca/" elpaca-repos-directory))
-	 (build (expand-file-name "elpaca/" elpaca-builds-directory))
-	 (order (cdr elpaca-order))
-	 (default-directory repo))
-  (add-to-list 'load-path (if (file-exists-p build) build repo))
-  (unless (file-exists-p repo)
-    (make-directory repo t)
-    (when (<= emacs-major-version 28) (require 'subr-x))
-    (condition-case-unless-debug err
-	  (if-let* ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
-		    ((zerop (apply #'call-process `("git" nil ,buffer t "clone"
-						    ,@(when-let* ((depth (plist-get order :depth)))
-							(list (format "--depth=%d" depth) "--no-single-branch"))
-						    ,(plist-get order :repo) ,repo))))
-		    ((zerop (call-process "git" nil buffer t "checkout"
-					  (or (plist-get order :ref) "--"))))
-		    (emacs (concat invocation-directory invocation-name))
-		    ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
-					  "--eval" "(byte-recompile-directory \".\" 0 'force)")))
-		    ((require 'elpaca))
-		    ((elpaca-generate-autoloads "elpaca" repo)))
-	      (progn (message "%s" (buffer-string)) (kill-buffer buffer))
-	    (error "%s" (with-current-buffer buffer (buffer-string))))
-	((error) (warn "%s" err) (delete-directory repo 'recursive))))
-  (unless (require 'elpaca-autoloads nil t)
-    (require 'elpaca)
-    (elpaca-generate-autoloads "elpaca" repo)
-    (let ((load-source-file-function nil)) (load "./elpaca-autoloads"))))
-(add-hook 'after-init-hook #'elpaca-process-queues)
-(elpaca `(,@elpaca-order))
-
-(elpaca (org :wait t))
-
-(elpaca elpaca-use-package
-  (require 'elpaca-use-package)
-  (elpaca-use-package-mode)
-  (setq use-package-always-ensure t)
-  (setq use-package-always-defer t))
-
-(defmacro use-feature (name &rest args)
-  "Like `use-package' but accounting for asynchronous installation.
-  NAME and ARGS are in `use-package'."
-  (declare (indent defun))
-  `(use-package ,name
-     :ensure nil
-     ,@args))
-
-(defmacro with-after-elpaca-init (&rest body)
-  "Adds BODY to `elpaca-after-init-hook`"
-  `(add-hook 'elpaca-after-init-hook (lambda () ,@body)))
 
 (use-package general
   :ensure (:wait t)
@@ -3114,31 +2980,165 @@ installed."
   :hook
   (elpaca-after-init . yas-global-mode))
 
-;;; init.el --- Personal Emacs configuration file -*- lexical-binding: t; -*-
+(general-define-key
+ "C-+" #'text-scale-increase
+ "C--" #'text-scale-decrease)
 
-(defconst rr-emacs-dir (expand-file-name user-emacs-directory)
-  "The path to the emacs.d directory.")
+(global-set-key (kbd "<pinch>") 'ignore)
+(global-set-key (kbd "<C-wheel-up>") 'ignore)
+(global-set-key (kbd "<C-wheel-down>") 'ignore)
 
-(defconst rr-cache-dir "~/.cache/emacs/"
-  "The directory for Emacs activity files.")
+(general-define-key
+ "C-x c" #'save-buffers-kill-emacs
+ "C-x C-b" #'ibuffer
+ "s-o" #'find-file
+ "s-k" #'kill-current-buffer
+ "M-s-k" #'kill-buffer-and-window
+ "s-K" #'nuke-all-buffers
+ "s-r" #'consult-buffer
+ "M-s-r" #'consult-buffer-other-window
+ "C-S-a" #'embark-act
+ "C-M-S-s-k" #'copy-kill-buffer
+ "C-M-S-s-s" #'goto-scratch)
 
-(defconst rr-backup-dir (concat rr-cache-dir "backup/")
-  "The directory for Emacs backup files.")
+(general-define-key
+ "s-0" #'delete-window
+ "s-1" #'delete-other-windows
+ "s-2" #'rlr/find-file-below
+ "s-3" #'rlr/find-file-right
+ "s-4" #'split-window-below-focus
+ "s-5" #'split-window-right-focus
+ "s-6" #'toggle-window-split
+ "S-C-<left>" #'shrink-window-horizontally
+ "S-C-<right>" #'enlarge-window-horizontally
+ "S-C-<down>" #'shrink-window
+ "S-C-<up>" #'enlarge-window
+ "C-x w" #'delete-frame
+ "M-o" #'crux-other-window-or-switch-buffer
+ "M-o" #'my/quick-window-jump
+ "s-\"" #'previous-window-any-frame)
 
-(defconst rr-org-dir "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/"
-  "The directory for my org files.")
+(general-define-key
+ "s-t" #'tab-new
+ "s-T" #'rlr/find-file-new-tab
+ "s-w" #'rlr/delete-tab-or-frame)
 
-(defconst rr-agenda-dir "/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/"
-  "The directory for RR-Emacs note storage.")
+(general-define-key
+ "s-l" #'hydra-locate/body
+ "s-f" #'consult-line
+ "<f5>" #'deadgrep
+ ;; "C-s" #'consult-isearch
+ ;; "C-r" #'consult-isearch-reverse
+ )
 
-(defconst rr-notes-dir "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/Documents/notes/"
-  "The directory for RR-Emacs note storage.")
+(general-define-key
+ "<s-up>" #'beginning-of-buffer
+ "<s-down>" #'end-of-buffer
+ "<s-right>" #'end-of-visual-line
+ "<s-left>" #'beginning-of-visual-line
+ "<M-down>" #'forward-paragraph
+ "<M-up>" #'backward-paragraph
+ "M-u" #'upcase-dwim
+ "M-l" #'downcase-dwim
+ "M-c" #'capitalize-dwim
+ "RET" #'newline-and-indent
+ "M-/" #'hippie-expand
+ "<s-backspace>" #'kill-whole-line
+ "s-j" #'crux-top-join-line
+ "<S-return>" #'crux-smart-open-line
+ "<C-S-return>" #'crux-smart-open-line-above
+ "<C-d d>" #'insert-standard-date
 
-;;;; Create directories if non-existing
-(dolist (dir (list rr-cache-dir
-		     rr-backup-dir))
-  (unless (file-directory-p dir)
-    (make-directory dir t)))
+ "M-y" #'consult-yank-pop
 
-;; set load path
-(add-to-list 'load-path (concat rr-emacs-dir "elisp"))
+ "M-q" #'reformat-paragraph
+ "M-#" #'dictionary-lookup-definition
+ "M-=" #'shrink-whitespace
+ "s-l" #'hydra-locate/body
+ "s-f" #'consult-line
+ "<f5>" #'deadgrep)
+
+(general-define-key
+ ;; Editing
+ ;; "s-/" #'avy-goto-char-timer
+ "C-x 4 b" #'consult-buffer-other-window
+ "C-x 5 b" #'consult-buffer-other-frame
+ "C-x r x" #'consult-register
+ "M-s m" #'consult-multi-occur
+ "<f8>" #'calendar
+ )
+
+(defun open-emacs-config ()
+  (interactive)
+  (find-file "~/.config/emacs/README.org"))
+
+(defun open-fish-functions ()
+  (interactive)
+  (dired "~/.config/fish/functions"))
+
+(general-define-key
+ :prefix "C-c"
+ ;; bind "C-c a" to #'org-agenda
+
+ "a" #'org-agenda
+ "b" #'consult-bookmark
+ "c" #'org-capture
+
+ "d s" #'insert-date-string
+ "d d" #'insert-standard-date
+ "d b" #'insert-blog-date
+ "d l" #'dictionary-search
+ "D" #'crux-delete-file-and-buffer
+
+ "f f" #'find-file
+ "f k" #'rlr/kill-other-buffers
+ "f r" #'consult-buffer
+ "f R" #'crux-rename-file-and-buffer
+ "f P" #'open-emacs-config
+ "f S" #'open-fish-functions
+
+ "g l" #'avy-goto-line
+ "g w" #'avy-goto-word-1
+ "g p" #'pdf-sync-forward-search
+
+ ;; "h" #'consult-history
+
+ ;; Helpful
+ "H c" #'helpful-command
+ "H F" #'helpful-callable
+ "H h" #'helpful-at-point
+ "H f" #'helpful-function
+ "H v" #'helpful-variable
+ "H k" #'helpful-key
+
+ "k" #'rlr/kill-other-buffers
+
+ "m" #'consult-mark
+ "n b" #'hugo-draft-post
+ "o" #'consult-outline
+
+ ;; Projects
+ "p f" #'consult-project-buffer
+ "p d" #'project-find-dired
+
+ "r" #'crux-rename-file-and-buffer
+ ;; "s" #'rg-menu
+ "S" #'crux-cleanup-buffer-or-region
+ "t" #'terminal-here-launch
+ "u" #'unfill-paragraph
+ "w" #'kill-buffer-and-window
+ "z" #'reveal-in-osx-finder
+
+ ;; Search
+ "s s" #'denote-search
+ "s d" #'denote-search-marked-dired-files
+ "s r" #'denote-search-files-referenced-in-region
+ )
+
+(setq default-directory "~/")
+
+;; Local Variables:
+;; no-byte-compile: t
+;; no-native-compile: t
+;; no-update-autoloads: t
+;; End:

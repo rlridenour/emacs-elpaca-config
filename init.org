@@ -3,6 +3,313 @@
 #+email: rlridenour@fastmail.com
 #+auto_tangle: t
 
+* Early Init File
+:PROPERTIES:
+:header-args: :tangle early-init.el
+:END:
+
+** Header
+
+Set the header and prevent package initialization.
+
+#+begin_src emacs-lisp
+  ;; early-init.el -*- lexical-binding: t; -*-
+#+end_src
+
+#+begin_src emacs-lisp :lexical t
+  (setq package-enable-at-startup nil)
+  (setq inhibit-default-init nil)
+#+end_src
+
+** Performance
+
+*** Garbage Collection
+
+#+begin_src emacs-lisp
+  (setq gc-cons-threshold most-positive-fixnum
+	gc-cons-percentage 1)
+
+  (defun +gc-after-focus-change ()
+    "Run GC when frame loses focus."
+    (run-with-idle-timer
+     5 nil
+     (lambda () (unless (frame-focus-state) (garbage-collect)))))
+#+end_src
+
+Raise max lisp nesting depth.
+
+#+begin_src emacs-lisp
+  (setq max-lisp-eval-depth 10000)
+#+end_src
+
+#+begin_src emacs-lisp :lexical t
+  (defun +reset-init-values ()
+    (run-with-idle-timer
+     1 nil
+     (lambda ()
+       (setq file-name-handler-alist default-file-name-handler-alist
+	     gc-cons-percentage 0.1
+	     gc-cons-threshold 100000000)
+       (let ((inhibit-message t))
+	 (message "gc-cons-threshold & file-name-handler-alist restored"))
+       (message "ELPACA LOADING COMPLETE: %s" (emacs-init-time))
+       (when (boundp 'after-focus-change-function)
+	 (add-function :after after-focus-change-function #'+gc-after-focus-change)))))
+
+  (with-eval-after-load 'elpaca
+    (add-hook 'elpaca-after-init-hook '+reset-init-values))
+#+end_src
+
+*** Native Comp
+
+Improve execution speed.
+
+#+begin_src emacs-lisp
+  (customize-set-variable 'native-comp-speed 2)
+  (customize-set-variable 'native-comp-deferred-compilation t)
+#+end_src
+
+#+begin_src emacs-lisp
+  ;; Silence native compilation warnings
+  (setq native-comp-async-report-warnings-errors nil)
+#+end_src
+
+*** File-Name-Handler-Alist
+
+Skipping a bunch of regular expression searching in the =file-name-handler-alist= should improve start time.
+#+begin_src emacs-lisp :lexical t
+  (defvar default-file-name-handler-alist file-name-handler-alist)
+  (setq file-name-handler-alist nil)
+#+end_src
+
+Set my name and email.
+
+#+begin_src emacs-lisp
+  (setq user-full-name "Randy Ridenour"
+	user-mail-address "rlridenour@fastmail.com")
+#+end_src
+
+** UI
+
+*** Clean Up UI
+
+Remove unnecessary GUI elements.
+
+#+begin_src emacs-lisp
+  (tool-bar-mode -1)
+  (scroll-bar-mode -1)
+  (tooltip-mode -1)
+  (setq-default frame-inhibit-implied-resize t)
+  (setq-default inhibit-startup-screen t)
+  (setq-default inhibit-startup-message t)
+  (setq-default inhibit-splash-screen t)
+  (setq-default initial-scratch-message nil)
+  (setq use-dialog-box nil)
+#+end_src
+
+Make scrolling smoother.
+
+#+begin_src emacs-lisp
+  (setq scroll-conservatively 10
+	scroll-margin 0)
+#+end_src
+
+*** Initial Frame
+
+Set initial frame size to fullheight.
+
+#+begin_src emacs-lisp
+  (setq frame-resize-pixelwise t)
+  (add-to-list 'default-frame-alist '(fullscreen . maximized))
+  ;; (add-to-list 'default-frame-alist '(left . 0))
+  ;; (add-to-list 'default-frame-alist '(width . 100))
+#+end_src
+
+Bring new frame to front. From [[https://www.reddit.com/r/emacs/comments/1g2hkh8/a_useful_snippet_to_bring_emacs_client_to_the/][a useful snippet to bring emacs client to the front on OS X : r/emacs]].
+
+#+begin_src emacs-lisp
+  (defun initd/bring-emacs-to-front ()
+    "Using applescript, force the Emacs frame to be activated."
+    (when (eq system-type 'darwin)
+      (start-process "bring-emacs-to-front" nil
+		     "osascript"
+		     "-e"
+		     "tell application \"Emacs\" to activate")))
+
+  (add-hook 'server-after-make-frame-hook #'initd/bring-emacs-to-front)
+#+end_src
+
+Set the frame title format.
+
+#+begin_src emacs-lisp :tangle no
+  (setq-default cursor-in-non-selected-windows nil
+		frame-title-format '("%f [%m]"))
+#+end_src
+
+Set window title to file name.
+
+#+begin_src emacs-lisp
+  (setq frame-title-format
+	'(buffer-file-name (:eval (abbreviate-file-name buffer-file-name))
+			   (dired-directory dired-directory
+					    "%b")))
+#+end_src
+
+Focus new frames
+
+#+begin_src emacs-lisp
+  (defun rr/focus-new-client-frame ()
+    (select-frame-set-input-focus (selected-frame)))
+
+  (add-hook 'server-after-make-frame-hook #'rr/focus-new-client-frame)
+#+end_src
+
+** Font size
+
+Increase font size.
+
+#+begin_src emacs-lisp
+  (set-face-attribute 'default nil :height 160)
+#+end_src
+
+** Footer
+
+#+begin_src emacs-lisp
+  ;; Local Variables:
+  ;; no-byte-compile: t
+  ;; no-native-compile: t
+  ;; no-update-autoloads: t
+  ;; End:
+#+end_src
+
+* Variables
+:PROPERTIES:
+:header-args: :tangle init.el
+:END:
+
+#+begin_src emacs-lisp
+  ;;; init.el --- Personal Emacs configuration file -*- lexical-binding: t; -*-
+#+end_src
+
+#+begin_src emacs-lisp
+  (defconst rr-emacs-dir (expand-file-name user-emacs-directory)
+    "The path to the emacs.d directory.")
+
+  (defconst rr-cache-dir "~/.cache/emacs/"
+    "The directory for Emacs activity files.")
+
+  (defconst rr-backup-dir (concat rr-cache-dir "backup/")
+    "The directory for Emacs backup files.")
+
+  (defconst rr-org-dir "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/"
+    "The directory for my org files.")
+
+  (defconst rr-agenda-dir "/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/"
+    "The directory for RR-Emacs note storage.")
+
+  (defconst rr-notes-dir "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/Documents/notes/"
+    "The directory for RR-Emacs note storage.")
+#+end_src
+
+Create cache and backup directories.
+
+#+begin_src emacs-lisp
+    ;;;; Create directories if non-existing
+  (dolist (dir (list rr-cache-dir
+		     rr-backup-dir))
+    (unless (file-directory-p dir)
+      (make-directory dir t)))
+#+end_src
+
+Add elisp directory to load path.
+
+#+begin_src emacs-lisp
+  ;; set load path
+  (add-to-list 'load-path (concat rr-emacs-dir "elisp"))
+#+end_src
+
+* Package Management
+:PROPERTIES:
+:header-args: :tangle init.el
+:END:
+
+** Elpaca Install
+
+#+begin_src emacs-lisp
+  (defvar elpaca-installer-version 0.11)
+  (defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
+  (defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
+  (defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
+  (defvar elpaca-order '(elpaca :repo "https://github.com/progfolio/elpaca.git"
+				:ref nil :depth 1 :inherit ignore
+				:files (:defaults "elpaca-test.el" (:exclude "extensions"))
+				:build (:not elpaca--activate-package)))
+  (let* ((repo  (expand-file-name "elpaca/" elpaca-repos-directory))
+	 (build (expand-file-name "elpaca/" elpaca-builds-directory))
+	 (order (cdr elpaca-order))
+	 (default-directory repo))
+    (add-to-list 'load-path (if (file-exists-p build) build repo))
+    (unless (file-exists-p repo)
+      (make-directory repo t)
+      (when (<= emacs-major-version 28) (require 'subr-x))
+      (condition-case-unless-debug err
+	  (if-let* ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
+		    ((zerop (apply #'call-process `("git" nil ,buffer t "clone"
+						    ,@(when-let* ((depth (plist-get order :depth)))
+							(list (format "--depth=%d" depth) "--no-single-branch"))
+						    ,(plist-get order :repo) ,repo))))
+		    ((zerop (call-process "git" nil buffer t "checkout"
+					  (or (plist-get order :ref) "--"))))
+		    (emacs (concat invocation-directory invocation-name))
+		    ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
+					  "--eval" "(byte-recompile-directory \".\" 0 'force)")))
+		    ((require 'elpaca))
+		    ((elpaca-generate-autoloads "elpaca" repo)))
+	      (progn (message "%s" (buffer-string)) (kill-buffer buffer))
+	    (error "%s" (with-current-buffer buffer (buffer-string))))
+	((error) (warn "%s" err) (delete-directory repo 'recursive))))
+    (unless (require 'elpaca-autoloads nil t)
+      (require 'elpaca)
+      (elpaca-generate-autoloads "elpaca" repo)
+      (let ((load-source-file-function nil)) (load "./elpaca-autoloads"))))
+  (add-hook 'after-init-hook #'elpaca-process-queues)
+  (elpaca `(,@elpaca-order))
+#+end_src
+
+** Elpaca Use-Package Support
+
+Load org first to avoid version mismatch.
+
+#+begin_src emacs-lisp
+  (elpaca (org :wait t))
+#+end_src
+
+#+begin_src emacs-lisp
+  (elpaca elpaca-use-package
+    (require 'elpaca-use-package)
+    (elpaca-use-package-mode)
+    (setq use-package-always-ensure t)
+    (setq use-package-always-defer t))
+#+end_src
+
+#+begin_src emacs-lisp :lexical t
+  (defmacro use-feature (name &rest args)
+    "Like `use-package' but accounting for asynchronous installation.
+    NAME and ARGS are in `use-package'."
+    (declare (indent defun))
+    `(use-package ,name
+       :ensure nil
+       ,@args))
+#+end_src
+
+Use this macro for code that needs to run after Elpaca.
+
+#+begin_src emacs-lisp
+  (defmacro with-after-elpaca-init (&rest body)
+    "Adds BODY to `elpaca-after-init-hook`"
+    `(add-hook 'elpaca-after-init-hook (lambda () ,@body)))
+#+end_src
+
 * Defaults
 :PROPERTIES:
 :header-args: :tangle init.el
@@ -681,498 +988,6 @@ Delete extra blank lines in buffer.
     (save-excursion)
     (beginning-of-buffer)
     (replace-regexp "^\n\n+" "\n"))
-#+end_src
-
-* Early Init File
-:PROPERTIES:
-:header-args: :tangle early-init.el
-:END:
-
-** Header
-
-Set the header and prevent package initialization.
-
-#+begin_src emacs-lisp
-  ;; early-init.el -*- lexical-binding: t; -*-
-#+end_src
-
-#+begin_src emacs-lisp :lexical t
-  (setq package-enable-at-startup nil)
-  (setq inhibit-default-init nil)
-#+end_src
-
-** Performance
-
-*** Garbage Collection
-
-#+begin_src emacs-lisp
-  (setq gc-cons-threshold most-positive-fixnum
-	gc-cons-percentage 1)
-
-  (defun +gc-after-focus-change ()
-    "Run GC when frame loses focus."
-    (run-with-idle-timer
-     5 nil
-     (lambda () (unless (frame-focus-state) (garbage-collect)))))
-#+end_src
-
-Raise max lisp nesting depth.
-
-#+begin_src emacs-lisp
-  (setq max-lisp-eval-depth 10000)
-#+end_src
-
-#+begin_src emacs-lisp :lexical t
-  (defun +reset-init-values ()
-    (run-with-idle-timer
-     1 nil
-     (lambda ()
-       (setq file-name-handler-alist default-file-name-handler-alist
-	     gc-cons-percentage 0.1
-	     gc-cons-threshold 100000000)
-       (let ((inhibit-message t))
-	 (message "gc-cons-threshold & file-name-handler-alist restored"))
-       (message "ELPACA LOADING COMPLETE: %s" (emacs-init-time))
-       (when (boundp 'after-focus-change-function)
-	 (add-function :after after-focus-change-function #'+gc-after-focus-change)))))
-
-  (with-eval-after-load 'elpaca
-    (add-hook 'elpaca-after-init-hook '+reset-init-values))
-#+end_src
-
-*** Native Comp
-
-Improve execution speed.
-
-#+begin_src emacs-lisp
-  (customize-set-variable 'native-comp-speed 2)
-  (customize-set-variable 'native-comp-deferred-compilation t)
-#+end_src
-
-#+begin_src emacs-lisp
-  ;; Silence native compilation warnings
-  (setq native-comp-async-report-warnings-errors nil)
-#+end_src
-
-*** File-Name-Handler-Alist
-
-Skipping a bunch of regular expression searching in the =file-name-handler-alist= should improve start time.
-#+begin_src emacs-lisp :lexical t
-  (defvar default-file-name-handler-alist file-name-handler-alist)
-  (setq file-name-handler-alist nil)
-#+end_src
-
-Set my name and email.
-
-#+begin_src emacs-lisp
-  (setq user-full-name "Randy Ridenour"
-	user-mail-address "rlridenour@fastmail.com")
-#+end_src
-
-** UI
-
-*** Clean Up UI
-
-Remove unnecessary GUI elements.
-
-#+begin_src emacs-lisp
-  (tool-bar-mode -1)
-  (scroll-bar-mode -1)
-  (tooltip-mode -1)
-  (setq-default frame-inhibit-implied-resize t)
-  (setq-default inhibit-startup-screen t)
-  (setq-default inhibit-startup-message t)
-  (setq-default inhibit-splash-screen t)
-  (setq-default initial-scratch-message nil)
-  (setq use-dialog-box nil)
-#+end_src
-
-Make scrolling smoother.
-
-#+begin_src emacs-lisp
-  (setq scroll-conservatively 10
-	scroll-margin 0)
-#+end_src
-
-*** Initial Frame
-
-Set initial frame size to fullheight.
-
-#+begin_src emacs-lisp
-  (setq frame-resize-pixelwise t)
-  (add-to-list 'default-frame-alist '(fullscreen . maximized))
-  ;; (add-to-list 'default-frame-alist '(left . 0))
-  ;; (add-to-list 'default-frame-alist '(width . 100))
-#+end_src
-
-Bring new frame to front. From [[https://www.reddit.com/r/emacs/comments/1g2hkh8/a_useful_snippet_to_bring_emacs_client_to_the/][a useful snippet to bring emacs client to the front on OS X : r/emacs]].
-
-#+begin_src emacs-lisp
-  (defun initd/bring-emacs-to-front ()
-    "Using applescript, force the Emacs frame to be activated."
-    (when (eq system-type 'darwin)
-      (start-process "bring-emacs-to-front" nil
-		     "osascript"
-		     "-e"
-		     "tell application \"Emacs\" to activate")))
-
-  (add-hook 'server-after-make-frame-hook #'initd/bring-emacs-to-front)
-#+end_src
-
-Set the frame title format.
-
-#+begin_src emacs-lisp :tangle no
-  (setq-default cursor-in-non-selected-windows nil
-		frame-title-format '("%f [%m]"))
-#+end_src
-
-Set window title to file name.
-
-#+begin_src emacs-lisp
-  (setq frame-title-format
-	'(buffer-file-name (:eval (abbreviate-file-name buffer-file-name))
-			   (dired-directory dired-directory
-					    "%b")))
-#+end_src
-
-Focus new frames
-
-#+begin_src emacs-lisp
-  (defun rr/focus-new-client-frame ()
-    (select-frame-set-input-focus (selected-frame)))
-
-  (add-hook 'server-after-make-frame-hook #'rr/focus-new-client-frame)
-#+end_src
-
-** Font size
-
-Increase font size.
-
-#+begin_src emacs-lisp
-  (set-face-attribute 'default nil :height 160)
-#+end_src
-
-** Footer
-
-#+begin_src emacs-lisp
-  ;; Local Variables:
-  ;; no-byte-compile: t
-  ;; no-native-compile: t
-  ;; no-update-autoloads: t
-  ;; End:
-#+end_src
-
-* Finish
-:PROPERTIES:
-:header-args: :tangle init.el
-:END:
-
-Set default directory.
-
-#+begin_src emacs-lisp
-  (setq default-directory "~/")
-#+end_src
-
-* Footer
-:PROPERTIES:
-:header-args: :tangle init.el
-:END:
-
-#+begin_src emacs-lisp
-  ;; Local Variables:
-  ;; no-byte-compile: t
-  ;; no-native-compile: t
-  ;; no-update-autoloads: t
-  ;; End:
-#+end_src
-* Keybindings
-:PROPERTIES:
-:header-args: :tangle init.el
-:END:
-
-** Appearance Keybindings
-
-#+begin_src emacs-lisp
-  (general-define-key
-   "C-+" #'text-scale-increase
-   "C--" #'text-scale-decrease)
-#+end_src
-
-Disable changing text size with mouse and trackpad
-
-#+begin_src emacs-lisp
-  (global-set-key (kbd "<pinch>") 'ignore)
-  (global-set-key (kbd "<C-wheel-up>") 'ignore)
-  (global-set-key (kbd "<C-wheel-down>") 'ignore)
-#+end_src
-
-** Buffer Keybindings
-
-Keybindings for files and buffers.
-
-#+begin_src emacs-lisp
-  (general-define-key
-   "C-x c" #'save-buffers-kill-emacs
-   "C-x C-b" #'ibuffer
-   "s-o" #'find-file
-   "s-k" #'kill-current-buffer
-   "M-s-k" #'kill-buffer-and-window
-   "s-K" #'nuke-all-buffers
-   "s-r" #'consult-buffer
-   "M-s-r" #'consult-buffer-other-window
-   "C-S-a" #'embark-act
-   "C-M-S-s-k" #'copy-kill-buffer
-   "C-M-S-s-s" #'goto-scratch)
-#+end_src
-
-** Window Keybindings
-
-#+begin_src emacs-lisp
-  (general-define-key
-   "s-0" #'delete-window
-   "s-1" #'delete-other-windows
-   "s-2" #'rlr/find-file-below
-   "s-3" #'rlr/find-file-right
-   "s-4" #'split-window-below-focus
-   "s-5" #'split-window-right-focus
-   "s-6" #'toggle-window-split
-   "S-C-<left>" #'shrink-window-horizontally
-   "S-C-<right>" #'enlarge-window-horizontally
-   "S-C-<down>" #'shrink-window
-   "S-C-<up>" #'enlarge-window
-   "C-x w" #'delete-frame
-   "M-o" #'crux-other-window-or-switch-buffer
-   "M-o" #'my/quick-window-jump
-   "s-\"" #'previous-window-any-frame)
-#+end_src
-
-** Tab Keybindings
-
-#+begin_src emacs-lisp
-  (general-define-key
-   "s-t" #'tab-new
-   "s-T" #'rlr/find-file-new-tab
-   "s-w" #'rlr/delete-tab-or-frame)
-#+end_src
-
-** Search Keybindings
-
-#+begin_src emacs-lisp
-  (general-define-key
-   "s-l" #'hydra-locate/body
-   "s-f" #'consult-line
-   "<f5>" #'deadgrep
-   ;; "C-s" #'consult-isearch
-   ;; "C-r" #'consult-isearch-reverse
-   )
-#+end_src
-
-** Editing Keybindings
-
-#+begin_src emacs-lisp
-  (general-define-key
-   "<s-up>" #'beginning-of-buffer
-   "<s-down>" #'end-of-buffer
-   "<s-right>" #'end-of-visual-line
-   "<s-left>" #'beginning-of-visual-line
-   "<M-down>" #'forward-paragraph
-   "<M-up>" #'backward-paragraph
-   "M-u" #'upcase-dwim
-   "M-l" #'downcase-dwim
-   "M-c" #'capitalize-dwim
-   "RET" #'newline-and-indent
-   "M-/" #'hippie-expand
-   "<s-backspace>" #'kill-whole-line
-   "s-j" #'crux-top-join-line
-   "<S-return>" #'crux-smart-open-line
-   "<C-S-return>" #'crux-smart-open-line-above
-   "<C-d d>" #'insert-standard-date
-
-   "M-y" #'consult-yank-pop
-
-   "M-q" #'reformat-paragraph
-   "M-#" #'dictionary-lookup-definition
-   "M-=" #'shrink-whitespace
-   "s-l" #'hydra-locate/body
-   "s-f" #'consult-line
-   "<f5>" #'deadgrep)
-#+end_src
-
-** Other Keybindings
-
-#+begin_src emacs-lisp
-  (general-define-key
-   ;; Editing
-   ;; "s-/" #'avy-goto-char-timer
-   "C-x 4 b" #'consult-buffer-other-window
-   "C-x 5 b" #'consult-buffer-other-frame
-   "C-x r x" #'consult-register
-   "M-s m" #'consult-multi-occur
-   "<f8>" #'calendar
-   )
-#+end_src
-
-** Prefix Keybindings
-
-Some functions that are used below.
-
-Open Emacs configuration file.
-
-#+begin_src emacs-lisp
-  (defun open-emacs-config ()
-    (interactive)
-    (find-file "~/.config/emacs/README.org"))
-#+end_src
-
-Open fish functions directory.
-
-#+begin_src emacs-lisp
-  (defun open-fish-functions ()
-    (interactive)
-    (dired "~/.config/fish/functions"))
-#+end_src
-
-#+begin_src emacs-lisp
-  (general-define-key
-   :prefix "C-c"
-   ;; bind "C-c a" to #'org-agenda
-
-   "a" #'org-agenda
-   "b" #'consult-bookmark
-   "c" #'org-capture
-
-   "d s" #'insert-date-string
-   "d d" #'insert-standard-date
-   "d b" #'insert-blog-date
-   "d l" #'dictionary-search
-   "D" #'crux-delete-file-and-buffer
-
-   "f f" #'find-file
-   "f k" #'rlr/kill-other-buffers
-   "f r" #'consult-buffer
-   "f R" #'crux-rename-file-and-buffer
-   "f P" #'open-emacs-config
-   "f S" #'open-fish-functions
-
-   "g l" #'avy-goto-line
-   "g w" #'avy-goto-word-1
-   "g p" #'pdf-sync-forward-search
-
-   ;; "h" #'consult-history
-
-   ;; Helpful
-   "H c" #'helpful-command
-   "H F" #'helpful-callable
-   "H h" #'helpful-at-point
-   "H f" #'helpful-function
-   "H v" #'helpful-variable
-   "H k" #'helpful-key
-
-   "k" #'rlr/kill-other-buffers
-
-   "m" #'consult-mark
-   "n b" #'hugo-draft-post
-   "o" #'consult-outline
-
-   ;; Projects
-   "p f" #'consult-project-buffer
-   "p d" #'project-find-dired
-
-   "r" #'crux-rename-file-and-buffer
-   ;; "s" #'rg-menu
-   "S" #'crux-cleanup-buffer-or-region
-   "t" #'terminal-here-launch
-   "u" #'unfill-paragraph
-   "w" #'kill-buffer-and-window
-   "z" #'reveal-in-osx-finder
-
-   ;; Search
-   "s s" #'denote-search
-   "s d" #'denote-search-marked-dired-files
-   "s r" #'denote-search-files-referenced-in-region
-   )
-#+end_src
-
-* Package Management
-:PROPERTIES:
-:header-args: :tangle init.el
-:END:
-
-** Elpaca Install
-
-#+begin_src emacs-lisp
-  (defvar elpaca-installer-version 0.11)
-  (defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
-  (defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
-  (defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
-  (defvar elpaca-order '(elpaca :repo "https://github.com/progfolio/elpaca.git"
-				:ref nil :depth 1 :inherit ignore
-				:files (:defaults "elpaca-test.el" (:exclude "extensions"))
-				:build (:not elpaca--activate-package)))
-  (let* ((repo  (expand-file-name "elpaca/" elpaca-repos-directory))
-	 (build (expand-file-name "elpaca/" elpaca-builds-directory))
-	 (order (cdr elpaca-order))
-	 (default-directory repo))
-    (add-to-list 'load-path (if (file-exists-p build) build repo))
-    (unless (file-exists-p repo)
-      (make-directory repo t)
-      (when (<= emacs-major-version 28) (require 'subr-x))
-      (condition-case-unless-debug err
-	  (if-let* ((buffer (pop-to-buffer-same-window "*elpaca-bootstrap*"))
-		    ((zerop (apply #'call-process `("git" nil ,buffer t "clone"
-						    ,@(when-let* ((depth (plist-get order :depth)))
-							(list (format "--depth=%d" depth) "--no-single-branch"))
-						    ,(plist-get order :repo) ,repo))))
-		    ((zerop (call-process "git" nil buffer t "checkout"
-					  (or (plist-get order :ref) "--"))))
-		    (emacs (concat invocation-directory invocation-name))
-		    ((zerop (call-process emacs nil buffer nil "-Q" "-L" "." "--batch"
-					  "--eval" "(byte-recompile-directory \".\" 0 'force)")))
-		    ((require 'elpaca))
-		    ((elpaca-generate-autoloads "elpaca" repo)))
-	      (progn (message "%s" (buffer-string)) (kill-buffer buffer))
-	    (error "%s" (with-current-buffer buffer (buffer-string))))
-	((error) (warn "%s" err) (delete-directory repo 'recursive))))
-    (unless (require 'elpaca-autoloads nil t)
-      (require 'elpaca)
-      (elpaca-generate-autoloads "elpaca" repo)
-      (let ((load-source-file-function nil)) (load "./elpaca-autoloads"))))
-  (add-hook 'after-init-hook #'elpaca-process-queues)
-  (elpaca `(,@elpaca-order))
-#+end_src
-
-** Elpaca Use-Package Support
-
-Load org first to avoid version mismatch.
-
-#+begin_src emacs-lisp
-  (elpaca (org :wait t))
-#+end_src
-
-#+begin_src emacs-lisp
-  (elpaca elpaca-use-package
-    (require 'elpaca-use-package)
-    (elpaca-use-package-mode)
-    (setq use-package-always-ensure t)
-    (setq use-package-always-defer t))
-#+end_src
-
-#+begin_src emacs-lisp :lexical t
-  (defmacro use-feature (name &rest args)
-    "Like `use-package' but accounting for asynchronous installation.
-    NAME and ARGS are in `use-package'."
-    (declare (indent defun))
-    `(use-package ,name
-       :ensure nil
-       ,@args))
-#+end_src
-
-Use this macro for code that needs to run after Elpaca.
-
-#+begin_src emacs-lisp
-  (defmacro with-after-elpaca-init (&rest body)
-    "Adds BODY to `elpaca-after-init-hook`"
-    `(add-hook 'elpaca-after-init-hook (lambda () ,@body)))
 #+end_src
 
 * Packages
@@ -4685,49 +4500,234 @@ https://github.com/joaotavora/yasnippet
     (elpaca-after-init . yas-global-mode))
 #+end_src
 
-* Variables
+* Keybindings
+:PROPERTIES:
+:header-args: :tangle init.el
+:END:
+
+** Appearance Keybindings
+
+#+begin_src emacs-lisp
+  (general-define-key
+   "C-+" #'text-scale-increase
+   "C--" #'text-scale-decrease)
+#+end_src
+
+Disable changing text size with mouse and trackpad
+
+#+begin_src emacs-lisp
+  (global-set-key (kbd "<pinch>") 'ignore)
+  (global-set-key (kbd "<C-wheel-up>") 'ignore)
+  (global-set-key (kbd "<C-wheel-down>") 'ignore)
+#+end_src
+
+** Buffer Keybindings
+
+Keybindings for files and buffers.
+
+#+begin_src emacs-lisp
+  (general-define-key
+   "C-x c" #'save-buffers-kill-emacs
+   "C-x C-b" #'ibuffer
+   "s-o" #'find-file
+   "s-k" #'kill-current-buffer
+   "M-s-k" #'kill-buffer-and-window
+   "s-K" #'nuke-all-buffers
+   "s-r" #'consult-buffer
+   "M-s-r" #'consult-buffer-other-window
+   "C-S-a" #'embark-act
+   "C-M-S-s-k" #'copy-kill-buffer
+   "C-M-S-s-s" #'goto-scratch)
+#+end_src
+
+** Window Keybindings
+
+#+begin_src emacs-lisp
+  (general-define-key
+   "s-0" #'delete-window
+   "s-1" #'delete-other-windows
+   "s-2" #'rlr/find-file-below
+   "s-3" #'rlr/find-file-right
+   "s-4" #'split-window-below-focus
+   "s-5" #'split-window-right-focus
+   "s-6" #'toggle-window-split
+   "S-C-<left>" #'shrink-window-horizontally
+   "S-C-<right>" #'enlarge-window-horizontally
+   "S-C-<down>" #'shrink-window
+   "S-C-<up>" #'enlarge-window
+   "C-x w" #'delete-frame
+   "M-o" #'crux-other-window-or-switch-buffer
+   "M-o" #'my/quick-window-jump
+   "s-\"" #'previous-window-any-frame)
+#+end_src
+
+** Tab Keybindings
+
+#+begin_src emacs-lisp
+  (general-define-key
+   "s-t" #'tab-new
+   "s-T" #'rlr/find-file-new-tab
+   "s-w" #'rlr/delete-tab-or-frame)
+#+end_src
+
+** Search Keybindings
+
+#+begin_src emacs-lisp
+  (general-define-key
+   "s-l" #'hydra-locate/body
+   "s-f" #'consult-line
+   "<f5>" #'deadgrep
+   ;; "C-s" #'consult-isearch
+   ;; "C-r" #'consult-isearch-reverse
+   )
+#+end_src
+
+** Editing Keybindings
+
+#+begin_src emacs-lisp
+  (general-define-key
+   "<s-up>" #'beginning-of-buffer
+   "<s-down>" #'end-of-buffer
+   "<s-right>" #'end-of-visual-line
+   "<s-left>" #'beginning-of-visual-line
+   "<M-down>" #'forward-paragraph
+   "<M-up>" #'backward-paragraph
+   "M-u" #'upcase-dwim
+   "M-l" #'downcase-dwim
+   "M-c" #'capitalize-dwim
+   "RET" #'newline-and-indent
+   "M-/" #'hippie-expand
+   "<s-backspace>" #'kill-whole-line
+   "s-j" #'crux-top-join-line
+   "<S-return>" #'crux-smart-open-line
+   "<C-S-return>" #'crux-smart-open-line-above
+   "<C-d d>" #'insert-standard-date
+
+   "M-y" #'consult-yank-pop
+
+   "M-q" #'reformat-paragraph
+   "M-#" #'dictionary-lookup-definition
+   "M-=" #'shrink-whitespace
+   "s-l" #'hydra-locate/body
+   "s-f" #'consult-line
+   "<f5>" #'deadgrep)
+#+end_src
+
+** Other Keybindings
+
+#+begin_src emacs-lisp
+  (general-define-key
+   ;; Editing
+   ;; "s-/" #'avy-goto-char-timer
+   "C-x 4 b" #'consult-buffer-other-window
+   "C-x 5 b" #'consult-buffer-other-frame
+   "C-x r x" #'consult-register
+   "M-s m" #'consult-multi-occur
+   "<f8>" #'calendar
+   )
+#+end_src
+
+** Prefix Keybindings
+
+Some functions that are used below.
+
+Open Emacs configuration file.
+
+#+begin_src emacs-lisp
+  (defun open-emacs-config ()
+    (interactive)
+    (find-file "~/.config/emacs/README.org"))
+#+end_src
+
+Open fish functions directory.
+
+#+begin_src emacs-lisp
+  (defun open-fish-functions ()
+    (interactive)
+    (dired "~/.config/fish/functions"))
+#+end_src
+
+#+begin_src emacs-lisp
+  (general-define-key
+   :prefix "C-c"
+   ;; bind "C-c a" to #'org-agenda
+
+   "a" #'org-agenda
+   "b" #'consult-bookmark
+   "c" #'org-capture
+
+   "d s" #'insert-date-string
+   "d d" #'insert-standard-date
+   "d b" #'insert-blog-date
+   "d l" #'dictionary-search
+   "D" #'crux-delete-file-and-buffer
+
+   "f f" #'find-file
+   "f k" #'rlr/kill-other-buffers
+   "f r" #'consult-buffer
+   "f R" #'crux-rename-file-and-buffer
+   "f P" #'open-emacs-config
+   "f S" #'open-fish-functions
+
+   "g l" #'avy-goto-line
+   "g w" #'avy-goto-word-1
+   "g p" #'pdf-sync-forward-search
+
+   ;; "h" #'consult-history
+
+   ;; Helpful
+   "H c" #'helpful-command
+   "H F" #'helpful-callable
+   "H h" #'helpful-at-point
+   "H f" #'helpful-function
+   "H v" #'helpful-variable
+   "H k" #'helpful-key
+
+   "k" #'rlr/kill-other-buffers
+
+   "m" #'consult-mark
+   "n b" #'hugo-draft-post
+   "o" #'consult-outline
+
+   ;; Projects
+   "p f" #'consult-project-buffer
+   "p d" #'project-find-dired
+
+   "r" #'crux-rename-file-and-buffer
+   ;; "s" #'rg-menu
+   "S" #'crux-cleanup-buffer-or-region
+   "t" #'terminal-here-launch
+   "u" #'unfill-paragraph
+   "w" #'kill-buffer-and-window
+   "z" #'reveal-in-osx-finder
+
+   ;; Search
+   "s s" #'denote-search
+   "s d" #'denote-search-marked-dired-files
+   "s r" #'denote-search-files-referenced-in-region
+   )
+#+end_src
+
+* Finish
+:PROPERTIES:
+:header-args: :tangle init.el
+:END:
+
+Set default directory.
+
+#+begin_src emacs-lisp
+  (setq default-directory "~/")
+#+end_src
+
+* Footer
 :PROPERTIES:
 :header-args: :tangle init.el
 :END:
 
 #+begin_src emacs-lisp
-  ;;; init.el --- Personal Emacs configuration file -*- lexical-binding: t; -*-
+  ;; Local Variables:
+  ;; no-byte-compile: t
+  ;; no-native-compile: t
+  ;; no-update-autoloads: t
+  ;; End:
 #+end_src
-
-#+begin_src emacs-lisp
-  (defconst rr-emacs-dir (expand-file-name user-emacs-directory)
-    "The path to the emacs.d directory.")
-
-  (defconst rr-cache-dir "~/.cache/emacs/"
-    "The directory for Emacs activity files.")
-
-  (defconst rr-backup-dir (concat rr-cache-dir "backup/")
-    "The directory for Emacs backup files.")
-
-  (defconst rr-org-dir "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/"
-    "The directory for my org files.")
-
-  (defconst rr-agenda-dir "/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/"
-    "The directory for RR-Emacs note storage.")
-
-  (defconst rr-notes-dir "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/Documents/notes/"
-    "The directory for RR-Emacs note storage.")
-#+end_src
-
-Create cache and backup directories.
-
-#+begin_src emacs-lisp
-    ;;;; Create directories if non-existing
-  (dolist (dir (list rr-cache-dir
-		     rr-backup-dir))
-    (unless (file-directory-p dir)
-      (make-directory dir t)))
-#+end_src
-
-Add elisp directory to load path.
-
-#+begin_src emacs-lisp
-  ;; set load path
-  (add-to-list 'load-path (concat rr-emacs-dir "elisp"))
-#+end_src
-
