@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2025-04-26 06:02:33 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2025-04-26 06:15:16 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+auto_tangle: t
 
@@ -609,7 +609,7 @@ Overwrite selected text.
 
 Add automatic time stamps to files, from [[https://olddeuteronomy.github.io/post/emacs-time-stamp/][The Emacs Cat]]. Put a time stamp somewhere in the first 10 lines of the file with this format:
 Elisp: =;; Time-stamp: <Last changed 2025-04-18 12:54:28 by rlridenour>=
-Org: =#+DATE: Time-stamp: <Last changed 2025-04-22 14:40:44 by rlridenour>=
+Org: =# Time-stamp: <Last changed 2025-04-22 14:40:44 by rlridenour>=
 #+begin_src emacs-lisp
 ;; When there is a "Time-stamp: <>" string in the first 10 lines of the file,
 ;; Emacs will write time-stamp information there when saving the file.
