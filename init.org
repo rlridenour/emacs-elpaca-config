@@ -1,5 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
+#+DATE: Time-stamp: <Last changed 2025-04-26 06:02:33 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+auto_tangle: t
 
@@ -605,6 +606,21 @@ Overwrite selected text.
 #+begin_src emacs-lisp
   (delete-selection-mode 1)
 #+end_src
+
+Add automatic time stamps to files, from [[https://olddeuteronomy.github.io/post/emacs-time-stamp/][The Emacs Cat]]. Put a time stamp somewhere in the first 10 lines of the file with this format:
+Elisp: =;; Time-stamp: <Last changed 2025-04-18 12:54:28 by rlridenour>=
+Org: =#+DATE: Time-stamp: <Last changed 2025-04-22 14:40:44 by rlridenour>=
+#+begin_src emacs-lisp
+;; When there is a "Time-stamp: <>" string in the first 10 lines of the file,
+;; Emacs will write time-stamp information there when saving the file.
+;; (Borrowed from http://home.thep.lu.se/~karlf/emacs.html)
+(setq time-stamp-active t          ; Do enable time-stamps.
+      time-stamp-line-limit 10     ; Check first 10 buffer lines for Time-stamp: <>
+      time-stamp-format "Last changed %Y-%02m-%02d %02H:%02M:%02S by %u")
+(add-hook 'write-file-hooks 'time-stamp) ; Update when saving.
+#+end_src
+
+
 
 ** Windows
 

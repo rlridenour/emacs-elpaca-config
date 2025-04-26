@@ -236,6 +236,14 @@
 
 (delete-selection-mode 1)
 
+;; When there is a "Time-stamp: <>" string in the first 10 lines of the file,
+;; Emacs will write time-stamp information there when saving the file.
+;; (Borrowed from http://home.thep.lu.se/~karlf/emacs.html)
+(setq time-stamp-active t          ; Do enable time-stamps.
+      time-stamp-line-limit 10     ; Check first 10 buffer lines for Time-stamp: <>
+      time-stamp-format "Last changed %Y-%02m-%02d %02H:%02M:%02S by %u")
+(add-hook 'write-file-hooks 'time-stamp) ; Update when saving.
+
 (defun delete-window-balance ()
   "Delete window and rebalance the remaining ones."
   (interactive)
