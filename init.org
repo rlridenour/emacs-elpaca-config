@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2025-04-26 06:15:16 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2025-04-26 18:00:40 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+auto_tangle: t
 
@@ -620,8 +620,6 @@ Org: =# Time-stamp: <Last changed 2025-04-22 14:40:44 by rlridenour>=
 (add-hook 'write-file-hooks 'time-stamp) ; Update when saving.
 #+end_src
 
-
-
 ** Windows
 
 #+begin_src emacs-lisp
@@ -1034,6 +1032,14 @@ Load general before the remaining packages so they can make use of the ~:general
       "s-,"))
 #+end_src
 
+*** Key Chord
+
+#+begin_src emacs-lisp
+(use-package key-chord
+:config
+(key-chord-mode 1))
+#+end_src
+
 ** AAS
 
 #+begin_src emacs-lisp
@@ -1347,7 +1353,7 @@ Search notes with the xapian syntax (+word -word AND NOT etc), <tab> to preview,
 
 ** Devil Mode
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package devil
     :init
     (global-devil-mode))
@@ -1783,6 +1789,21 @@ Tag items — from [[https://www.reddit.com/r/emacs/comments/go5d0v/using_emacs_
 	  ;; If nil, the fzf buffer will appear at the top of the window
 	  fzf/position-bottom t
 	  fzf/window-height 15))
+#+end_src
+
+** God-Mode
+
+#+begin_src emacs-lisp
+  (use-package
+    god-mode
+    :general
+    (:keymaps 'god-local-mode-map
+	  "."  #'repeat)
+    :init (setq god-mode-enable-function-key-translation nil)
+(key-chord-define-global "jk" #'god-mode-all)
+    :config
+    (add-hook 'god-mode-enabled-hook (lambda () (setq cursor-type 'hbar)))
+    (add-hook 'god-mode-disabled-hook (lambda () (setq cursor-type 'box))))
 #+end_src
 
 ** Helpful
@@ -3119,7 +3140,7 @@ Sort org buffer when saving. Add the following to the beginning of the buffer: "
     (org-sort-entries nil ?a))
 
 (add-to-list 'safe-local-variable-values
-             '(before-save-hook . (rlr/org-sort)))
+	     '(before-save-hook . (rlr/org-sort)))
 #+end_src
 
 *** Org Agenda

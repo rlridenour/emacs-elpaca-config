@@ -520,6 +520,10 @@ If there are only two windows, jump directly to the other window."
     "s-h"
     "s-,"))
 
+(use-package key-chord
+:config
+(key-chord-mode 1))
+
 (use-package aas)
 
 (use-package laas
@@ -716,10 +720,6 @@ If there are only two windows, jump directly to the other window."
   ;; (denote-search-help-string "")
   ;; Display keywords in results buffer
   (denote-search-format-heading-function #'denote-search-format-heading-with-keywords))
-
-(use-package devil
-  :init
-  (global-devil-mode))
 
 (use-package dired+
   :demand
@@ -1032,6 +1032,17 @@ If there are only two windows, jump directly to the other window."
 	  ;; If nil, the fzf buffer will appear at the top of the window
 	  fzf/position-bottom t
 	  fzf/window-height 15))
+
+(use-package
+    god-mode
+    :general
+    (:keymaps 'god-local-mode-map
+	  "."  #'repeat)
+    :init (setq god-mode-enable-function-key-translation nil)
+(key-chord-define-global "jk" #'god-mode-all)
+    :config
+    (add-hook 'god-mode-enabled-hook (lambda () (setq cursor-type 'hbar)))
+    (add-hook 'god-mode-disabled-hook (lambda () (setq cursor-type 'box))))
 
 (use-package helpful)
 
@@ -2087,7 +2098,7 @@ installed."
     (org-sort-entries nil ?a))
 
 (add-to-list 'safe-local-variable-values
-             '(before-save-hook . (rlr/org-sort)))
+	     '(before-save-hook . (rlr/org-sort)))
 
 (use-package org-super-agenda
   :after org
