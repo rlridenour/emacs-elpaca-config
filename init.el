@@ -136,6 +136,10 @@
 (setq hl-line-sticky-flag nil)
 (setq global-hl-line-sticky-flag nil)
 
+(setq server-use-tcp t)
+(server-start)
+(require 'org-protocol)
+
 ;; Where to save to backup file - in the backup dir
 (setq backup-directory-alist (list (cons "."  rr-backup-dir)))
 ;; Always backup by copying
