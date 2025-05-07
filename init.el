@@ -1421,6 +1421,7 @@ If there are only two windows, jump directly to the other window."
      ("Message"
 	(
 	 ("n" mu4e-compose-mail "New")
+	 ("e" mu4e-view-save-attachments "Save attachments")
 	 )))
 
    (major-mode-hydra-define mu4e-headers-mode
@@ -1734,16 +1735,16 @@ installed."
   (setq org-agenda-skip-scheduled-if-done t)
   (setq org-log-done t)
   (setq org-todo-keyword-faces
-        '(("DONE" . "green4") ("TODO" . org-warning)))
+	  '(("DONE" . "green4") ("TODO" . org-warning)))
   (setq org-agenda-files '("/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/"))
   (setq org-agenda-start-on-weekday nil)
   (setq org-agenda-window-setup 'current-window)
   (setq org-link-frame-setup
-        '((vm . vm-visit-folder-other-frame)
-  	(vm-imap . vm-visit-imap-folder-other-frame)
-  	(gnus . org-gnus-no-new-news)
-  	(file . find-file)
-  	(wl . wl-other-frame)))
+	  '((vm . vm-visit-folder-other-frame)
+	(vm-imap . vm-visit-imap-folder-other-frame)
+	(gnus . org-gnus-no-new-news)
+	(file . find-file)
+	(wl . wl-other-frame)))
   (require 'org-tempo)
   ;; Open directory links in Dired.
   (add-to-list 'org-file-apps '(directory . emacs)))
