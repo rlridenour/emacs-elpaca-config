@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2025-05-07 07:31:02 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2025-05-07 07:39:11 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+auto_tangle: t
 
@@ -2630,6 +2630,7 @@ Copy entire buffer then kill. I use this with temporary scratch buffers to write
     (setq org-hide-emphasis-markers t)
     (setq org-list-indent-offset 2)
     (setq org-agenda-skip-deadline-prewarning-if-scheduled t)
+    (setq org-use-speed-commands t)
 
     ;; Hide drawers
     (setopt org-cycle-hide-drawer-startup t)

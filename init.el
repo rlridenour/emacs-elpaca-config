@@ -1706,6 +1706,7 @@ installed."
   (setq org-hide-emphasis-markers t)
   (setq org-list-indent-offset 2)
   (setq org-agenda-skip-deadline-prewarning-if-scheduled t)
+  (setq org-use-speed-commands t)
 
   ;; Hide drawers
   (setopt org-cycle-hide-drawer-startup t)
