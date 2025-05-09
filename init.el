@@ -2848,7 +2848,12 @@ installed."
 
 (use-package super-save
   :config
-  (setq super-save-auto-save-when-idle t)
+  (setq super-save-auto-save-when-idle t
+	  auto-save-default nil
+	  super-save-silent t
+	  super-save-all-buffers t)
+  ;; save on find-file
+  (add-to-list 'super-save-hook-triggers 'find-file-hook)
   (super-save-mode +1))
 
 (use-package terminal-here
