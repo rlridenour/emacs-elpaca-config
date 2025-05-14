@@ -360,9 +360,6 @@ If there are only two windows, jump directly to the other window."
 	    (when-let ((selected-window (cdr (assoc (char-to-string key) window-map))))
 	      (select-window selected-window)))))))
 
-(set-face-attribute 'mode-line nil
-		      :foreground "black" :background "wheat3" :box '(:line-width 1 :color "black"))
-
 (setq display-time-24hr-format t)
 (display-time-mode)
 
@@ -1466,6 +1463,11 @@ If there are only two windows, jump directly to the other window."
  "H-w" #'hydra-window/body
  ;; "s-b" #'hydra-buffer/body
  "C-x 9" #'hydra-logic/body)
+
+(use-package isgd
+  :custom
+  (isgd-logstats nil)
+  (isgd-ask-custom-url t))
 
 (use-package jinx
   :init
@@ -2838,7 +2840,19 @@ installed."
   (require 'smartparens-config))
 
 (use-package spacious-padding
-  :init (spacious-padding-mode))
+  :after modus-themes doom-modeline
+  :config
+  (setq spacious-padding-subtle-mode-line t)
+  (setq spacious-padding-widths
+	  '( :internal-border-width 30
+	 :header-line-width 4
+	 :mode-line-width 10
+	 :tab-width 4
+	 :right-divider-width 30
+	 :scroll-bar-width 8
+	     :fringe-width 8))
+  :general
+  ("C-M-s-p" #'spacious-padding-mode))
 
 (use-package speedrect
   :demand

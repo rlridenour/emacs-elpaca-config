@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2025-05-08 19:44:58 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2025-05-14 12:54:58 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+auto_tangle: t
 
@@ -765,7 +765,7 @@ If one window, switch to previous buffer. If two, then jump to other window. If 
 
 Change color for active window.
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (set-face-attribute 'mode-line nil
 		      :foreground "black" :background "wheat3" :box '(:line-width 1 :color "black"))
 #+end_src
@@ -2274,6 +2274,18 @@ Tag items — from [[https://www.reddit.com/r/emacs/comments/go5d0v/using_emacs_
    ;; "s-b" #'hydra-buffer/body
    "C-x 9" #'hydra-logic/body)
 #+end_src
+
+
+** ISGD
+
+#+begin_src emacs-lisp
+(use-package isgd
+  :custom
+  (isgd-logstats nil)
+  (isgd-ask-custom-url t))
+#+end_src
+
+
 
 ** Jinx
 
@@ -4283,7 +4295,19 @@ Increase number of recent files shown.
 
 #+begin_src emacs-lisp
   (use-package spacious-padding
-    :init (spacious-padding-mode))
+    :after modus-themes doom-modeline
+    :config
+    (setq spacious-padding-subtle-mode-line t)
+    (setq spacious-padding-widths
+	  '( :internal-border-width 30
+	 :header-line-width 4
+	 :mode-line-width 10
+	 :tab-width 4
+	 :right-divider-width 30
+	 :scroll-bar-width 8
+	     :fringe-width 8))
+    :general
+    ("C-M-s-p" #'spacious-padding-mode))
 #+end_src
 
 ** Speedrect
