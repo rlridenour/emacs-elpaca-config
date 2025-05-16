@@ -318,47 +318,24 @@
 	    (select-window first-win)
 	    (if this-win-2nd (other-window 1))))))
 
-(defun toggle-frame-maximized-undecorated () (interactive) (let* ((frame (selected-frame)) (on? (and (frame-parameter frame 'undecorated) (eq (frame-parameter frame 'fullscreen) 'maximized))) (geom (frame-monitor-attribute 'geometry)) (x (nth 0 geom)) (y (nth 1 geom)) (display-height (nth 3 geom)) (display-width (nth 2 geom)) (cut (if on? (if ns-auto-hide-menu-bar 26 50) (if ns-auto-hide-menu-bar 4 26)))) (set-frame-position frame x y) (set-frame-parameter frame 'fullscreen-restore 'maximized) (set-frame-parameter nil 'fullscreen 'maximized) (set-frame-parameter frame 'undecorated (not on?)) (set-frame-height frame (- display-height cut) nil t) (set-frame-width frame (- display-width 20) nil t) (set-frame-position frame x y)))
-
-(defun my/quick-window-jump ()
-  "Jump to a window by typing its assigned character label.
-If there are only two windows, jump directly to the other window."
+(defun toggle-frame-maximized-undecorated ()
   (interactive)
-  (let* ((window-list (window-list nil 'no-mini)))
-    (if (< (length window-list) 3)
-	  ;; If only one window, switch to previous buffer. If only two, jump directly to other window.
-	  (if (one-window-p)
-	      (switch-to-buffer nil)
-	    (other-window 1))
-	;; Otherwise, show the key selection interface.
-	(let* ((my/quick-window-overlays nil)
-	       (sorted-windows (sort window-list
-				     (lambda (w1 w2)
-				       (let ((edges1 (window-edges w1))
-					     (edges2 (window-edges w2)))
-					 (or (< (car edges1) (car edges2))
-					     (and (= (car edges1) (car edges2))
-						  (< (cadr edges1) (cadr edges2))))))))
-	       (window-keys (seq-take '("j" "k" "l" ";" "a" "s" "d" "f")
-				      (length sorted-windows)))
-	       (window-map (cl-pairlis window-keys sorted-windows)))
-	  (setq my/quick-window-overlays
-		(mapcar (lambda (entry)
-			  (let* ((key (car entry))
-				 (window (cdr entry))
-				 (start (window-start window))
-				 (overlay (make-overlay start start (window-buffer window))))
-			    (overlay-put overlay 'after-string
-					 (propertize (format "[%s]" key)
-						     'face '(:foreground "white" :background "blue" :weight bold)))
-			    (overlay-put overlay 'window window)
-			    overlay))
-			window-map))
-	  (let ((key (read-key (format "Select window [%s]: " (string-join window-keys ", ")))))
-	    (mapc #'delete-overlay my/quick-window-overlays)
-	    (setq my/quick-window-overlays nil)
-	    (when-let ((selected-window (cdr (assoc (char-to-string key) window-map))))
-	      (select-window selected-window)))))))
+  (let* (
+	   (frame (selected-frame))
+	   (on? (and (frame-parameter frame 'undecorated) (eq (frame-parameter frame 'fullscreen) 'maximized)))
+	   (geom (frame-monitor-attribute 'geometry))
+	   (x (nth 0 geom))
+	   (y (nth 1 geom))
+	   (display-height (nth 3 geom))
+	   (display-width (nth 2 geom))
+	   (cut (if on? (if ns-auto-hide-menu-bar 26 50) (if ns-auto-hide-menu-bar 4 26))))
+    (set-frame-position frame x y)
+    (set-frame-parameter frame 'fullscreen-restore 'maximized)
+    (set-frame-parameter nil 'fullscreen 'maximized)
+    (set-frame-parameter frame 'undecorated (not on?))
+    (set-frame-height frame (- display-height cut) nil t)
+    (set-frame-width frame (- display-width 20) nil t)
+    (set-frame-position frame x y)))
 
 (setq display-time-24hr-format t)
 (display-time-mode)
@@ -535,6 +512,18 @@ If there are only two windows, jump directly to the other window."
 (use-feature abbrev
   :config
   (load "~/Dropbox/emacs/my-emacs-abbrev"))
+
+(use-package ace-window
+  :config
+  (defun rlr/quick-window-jump ()
+    "If only one window, switch to previous buffer, otherwise call ace-window."
+    (interactive)
+    (if (one-window-p)
+	  (switch-to-buffer nil)
+	(ace-window t)))
+  :general
+  ("M-O" #'ace-window
+   "M-o" #'rlr/quick-window-jump))
 
 (use-package aggressive-indent
   :config
@@ -1035,15 +1024,15 @@ If there are only two windows, jump directly to the other window."
 	  fzf/window-height 15))
 
 (use-package
-    god-mode
-    :general
-    (:keymaps 'god-local-mode-map
-	  "."  #'repeat)
-    :init (setq god-mode-enable-function-key-translation nil)
-(key-chord-define-global "jk" #'god-mode-all)
-    :config
-    (add-hook 'god-mode-enabled-hook (lambda () (setq cursor-type 'hbar)))
-    (add-hook 'god-mode-disabled-hook (lambda () (setq cursor-type 'box))))
+  god-mode
+  :general
+  (:keymaps 'god-local-mode-map
+	      "."  #'repeat)
+  :init (setq god-mode-enable-function-key-translation nil)
+  (key-chord-define-global "jk" #'god-mode-all)
+  :config
+  (add-hook 'god-mode-enabled-hook (lambda () (setq cursor-type 'hbar)))
+  (add-hook 'god-mode-disabled-hook (lambda () (setq cursor-type 'box))))
 
 (use-package helpful)
 
@@ -2107,11 +2096,11 @@ installed."
 (define-key global-map "\C-cc" 'org-capture)
 
 (defun rlr/org-sort ()
-    (mark-whole-buffer)
-    (org-sort-entries nil ?a))
+  (mark-whole-buffer)
+  (org-sort-entries nil ?a))
 
 (add-to-list 'safe-local-variable-values
-	     '(before-save-hook . (rlr/org-sort)))
+	       '(before-save-hook . (rlr/org-sort)))
 
 (use-package org-super-agenda
   :after org
@@ -3001,7 +2990,7 @@ installed."
   :ensure (:host github :repo "rtrppl/website2org")
   :config
   (setq website2org-directory "~/icloud/web-saves/website2org/") ;; if needed, see below
-(setq website2org-additional-meta nil)
+  (setq website2org-additional-meta nil)
   :bind
   (:map global-map)
   ("C-M-s-<down>" . website2org)
@@ -3063,8 +3052,7 @@ installed."
  "S-C-<down>" #'shrink-window
  "S-C-<up>" #'enlarge-window
  "C-x w" #'delete-frame
- "M-o" #'crux-other-window-or-switch-buffer
- "M-o" #'my/quick-window-jump
+ ;; "M-o" #'crux-other-window-or-switch-buffer
  "s-\"" #'previous-window-any-frame)
 
 (general-define-key
