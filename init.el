@@ -355,6 +355,17 @@
 	  (tab-close)
 	(error (delete-frame)))))
 
+(defun rlr/kill-buffer-delete-tab-or-frame ()
+  "Delete current tab. If there is only one tab, then delete current frame."
+  (interactive)
+  (kill-buffer)
+  (if
+	(not (one-window-p))
+	(delete-window)
+    (condition-case nil
+	  (tab-close)
+	(error (delete-frame)))))
+
 ;; Main typeface
 (set-face-attribute 'default nil :family "SF Mono" :height 160 :weight 'medium)
 ;; Proportionately spaced typeface
@@ -3058,7 +3069,8 @@ installed."
 (general-define-key
  "s-t" #'tab-new
  "s-T" #'rlr/find-file-new-tab
- "s-w" #'rlr/delete-tab-or-frame)
+ "s-w" #'rlr/delete-tab-or-frame
+ "s-W" #'rlr/kill-buffer-delete-tab-or-frame)
 
 (general-define-key
  "s-l" #'hydra-locate/body

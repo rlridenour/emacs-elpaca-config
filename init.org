@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2025-05-16 06:12:13 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2025-05-19 05:43:32 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+auto_tangle: t
 
@@ -771,6 +771,22 @@ If more than one window, delete the window; if only one window, delete the tab; 
 	  (tab-close)
 	(error (delete-frame)))))
 #+end_src
+
+
+#+begin_src emacs-lisp
+  (defun rlr/kill-buffer-delete-tab-or-frame ()
+    "Delete current tab. If there is only one tab, then delete current frame."
+    (interactive)
+    (kill-buffer)
+    (if
+	(not (one-window-p))
+	(delete-window)
+      (condition-case nil
+	  (tab-close)
+	(error (delete-frame)))))
+#+end_src
+
+
 
 ** Font
 
@@ -4623,7 +4639,8 @@ Keybindings for files and buffers.
   (general-define-key
    "s-t" #'tab-new
    "s-T" #'rlr/find-file-new-tab
-   "s-w" #'rlr/delete-tab-or-frame)
+   "s-w" #'rlr/delete-tab-or-frame
+   "s-W" #'rlr/kill-buffer-delete-tab-or-frame)
 #+end_src
 
 ** Search Keybindings
