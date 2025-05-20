@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2025-05-19 05:43:32 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2025-05-19 14:41:35 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+auto_tangle: t
 
@@ -1067,16 +1067,27 @@ Load general before the remaining packages so they can make use of the ~:general
 #+begin_src emacs-lisp :tangle yes
   (use-package ace-window
     :config
-    (defun rlr/quick-window-jump ()
-      "If only one window, switch to previous buffer, otherwise call ace-window."
-      (interactive)
-      (if (one-window-p)
-	  (switch-to-buffer nil)
-	(ace-window t)))
+(setq aw-dispatch-always t)
     :general
     ("M-O" #'ace-window
      "M-o" #'rlr/quick-window-jump))
     #+end_src
+
+
+#+begin_src emacs-lisp
+(defun rlr/quick-window-jump ()
+"If only one window, switch to previous buffer, otherwise call ace-window."
+    (interactive)
+    (let* ((window-list (window-list nil 'no-mini)))
+      (if (< (length window-list) 3)
+	  ;; If only one window, switch to previous buffer. If only two, jump directly to other window.
+	  (if (one-window-p)
+	  (switch-to-buffer nil)
+	(other-window 1))
+	(ace-window t))))
+#+end_src
+
+
 
 ** Aggressive Indent
 
@@ -3130,6 +3141,9 @@ Use ~org-auto-tangle~ to generate ~early-init.el~ and ~init.el~ whenever ~README
 	   "* %?\n:PROPERTIES:\n:CREATED: %U\n:END:\n\n" :empty-lines 1)
 	  ("c" "Quick note" entry (file "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/Documents/notes/quick-notes.org")
 	   "* %?\n:PROPERTIES:\n:CREATED: %U\n:END:\n\n" :empty-lines 1)
+("j" "Journelly Entry" entry
+           (file "/Users/rlridenour/Library/Mobile Documents/iCloud~com~xenodium~Journelly/Documents/Journelly.org")
+           "* %U @ -\n%?" :prepend t)
 	  )
 	)
 

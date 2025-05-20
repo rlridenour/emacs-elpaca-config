@@ -525,16 +525,22 @@
   (load "~/Dropbox/emacs/my-emacs-abbrev"))
 
 (use-package ace-window
-  :config
-  (defun rlr/quick-window-jump ()
-    "If only one window, switch to previous buffer, otherwise call ace-window."
+    :config
+(setq aw-dispatch-always t)
+    :general
+    ("M-O" #'ace-window
+     "M-o" #'rlr/quick-window-jump))
+
+(defun rlr/quick-window-jump ()
+"If only one window, switch to previous buffer, otherwise call ace-window."
     (interactive)
-    (if (one-window-p)
+    (let* ((window-list (window-list nil 'no-mini)))
+      (if (< (length window-list) 3)
+	  ;; If only one window, switch to previous buffer. If only two, jump directly to other window.
+	  (if (one-window-p)
 	  (switch-to-buffer nil)
-	(ace-window t)))
-  :general
-  ("M-O" #'ace-window
-   "M-o" #'rlr/quick-window-jump))
+	(other-window 1))
+	(ace-window t))))
 
 (use-package aggressive-indent
   :config
@@ -2079,7 +2085,7 @@ installed."
   :hook (org-mode . org-auto-tangle-mode))
 
 ;; Org-capture
-(setq org-capture-templates
+  (setq org-capture-templates
 	'(
 	  ("t" "Todo" entry (file+headline "/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/tasks.org" "Inbox")
 	   "** TODO %?\n  %i\n  %a")
@@ -2089,11 +2095,14 @@ installed."
 	   "* %?\n:PROPERTIES:\n:CREATED: %U\n:END:\n\n" :empty-lines 1)
 	  ("c" "Quick note" entry (file "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/Documents/notes/quick-notes.org")
 	   "* %?\n:PROPERTIES:\n:CREATED: %U\n:END:\n\n" :empty-lines 1)
+("j" "Journelly Entry" entry
+           (file "/Users/rlridenour/Library/Mobile Documents/iCloud~com~xenodium~Journelly/Documents/Journelly.org")
+           "* %U @ -\n%?" :prepend t)
 	  )
 	)
 
-(with-eval-after-load 'org-capture
-  (add-to-list 'org-capture-templates
+  (with-eval-after-load 'org-capture
+    (add-to-list 'org-capture-templates
 		 '("n" "New note (with Denote)" plain
 		   (file denote-last-path)
 		   #'denote-org-capture
@@ -2102,9 +2111,9 @@ installed."
 		   :kill-buffer t
 		   :jump-to-captured t)))
 
-(setq org-refile-targets '((org-agenda-files :maxlevel . 1)))
+  (setq org-refile-targets '((org-agenda-files :maxlevel . 1)))
 
-(define-key global-map "\C-cc" 'org-capture)
+  (define-key global-map "\C-cc" 'org-capture)
 
 (defun rlr/org-sort ()
   (mark-whole-buffer)
