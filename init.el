@@ -201,21 +201,23 @@
 (add-hook 'find-file-not-found-functions #'make-parent-directory)
 
 (defun nuke-all-buffers ()
-  "Kill all the open buffers except the current one.
+    "Kill all the open buffers except the current one.
 	    Leave *scratch*, *dashboard* and *Messages* alone too."
-  (interactive)
-  (mapc
-   (lambda (buffer)
-     (unless (or
+    (interactive)
+    (mapc
+     (lambda (buffer)
+       (unless (or
 		(string= (buffer-name buffer) "*scratch*")
 		(string= (buffer-name buffer) "*Org Agenda*")
-		(string= (buffer-name buffer) "*Messages*"))
+		(string= (buffer-name buffer) "*Messages*")
+		(string= (buffer-name buffer) "*mu4e-main*")
+)
 	 (kill-buffer buffer)))
-   (buffer-list))
-  (delete-other-windows)
-  (tab-bar-close-other-tabs)
-  ;; (goto-dashboard)
-  )
+     (buffer-list))
+    (delete-other-windows)
+    (tab-bar-close-other-tabs)
+    ;; (goto-dashboard)
+    )
 
 (defun rlr/kill-other-buffers ()
   (interactive)
@@ -1777,12 +1779,12 @@ installed."
   :commands (mu4e mu4e-update-mail-and-index)
   :general
   (:keymaps 'mu4e-headers-mode-map
-	      "q"  #'kill-current-buffer
-	      "C-<tab>" #'tab-next)
+	  "q"  #'kill-current-buffer
+	  "C-<tab>" #'tab-next)
   (:keymaps 'mu4e-thread-mode-map
-	      "C-<tab>" #'tab-next)
+	  "C-<tab>" #'tab-next)
   (:keymaps 'mu4e-main-mode-map
-	      "q"  #'rlr/quit-mu4e)
+	  "q"  #'rlr/quit-mu4e)
   :after org
   :config
   (setq
@@ -1809,63 +1811,73 @@ installed."
    mu4e-completing-read-function 'completing-read
    mu4e-context-policy 'pick-first
    mu4e-contexts (list
-		    (make-mu4e-context
-		     :name "fastmail"
-		     :match-func
-		     (lambda (msg)
-		       (when msg
-			 (string-prefix-p "/fastmail" (mu4e-message-field msg :maildir))))
-		     :vars '((user-mail-address . "rlridenour@fastmail.com")
-			     (user-full-name    . "Randy Ridenour")
-			     (mu4e-drafts-folder  . "/fastmail/Drafts")
-			     (mu4e-sent-folder  . "/fastmail/Sent")
-			     (mu4e-trash-folder  . "/fastmail/Trash")
-			     (mu4e-refile-folder  . "/fastmail/Archive")
-			     (sendmail-program . "msmtp")
-			     (send-mail-function . smtpmail-send-it)
-			     (message-sendmail-f-is-evil . t)
-			     (message-sendmail-extra-arguments . ("--read-envelope-from"))
-			     (message-send-mail-function . message-send-mail-with-sendmail)
-			     (smtpmail-default-smtp-server . "smtp.fastmail.com")
-			     (smtpmail-smtp-server  . "smtp.fastmail.com")
-			     ))
-		    (make-mu4e-context
-		     :name "obu"
-		     :match-func
-		     (lambda (msg)
-		       (when msg
-			 (string-prefix-p "/obu" (mu4e-message-field msg :maildir))))
-		     :vars '((user-mail-address . "randy.ridenour@okbu.edu")
-			     (user-full-name    . "Randy Ridenour")
-			     (mu4e-drafts-folder  . "/obu/Drafts")
-			     (mu4e-sent-folder  . "/obu/Sent")
-			     (mu4e-trash-folder . "/obu/Trash")
-			     (mu4e-refile-folder  . "/obu/Archive")
-			     ;; (sendmail-program . "msmtp")
-			     (send-mail-function . smtpmail-send-it)
-			     (message-sendmail-f-is-evil . t)
-			     (message-sendmail-extra-arguments . ("--read-envelope-from"))
-			     (message-send-mail-function . message-send-mail-with-sendmail)
-			     (smtpmail-smtp-server  . "localhost")
-			     (smtpmail-smtp-user . "randy.ridenour@okbu.edu")
-			     (smtpmail-stream-type . plain)
-			     (smtpmail-smtp-service . 1025)
-			     ))))
+		(make-mu4e-context
+		 :name "fastmail"
+		 :match-func
+		 (lambda (msg)
+		 (when msg
+		   (string-prefix-p "/fastmail" (mu4e-message-field msg :maildir))))
+		 :vars '((user-mail-address . "rlridenour@fastmail.com")
+		       (user-full-name    . "Randy Ridenour")
+		       (mu4e-drafts-folder  . "/fastmail/Drafts")
+		       (mu4e-sent-folder  . "/fastmail/Sent")
+		       (mu4e-trash-folder  . "/fastmail/Trash")
+		       (mu4e-refile-folder  . "/fastmail/Archive")
+		       (sendmail-program . "msmtp")
+		       (send-mail-function . smtpmail-send-it)
+		       (message-sendmail-f-is-evil . t)
+		       (message-sendmail-extra-arguments . ("--read-envelope-from"))
+		       (message-send-mail-function . message-send-mail-with-sendmail)
+		       (smtpmail-default-smtp-server . "smtp.fastmail.com")
+		       (smtpmail-smtp-server  . "smtp.fastmail.com")
+		       ))
+		(make-mu4e-context
+		 :name "obu"
+		 :match-func
+		 (lambda (msg)
+		 (when msg
+		   (string-prefix-p "/obu" (mu4e-message-field msg :maildir))))
+		 :vars '((user-mail-address . "randy.ridenour@okbu.edu")
+		       (user-full-name    . "Randy Ridenour")
+		       (mu4e-drafts-folder  . "/obu/Drafts")
+		       (mu4e-sent-folder  . "/obu/Sent")
+		       (mu4e-trash-folder . "/obu/Trash")
+		       (mu4e-refile-folder  . "/obu/Archive")
+		       ;; (sendmail-program . "msmtp")
+		       (send-mail-function . smtpmail-send-it)
+		       (message-sendmail-f-is-evil . t)
+		       (message-sendmail-extra-arguments . ("--read-envelope-from"))
+		       (message-send-mail-function . message-send-mail-with-sendmail)
+		       (smtpmail-smtp-server  . "localhost")
+		       (smtpmail-smtp-user . "randy.ridenour@okbu.edu")
+		       (smtpmail-stream-type . plain)
+		       (smtpmail-smtp-service . 1025)
+		       ))))
   (display-line-numbers-mode -1)
   (require 'mu4e-transient)
   (add-to-list 'mu4e-bookmarks
-		 '( :name "OBU Inbox"
-		    :query "maildir:/obu/INBOX AND NOT flag:trashed"
-		    :key ?o))
+	     '( :name "OBU Inbox"
+		:query "maildir:/obu/INBOX AND NOT flag:trashed"
+		:key ?o))
   (add-to-list 'mu4e-bookmarks
-		 '( :name "Fastmail Inbox"
-		    :query "maildir:/fastmail/INBOX AND NOT flag:trashed"
-		    :key ?f))
+	     '( :name "Fastmail Inbox"
+		:query "maildir:/fastmail/INBOX AND NOT flag:trashed"
+		:key ?f))
+  ;; (add-to-list 'mu4e-bookmarks
+  ;; 	     '(:name "All Inboxes"
+  ;; 		   :query "(maildir:/obu/INBOX OR maildir:/fastmail/INBOX) AND NOT flag:trashed"
+  ;; 		   :key ?i
+  ;; 		   :hide-unread))
+  (add-to-list 'mu4e-bookmarks
+	     '(:name "Unread Inboxes"
+		   :query "flag:unread AND NOT flag:trashed"
+		   :key ?b))
+
   (setq gnus-blocked-images
 	  (lambda(&optional _ignore)
-	    (if (mu4e-message-contact-field-matches
-		 (mu4e-message-at-point) :from "store-news@woot.com")
-		nil "."))))
+	(if (mu4e-message-contact-field-matches
+	     (mu4e-message-at-point) :from "store-news@woot.com")
+	    nil "."))))
 
 (use-package org-mime
   :commands (org-mime-edit-mail-in-org-mode)
@@ -2096,8 +2108,8 @@ installed."
 	  ("c" "Quick note" entry (file "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/Documents/notes/quick-notes.org")
 	   "* %?\n:PROPERTIES:\n:CREATED: %U\n:END:\n\n" :empty-lines 1)
 ("j" "Journelly Entry" entry
-           (file "/Users/rlridenour/Library/Mobile Documents/iCloud~com~xenodium~Journelly/Documents/Journelly.org")
-           "* %U @ -\n%?" :prepend t)
+	   (file "/Users/rlridenour/Library/Mobile Documents/iCloud~com~xenodium~Journelly/Documents/Journelly.org")
+	   "* %U @ -\n%?" :prepend t)
 	  )
 	)
 
