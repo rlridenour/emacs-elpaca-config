@@ -3037,6 +3037,8 @@ installed."
   (which-key-mode)
   )
 
+(use-package yaml-mode)
+
 (use-package yankpad
   :init
   (setq yankpad-file "~/Library/Mobile Documents/com~apple~CloudDocs/org/yankpad.org")
