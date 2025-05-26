@@ -773,6 +773,12 @@
 
 (setopt dired-keep-marker-rename 82)
 
+(defun rlr/dired-search-and-enter ()
+  "Search file or directory with `consult-line' and then visit it."
+  (interactive)
+  (consult-line)
+  (dired-find-file))
+
 (defun my-substspaces (str)
   (subst-char-in-string ?\s ?- str))
 
@@ -784,7 +790,8 @@
 (general-define-key
  :keymaps 'dired-mode-map
  "M-<RET>" #'crux-open-with
- "s-j" #'dired-goto-file
+ "j" #'rlr/dired-search-and-enter
+ "s-j" #'rlr/dired-search-and-enter
  "%s" #'my-dired-substspaces)
 
 (use-package discover
@@ -1866,10 +1873,10 @@ installed."
 		:query "maildir:/fastmail/INBOX AND NOT flag:trashed"
 		:key ?f))
   ;; (add-to-list 'mu4e-bookmarks
-  ;; 	     '(:name "All Inboxes"
-  ;; 		   :query "(maildir:/obu/INBOX OR maildir:/fastmail/INBOX) AND NOT flag:trashed"
-  ;; 		   :key ?i
-  ;; 		   :hide-unread))
+  ;;	     '(:name "All Inboxes"
+  ;;		   :query "(maildir:/obu/INBOX OR maildir:/fastmail/INBOX) AND NOT flag:trashed"
+  ;;		   :key ?i
+  ;;		   :hide-unread))
   (add-to-list 'mu4e-bookmarks
 	     '(:name "Unread Inboxes"
 		   :query "flag:unread AND NOT flag:trashed"

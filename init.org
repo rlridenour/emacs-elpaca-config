@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2025-05-26 06:38:34 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2025-05-26 07:30:21 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+auto_tangle: t
 
@@ -1432,6 +1432,16 @@ Use "R" to mark renamed files to avoid moving accidental subsequent moves.
 (setopt dired-keep-marker-rename 82)
 #+end_src
 
+Search for line and open directly. From [[https://macowners.club/posts/custom-functions-3-dired/][Aimé Bertrand]]. Use =dired-find-file= to keep old Dired buffers.
+
+#+begin_src emacs-lisp
+(defun rlr/dired-search-and-enter ()
+  "Search file or directory with `consult-line' and then visit it."
+  (interactive)
+  (consult-line)
+  (dired-find-file))
+#+end_src
+
 Replace spaces in file names with hyphens using "%s" in dired.
 
 #+begin_src emacs-lisp
@@ -1444,11 +1454,14 @@ Replace spaces in file names with hyphens using "%s" in dired.
     (dired-rename-non-directory #'my-substspaces "Rename by substituting spaces" arg))
 #+end_src
 
+
+
 #+begin_src emacs-lisp
   (general-define-key
    :keymaps 'dired-mode-map
    "M-<RET>" #'crux-open-with
-   "s-j" #'dired-goto-file
+   "j" #'rlr/dired-search-and-enter
+   "s-j" #'rlr/dired-search-and-enter
    "%s" #'my-dired-substspaces)
 #+end_src
 
@@ -2809,10 +2822,10 @@ Use variable pitch mode in Org and Markdown modes. Toggle with ~C-M-S-s-v~, boun
 		:query "maildir:/fastmail/INBOX AND NOT flag:trashed"
 		:key ?f))
     ;; (add-to-list 'mu4e-bookmarks
-    ;; 	     '(:name "All Inboxes"
-    ;; 		   :query "(maildir:/obu/INBOX OR maildir:/fastmail/INBOX) AND NOT flag:trashed"
-    ;; 		   :key ?i
-    ;; 		   :hide-unread))
+    ;;	     '(:name "All Inboxes"
+    ;;		   :query "(maildir:/obu/INBOX OR maildir:/fastmail/INBOX) AND NOT flag:trashed"
+    ;;		   :key ?i
+    ;;		   :hide-unread))
     (add-to-list 'mu4e-bookmarks
 	     '(:name "Unread Inboxes"
 		   :query "flag:unread AND NOT flag:trashed"
