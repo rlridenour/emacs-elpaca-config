@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2025-05-25 16:34:42 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2025-05-26 06:38:34 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+auto_tangle: t
 
@@ -429,7 +429,6 @@ Set server to use tcp for [[http://yummymelon.com/scrim/][Scrim]]
 (require 'org-protocol)
 #+end_src
 
-
 ** Files and Buffers
 
 Backup files are in ~/Users/rlridenour/.cache/emacs/backup/~.
@@ -774,7 +773,6 @@ If more than one window, delete the window; if only one window, delete the tab; 
 	(error (delete-frame)))))
 #+end_src
 
-
 #+begin_src emacs-lisp
   (defun rlr/kill-buffer-delete-tab-or-frame ()
     "Delete current tab. If there is only one tab, then delete current frame."
@@ -787,8 +785,6 @@ If more than one window, delete the window; if only one window, delete the tab; 
 	  (tab-close)
 	(error (delete-frame)))))
 #+end_src
-
-
 
 ** Font
 
@@ -1075,7 +1071,6 @@ Load general before the remaining packages so they can make use of the ~:general
      "M-o" #'rlr/quick-window-jump))
     #+end_src
 
-
 #+begin_src emacs-lisp
 (defun rlr/quick-window-jump ()
 "If only one window, switch to previous buffer, otherwise call ace-window."
@@ -1088,8 +1083,6 @@ Load general before the remaining packages so they can make use of the ~:general
 	(other-window 1))
 	(ace-window t))))
 #+end_src
-
-
 
 ** Aggressive Indent
 
@@ -1431,6 +1424,12 @@ Make copying and moving files easier.
 
 #+begin_src emacs-lisp
   (setq dired-dwim-target t)
+#+end_src
+
+Use "R" to mark renamed files to avoid moving accidental subsequent moves.
+
+#+begin_src emacs-lisp
+(setopt dired-keep-marker-rename 82)
 #+end_src
 
 Replace spaces in file names with hyphens using "%s" in dired.
@@ -2277,7 +2276,6 @@ Tag items — from [[https://www.reddit.com/r/emacs/comments/go5d0v/using_emacs_
    "C-x 9" #'hydra-logic/body)
 #+end_src
 
-
 ** ISGD
 
 #+begin_src emacs-lisp
@@ -2286,8 +2284,6 @@ Tag items — from [[https://www.reddit.com/r/emacs/comments/go5d0v/using_emacs_
     (isgd-logstats nil)
     (isgd-ask-custom-url t))
 #+end_src
-
-
 
 ** Jinx
 
@@ -4574,14 +4570,11 @@ https://github.com/justbur/emacs-which-key
     )
 #+end_src
 
-
 ** YAML
 
 #+begin_src emacs-lisp
 (use-package yaml-mode)
 #+end_src
-
-
 
 ** Yankpad
 

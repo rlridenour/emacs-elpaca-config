@@ -771,6 +771,8 @@
 
 (setq dired-dwim-target t)
 
+(setopt dired-keep-marker-rename 82)
+
 (defun my-substspaces (str)
   (subst-char-in-string ?\s ?- str))
 
