@@ -526,6 +526,12 @@
   :config
   (load "~/Dropbox/emacs/my-emacs-abbrev"))
 
+(use-package accent
+:config
+(setq accent-position 'after)
+:general
+("C-x C-a" #'accent-menu))
+
 (use-package ace-window
     :config
 (setq aw-dispatch-always t)

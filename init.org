@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2025-05-26 07:30:21 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2025-05-27 14:04:42 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+auto_tangle: t
 
@@ -1052,12 +1052,14 @@ Load general before the remaining packages so they can make use of the ~:general
     (load "~/Dropbox/emacs/my-emacs-abbrev"))
 #+end_src
 
-** Ace Link
+** Accent
 
-#+begin_src emacs-lisp :tangle no
-  (use-package ace-link
-    :init
-    (ace-link-setup-default))
+#+begin_src emacs-lisp
+(use-package accent
+:config
+(setq accent-position 'after)
+:general
+("C-x C-a" #'accent-menu))
 #+end_src
 
 ** Ace Window
@@ -1453,8 +1455,6 @@ Replace spaces in file names with hyphens using "%s" in dired.
     (interactive "P")
     (dired-rename-non-directory #'my-substspaces "Rename by substituting spaces" arg))
 #+end_src
-
-
 
 #+begin_src emacs-lisp
   (general-define-key
