@@ -1814,7 +1814,7 @@ installed."
    mu4e-headers-date-format "%Y/%m/%d"
    mu4e-change-filenames-when-moving t
    mu4e-attachment-dir "~/Downloads"
-   mu4e-maildir       "~/Maildir/"   ;; top-level Maildir
+   mu4e-maildir       "~/.maildir/"   ;; top-level Maildir
    ;; note that these folders below must start with /
    ;; the paths are relative to maildir root
 

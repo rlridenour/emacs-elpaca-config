@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2025-05-27 14:04:42 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2025-05-28 07:31:48 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+auto_tangle: t
 
@@ -2757,7 +2757,7 @@ Use variable pitch mode in Org and Markdown modes. Toggle with ~C-M-S-s-v~, boun
      mu4e-headers-date-format "%Y/%m/%d"
      mu4e-change-filenames-when-moving t
      mu4e-attachment-dir "~/Downloads"
-     mu4e-maildir       "~/Maildir/"   ;; top-level Maildir
+     mu4e-maildir       "~/.maildir/"   ;; top-level Maildir
      ;; note that these folders below must start with /
      ;; the paths are relative to maildir root
 
