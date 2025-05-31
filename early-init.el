@@ -33,7 +33,6 @@
 (customize-set-variable 'native-comp-speed 2)
 (customize-set-variable 'native-comp-deferred-compilation t)
 
-;; Silence native compilation warnings
 (setq native-comp-async-report-warnings-errors nil)
 
 (defvar default-file-name-handler-alist file-name-handler-alist)
@@ -48,7 +47,6 @@
 (setq-default frame-inhibit-implied-resize t)
 (setq-default inhibit-startup-screen t)
 (setq-default inhibit-startup-message t)
-(setq-default inhibit-splash-screen t)
 (setq-default initial-scratch-message nil)
 (setq use-dialog-box nil)
 
@@ -57,8 +55,6 @@
 
 (setq frame-resize-pixelwise t)
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
-;; (add-to-list 'default-frame-alist '(left . 0))
-;; (add-to-list 'default-frame-alist '(width . 100))
 
 (defun initd/bring-emacs-to-front ()
   "Using applescript, force the Emacs frame to be activated."
@@ -67,7 +63,6 @@
 		     "osascript"
 		     "-e"
 		     "tell application \"Emacs\" to activate")))
-
 (add-hook 'server-after-make-frame-hook #'initd/bring-emacs-to-front)
 
 (setq frame-title-format
@@ -77,7 +72,6 @@
 
 (defun rr/focus-new-client-frame ()
   (select-frame-set-input-focus (selected-frame)))
-
 (add-hook 'server-after-make-frame-hook #'rr/focus-new-client-frame)
 
 (set-face-attribute 'default nil :height 160)

@@ -101,8 +101,7 @@
 
 (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 
-(setq ns-function-modifier 'hyper)
-;; ns-right-command-modifier 'hyper)
+(setopt ns-right-command-modifier 'hyper)
 
 (setq enable-recursive-minibuffers t)
 (minibuffer-depth-indicate-mode 1)
@@ -127,14 +126,17 @@
 	holiday-islamic-holidays nil         ;... that I don't get off
 	)
 
-(define-key key-translation-map (kbd "ESC") (kbd "C-g"))
-
 (line-number-mode)
 (column-number-mode)
 (global-visual-line-mode 1)
 (global-hl-line-mode)
 (setq hl-line-sticky-flag nil)
 (setq global-hl-line-sticky-flag nil)
+
+(setq display-time-24hr-format t)
+(display-time-mode)
+
+(setq ring-bell-function 'ignore)
 
 (setq server-use-tcp t)
 (server-start)
@@ -153,10 +155,6 @@
 ;; Do not automatically save
 (setq auto-save-default nil)
 
-;;;;; = saveplace - last position in file
-;; Save point position in files between sessions.
-
-;; Where to save the saveplaces file - in the .cache
 (setq save-place-file (expand-file-name "saveplaces" rr-cache-dir))
 (save-place-mode)
 
@@ -338,11 +336,6 @@
     (set-frame-height frame (- display-height cut) nil t)
     (set-frame-width frame (- display-width 20) nil t)
     (set-frame-position frame x y)))
-
-(setq display-time-24hr-format t)
-(display-time-mode)
-
-(setq ring-bell-function 'ignore)
 
 (show-paren-mode)
 (setq show-paren-delay 0)

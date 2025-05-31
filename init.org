@@ -1,7 +1,8 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2025-05-28 07:31:48 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2025-05-31 18:34:19 by rlridenour>
 #+email: rlridenour@fastmail.com
+#+PROPERTY: header-args :tangle init.el
 #+auto_tangle: t
 
 * Early Init File
@@ -70,18 +71,22 @@ Improve execution speed.
   (customize-set-variable 'native-comp-deferred-compilation t)
 #+end_src
 
+Silence native compilation warnings.
+
 #+begin_src emacs-lisp
-  ;; Silence native compilation warnings
   (setq native-comp-async-report-warnings-errors nil)
 #+end_src
 
 *** File-Name-Handler-Alist
 
 Skipping a bunch of regular expression searching in the =file-name-handler-alist= should improve start time.
+
 #+begin_src emacs-lisp :lexical t
   (defvar default-file-name-handler-alist file-name-handler-alist)
   (setq file-name-handler-alist nil)
 #+end_src
+
+** Personal Identification
 
 Set my name and email.
 
@@ -103,7 +108,6 @@ Remove unnecessary GUI elements.
   (setq-default frame-inhibit-implied-resize t)
   (setq-default inhibit-startup-screen t)
   (setq-default inhibit-startup-message t)
-  (setq-default inhibit-splash-screen t)
   (setq-default initial-scratch-message nil)
   (setq use-dialog-box nil)
 #+end_src
@@ -122,8 +126,6 @@ Set initial frame size to fullheight.
 #+begin_src emacs-lisp
   (setq frame-resize-pixelwise t)
   (add-to-list 'default-frame-alist '(fullscreen . maximized))
-  ;; (add-to-list 'default-frame-alist '(left . 0))
-  ;; (add-to-list 'default-frame-alist '(width . 100))
 #+end_src
 
 Bring new frame to front. From [[https://www.reddit.com/r/emacs/comments/1g2hkh8/a_useful_snippet_to_bring_emacs_client_to_the/][a useful snippet to bring emacs client to the front on OS X : r/emacs]].
@@ -136,7 +138,6 @@ Bring new frame to front. From [[https://www.reddit.com/r/emacs/comments/1g2hkh8
 		     "osascript"
 		     "-e"
 		     "tell application \"Emacs\" to activate")))
-
   (add-hook 'server-after-make-frame-hook #'initd/bring-emacs-to-front)
 #+end_src
 
@@ -161,7 +162,6 @@ Focus new frames
 #+begin_src emacs-lisp
   (defun rr/focus-new-client-frame ()
     (select-frame-set-input-focus (selected-frame)))
-
   (add-hook 'server-after-make-frame-hook #'rr/focus-new-client-frame)
 #+end_src
 
@@ -183,14 +183,13 @@ Increase font size.
   ;; End:
 #+end_src
 
-* Variables
-:PROPERTIES:
-:header-args: :tangle init.el
-:END:
+* Init Header
 
 #+begin_src emacs-lisp
   ;;; init.el --- Personal Emacs configuration file -*- lexical-binding: t; -*-
 #+end_src
+
+* Variables
 
 #+begin_src emacs-lisp
   (defconst rr-emacs-dir (expand-file-name user-emacs-directory)
@@ -230,9 +229,6 @@ Add elisp directory to load path.
 #+end_src
 
 * Package Management
-:PROPERTIES:
-:header-args: :tangle init.el
-:END:
 
 ** Elpaca Install
 
@@ -279,7 +275,7 @@ Add elisp directory to load path.
 
 ** Elpaca Use-Package Support
 
-Load org first to avoid version mismatch.
+Load org first to avoid version mismatch problems.
 
 #+begin_src emacs-lisp
   (elpaca (org :wait t))
@@ -293,6 +289,8 @@ Load org first to avoid version mismatch.
     (setq use-package-always-defer t))
 #+end_src
 
+*** Use Feature
+
 #+begin_src emacs-lisp :lexical t
   (defmacro use-feature (name &rest args)
     "Like `use-package' but accounting for asynchronous installation.
@@ -303,6 +301,8 @@ Load org first to avoid version mismatch.
        ,@args))
 #+end_src
 
+*** After Elpaca Init
+
 Use this macro for code that needs to run after Elpaca.
 
 #+begin_src emacs-lisp
@@ -312,9 +312,8 @@ Use this macro for code that needs to run after Elpaca.
 #+end_src
 
 * Defaults
-:PROPERTIES:
-:header-args: :tangle init.el
-:END:
+
+** Settings
 
 UTF-8 as default.
 
@@ -347,23 +346,22 @@ Kill message buffer on exit.
   (setq message-kill-buffer-on-exit t)
 #+end_src
 
-Use "y" and "n" in confirmation dialogs.
+Use "y" and "n" in confirmation dialogues.
 
 #+begin_src emacs-lisp
   (setf use-short-answers t)
 #+end_src
 
-Escape quits everything.
+Make escape quit everything.
 
 #+begin_src emacs-lisp
   (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 #+end_src
 
-Set Mac right command key as Emacs hyper key. The fn key with A, F, H, E, C, N, and Q are used by the system. Maybe I can find a way to disable some of those keyboard shortcuts. On the new magic keyboard, the left control key is small and right by the fn key which I seem to always be reaching for. So, remap the fn key to control with Karabiner Elements.
+Set Mac right command key as Emacs hyper key. I was using the fn key, but there were two problems. First, the fn key with A, F, H, E, C, N, and Q are used by the system. Second, on the new magic keyboard, the left control key is small and right by the fn key which I seem to always be reaching for. So, I remapped the fn key to control on the magic keyboard with Karabiner Elements.
 
 #+begin_src emacs-lisp
-  (setq ns-function-modifier 'hyper)
-  ;; ns-right-command-modifier 'hyper)
+  (setopt ns-right-command-modifier 'hyper)
 #+end_src
 
 Allow entering a command when the minibuffer is active.
@@ -402,16 +400,21 @@ World clock settings.
 #+end_src
 
 #+begin_src emacs-lisp
-  (define-key key-translation-map (kbd "ESC") (kbd "C-g"))
-#+end_src
-
-#+begin_src emacs-lisp
   (line-number-mode)
   (column-number-mode)
   (global-visual-line-mode 1)
   (global-hl-line-mode)
   (setq hl-line-sticky-flag nil)
   (setq global-hl-line-sticky-flag nil)
+#+end_src
+
+#+begin_src emacs-lisp
+  (setq display-time-24hr-format t)
+  (display-time-mode)
+#+end_src
+
+#+begin_src emacs-lisp
+  (setq ring-bell-function 'ignore)
 #+end_src
 
 Use MacOS SF Symbols
@@ -451,10 +454,6 @@ Backup files are in ~/Users/rlridenour/.cache/emacs/backup/~.
 Open files to the last edited position.
 
 #+begin_src emacs-lisp
-    ;;;;; = saveplace - last position in file
-  ;; Save point position in files between sessions.
-
-  ;; Where to save the saveplaces file - in the .cache
   (setq save-place-file (expand-file-name "saveplaces" rr-cache-dir))
   (save-place-mode)
 #+end_src
@@ -531,13 +530,15 @@ Don't ask for confirmation when killing process buffers.
   (setq kill-buffer-query-functions nil)
 #+end_src
 
-Don't display async shell command process buffers
+Don't display async shell command process buffers.
 
 #+begin_src emacs-lisp
   (add-to-list 'display-buffer-alist
 	       (cons "\\*Async Shell Command\\*.*" (cons #'display-buffer-no-window nil)))
 
 #+end_src
+
+If necessary, create directories for new files.
 
 #+begin_src emacs-lisp
   (defun make-parent-directory ()
@@ -546,7 +547,7 @@ Don't display async shell command process buffers
   (add-hook 'find-file-not-found-functions #'make-parent-directory)
 #+end_src
 
-Kills all open buffers except scratch, dashboard and messages. From https://github.com/ocodo/.emacs.d/blob/master/custom/handy-functions.el
+Kills all open buffers except scratch, dashboard, Mu4e, and messages. From https://github.com/ocodo/.emacs.d/blob/master/custom/handy-functions.el
 
 #+begin_src emacs-lisp
   (defun nuke-all-buffers ()
@@ -592,14 +593,13 @@ Kill other buffers and tabs.
     (find-file "~/.config/fish/functions/"))
 #+end_src
 
-Save the current (system) clipboard before replacing it with the Emacs’ text.
-https://github.com/dakrone/eos/blob/master/eos.org
+Save the current (system) clipboard before replacing it with the Emacs’ text. https://github.com/dakrone/eos/blob/master/eos.org
 
 #+begin_src emacs-lisp
   (setq save-interprogram-paste-before-kill t)
 #+end_src
 
-Set initial mode to org-mode.
+Set scratch buffers to org-mode.
 
 #+begin_src emacs-lisp
   (setq initial-major-mode 'org-mode)
@@ -618,8 +618,10 @@ Overwrite selected text.
 #+end_src
 
 Add automatic time stamps to files, from [[https://olddeuteronomy.github.io/post/emacs-time-stamp/][The Emacs Cat]]. Put a time stamp somewhere in the first 10 lines of the file with this format:
-Elisp: =;; Time-stamp: <Last changed 2025-04-18 12:54:28 by rlridenour>=
-Org: =# Time-stamp: <Last changed 2025-04-22 14:40:44 by rlridenour>=
+
+- Elisp: =;; Time-stamp: <Last changed 2025-04-18 12:54:28 by rlridenour>=
+- Org: =# Time-stamp: <Last changed 2025-04-22 14:40:44 by rlridenour>=
+
 #+begin_src emacs-lisp
 ;; When there is a "Time-stamp: <>" string in the first 10 lines of the file,
 ;; Emacs will write time-stamp information there when saving the file.
@@ -736,15 +738,6 @@ Org: =# Time-stamp: <Last changed 2025-04-22 14:40:44 by rlridenour>=
       (set-frame-width frame (- display-width 20) nil t)
       (set-frame-position frame x y)))
  #+end_src
-
-#+begin_src emacs-lisp
-  (setq display-time-24hr-format t)
-  (display-time-mode)
-#+end_src
-
-#+begin_src emacs-lisp
-  (setq ring-bell-function 'ignore)
-#+end_src
 
 Auto insert close bracket.
 
@@ -994,9 +987,6 @@ Delete extra blank lines in buffer.
 #+end_src
 
 * Packages
-:PROPERTIES:
-:header-args: :tangle init.el
-:END:
 
 ** General
 
@@ -4615,9 +4605,6 @@ https://github.com/joaotavora/yasnippet
 #+end_src
 
 * Keybindings
-:PROPERTIES:
-:header-args: :tangle init.el
-:END:
 
 ** Appearance Keybindings
 
@@ -4823,9 +4810,6 @@ Open fish functions directory.
 #+end_src
 
 * Finish
-:PROPERTIES:
-:header-args: :tangle init.el
-:END:
 
 Set default directory.
 
@@ -4834,9 +4818,6 @@ Set default directory.
 #+end_src
 
 * Footer
-:PROPERTIES:
-:header-args: :tangle init.el
-:END:
 
 #+begin_src emacs-lisp
   ;; Local Variables:
