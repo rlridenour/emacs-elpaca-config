@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2025-06-01 07:53:32 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2025-06-01 15:55:02 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+PROPERTY: header-args :tangle init.el
 #+auto_tangle: t
@@ -310,6 +310,39 @@ Use this macro for code that needs to run after Elpaca.
     "Adds BODY to `elpaca-after-init-hook`"
     `(add-hook 'elpaca-after-init-hook (lambda () ,@body)))
 #+end_src
+
+** General
+
+Load general before the remaining packages so they can make use of the ~:general~ keyword in their declarations.
+
+#+begin_src emacs-lisp :lexical t
+  (use-package general
+    :ensure (:wait t)
+    :demand
+    :config
+    (general-override-mode)
+    (general-auto-unbind-keys)
+    (general-unbind
+      "C-z"
+      "H-w"
+      "s-p"
+      "s-q"
+      "s-w"
+      "s-m"
+      "s-n"
+      "s-h"
+      "s-,"))
+#+end_src
+
+*** Key Chord
+
+#+begin_src emacs-lisp
+(use-package key-chord
+:config
+(key-chord-mode 1))
+#+end_src
+
+
 
 * Defaults
 
@@ -988,36 +1021,6 @@ Delete extra blank lines in buffer.
 
 * Packages
 
-** General
-
-Load general before the remaining packages so they can make use of the ~:general~ keyword in their declarations.
-
-#+begin_src emacs-lisp :lexical t
-  (use-package general
-    :ensure (:wait t)
-    :demand
-    :config
-    (general-override-mode)
-    (general-auto-unbind-keys)
-    (general-unbind
-      "C-z"
-      "H-w"
-      "s-p"
-      "s-q"
-      "s-w"
-      "s-m"
-      "s-n"
-      "s-h"
-      "s-,"))
-#+end_src
-
-*** Key Chord
-
-#+begin_src emacs-lisp
-(use-package key-chord
-:config
-(key-chord-mode 1))
-#+end_src
 
 ** AAS
 

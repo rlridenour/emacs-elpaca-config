@@ -86,6 +86,27 @@
   "Adds BODY to `elpaca-after-init-hook`"
   `(add-hook 'elpaca-after-init-hook (lambda () ,@body)))
 
+(use-package general
+  :ensure (:wait t)
+  :demand
+  :config
+  (general-override-mode)
+  (general-auto-unbind-keys)
+  (general-unbind
+    "C-z"
+    "H-w"
+    "s-p"
+    "s-q"
+    "s-w"
+    "s-m"
+    "s-n"
+    "s-h"
+    "s-,"))
+
+(use-package key-chord
+:config
+(key-chord-mode 1))
+
 (set-language-environment "UTF-8")
 (set-default-coding-systems 'utf-8)
 
@@ -486,27 +507,6 @@
   (save-excursion)
   (beginning-of-buffer)
   (replace-regexp "^\n\n+" "\n"))
-
-(use-package general
-  :ensure (:wait t)
-  :demand
-  :config
-  (general-override-mode)
-  (general-auto-unbind-keys)
-  (general-unbind
-    "C-z"
-    "H-w"
-    "s-p"
-    "s-q"
-    "s-w"
-    "s-m"
-    "s-n"
-    "s-h"
-    "s-,"))
-
-(use-package key-chord
-:config
-(key-chord-mode 1))
 
 (use-package aas)
 
