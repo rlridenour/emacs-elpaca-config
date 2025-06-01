@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2025-06-01 05:39:04 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2025-06-01 07:53:32 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+PROPERTY: header-args :tangle init.el
 #+auto_tangle: t
@@ -2317,15 +2317,12 @@ Display suggestions in grid.
 
 #+begin_src emacs-lisp
   (use-package auctex
-    :ensure (auctex :pre-build (("./autogen.sh")
-				("./configure"
-				 "--without-texmf-dir"
-				 "--with-packagelispdir=./"
-				 "--with-packagedatadir=./")
-				("make"))
-		    :build (:not elpaca--compile-info) ;; Make will take care of this step
-		    :files ("*.el" "doc/*.info*" "etc" "images" "latex" "style")
-		    :version (lambda (_) (require 'tex-site) AUCTeX-version))
+    :ensure 
+(auctex :repo "https://git.savannah.gnu.org/git/auctex.git" :branch "main"
+        :pre-build (("make" "elpa"))
+        :build (:not elpaca--compile-info) ;; Make will take care of this step
+        :files ("*.el" "doc/*.info*" "etc" "images" "latex" "style")
+        :version (lambda (_) (require 'auctex) AUCTeX-version))
     :mode ("\\.tex\\'" . LaTeX-mode)
     :init
     (setq TeX-parse-self t
