@@ -2869,17 +2869,19 @@ installed."
   (require 'smartparens-config))
 
 (use-package spacious-padding
+  :demand
   :after modus-themes doom-modeline
   :config
   (setq spacious-padding-subtle-mode-line t)
   (setq spacious-padding-widths
-	  '( :internal-border-width 30
-	 :header-line-width 4
-	 :mode-line-width 10
-	 :tab-width 4
-	 :right-divider-width 30
-	 :scroll-bar-width 8
-	     :fringe-width 8))
+        '( :internal-border-width 30
+    	 :header-line-width 4
+    	 :mode-line-width 10
+    	 :tab-width 4
+    	 :right-divider-width 30
+    	 :scroll-bar-width 8
+	 :fringe-width 8))
+  (spacious-padding-mode 1)
   :general
   ("C-M-s-p" #'spacious-padding-mode))
 
