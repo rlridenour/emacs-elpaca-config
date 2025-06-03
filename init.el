@@ -1,32 +1,5 @@
 ;;; init.el --- Personal Emacs configuration file -*- lexical-binding: t; -*-
 
-(defconst rr-emacs-dir (expand-file-name user-emacs-directory)
-  "The path to the emacs.d directory.")
-
-(defconst rr-cache-dir "~/.cache/emacs/"
-  "The directory for Emacs activity files.")
-
-(defconst rr-backup-dir (concat rr-cache-dir "backup/")
-  "The directory for Emacs backup files.")
-
-(defconst rr-org-dir "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/"
-  "The directory for my org files.")
-
-(defconst rr-agenda-dir "/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/"
-  "The directory for RR-Emacs note storage.")
-
-(defconst rr-notes-dir "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/Documents/notes/"
-  "The directory for RR-Emacs note storage.")
-
-;;;; Create directories if non-existing
-(dolist (dir (list rr-cache-dir
-		     rr-backup-dir))
-  (unless (file-directory-p dir)
-    (make-directory dir t)))
-
-;; set load path
-(add-to-list 'load-path (concat rr-emacs-dir "elisp"))
-
 (defvar elpaca-installer-version 0.11)
 (defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
 (defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
@@ -107,6 +80,49 @@
 :config
 (key-chord-mode 1))
 
+(defconst rr-emacs-dir (expand-file-name user-emacs-directory)
+  "The path to the emacs.d directory.")
+
+(defconst rr-cache-dir "~/.cache/emacs/"
+  "The directory for Emacs activity files.")
+
+(defconst rr-backup-dir (concat rr-cache-dir "backup/")
+  "The directory for Emacs backup files.")
+
+(defconst rr-org-dir "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/"
+  "The directory for my org files.")
+
+(defconst rr-agenda-dir "/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/"
+  "The directory for RR-Emacs note storage.")
+
+(defconst rr-notes-dir "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/Documents/notes/"
+  "The directory for RR-Emacs note storage.")
+
+;;;; Create directories if non-existing
+(dolist (dir (list rr-cache-dir
+		     rr-backup-dir))
+  (unless (file-directory-p dir)
+    (make-directory dir t)))
+
+(add-to-list 'load-path (concat rr-emacs-dir "elisp"))
+
+(setq backup-directory-alist (list (cons "."  rr-backup-dir)))
+
+(setq backup-by-copying t)
+
+(setq delete-old-versions t)
+
+(setq kept-new-versions 5)
+
+(setq version-control t)
+
+(setq auto-save-default nil)
+
+(setq create-lockfiles nil)
+
+(setq delete-by-moving-to-trash t
+	trash-directory "~/.Trash/emacs")
+
 (set-language-environment "UTF-8")
 (set-default-coding-systems 'utf-8)
 
@@ -119,8 +135,6 @@
 (setq message-kill-buffer-on-exit t)
 
 (setf use-short-answers t)
-
-(global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 
 (setopt ns-right-command-modifier 'hyper)
 
@@ -149,7 +163,9 @@
 
 (line-number-mode)
 (column-number-mode)
+
 (global-visual-line-mode 1)
+
 (global-hl-line-mode)
 (setq hl-line-sticky-flag nil)
 (setq global-hl-line-sticky-flag nil)
@@ -163,24 +179,8 @@
 (server-start)
 (require 'org-protocol)
 
-;; Where to save to backup file - in the backup dir
-(setq backup-directory-alist (list (cons "."  rr-backup-dir)))
-;; Always backup by copying
-(setq backup-by-copying t)
-;; Delete old backup files
-(setq delete-old-versions t)
-;; Keep 5 backup files
-(setq kept-new-versions 5)
-;; Make numeric backup versions
-(setq version-control t)
-;; Do not automatically save
-(setq auto-save-default nil)
-
 (setq save-place-file (expand-file-name "saveplaces" rr-cache-dir))
 (save-place-mode)
-
-(setq delete-by-moving-to-trash t
-	trash-directory "~/.Trash/emacs")
 
 (require 'uniquify)
 
@@ -196,9 +196,6 @@
 		(ibuffer-auto-mode 1)
 		(ibuffer-switch-to-saved-filter-groups "home")))
 
-;;;;; = savehist - last commands used
-;; Persist emacs minibuffer history
-;; Where to save the savehsit file - in the .cache
 (setq savehist-file (expand-file-name "savehist" rr-cache-dir))
 (savehist-mode)
 
@@ -220,23 +217,23 @@
 (add-hook 'find-file-not-found-functions #'make-parent-directory)
 
 (defun nuke-all-buffers ()
-    "Kill all the open buffers except the current one.
-	    Leave *scratch*, *dashboard* and *Messages* alone too."
-    (interactive)
-    (mapc
-     (lambda (buffer)
-       (unless (or
+  "Kill all the open buffers except the current one.
+	      Leave *scratch*, *dashboard* and *Messages* alone too."
+  (interactive)
+  (mapc
+   (lambda (buffer)
+     (unless (or
 		(string= (buffer-name buffer) "*scratch*")
 		(string= (buffer-name buffer) "*Org Agenda*")
 		(string= (buffer-name buffer) "*Messages*")
 		(string= (buffer-name buffer) "*mu4e-main*")
-)
+		)
 	 (kill-buffer buffer)))
-     (buffer-list))
-    (delete-other-windows)
-    (tab-bar-close-other-tabs)
-    ;; (goto-dashboard)
-    )
+   (buffer-list))
+  (delete-other-windows)
+  (tab-bar-close-other-tabs)
+  ;; (goto-dashboard)
+  )
 
 (defun rlr/kill-other-buffers ()
   (interactive)
@@ -245,12 +242,10 @@
 
 (defun goto-emacs-init ()
   (interactive)
-  "Find Emacs literate init file."
   (find-file (concat rr-emacs-dir "/init.org")))
 
 (defun goto-shell-init ()
   (interactive)
-  "Find Emacs literate init file."
   (find-file "~/.config/fish/functions/"))
 
 (setq save-interprogram-paste-before-kill t)
@@ -265,8 +260,8 @@
 ;; Emacs will write time-stamp information there when saving the file.
 ;; (Borrowed from http://home.thep.lu.se/~karlf/emacs.html)
 (setq time-stamp-active t          ; Do enable time-stamps.
-      time-stamp-line-limit 10     ; Check first 10 buffer lines for Time-stamp: <>
-      time-stamp-format "Last changed %Y-%02m-%02d %02H:%02M:%02S by %u")
+	time-stamp-line-limit 10     ; Check first 10 buffer lines for Time-stamp: <>
+	time-stamp-format "Last changed %Y-%02m-%02d %02H:%02M:%02S by %u")
 (add-hook 'write-file-hooks 'time-stamp) ; Update when saving.
 
 (defun delete-window-balance ()
@@ -372,7 +367,7 @@
 	(error (delete-frame)))))
 
 (defun rlr/kill-buffer-delete-tab-or-frame ()
-  "Delete current tab. If there is only one tab, then delete current frame."
+  "Kill current buffer and delete its tab. If there is only one tab, then delete current frame."
   (interactive)
   (kill-buffer)
   (if
@@ -520,26 +515,26 @@
   (load "~/Dropbox/emacs/my-emacs-abbrev"))
 
 (use-package accent
-:config
-(setq accent-position 'after)
-:general
-("C-x C-a" #'accent-menu))
+  :config
+  (setq accent-position 'after)
+  :general
+  ("C-x C-a" #'accent-menu))
 
 (use-package ace-window
-    :config
-(setq aw-dispatch-always t)
-    :general
-    ("M-O" #'ace-window
-     "M-o" #'rlr/quick-window-jump))
+  :config
+  (setq aw-dispatch-always t)
+  :general
+  ("M-O" #'ace-window
+   "M-o" #'rlr/quick-window-jump))
 
 (defun rlr/quick-window-jump ()
-"If only one window, switch to previous buffer, otherwise call ace-window."
-    (interactive)
-    (let* ((window-list (window-list nil 'no-mini)))
-      (if (< (length window-list) 3)
+  "If only one window, switch to previous buffer, otherwise call ace-window."
+  (interactive)
+  (let* ((window-list (window-list nil 'no-mini)))
+    (if (< (length window-list) 3)
 	  ;; If only one window, switch to previous buffer. If only two, jump directly to other window.
 	  (if (one-window-p)
-	  (switch-to-buffer nil)
+	      (switch-to-buffer nil)
 	(other-window 1))
 	(ace-window t))))
 
@@ -651,7 +646,9 @@
 
 (use-package crux
   :general
-  ("s-p" #'crux-create-scratch-buffer))
+  ("s-p" #'crux-create-scratch-buffer
+   "<escape>" #'crux-keyboard-quit-dwim
+   [remap keyboard-quit] #'crux-keyboard-quit-dwim))
 
 (use-package deadgrep)
 
@@ -1497,12 +1494,12 @@
    "S-<f7>" #'jinx-correct-all))
 
 (use-package auctex
-    :ensure 
+    :ensure
 (auctex :repo "https://git.savannah.gnu.org/git/auctex.git" :branch "main"
-        :pre-build (("make" "elpa"))
-        :build (:not elpaca--compile-info) ;; Make will take care of this step
-        :files ("*.el" "doc/*.info*" "etc" "images" "latex" "style")
-        :version (lambda (_) (require 'auctex) AUCTeX-version))
+	:pre-build (("make" "elpa"))
+	:build (:not elpaca--compile-info) ;; Make will take care of this step
+	:files ("*.el" "doc/*.info*" "etc" "images" "latex" "style")
+	:version (lambda (_) (require 'auctex) AUCTeX-version))
     :mode ("\\.tex\\'" . LaTeX-mode)
     :init
     (setq TeX-parse-self t
@@ -2871,12 +2868,12 @@ installed."
   :config
   (setq spacious-padding-subtle-mode-line t)
   (setq spacious-padding-widths
-        '( :internal-border-width 30
-    	 :header-line-width 4
-    	 :mode-line-width 10
-    	 :tab-width 4
-    	 :right-divider-width 30
-    	 :scroll-bar-width 8
+	  '( :internal-border-width 30
+	 :header-line-width 4
+	 :mode-line-width 10
+	 :tab-width 4
+	 :right-divider-width 30
+	 :scroll-bar-width 8
 	 :fringe-width 8))
   (spacious-padding-mode 1)
   :general

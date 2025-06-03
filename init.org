@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2025-06-01 15:55:02 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2025-06-02 19:45:33 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+PROPERTY: header-args :tangle init.el
 #+auto_tangle: t
@@ -183,52 +183,11 @@ Increase font size.
   ;; End:
 #+end_src
 
-* Init Header
+* Package Management
 
 #+begin_src emacs-lisp
   ;;; init.el --- Personal Emacs configuration file -*- lexical-binding: t; -*-
 #+end_src
-
-* Variables
-
-#+begin_src emacs-lisp
-  (defconst rr-emacs-dir (expand-file-name user-emacs-directory)
-    "The path to the emacs.d directory.")
-
-  (defconst rr-cache-dir "~/.cache/emacs/"
-    "The directory for Emacs activity files.")
-
-  (defconst rr-backup-dir (concat rr-cache-dir "backup/")
-    "The directory for Emacs backup files.")
-
-  (defconst rr-org-dir "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/"
-    "The directory for my org files.")
-
-  (defconst rr-agenda-dir "/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/"
-    "The directory for RR-Emacs note storage.")
-
-  (defconst rr-notes-dir "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/Documents/notes/"
-    "The directory for RR-Emacs note storage.")
-#+end_src
-
-Create cache and backup directories.
-
-#+begin_src emacs-lisp
-    ;;;; Create directories if non-existing
-  (dolist (dir (list rr-cache-dir
-		     rr-backup-dir))
-    (unless (file-directory-p dir)
-      (make-directory dir t)))
-#+end_src
-
-Add elisp directory to load path.
-
-#+begin_src emacs-lisp
-  ;; set load path
-  (add-to-list 'load-path (concat rr-emacs-dir "elisp"))
-#+end_src
-
-* Package Management
 
 ** Elpaca Install
 
@@ -342,11 +301,104 @@ Load general before the remaining packages so they can make use of the ~:general
 (key-chord-mode 1))
 #+end_src
 
+* File Locations
 
+** Variables
 
-* Defaults
+#+begin_src emacs-lisp
+  (defconst rr-emacs-dir (expand-file-name user-emacs-directory)
+    "The path to the emacs.d directory.")
 
-** Settings
+  (defconst rr-cache-dir "~/.cache/emacs/"
+    "The directory for Emacs activity files.")
+
+  (defconst rr-backup-dir (concat rr-cache-dir "backup/")
+    "The directory for Emacs backup files.")
+
+  (defconst rr-org-dir "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/"
+    "The directory for my org files.")
+
+  (defconst rr-agenda-dir "/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/"
+    "The directory for RR-Emacs note storage.")
+
+  (defconst rr-notes-dir "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/Documents/notes/"
+    "The directory for RR-Emacs note storage.")
+#+end_src
+
+** Create directories
+
+#+begin_src emacs-lisp
+    ;;;; Create directories if non-existing
+  (dolist (dir (list rr-cache-dir
+		     rr-backup-dir))
+    (unless (file-directory-p dir)
+      (make-directory dir t)))
+#+end_src
+
+** Elisp
+
+Add elisp directory to load path.
+
+#+begin_src emacs-lisp
+  (add-to-list 'load-path (concat rr-emacs-dir "elisp"))
+#+end_src
+
+** Backups
+
+Backup files are in ~/Users/rlridenour/.cache/emacs/backup/~.
+
+#+begin_src emacs-lisp
+  (setq backup-directory-alist (list (cons "."  rr-backup-dir)))
+#+end_src
+
+Always backup by copying.
+
+#+begin_src emacs-lisp
+  (setq backup-by-copying t)
+#+end_src
+
+Delete old backup files
+
+#+begin_src emacs-lisp
+  (setq delete-old-versions t)
+#+end_src
+
+Keep 5 backup files
+
+#+begin_src emacs-lisp
+  (setq kept-new-versions 5)
+#+end_src
+
+Make numeric backup versions
+
+#+begin_src emacs-lisp
+  (setq version-control t)
+#+end_src
+
+Do not automatically save files.
+
+#+begin_src emacs-lisp
+  (setq auto-save-default nil)
+#+end_src
+
+Don't make all those files that look like =#foo.ext=.
+
+#+begin_src emacs-lisp
+(setq create-lockfiles nil)
+#+end_src
+
+** Trash
+
+Send deleted files to an Emacs folder in system trash.
+
+#+begin_src emacs-lisp
+  (setq delete-by-moving-to-trash t
+	trash-directory "~/.Trash/emacs")
+#+end_src
+
+* Settings
+
+** Miscellaneous
 
 UTF-8 as default.
 
@@ -361,13 +413,13 @@ Use single space after sentences.
   (setq sentence-end-double-space nil)
 #+end_src
 
-Set default tab width.
+Set default tab width to 10.
 
 #+begin_src emacs-lisp
   (setq-default tab-width 10)
 #+end_src
 
-Use GNU ls to avoid "Listing directory failed but 'access-file' worked" error.
+Use GNU =ls= to avoid "Listing directory failed but 'access-file' worked" error.
 
 #+begin_src emacs-lisp
   (setq insert-directory-program "gls")
@@ -383,12 +435,6 @@ Use "y" and "n" in confirmation dialogues.
 
 #+begin_src emacs-lisp
   (setf use-short-answers t)
-#+end_src
-
-Make escape quit everything.
-
-#+begin_src emacs-lisp
-  (global-set-key (kbd "<escape>") 'keyboard-escape-quit)
 #+end_src
 
 Set Mac right command key as Emacs hyper key. I was using the fn key, but there were two problems. First, the fn key with A, F, H, E, C, N, and Q are used by the system. Second, on the new magic keyboard, the left control key is small and right by the fn key which I seem to always be reaching for. So, I remapped the fn key to control on the magic keyboard with Karabiner Elements.
@@ -432,19 +478,35 @@ World clock settings.
 	)
 #+end_src
 
+Display line and column numbers in the modeline.
+
 #+begin_src emacs-lisp
   (line-number-mode)
   (column-number-mode)
+#+end_src
+
+Wrap lines to fit frame size.
+
+#+begin_src emacs-lisp
   (global-visual-line-mode 1)
+#+end_src
+
+Highlight current line, but only in the current window.
+
+#+begin_src emacs-lisp
   (global-hl-line-mode)
   (setq hl-line-sticky-flag nil)
   (setq global-hl-line-sticky-flag nil)
 #+end_src
 
+Show 24 hour time in the modeline.
+
 #+begin_src emacs-lisp
   (setq display-time-24hr-format t)
   (display-time-mode)
 #+end_src
+
+Silence warning bells.
 
 #+begin_src emacs-lisp
   (setq ring-bell-function 'ignore)
@@ -460,42 +522,18 @@ Use MacOS SF Symbols
 Set server to use tcp for [[http://yummymelon.com/scrim/][Scrim]]
 
 #+begin_src emacs-lisp
-(setq server-use-tcp t)
-(server-start)
-(require 'org-protocol)
+  (setq server-use-tcp t)
+  (server-start)
+  (require 'org-protocol)
 #+end_src
 
 ** Files and Buffers
-
-Backup files are in ~/Users/rlridenour/.cache/emacs/backup/~.
-
-#+begin_src emacs-lisp
-  ;; Where to save to backup file - in the backup dir
-  (setq backup-directory-alist (list (cons "."  rr-backup-dir)))
-  ;; Always backup by copying
-  (setq backup-by-copying t)
-  ;; Delete old backup files
-  (setq delete-old-versions t)
-  ;; Keep 5 backup files
-  (setq kept-new-versions 5)
-  ;; Make numeric backup versions
-  (setq version-control t)
-  ;; Do not automatically save
-  (setq auto-save-default nil)
-#+end_src
 
 Open files to the last edited position.
 
 #+begin_src emacs-lisp
   (setq save-place-file (expand-file-name "saveplaces" rr-cache-dir))
   (save-place-mode)
-#+end_src
-
-Send deleted files to an Emacs folder in system trash.
-
-#+begin_src emacs-lisp
-  (setq delete-by-moving-to-trash t
-	trash-directory "~/.Trash/emacs")
 #+end_src
 
 Give buffers uniquely numbered names.
@@ -531,14 +569,11 @@ Auto-update ibuffer list.
 Save minibuffer history in the cache directory.
 
 #+begin_src emacs-lisp
-    ;;;;; = savehist - last commands used
-  ;; Persist emacs minibuffer history
-  ;; Where to save the savehsit file - in the .cache
   (setq savehist-file (expand-file-name "savehist" rr-cache-dir))
   (savehist-mode)
 #+end_src
 
-Don't need to confirm that I want to edit a large file.
+Don't ask for confirmation to edit a large file.
 
 #+begin_src emacs-lisp
   (setq large-file-warning-threshold nil)
@@ -580,12 +615,12 @@ If necessary, create directories for new files.
   (add-hook 'find-file-not-found-functions #'make-parent-directory)
 #+end_src
 
-Kills all open buffers except scratch, dashboard, Mu4e, and messages. From https://github.com/ocodo/.emacs.d/blob/master/custom/handy-functions.el
+Kills all open buffers except scratch, dashboard, Mu4e, and messages. From https://github.com/ocodo/.emacs.d/blob/master/custom/handy-functions.el I also have it close other windows and tabs.
 
 #+begin_src emacs-lisp
   (defun nuke-all-buffers ()
     "Kill all the open buffers except the current one.
-	    Leave *scratch*, *dashboard* and *Messages* alone too."
+	      Leave *scratch*, *dashboard* and *Messages* alone too."
     (interactive)
     (mapc
      (lambda (buffer)
@@ -594,7 +629,7 @@ Kills all open buffers except scratch, dashboard, Mu4e, and messages. From https
 		(string= (buffer-name buffer) "*Org Agenda*")
 		(string= (buffer-name buffer) "*Messages*")
 		(string= (buffer-name buffer) "*mu4e-main*")
-)
+		)
 	 (kill-buffer buffer)))
      (buffer-list))
     (delete-other-windows)
@@ -612,17 +647,19 @@ Kill other buffers and tabs.
     (tab-bar-close-other-tabs))
 #+end_src
 
+Open the Emacs =init.org= file.
+
 #+begin_src emacs-lisp
   (defun goto-emacs-init ()
     (interactive)
-    "Find Emacs literate init file."
     (find-file (concat rr-emacs-dir "/init.org")))
 #+end_src
+
+Open the Fish function directory in Dired.
 
 #+begin_src emacs-lisp
   (defun goto-shell-init ()
     (interactive)
-    "Find Emacs literate init file."
     (find-file "~/.config/fish/functions/"))
 #+end_src
 
@@ -656,13 +693,13 @@ Add automatic time stamps to files, from [[https://olddeuteronomy.github.io/post
 - Org: =# Time-stamp: <Last changed 2025-04-22 14:40:44 by rlridenour>=
 
 #+begin_src emacs-lisp
-;; When there is a "Time-stamp: <>" string in the first 10 lines of the file,
-;; Emacs will write time-stamp information there when saving the file.
-;; (Borrowed from http://home.thep.lu.se/~karlf/emacs.html)
-(setq time-stamp-active t          ; Do enable time-stamps.
-      time-stamp-line-limit 10     ; Check first 10 buffer lines for Time-stamp: <>
-      time-stamp-format "Last changed %Y-%02m-%02d %02H:%02M:%02S by %u")
-(add-hook 'write-file-hooks 'time-stamp) ; Update when saving.
+  ;; When there is a "Time-stamp: <>" string in the first 10 lines of the file,
+  ;; Emacs will write time-stamp information there when saving the file.
+  ;; (Borrowed from http://home.thep.lu.se/~karlf/emacs.html)
+  (setq time-stamp-active t          ; Do enable time-stamps.
+	time-stamp-line-limit 10     ; Check first 10 buffer lines for Time-stamp: <>
+	time-stamp-format "Last changed %Y-%02m-%02d %02H:%02M:%02S by %u")
+  (add-hook 'write-file-hooks 'time-stamp) ; Update when saving.
 #+end_src
 
 ** Windows
@@ -770,7 +807,7 @@ Add automatic time stamps to files, from [[https://olddeuteronomy.github.io/post
       (set-frame-height frame (- display-height cut) nil t)
       (set-frame-width frame (- display-width 20) nil t)
       (set-frame-position frame x y)))
- #+end_src
+#+end_src
 
 Auto insert close bracket.
 
@@ -801,7 +838,7 @@ If more than one window, delete the window; if only one window, delete the tab; 
 
 #+begin_src emacs-lisp
   (defun rlr/kill-buffer-delete-tab-or-frame ()
-    "Delete current tab. If there is only one tab, then delete current frame."
+    "Kill current buffer and delete its tab. If there is only one tab, then delete current frame."
     (interactive)
     (kill-buffer)
     (if
@@ -1019,8 +1056,8 @@ Delete extra blank lines in buffer.
     (replace-regexp "^\n\n+" "\n"))
 #+end_src
 
-* Packages
 
+* Packages
 
 ** AAS
 
@@ -1048,11 +1085,11 @@ Delete extra blank lines in buffer.
 ** Accent
 
 #+begin_src emacs-lisp
-(use-package accent
-:config
-(setq accent-position 'after)
-:general
-("C-x C-a" #'accent-menu))
+  (use-package accent
+    :config
+    (setq accent-position 'after)
+    :general
+    ("C-x C-a" #'accent-menu))
 #+end_src
 
 ** Ace Window
@@ -1060,21 +1097,21 @@ Delete extra blank lines in buffer.
 #+begin_src emacs-lisp :tangle yes
   (use-package ace-window
     :config
-(setq aw-dispatch-always t)
+    (setq aw-dispatch-always t)
     :general
     ("M-O" #'ace-window
      "M-o" #'rlr/quick-window-jump))
-    #+end_src
+#+end_src
 
 #+begin_src emacs-lisp
-(defun rlr/quick-window-jump ()
-"If only one window, switch to previous buffer, otherwise call ace-window."
+  (defun rlr/quick-window-jump ()
+    "If only one window, switch to previous buffer, otherwise call ace-window."
     (interactive)
     (let* ((window-list (window-list nil 'no-mini)))
       (if (< (length window-list) 3)
 	  ;; If only one window, switch to previous buffer. If only two, jump directly to other window.
 	  (if (one-window-p)
-	  (switch-to-buffer nil)
+	      (switch-to-buffer nil)
 	(other-window 1))
 	(ace-window t))))
 #+end_src
@@ -1230,7 +1267,9 @@ Delete extra blank lines in buffer.
 #+begin_src emacs-lisp
   (use-package crux
     :general
-    ("s-p" #'crux-create-scratch-buffer))
+    ("s-p" #'crux-create-scratch-buffer
+     "<escape>" #'crux-keyboard-quit-dwim
+     [remap keyboard-quit] #'crux-keyboard-quit-dwim))
 #+end_src
 
 ** Deadgrep
@@ -2320,12 +2359,12 @@ Display suggestions in grid.
 
 #+begin_src emacs-lisp
   (use-package auctex
-    :ensure 
+    :ensure
 (auctex :repo "https://git.savannah.gnu.org/git/auctex.git" :branch "main"
-        :pre-build (("make" "elpa"))
-        :build (:not elpaca--compile-info) ;; Make will take care of this step
-        :files ("*.el" "doc/*.info*" "etc" "images" "latex" "style")
-        :version (lambda (_) (require 'auctex) AUCTeX-version))
+	:pre-build (("make" "elpa"))
+	:build (:not elpaca--compile-info) ;; Make will take care of this step
+	:files ("*.el" "doc/*.info*" "etc" "images" "latex" "style")
+	:version (lambda (_) (require 'auctex) AUCTeX-version))
     :mode ("\\.tex\\'" . LaTeX-mode)
     :init
     (setq TeX-parse-self t
@@ -4314,12 +4353,12 @@ Increase number of recent files shown.
     :config
     (setq spacious-padding-subtle-mode-line t)
     (setq spacious-padding-widths
-          '( :internal-border-width 30
-      	 :header-line-width 4
-      	 :mode-line-width 10
-      	 :tab-width 4
-      	 :right-divider-width 30
-      	 :scroll-bar-width 8
+	  '( :internal-border-width 30
+	 :header-line-width 4
+	 :mode-line-width 10
+	 :tab-width 4
+	 :right-divider-width 30
+	 :scroll-bar-width 8
 	 :fringe-width 8))
     (spacious-padding-mode 1)
     :general
