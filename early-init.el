@@ -74,7 +74,16 @@
   (select-frame-set-input-focus (selected-frame)))
 (add-hook 'server-after-make-frame-hook #'rr/focus-new-client-frame)
 
+;; Main typeface
+(set-face-attribute 'default nil :family "SF Mono" :height 160 :weight 'medium)
+;; Proportionately spaced typeface
+(set-face-attribute 'variable-pitch nil :family "SF Pro Text" :height 1.0 :weight 'medium)
+;; Monospaced typeface
+(set-face-attribute 'fixed-pitch nil :family "SF Mono" :height 1.0 :weight 'medium)
+
 (set-face-attribute 'default nil :height 160)
+
+(setq-default line-spacing 0.25)
 
 ;; Local Variables:
 ;; no-byte-compile: t

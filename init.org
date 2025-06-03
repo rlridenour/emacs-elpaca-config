@@ -1,7 +1,8 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2025-06-02 19:45:33 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2025-06-03 15:23:49 by rlridenour>
 #+email: rlridenour@fastmail.com
+#+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
 #+auto_tangle: t
 
@@ -165,12 +166,29 @@ Focus new frames
   (add-hook 'server-after-make-frame-hook #'rr/focus-new-client-frame)
 #+end_src
 
-** Font size
+** Font
+
+Set font to Apple's San Francisco
+
+#+begin_src emacs-lisp
+  ;; Main typeface
+  (set-face-attribute 'default nil :family "SF Mono" :height 160 :weight 'medium)
+  ;; Proportionately spaced typeface
+  (set-face-attribute 'variable-pitch nil :family "SF Pro Text" :height 1.0 :weight 'medium)
+  ;; Monospaced typeface
+  (set-face-attribute 'fixed-pitch nil :family "SF Mono" :height 1.0 :weight 'medium)
+#+end_src
 
 Increase font size.
 
 #+begin_src emacs-lisp
   (set-face-attribute 'default nil :height 160)
+#+end_src
+
+Add some space between lines.
+
+#+begin_src emacs-lisp
+  (setq-default line-spacing 0.25)
 #+end_src
 
 ** Footer
@@ -270,7 +288,8 @@ Use this macro for code that needs to run after Elpaca.
     `(add-hook 'elpaca-after-init-hook (lambda () ,@body)))
 #+end_src
 
-** General
+** Keybinding and Menus
+*** General
 
 Load general before the remaining packages so they can make use of the ~:general~ keyword in their declarations.
 
@@ -301,7 +320,56 @@ Load general before the remaining packages so they can make use of the ~:general
 (key-chord-mode 1))
 #+end_src
 
+*** Hydra
+
+#+begin_src emacs-lisp
+  (use-package major-mode-hydra
+    :commands (pretty-hydra-define)
+    :general
+    ("s-m" #'major-mode-hydra))
+#+end_src
+
+*** Casual Suite
+
+#+begin_src emacs-lisp
+  (use-package casual
+    :ensure
+    (:type git :host github :repo "kickingvegas/casual")
+    :general
+    ("s-." #'casual-editkit-main-tmenu)
+    (:keymaps 'reb-mode-map
+	      "s-." #'casual-re-builder-tmenu)
+    (:keymaps 'calc-mode-map
+	      "s-." #'casual-calc-tmenu)
+    (:keymaps 'dired-mode-map
+	      "s-." #'casual-dired-tmenu)
+    (:keymaps 'isearch-mode-map
+	      "s-." #'casual-isearch-tmenu)
+    (:keymaps 'ibuffer-mode-map
+	      "s-." #'casual-ibuffer-tmenu
+	      "F" #'casual-ibuffer-filter-tmenu
+	      "s" #'casual-ibuffer-sortby-tmenu)
+    (:keymaps 'bookmark-bemenu-mode-map
+	      "s-." #'casual-bookmarks-tmenu)
+    (:keymaps 'org-agenda-mode-map
+	      "s-." #'casual-agenda-tmenu)
+    (:keymaps 'Info-mode-map
+	      "s-." #'casual-info-tmenu)
+    (:keymaps 'calendar-mode-map
+	      "s-." #'casual-calendar-tmenu)
+    )
+#+end_src
+
 * File Locations
+** Set Path
+
+Use Exec-Path-From-Shell to set path.
+
+#+begin_src emacs-lisp
+  (use-package exec-path-from-shell
+    :config
+    (exec-path-from-shell-initialize))
+#+end_src
 
 ** Variables
 
@@ -387,6 +455,16 @@ Don't make all those files that look like =#foo.ext=.
 (setq create-lockfiles nil)
 #+end_src
 
+** Bookmarks
+
+#+begin_src emacs-lisp
+  (use-feature bookmark
+    :config
+    (require 'bookmark)
+    (bookmark-bmenu-list)
+    (setq bookmark-save-flag 1))
+#+end_src
+
 ** Trash
 
 Send deleted files to an Emacs folder in system trash.
@@ -394,6 +472,17 @@ Send deleted files to an Emacs folder in system trash.
 #+begin_src emacs-lisp
   (setq delete-by-moving-to-trash t
 	trash-directory "~/.Trash/emacs")
+#+end_src
+
+** Open Emacs Init
+
+Open Emacs init file in fixed-pitch mode.
+
+#+begin_src emacs-lisp
+  (defun rr/open-init-file ()
+    (interactive)
+    (progn (find-file "~/.config/emacs/init.org")
+	   (variable-pitch-mode -1)))
 #+end_src
 
 * Settings
@@ -526,6 +615,83 @@ Set server to use tcp for [[http://yummymelon.com/scrim/][Scrim]]
   (server-start)
   (require 'org-protocol)
 #+end_src
+
+Auto insert close bracket.
+
+#+begin_src emacs-lisp :tangle no
+  (electric-pair-mode 1)
+#+end_src
+
+Immediately highlight matching pairs of parentheses and quotes.
+
+#+begin_src emacs-lisp
+  (show-paren-mode)
+  (setq show-paren-delay 0)
+#+end_src
+
+** Appearance
+
+*** Modus Themes
+
+#+begin_src emacs-lisp
+  (use-package modus-themes
+    :demand
+    :config
+    ;; Add all your customizations prior to loading the themes
+    (setq modus-themes-italic-constructs t
+	  modus-themes-mixed-fonts t
+	  modus-themes-variable-pitch-ui t
+	  modus-themes-italic-constructs t
+	  modus-themes-bold-constructs t)
+
+    ;; Maybe define some palette overrides, such as by using our presets
+    (setq modus-themes-common-palette-overrides
+	  modus-themes-preset-overrides-faint)
+
+    ;; Load the theme of your choice.
+    (load-theme 'modus-operandi t)
+    :general
+    ("<f9>" #'modus-themes-rotate))
+#+end_src
+
+*** Doom Modeline
+
+#+begin_src emacs-lisp
+  (use-package doom-modeline
+    :init
+    :config
+    (setq doom-modeline-enable-word-count t)
+    (setq doom-modeline-continuous-word-count-modes '(markdown-mode gfm-mode org-mode))
+    (setq display-time-day-and-date t)
+    (setq doom-modeline-modal t)
+    :hook
+    (elpaca-after-init . doom-modeline-mode))
+#+end_src
+
+*** Spacious-Padding
+
+#+begin_src emacs-lisp
+  (use-package spacious-padding
+    :demand
+    :after modus-themes doom-modeline
+    :config
+    (setq spacious-padding-subtle-mode-line t)
+    (setq spacious-padding-widths
+	  '( :internal-border-width 30
+	 :header-line-width 4
+	 :mode-line-width 10
+	 :tab-width 4
+	 :right-divider-width 30
+	 :scroll-bar-width 8
+	 :fringe-width 8))
+    (spacious-padding-mode 1)
+    :general
+    ("C-M-s-p" #'spacious-padding-mode))
+#+end_src
+
+** Menus
+
+*** Pretty Hydra
 
 ** Files and Buffers
 
@@ -704,6 +870,32 @@ Add automatic time stamps to files, from [[https://olddeuteronomy.github.io/post
 
 ** Windows
 
+*** Ace Window
+
+#+begin_src emacs-lisp :tangle yes
+  (use-package ace-window
+    :config
+    (setq aw-dispatch-always t)
+    :general
+    ("M-O" #'ace-window
+     "M-o" #'rlr/quick-window-jump))
+#+end_src
+
+#+begin_src emacs-lisp
+  (defun rlr/quick-window-jump ()
+    "If only one window, switch to previous buffer, otherwise call ace-window."
+    (interactive)
+    (let* ((window-list (window-list nil 'no-mini)))
+      (if (< (length window-list) 3)
+	  ;; If only one window, switch to previous buffer. If only two, jump directly to other window.
+	  (if (one-window-p)
+	      (switch-to-buffer nil)
+	(other-window 1))
+	(ace-window t))))
+#+end_src
+
+*** Window Functions 
+
 #+begin_src emacs-lisp
   (defun delete-window-balance ()
     "Delete window and rebalance the remaining ones."
@@ -744,21 +936,6 @@ Add automatic time stamps to files, from [[https://olddeuteronomy.github.io/post
     (interactive)
     (split-window-below-focus)
     (consult-buffer))
-#+end_src
-
-#+begin_src emacs-lisp
-  (defun transpose-windows ()
-    "Transpose two windows.  If more or less than two windows are visible, error."
-    (interactive)
-    (unless (= 2 (count-windows))
-      (error "There are not 2 windows."))
-    (let* ((windows (window-list))
-	   (w1 (car windows))
-	   (w2 (nth 1 windows))
-	   (w1b (window-buffer w1))
-	   (w2b (window-buffer w2)))
-      (set-window-buffer w1 w2b)
-      (set-window-buffer w2 w1b)))
 #+end_src
 
 #+begin_src emacs-lisp
@@ -809,19 +986,6 @@ Add automatic time stamps to files, from [[https://olddeuteronomy.github.io/post
       (set-frame-position frame x y)))
 #+end_src
 
-Auto insert close bracket.
-
-#+begin_src emacs-lisp :tangle no
-  (electric-pair-mode 1)
-#+end_src
-
-Immediately highlight matching pairs of parentheses and quotes.
-
-#+begin_src emacs-lisp
-  (show-paren-mode)
-  (setq show-paren-delay 0)
-#+end_src
-
 If more than one window, delete the window; if only one window, delete the tab; if only one tab, delete the frame.
 
 #+begin_src emacs-lisp
@@ -847,25 +1011,6 @@ If more than one window, delete the window; if only one window, delete the tab; 
       (condition-case nil
 	  (tab-close)
 	(error (delete-frame)))))
-#+end_src
-
-** Font
-
-Set font
-
-#+begin_src emacs-lisp
-  ;; Main typeface
-  (set-face-attribute 'default nil :family "SF Mono" :height 160 :weight 'medium)
-  ;; Proportionately spaced typeface
-  (set-face-attribute 'variable-pitch nil :family "SF Pro Text" :height 1.0 :weight 'medium)
-  ;; Monospaced typeface
-  (set-face-attribute 'fixed-pitch nil :family "SF Mono" :height 1.0 :weight 'medium)
-#+end_src
-
-Add some space between lines.
-
-#+begin_src emacs-lisp
-  (setq-default line-spacing 0.25)
 #+end_src
 
 ** Search
@@ -899,7 +1044,65 @@ Find non-ascii characters in buffer.
     (occur "[^[:ascii:]]"))
 #+end_src
 
+*** Avy
+
+#+begin_src emacs-lisp
+  (use-package avy
+    :config
+    (avy-setup-default)
+    :general
+    ("s-/" #'avy-goto-char-timer)
+    ("C-c C-j" #'avy-resume))
+#+end_src
+
+#+begin_src emacs-lisp
+  (use-package casual-avy
+    :general
+    ("M-g a" #'casual-avy-tmenu))
+#+end_src
+
+*** FZF
+
+#+begin_src emacs-lisp
+  (use-package fzf
+    :bind
+    ;; Don't forget to set keybinds!
+    :config
+    (setq fzf/args "-x --color bw --print-query --margin=1,0 --no-hscroll"
+	  fzf/executable "fzf"
+	  fzf/git-grep-args "-i --line-number %s"
+	  ;; command used for `fzf-grep-*` functions
+	  ;; example usage for ripgrep:
+	  fzf/grep-command "rg --no-heading -nH"
+	  ;; fzf/grep-command "grep -nrH"
+	  ;; If nil, the fzf buffer will appear at the top of the window
+	  fzf/position-bottom t
+	  fzf/window-height 15))
+#+end_src
+
+*** Rg
+
+#+begin_src emacs-lisp
+  (use-package rg
+    :config
+    (rg-enable-default-bindings))
+#+end_src
+
+*** Wgrep
+
+#+begin_src emacs-lisp
+  (use-package wgrep)
+#+end_src
+
+*** Deadgrep
+
+#+begin_src emacs-lisp
+  (use-package deadgrep)
+#+end_src
+
 ** Shells
+
+*** Async Shell Command Buffers
 
 Don't ask to create new shell buffers.
 
@@ -923,30 +1126,27 @@ Run async shell command without creating a window.
        command)))
 #+end_src
 
-#+begin_src emacs-lisp
-  (defun iterm-goto-filedir-or-home ()
-    "Go to present working dir and focus iterm"
-    (interactive)
-    (do-applescript
-     (concat
-      " tell application \"iTerm2\"\n"
-      "   tell the current session of current window\n"
-      (format "     write text \"cd %s\" \n"
-	      ;; string escaping madness for applescript
-	      (replace-regexp-in-string "\\\\" "\\\\\\\\"
-					(shell-quote-argument (or default-directory "~"))))
-      "   end tell\n"
-      " end tell\n"
-      " do shell script \"open -a iTerm\"\n"
-      ))
-    )
-
-#+end_src
+*** Eshell
 
 Make output scroll to bottom in Eshell.
 
 #+begin_src emacs-lisp
   (setq eshell-scroll-to-bottom-on-input "this")
+#+end_src
+
+*** Terminal Here
+
+Go to current directory in Ghostty.
+
+#+begin_src emacs-lisp
+  (use-package terminal-here
+    :ensure
+    (:host github :repo "davidshepherd7/terminal-here")
+    :config
+    (setq terminal-here-mac-terminal-command 'ghostty)
+    :general
+    ("C-`" #'terminal-here-launch)
+    )
 #+end_src
 
 ** Help
@@ -958,7 +1158,40 @@ Make help buffers active when created, so pressing "q" will immediately close th
   (setq Man-notify-method 'aggressive)
 #+end_src
 
-** Functions
+*** Which-Key
+#+begin_quote
+which-key is a minor mode for Emacs that displays the key bindings following your currently entered incomplete command (a prefix) in a popup.
+
+https://github.com/justbur/emacs-which-key
+#+end_quote
+#+begin_src emacs-lisp :lexical t
+  (use-package which-key
+    :demand
+    :config
+    (setq which-key-popup-type 'minibuffer)
+    (which-key-mode)
+    )
+#+end_src
+
+*** Helpful
+
+Helpful gives better contextual information in help buffers.
+
+#+begin_src emacs-lisp
+  (use-package helpful)
+#+end_src
+
+* Editing 
+
+** Abbrev
+
+#+begin_src emacs-lisp
+  (use-feature abbrev
+    :config
+    (load "~/Dropbox/emacs/my-emacs-abbrev"))
+#+end_src
+
+** Miscellaneous Functions
 
 Use ~C-c d d~ to insert Month, Day Year and ~C-c d s~ to insert YYYYMMDD date string.
 
@@ -976,14 +1209,6 @@ Use ~C-c d d~ to insert Month, Day Year and ~C-c d s~ to insert YYYYMMDD date st
   (defun insert-blog-date ()
     (interactive)
     (insert (format-time-string "%Y-%m-%d-")))
-#+end_src
-
-Make a function to reload the Emacs config file to test changes.
-
-#+begin_src emacs-lisp
-  (defun reload-user-init-file()
-    (interactive)
-    (load-file user-init-file))
 #+end_src
 
 Convert paragraph to single sentence per line.
@@ -1037,15 +1262,6 @@ Strip tracking elements from URL's using Brett Terpstra's stretchlink.cc.
       (message myurl)))
 #+end_src
 
-Open Emacs init file in fixed-pitch.
-
-#+begin_src emacs-lisp
-  (defun rr/open-init-file ()
-    (interactive)
-    (progn (find-file "~/.config/emacs/init.org")
-	   (variable-pitch-mode -1)))
-#+end_src
-
 Delete extra blank lines in buffer.
 
 #+begin_src emacs-lisp
@@ -1055,9 +1271,6 @@ Delete extra blank lines in buffer.
     (beginning-of-buffer)
     (replace-regexp "^\n\n+" "\n"))
 #+end_src
-
-
-* Packages
 
 ** AAS
 
@@ -1074,15 +1287,9 @@ Delete extra blank lines in buffer.
     (LaTeX-mode . laas-mode))
 #+end_src
 
-** Abbrev
-
-#+begin_src emacs-lisp
-  (use-feature abbrev
-    :config
-    (load "~/Dropbox/emacs/my-emacs-abbrev"))
-#+end_src
-
 ** Accent
+
+Accent allows easy insertion of accented characters. Place the mark on the character to be accented and press =C-x C-a=.
 
 #+begin_src emacs-lisp
   (use-package accent
@@ -1090,30 +1297,6 @@ Delete extra blank lines in buffer.
     (setq accent-position 'after)
     :general
     ("C-x C-a" #'accent-menu))
-#+end_src
-
-** Ace Window
-
-#+begin_src emacs-lisp :tangle yes
-  (use-package ace-window
-    :config
-    (setq aw-dispatch-always t)
-    :general
-    ("M-O" #'ace-window
-     "M-o" #'rlr/quick-window-jump))
-#+end_src
-
-#+begin_src emacs-lisp
-  (defun rlr/quick-window-jump ()
-    "If only one window, switch to previous buffer, otherwise call ace-window."
-    (interactive)
-    (let* ((window-list (window-list nil 'no-mini)))
-      (if (< (length window-list) 3)
-	  ;; If only one window, switch to previous buffer. If only two, jump directly to other window.
-	  (if (one-window-p)
-	      (switch-to-buffer nil)
-	(other-window 1))
-	(ace-window t))))
 #+end_src
 
 ** Aggressive Indent
@@ -1124,64 +1307,6 @@ Delete extra blank lines in buffer.
   (use-package aggressive-indent
     :config
     (global-aggressive-indent-mode 1))
-#+end_src
-
-** Avy
-
-#+begin_src emacs-lisp
-  (use-package avy
-    :config
-    (avy-setup-default)
-    :general
-    ("s-/" #'avy-goto-char-timer)
-    ("C-c C-j" #'avy-resume))
-#+end_src
-
-** Bookmarks
-
-#+begin_src emacs-lisp
-  (use-feature bookmark
-    :config
-    (require 'bookmark)
-    (bookmark-bmenu-list)
-    (setq bookmark-save-flag 1))
-#+end_src
-
-** Casual Suite
-
-#+begin_src emacs-lisp
-  (use-package casual
-    :ensure
-    (:type git :host github :repo "kickingvegas/casual")
-    :general
-    ("s-." #'casual-editkit-main-tmenu)
-    (:keymaps 'reb-mode-map
-	      "s-." #'casual-re-builder-tmenu)
-    (:keymaps 'calc-mode-map
-	      "s-." #'casual-calc-tmenu)
-    (:keymaps 'dired-mode-map
-	      "s-." #'casual-dired-tmenu)
-    (:keymaps 'isearch-mode-map
-	      "s-." #'casual-isearch-tmenu)
-    (:keymaps 'ibuffer-mode-map
-	      "s-." #'casual-ibuffer-tmenu
-	      "F" #'casual-ibuffer-filter-tmenu
-	      "s" #'casual-ibuffer-sortby-tmenu)
-    (:keymaps 'bookmark-bemenu-mode-map
-	      "s-." #'casual-bookmarks-tmenu)
-    (:keymaps 'org-agenda-mode-map
-	      "s-." #'casual-agenda-tmenu)
-    (:keymaps 'Info-mode-map
-	      "s-." #'casual-info-tmenu)
-    (:keymaps 'calendar-mode-map
-	      "s-." #'casual-calendar-tmenu)
-    )
-#+end_src
-
-#+begin_src emacs-lisp
-  (use-package casual-avy
-    :general
-    ("M-g a" #'casual-avy-tmenu))
 #+end_src
 
 ** Cape
@@ -1270,12 +1395,6 @@ Delete extra blank lines in buffer.
     ("s-p" #'crux-create-scratch-buffer
      "<escape>" #'crux-keyboard-quit-dwim
      [remap keyboard-quit] #'crux-keyboard-quit-dwim))
-#+end_src
-
-** Deadgrep
-
-#+begin_src emacs-lisp
-  (use-package deadgrep)
 #+end_src
 
 ** Denote
@@ -1505,37 +1624,6 @@ From [[https://github.com/mickeynp/discover.el][mickeynp/discover.el: Discover m
   (use-package discover
     :config
     (global-discover-mode 1))
-#+end_src
-
-** Doom Modeline
-
-#+begin_src emacs-lisp
-  (use-package doom-modeline
-    :init
-    :config
-    (setq doom-modeline-enable-word-count t)
-    (setq doom-modeline-continuous-word-count-modes '(markdown-mode gfm-mode org-mode))
-    (setq display-time-day-and-date t)
-    (setq doom-modeline-modal t)
-    :hook
-    (elpaca-after-init . doom-modeline-mode))
-#+end_src
-
-** Eat
-
-[[https://codeberg.org/akib/emacs-eat][akib/emacs-eat: Emulate A Terminal, in a region, in a buffer and in Eshell - emacs-eat - Codeberg.org]]
-
-#+begin_src emacs-lisp
-  (use-package eat
-    :demand
-    :ensure
-    (:host codeberg
-	   :repo "akib/emacs-eat"
-	   :files ("*.el" ("term" "term/*.el") "*.texi"
-		   "*.ti" ("terminfo/e" "terminfo/e/*")
-		   ("terminfo/65" "terminfo/65/*")
-		   ("integration" "integration/*")
-		   (:exclude ".dir-locals.el" "*-tests.el"))))
 #+end_src
 
 ** Ebib
@@ -1795,14 +1883,6 @@ Tag items — from [[https://www.reddit.com/r/emacs/comments/go5d0v/using_emacs_
 	      "C-M-S-s-<left>" #'emmet-prev-edit-point))
 #+end_src
 
-** Exec-Path-From-Shell
-
-#+begin_src emacs-lisp
-  (use-package exec-path-from-shell
-    :config
-    (exec-path-from-shell-initialize))
-#+end_src
-
 ** Expand-region
 
 #+begin_src emacs-lisp
@@ -1827,25 +1907,6 @@ Tag items — from [[https://www.reddit.com/r/emacs/comments/go5d0v/using_emacs_
       (global-fish-completion-mode)))
 #+end_src
 
-** FZF
-
-#+begin_src emacs-lisp
-  (use-package fzf
-    :bind
-    ;; Don't forget to set keybinds!
-    :config
-    (setq fzf/args "-x --color bw --print-query --margin=1,0 --no-hscroll"
-	  fzf/executable "fzf"
-	  fzf/git-grep-args "-i --line-number %s"
-	  ;; command used for `fzf-grep-*` functions
-	  ;; example usage for ripgrep:
-	  fzf/grep-command "rg --no-heading -nH"
-	  ;; fzf/grep-command "grep -nrH"
-	  ;; If nil, the fzf buffer will appear at the top of the window
-	  fzf/position-bottom t
-	  fzf/window-height 15))
-#+end_src
-
 ** God-Mode
 
 #+begin_src emacs-lisp
@@ -1859,12 +1920,6 @@ Tag items — from [[https://www.reddit.com/r/emacs/comments/go5d0v/using_emacs_
     :config
     (add-hook 'god-mode-enabled-hook (lambda () (setq cursor-type 'hbar)))
     (add-hook 'god-mode-disabled-hook (lambda () (setq cursor-type 'box))))
-#+end_src
-
-** Helpful
-
-#+begin_src emacs-lisp
-  (use-package helpful)
 #+end_src
 
 ** History
@@ -1897,13 +1952,6 @@ Tag items — from [[https://www.reddit.com/r/emacs/comments/go5d0v/using_emacs_
   (defun rr/insert-unicode (unicode-name)
     "Same as C-x 8 enter UNICODE-NAME."
     (insert-char (gethash unicode-name (ucs-names))))
-#+end_src
-
-#+begin_src emacs-lisp
-  (use-package major-mode-hydra
-    :commands (pretty-hydra-define)
-    :general
-    ("s-m" #'major-mode-hydra))
 #+end_src
 
 #+begin_src emacs-lisp
@@ -1977,7 +2025,7 @@ Tag items — from [[https://www.reddit.com/r/emacs/comments/go5d0v/using_emacs_
 	(("w" other-window "cycle windows" :exit nil)
 	 ("a" ace-window "ace window")
 	 ("m" minimize-window "minimize window")
-	 ("s" transpose-windows "swap windows")
+	 ("s" crux-transpose-windows "swap windows")
 	 ("S" shrink-window-if-larger-than-buffer "shrink to fit")
 	 ("b" balance-windows "balance windows")
 	 ("t" toggle-window-split "toggle split")
@@ -2570,29 +2618,6 @@ I can't imagine wanting the same buffer in two tabs, so this calls consult-buffe
     (interactive)
     (tab-new)
     (consult-buffer))
-#+end_src
-
-** Modus Themes
-
-#+begin_src emacs-lisp
-  (use-package modus-themes
-    :demand
-    :config
-    ;; Add all your customizations prior to loading the themes
-    (setq modus-themes-italic-constructs t
-	  modus-themes-mixed-fonts t
-	  modus-themes-variable-pitch-ui t
-	  modus-themes-italic-constructs t
-	  modus-themes-bold-constructs t)
-
-    ;; Maybe define some palette overrides, such as by using our presets
-    (setq modus-themes-common-palette-overrides
-	  modus-themes-preset-overrides-faint)
-
-    ;; Load the theme of your choice.
-    (load-theme 'modus-operandi t)
-    :general
-    ("<f9>" #'modus-themes-rotate))
 #+end_src
 
 ** Notepad
@@ -4287,14 +4312,6 @@ Increase number of recent files shown.
   (use-package reveal-in-osx-finder)
 #+end_src
 
-** Rg
-
-#+begin_src emacs-lisp
-  (use-package rg
-    :config
-    (rg-enable-default-bindings))
-#+end_src
-
 ** Selected
 
 #+begin_src emacs-lisp :tangle no
@@ -4344,27 +4361,6 @@ Increase number of recent files shown.
     (require 'smartparens-config))
 #+end_src
 
-** Spacious-Padding
-
-#+begin_src emacs-lisp
-  (use-package spacious-padding
-    :demand
-    :after modus-themes doom-modeline
-    :config
-    (setq spacious-padding-subtle-mode-line t)
-    (setq spacious-padding-widths
-	  '( :internal-border-width 30
-	 :header-line-width 4
-	 :mode-line-width 10
-	 :tab-width 4
-	 :right-divider-width 30
-	 :scroll-bar-width 8
-	 :fringe-width 8))
-    (spacious-padding-mode 1)
-    :general
-    ("C-M-s-p" #'spacious-padding-mode))
-#+end_src
-
 ** Speedrect
 
 #+begin_src emacs-lisp
@@ -4389,19 +4385,6 @@ Increase number of recent files shown.
     ;; save on find-file
     (add-to-list 'super-save-hook-triggers 'find-file-hook)
     (super-save-mode +1))
-#+end_src
-
-** Terminal Here
-
-#+begin_src emacs-lisp
-  (use-package terminal-here
-    :ensure
-    (:host github :repo "davidshepherd7/terminal-here")
-    :config
-    (setq terminal-here-mac-terminal-command 'ghostty)
-    :general
-    ("C-`" #'terminal-here-launch)
-    )
 #+end_src
 
 ** Term Toggle
@@ -4591,27 +4574,6 @@ This builds the RSS feed for the blog.
     (:map global-map)
     ("C-M-s-<down>" . website2org)
     ("C-M-s-<up>" . website2org-temp))
-#+end_src
-
-** Wgrep
-
-#+begin_src emacs-lisp
-  (use-package wgrep)
-#+end_src
-
-** Which-Key
-#+begin_quote
-which-key is a minor mode for Emacs that displays the key bindings following your currently entered incomplete command (a prefix) in a popup.
-
-https://github.com/justbur/emacs-which-key
-#+end_quote
-#+begin_src emacs-lisp :lexical t
-  (use-package which-key
-    :demand
-    :config
-    (setq which-key-popup-type 'minibuffer)
-    (which-key-mode)
-    )
 #+end_src
 
 ** YAML
@@ -4851,6 +4813,14 @@ Open fish functions directory.
 #+end_src
 
 * Finish
+
+This reloads the Emacs config file to test changes.
+
+#+begin_src emacs-lisp
+  (defun reload-user-init-file()
+    (interactive)
+    (load-file user-init-file))
+#+end_src
 
 Set default directory.
 

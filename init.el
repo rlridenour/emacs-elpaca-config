@@ -80,6 +80,42 @@
 :config
 (key-chord-mode 1))
 
+(use-package major-mode-hydra
+  :commands (pretty-hydra-define)
+  :general
+  ("s-m" #'major-mode-hydra))
+
+(use-package casual
+  :ensure
+  (:type git :host github :repo "kickingvegas/casual")
+  :general
+  ("s-." #'casual-editkit-main-tmenu)
+  (:keymaps 'reb-mode-map
+	      "s-." #'casual-re-builder-tmenu)
+  (:keymaps 'calc-mode-map
+	      "s-." #'casual-calc-tmenu)
+  (:keymaps 'dired-mode-map
+	      "s-." #'casual-dired-tmenu)
+  (:keymaps 'isearch-mode-map
+	      "s-." #'casual-isearch-tmenu)
+  (:keymaps 'ibuffer-mode-map
+	      "s-." #'casual-ibuffer-tmenu
+	      "F" #'casual-ibuffer-filter-tmenu
+	      "s" #'casual-ibuffer-sortby-tmenu)
+  (:keymaps 'bookmark-bemenu-mode-map
+	      "s-." #'casual-bookmarks-tmenu)
+  (:keymaps 'org-agenda-mode-map
+	      "s-." #'casual-agenda-tmenu)
+  (:keymaps 'Info-mode-map
+	      "s-." #'casual-info-tmenu)
+  (:keymaps 'calendar-mode-map
+	      "s-." #'casual-calendar-tmenu)
+  )
+
+(use-package exec-path-from-shell
+  :config
+  (exec-path-from-shell-initialize))
+
 (defconst rr-emacs-dir (expand-file-name user-emacs-directory)
   "The path to the emacs.d directory.")
 
@@ -120,8 +156,19 @@
 
 (setq create-lockfiles nil)
 
+(use-feature bookmark
+  :config
+  (require 'bookmark)
+  (bookmark-bmenu-list)
+  (setq bookmark-save-flag 1))
+
 (setq delete-by-moving-to-trash t
 	trash-directory "~/.Trash/emacs")
+
+(defun rr/open-init-file ()
+  (interactive)
+  (progn (find-file "~/.config/emacs/init.org")
+	   (variable-pitch-mode -1)))
 
 (set-language-environment "UTF-8")
 (set-default-coding-systems 'utf-8)
@@ -178,6 +225,55 @@
 (setq server-use-tcp t)
 (server-start)
 (require 'org-protocol)
+
+(show-paren-mode)
+(setq show-paren-delay 0)
+
+(use-package modus-themes
+  :demand
+  :config
+  ;; Add all your customizations prior to loading the themes
+  (setq modus-themes-italic-constructs t
+	  modus-themes-mixed-fonts t
+	  modus-themes-variable-pitch-ui t
+	  modus-themes-italic-constructs t
+	  modus-themes-bold-constructs t)
+
+  ;; Maybe define some palette overrides, such as by using our presets
+  (setq modus-themes-common-palette-overrides
+	  modus-themes-preset-overrides-faint)
+
+  ;; Load the theme of your choice.
+  (load-theme 'modus-operandi t)
+  :general
+  ("<f9>" #'modus-themes-rotate))
+
+(use-package doom-modeline
+  :init
+  :config
+  (setq doom-modeline-enable-word-count t)
+  (setq doom-modeline-continuous-word-count-modes '(markdown-mode gfm-mode org-mode))
+  (setq display-time-day-and-date t)
+  (setq doom-modeline-modal t)
+  :hook
+  (elpaca-after-init . doom-modeline-mode))
+
+(use-package spacious-padding
+  :demand
+  :after modus-themes doom-modeline
+  :config
+  (setq spacious-padding-subtle-mode-line t)
+  (setq spacious-padding-widths
+	  '( :internal-border-width 30
+	 :header-line-width 4
+	 :mode-line-width 10
+	 :tab-width 4
+	 :right-divider-width 30
+	 :scroll-bar-width 8
+	 :fringe-width 8))
+  (spacious-padding-mode 1)
+  :general
+  ("C-M-s-p" #'spacious-padding-mode))
 
 (setq save-place-file (expand-file-name "saveplaces" rr-cache-dir))
 (save-place-mode)
@@ -264,6 +360,24 @@
 	time-stamp-format "Last changed %Y-%02m-%02d %02H:%02M:%02S by %u")
 (add-hook 'write-file-hooks 'time-stamp) ; Update when saving.
 
+(use-package ace-window
+  :config
+  (setq aw-dispatch-always t)
+  :general
+  ("M-O" #'ace-window
+   "M-o" #'rlr/quick-window-jump))
+
+(defun rlr/quick-window-jump ()
+  "If only one window, switch to previous buffer, otherwise call ace-window."
+  (interactive)
+  (let* ((window-list (window-list nil 'no-mini)))
+    (if (< (length window-list) 3)
+	  ;; If only one window, switch to previous buffer. If only two, jump directly to other window.
+	  (if (one-window-p)
+	      (switch-to-buffer nil)
+	(other-window 1))
+	(ace-window t))))
+
 (defun delete-window-balance ()
   "Delete window and rebalance the remaining ones."
   (interactive)
@@ -295,19 +409,6 @@
   (interactive)
   (split-window-below-focus)
   (consult-buffer))
-
-(defun transpose-windows ()
-  "Transpose two windows.  If more or less than two windows are visible, error."
-  (interactive)
-  (unless (= 2 (count-windows))
-    (error "There are not 2 windows."))
-  (let* ((windows (window-list))
-	   (w1 (car windows))
-	   (w2 (nth 1 windows))
-	   (w1b (window-buffer w1))
-	   (w2b (window-buffer w2)))
-    (set-window-buffer w1 w2b)
-    (set-window-buffer w2 w1b)))
 
 (defun toggle-window-split ()
   (interactive)
@@ -353,9 +454,6 @@
     (set-frame-width frame (- display-width 20) nil t)
     (set-frame-position frame x y)))
 
-(show-paren-mode)
-(setq show-paren-delay 0)
-
 (defun rlr/delete-tab-or-frame ()
   "Delete current tab. If there is only one tab, then delete current frame."
   (interactive)
@@ -377,15 +475,6 @@
 	  (tab-close)
 	(error (delete-frame)))))
 
-;; Main typeface
-(set-face-attribute 'default nil :family "SF Mono" :height 160 :weight 'medium)
-;; Proportionately spaced typeface
-(set-face-attribute 'variable-pitch nil :family "SF Pro Text" :height 1.0 :weight 'medium)
-;; Monospaced typeface
-(set-face-attribute 'fixed-pitch nil :family "SF Mono" :height 1.0 :weight 'medium)
-
-(setq-default line-spacing 0.25)
-
 (setq case-replace nil)
 
 (setq isearch-lazy-count t)
@@ -398,6 +487,40 @@
   "Find any non-ascii characters in the current buffer."
   (interactive)
   (occur "[^[:ascii:]]"))
+
+(use-package avy
+  :config
+  (avy-setup-default)
+  :general
+  ("s-/" #'avy-goto-char-timer)
+  ("C-c C-j" #'avy-resume))
+
+(use-package casual-avy
+  :general
+  ("M-g a" #'casual-avy-tmenu))
+
+(use-package fzf
+  :bind
+  ;; Don't forget to set keybinds!
+  :config
+  (setq fzf/args "-x --color bw --print-query --margin=1,0 --no-hscroll"
+	  fzf/executable "fzf"
+	  fzf/git-grep-args "-i --line-number %s"
+	  ;; command used for `fzf-grep-*` functions
+	  ;; example usage for ripgrep:
+	  fzf/grep-command "rg --no-heading -nH"
+	  ;; fzf/grep-command "grep -nrH"
+	  ;; If nil, the fzf buffer will appear at the top of the window
+	  fzf/position-bottom t
+	  fzf/window-height 15))
+
+(use-package rg
+  :config
+  (rg-enable-default-bindings))
+
+(use-package wgrep)
+
+(use-package deadgrep)
 
 (setq async-shell-command-buffer "new-buffer")
 
@@ -413,27 +536,32 @@
     (async-shell-command
      command)))
 
-(defun iterm-goto-filedir-or-home ()
-  "Go to present working dir and focus iterm"
-  (interactive)
-  (do-applescript
-   (concat
-    " tell application \"iTerm2\"\n"
-    "   tell the current session of current window\n"
-    (format "     write text \"cd %s\" \n"
-	      ;; string escaping madness for applescript
-	      (replace-regexp-in-string "\\\\" "\\\\\\\\"
-					(shell-quote-argument (or default-directory "~"))))
-    "   end tell\n"
-    " end tell\n"
-    " do shell script \"open -a iTerm\"\n"
-    ))
-  )
-
 (setq eshell-scroll-to-bottom-on-input "this")
+
+(use-package terminal-here
+  :ensure
+  (:host github :repo "davidshepherd7/terminal-here")
+  :config
+  (setq terminal-here-mac-terminal-command 'ghostty)
+  :general
+  ("C-`" #'terminal-here-launch)
+  )
 
 (setq help-window-select t)
 (setq Man-notify-method 'aggressive)
+
+(use-package which-key
+  :demand
+  :config
+  (setq which-key-popup-type 'minibuffer)
+  (which-key-mode)
+  )
+
+(use-package helpful)
+
+(use-feature abbrev
+  :config
+  (load "~/Dropbox/emacs/my-emacs-abbrev"))
 
 (defun insert-date-string ()
   "Insert current date yyyymmdd."
@@ -448,10 +576,6 @@
 (defun insert-blog-date ()
   (interactive)
   (insert (format-time-string "%Y-%m-%d-")))
-
-(defun reload-user-init-file()
-  (interactive)
-  (load-file user-init-file))
 
 (defun rr/wrap-at-sentences ()
   "Fills the current paragraph, but starts each sentence on a new line."
@@ -492,11 +616,6 @@
     (setq myurl (yank))
     (message myurl)))
 
-(defun rr/open-init-file ()
-  (interactive)
-  (progn (find-file "~/.config/emacs/init.org")
-	   (variable-pitch-mode -1)))
-
 (defun delete-extra-blank-lines ()
   (interactive)
   (save-excursion)
@@ -510,81 +629,15 @@
   :hook
   (LaTeX-mode . laas-mode))
 
-(use-feature abbrev
-  :config
-  (load "~/Dropbox/emacs/my-emacs-abbrev"))
-
 (use-package accent
   :config
   (setq accent-position 'after)
   :general
   ("C-x C-a" #'accent-menu))
 
-(use-package ace-window
-  :config
-  (setq aw-dispatch-always t)
-  :general
-  ("M-O" #'ace-window
-   "M-o" #'rlr/quick-window-jump))
-
-(defun rlr/quick-window-jump ()
-  "If only one window, switch to previous buffer, otherwise call ace-window."
-  (interactive)
-  (let* ((window-list (window-list nil 'no-mini)))
-    (if (< (length window-list) 3)
-	  ;; If only one window, switch to previous buffer. If only two, jump directly to other window.
-	  (if (one-window-p)
-	      (switch-to-buffer nil)
-	(other-window 1))
-	(ace-window t))))
-
 (use-package aggressive-indent
   :config
   (global-aggressive-indent-mode 1))
-
-(use-package avy
-  :config
-  (avy-setup-default)
-  :general
-  ("s-/" #'avy-goto-char-timer)
-  ("C-c C-j" #'avy-resume))
-
-(use-feature bookmark
-  :config
-  (require 'bookmark)
-  (bookmark-bmenu-list)
-  (setq bookmark-save-flag 1))
-
-(use-package casual
-  :ensure
-  (:type git :host github :repo "kickingvegas/casual")
-  :general
-  ("s-." #'casual-editkit-main-tmenu)
-  (:keymaps 'reb-mode-map
-	      "s-." #'casual-re-builder-tmenu)
-  (:keymaps 'calc-mode-map
-	      "s-." #'casual-calc-tmenu)
-  (:keymaps 'dired-mode-map
-	      "s-." #'casual-dired-tmenu)
-  (:keymaps 'isearch-mode-map
-	      "s-." #'casual-isearch-tmenu)
-  (:keymaps 'ibuffer-mode-map
-	      "s-." #'casual-ibuffer-tmenu
-	      "F" #'casual-ibuffer-filter-tmenu
-	      "s" #'casual-ibuffer-sortby-tmenu)
-  (:keymaps 'bookmark-bemenu-mode-map
-	      "s-." #'casual-bookmarks-tmenu)
-  (:keymaps 'org-agenda-mode-map
-	      "s-." #'casual-agenda-tmenu)
-  (:keymaps 'Info-mode-map
-	      "s-." #'casual-info-tmenu)
-  (:keymaps 'calendar-mode-map
-	      "s-." #'casual-calendar-tmenu)
-  )
-
-(use-package casual-avy
-  :general
-  ("M-g a" #'casual-avy-tmenu))
 
 (use-package cape
   :commands (cape-file)
@@ -649,8 +702,6 @@
   ("s-p" #'crux-create-scratch-buffer
    "<escape>" #'crux-keyboard-quit-dwim
    [remap keyboard-quit] #'crux-keyboard-quit-dwim))
-
-(use-package deadgrep)
 
 (use-package denote
   :config
@@ -793,27 +844,6 @@
 (use-package discover
   :config
   (global-discover-mode 1))
-
-(use-package doom-modeline
-  :init
-  :config
-  (setq doom-modeline-enable-word-count t)
-  (setq doom-modeline-continuous-word-count-modes '(markdown-mode gfm-mode org-mode))
-  (setq display-time-day-and-date t)
-  (setq doom-modeline-modal t)
-  :hook
-  (elpaca-after-init . doom-modeline-mode))
-
-(use-package eat
-  :demand
-  :ensure
-  (:host codeberg
-	   :repo "akib/emacs-eat"
-	   :files ("*.el" ("term" "term/*.el") "*.texi"
-		   "*.ti" ("terminfo/e" "terminfo/e/*")
-		   ("terminfo/65" "terminfo/65/*")
-		   ("integration" "integration/*")
-		   (:exclude ".dir-locals.el" "*-tests.el"))))
 
 (use-package ebib
   :config
@@ -1016,10 +1046,6 @@
 	      "C-M-S-s-<right>" #'emmet-next-edit-point
 	      "C-M-S-s-<left>" #'emmet-prev-edit-point))
 
-(use-package exec-path-from-shell
-  :config
-  (exec-path-from-shell-initialize))
-
 (use-package expand-region
   :general ("C-=" #'er/expand-region))
 
@@ -1032,21 +1058,6 @@
 	       (require 'fish-completion nil t))
     (global-fish-completion-mode)))
 
-(use-package fzf
-  :bind
-  ;; Don't forget to set keybinds!
-  :config
-  (setq fzf/args "-x --color bw --print-query --margin=1,0 --no-hscroll"
-	  fzf/executable "fzf"
-	  fzf/git-grep-args "-i --line-number %s"
-	  ;; command used for `fzf-grep-*` functions
-	  ;; example usage for ripgrep:
-	  fzf/grep-command "rg --no-heading -nH"
-	  ;; fzf/grep-command "grep -nrH"
-	  ;; If nil, the fzf buffer will appear at the top of the window
-	  fzf/position-bottom t
-	  fzf/window-height 15))
-
 (use-package
   god-mode
   :general
@@ -1057,8 +1068,6 @@
   :config
   (add-hook 'god-mode-enabled-hook (lambda () (setq cursor-type 'hbar)))
   (add-hook 'god-mode-disabled-hook (lambda () (setq cursor-type 'box))))
-
-(use-package helpful)
 
 (use-feature savehist
   :config
@@ -1071,11 +1080,6 @@
 (defun rr/insert-unicode (unicode-name)
   "Same as C-x 8 enter UNICODE-NAME."
   (insert-char (gethash unicode-name (ucs-names))))
-
-(use-package major-mode-hydra
-  :commands (pretty-hydra-define)
-  :general
-  ("s-m" #'major-mode-hydra))
 
 (with-after-elpaca-init
  (progn
@@ -1147,7 +1151,7 @@
 	(("w" other-window "cycle windows" :exit nil)
 	 ("a" ace-window "ace window")
 	 ("m" minimize-window "minimize window")
-	 ("s" transpose-windows "swap windows")
+	 ("s" crux-transpose-windows "swap windows")
 	 ("S" shrink-window-if-larger-than-buffer "shrink to fit")
 	 ("b" balance-windows "balance windows")
 	 ("t" toggle-window-split "toggle split")
@@ -1644,25 +1648,6 @@ installed."
   (interactive)
   (tab-new)
   (consult-buffer))
-
-(use-package modus-themes
-  :demand
-  :config
-  ;; Add all your customizations prior to loading the themes
-  (setq modus-themes-italic-constructs t
-	  modus-themes-mixed-fonts t
-	  modus-themes-variable-pitch-ui t
-	  modus-themes-italic-constructs t
-	  modus-themes-bold-constructs t)
-
-  ;; Maybe define some palette overrides, such as by using our presets
-  (setq modus-themes-common-palette-overrides
-	  modus-themes-preset-overrides-faint)
-
-  ;; Load the theme of your choice.
-  (load-theme 'modus-operandi t)
-  :general
-  ("<f9>" #'modus-themes-rotate))
 
 (defvar-keymap notepad-mode-map
   "C-c C-c" #'copy-kill-buffer)
@@ -2848,10 +2833,6 @@ installed."
 
 (use-package reveal-in-osx-finder)
 
-(use-package rg
-  :config
-  (rg-enable-default-bindings))
-
 (use-package shrink-whitespace)
 
 (use-package sly)
@@ -2861,23 +2842,6 @@ installed."
   :config
   ;; load default config
   (require 'smartparens-config))
-
-(use-package spacious-padding
-  :demand
-  :after modus-themes doom-modeline
-  :config
-  (setq spacious-padding-subtle-mode-line t)
-  (setq spacious-padding-widths
-	  '( :internal-border-width 30
-	 :header-line-width 4
-	 :mode-line-width 10
-	 :tab-width 4
-	 :right-divider-width 30
-	 :scroll-bar-width 8
-	 :fringe-width 8))
-  (spacious-padding-mode 1)
-  :general
-  ("C-M-s-p" #'spacious-padding-mode))
 
 (use-package speedrect
   :demand
@@ -2894,15 +2858,6 @@ installed."
   ;; save on find-file
   (add-to-list 'super-save-hook-triggers 'find-file-hook)
   (super-save-mode +1))
-
-(use-package terminal-here
-  :ensure
-  (:host github :repo "davidshepherd7/terminal-here")
-  :config
-  (setq terminal-here-mac-terminal-command 'ghostty)
-  :general
-  ("C-`" #'terminal-here-launch)
-  )
 
 (use-package term-toggle
   :demand
@@ -3031,15 +2986,6 @@ installed."
   (:map global-map)
   ("C-M-s-<down>" . website2org)
   ("C-M-s-<up>" . website2org-temp))
-
-(use-package wgrep)
-
-(use-package which-key
-  :demand
-  :config
-  (setq which-key-popup-type 'minibuffer)
-  (which-key-mode)
-  )
 
 (use-package yaml-mode)
 
@@ -3210,6 +3156,10 @@ installed."
  "s d" #'denote-search-marked-dired-files
  "s r" #'denote-search-files-referenced-in-region
  )
+
+(defun reload-user-init-file()
+  (interactive)
+  (load-file user-init-file))
 
 (setq default-directory "~/")
 
