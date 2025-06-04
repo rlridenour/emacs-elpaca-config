@@ -926,6 +926,47 @@
 
 (use-package osx-dictionary)
 
+(use-package shrink-whitespace)
+
+(use-package visual-regexp
+  :general
+  ("C-c r" #'vr/replace)
+  ("C-c q" #'vr/query-replace))
+
+(use-package smartparens
+  :hook (prog-mode text-mode markdown-mode) ;; add `smartparens-mode` to these hooks
+  :config
+  ;; load default config
+  (require 'smartparens-config))
+
+(use-package speedrect
+  :demand
+  :ensure
+  (:host github :repo "jdtsmith/speedrect")
+  :config (speedrect-mode))
+
+(use-package super-save
+  :config
+  (setq super-save-auto-save-when-idle t
+	  auto-save-default nil
+	  super-save-silent t
+	  super-save-all-buffers t)
+  ;; save on find-file
+  (add-to-list 'super-save-hook-triggers 'find-file-hook)
+  (super-save-mode +1))
+
+(use-package titlecase
+  :config
+  (setq titlecase-style "chicago"))
+
+(use-package vundo
+  :custom
+  (vundo-glyph-alist vundo-unicode-symbols)
+  :bind
+  ("C-x u" . vundo))
+
+(use-package unfill)
+
 (use-package aas)
 
 (use-package laas
@@ -2870,47 +2911,6 @@ installed."
   (:keymaps 'pdf-view-mode-map
 	      "C-s" #'isearch-forward)
   )
-
-(use-package shrink-whitespace)
-
-(use-package visual-regexp
-  :general
-  ("C-c r" #'vr/replace)
-  ("C-c q" #'vr/query-replace))
-
-(use-package smartparens
-  :hook (prog-mode text-mode markdown-mode) ;; add `smartparens-mode` to these hooks
-  :config
-  ;; load default config
-  (require 'smartparens-config))
-
-(use-package speedrect
-  :demand
-  :ensure
-  (:host github :repo "jdtsmith/speedrect")
-  :config (speedrect-mode))
-
-(use-package super-save
-  :config
-  (setq super-save-auto-save-when-idle t
-	  auto-save-default nil
-	  super-save-silent t
-	  super-save-all-buffers t)
-  ;; save on find-file
-  (add-to-list 'super-save-hook-triggers 'find-file-hook)
-  (super-save-mode +1))
-
-(use-package titlecase
-  :config
-  (setq titlecase-style "chicago"))
-
-(use-package vundo
-  :custom
-  (vundo-glyph-alist vundo-unicode-symbols)
-  :bind
-  ("C-x u" . vundo))
-
-(use-package unfill)
 
 (use-package sly)
 

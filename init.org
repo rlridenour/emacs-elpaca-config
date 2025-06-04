@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2025-06-04 05:37:06 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2025-06-04 06:03:05 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -498,10 +498,10 @@ Open Emacs init file in fixed-pitch mode.
 #+end_src
 
 
-* Settings
-** Completion
 
-*** Vertico
+* Completion
+
+** Vertico
 
 #+begin_src emacs-lisp :lexical t
   (use-package vertico
@@ -525,7 +525,7 @@ Open Emacs init file in fixed-pitch mode.
 	      "RET" 'vertico-directory-enter))
 #+end_src
 
-*** Orderless
+** Orderless
 
 #+begin_src emacs-lisp :lexical t
   (use-package orderless
@@ -534,7 +534,7 @@ Open Emacs init file in fixed-pitch mode.
     (completion-category-overrides '((file (styles partial-completion)))))
 #+end_src
 
-*** Marginalia
+** Marginalia
 
 Enrich existing commands with completion annotations
 
@@ -543,7 +543,7 @@ Enrich existing commands with completion annotations
     :config (marginalia-mode))
 #+end_src
 
-*** Consult
+** Consult
 
 #+begin_src emacs-lisp
   (use-package consult
@@ -562,7 +562,7 @@ Enrich existing commands with completion annotations
     ("C-x b" #'consult-buffer))
 #+end_src
 
-*** Embark
+** Embark
 
 #+begin_src emacs-lisp
   (use-package embark
@@ -585,7 +585,7 @@ Enrich existing commands with completion annotations
     (embark-collect-mode . consult-preview-at-point-mode))
 #+end_src
 
-*** Cape
+** Cape
 
 #+begin_src emacs-lisp
   (use-package cape
@@ -610,7 +610,7 @@ Enrich existing commands with completion annotations
     )
 #+end_src
 
-*** Corfu
+** Corfu
 
 #+begin_src emacs-lisp
   (use-package corfu
@@ -620,13 +620,16 @@ Enrich existing commands with completion annotations
     (global-corfu-mode))
 #+end_src
 
-*** Abbrev
+** Abbrev
 
 #+begin_src emacs-lisp
   (use-feature abbrev
     :config
     (load "~/Dropbox/emacs/my-emacs-abbrev"))
 #+end_src
+
+
+* Settings
 
 ** Miscellaneous
 
@@ -1787,6 +1790,108 @@ Display suggestions in grid.
 
 #+begin_src emacs-lisp
   (use-package osx-dictionary)
+#+end_src
+
+** Selected
+
+#+begin_src emacs-lisp :tangle no
+  (use-package selected
+    :ensure
+    :commands (selected-minor-mode)
+    :config
+    (selected-global-mode)
+    :general
+    (:keymaps 'selected-keymap
+	      "j" #'next-line
+	      "k" #'previous-line
+	      "l" #'forward-char
+	      "h" #'backward-char
+	      "d" #'downcase-dwim
+	      "f" #'forward-word
+	      "b" #'backward-word
+	      "e" #'forward-sentence
+	      "a" #'backward-sentence
+	      "}" #'forward-paragraph
+	      "{" #'backward-paragraph
+	      "u" #'upcase-dwim
+	      "c" #'capitalize-dwim
+	      "C" #'count-words-region
+	      "m" #'apply-macro-to-region-lines))
+#+end_src
+
+** Shrink Whitespace
+
+#+begin_src emacs-lisp
+  (use-package shrink-whitespace)
+#+end_src
+
+** Visual-Regexp
+
+#+begin_src emacs-lisp
+  (use-package visual-regexp
+    :general
+    ("C-c r" #'vr/replace)
+    ("C-c q" #'vr/query-replace))
+#+end_src
+
+** Smartparens
+
+#+begin_src emacs-lisp
+  (use-package smartparens
+    :hook (prog-mode text-mode markdown-mode) ;; add `smartparens-mode` to these hooks
+    :config
+    ;; load default config
+    (require 'smartparens-config))
+#+end_src
+
+** Speedrect
+
+#+begin_src emacs-lisp
+  (use-package speedrect
+    :demand
+    :ensure
+    (:host github :repo "jdtsmith/speedrect")
+    :config (speedrect-mode))
+#+end_src
+
+** Super Save
+
+[[https://github.com/bbatsov/super-save][GitHub - bbatsov/super-save: Save Emacs buffers when they lose focus]]
+
+#+begin_src emacs-lisp
+  (use-package super-save
+    :config
+    (setq super-save-auto-save-when-idle t
+	  auto-save-default nil
+	  super-save-silent t
+	  super-save-all-buffers t)
+    ;; save on find-file
+    (add-to-list 'super-save-hook-triggers 'find-file-hook)
+    (super-save-mode +1))
+#+end_src
+
+** Titlecase
+
+#+begin_src emacs-lisp
+  (use-package titlecase
+    :config
+    (setq titlecase-style "chicago"))
+#+end_src
+
+** Vundo
+
+#+begin_src emacs-lisp
+  (use-package vundo
+    :custom
+    (vundo-glyph-alist vundo-unicode-symbols)
+    :bind
+    ("C-x u" . vundo))
+#+end_src
+
+** Unfill
+
+#+begin_src emacs-lisp
+  (use-package unfill)
 #+end_src
 
 
@@ -4367,108 +4472,6 @@ From [[https://kitchingroup.cheme.cmu.edu/blog/2016/06/16/Copy-formatted-org-mod
     (:keymaps 'pdf-view-mode-map
 	      "C-s" #'isearch-forward)
     )
-#+end_src
-
-** Selected
-
-#+begin_src emacs-lisp :tangle no
-  (use-package selected
-    :ensure
-    :commands (selected-minor-mode)
-    :config
-    (selected-global-mode)
-    :general
-    (:keymaps 'selected-keymap
-	      "j" #'next-line
-	      "k" #'previous-line
-	      "l" #'forward-char
-	      "h" #'backward-char
-	      "d" #'downcase-dwim
-	      "f" #'forward-word
-	      "b" #'backward-word
-	      "e" #'forward-sentence
-	      "a" #'backward-sentence
-	      "}" #'forward-paragraph
-	      "{" #'backward-paragraph
-	      "u" #'upcase-dwim
-	      "c" #'capitalize-dwim
-	      "C" #'count-words-region
-	      "m" #'apply-macro-to-region-lines))
-#+end_src
-
-** Shrink Whitespace
-
-#+begin_src emacs-lisp
-  (use-package shrink-whitespace)
-#+end_src
-
-** Visual-Regexp
-
-#+begin_src emacs-lisp
-  (use-package visual-regexp
-    :general
-    ("C-c r" #'vr/replace)
-    ("C-c q" #'vr/query-replace))
-#+end_src
-
-** Smartparens
-
-#+begin_src emacs-lisp
-  (use-package smartparens
-    :hook (prog-mode text-mode markdown-mode) ;; add `smartparens-mode` to these hooks
-    :config
-    ;; load default config
-    (require 'smartparens-config))
-#+end_src
-
-** Speedrect
-
-#+begin_src emacs-lisp
-  (use-package speedrect
-    :demand
-    :ensure
-    (:host github :repo "jdtsmith/speedrect")
-    :config (speedrect-mode))
-#+end_src
-
-** Super Save
-
-[[https://github.com/bbatsov/super-save][GitHub - bbatsov/super-save: Save Emacs buffers when they lose focus]]
-
-#+begin_src emacs-lisp
-  (use-package super-save
-    :config
-    (setq super-save-auto-save-when-idle t
-	  auto-save-default nil
-	  super-save-silent t
-	  super-save-all-buffers t)
-    ;; save on find-file
-    (add-to-list 'super-save-hook-triggers 'find-file-hook)
-    (super-save-mode +1))
-#+end_src
-
-** Titlecase
-
-#+begin_src emacs-lisp
-  (use-package titlecase
-    :config
-    (setq titlecase-style "chicago"))
-#+end_src
-
-** Vundo
-
-#+begin_src emacs-lisp
-  (use-package vundo
-    :custom
-    (vundo-glyph-alist vundo-unicode-symbols)
-    :bind
-    ("C-x u" . vundo))
-#+end_src
-
-** Unfill
-
-#+begin_src emacs-lisp
-  (use-package unfill)
 #+end_src
 
 ** SLY
