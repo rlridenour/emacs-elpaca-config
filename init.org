@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2025-06-04 06:03:05 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2025-06-04 07:09:07 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -1894,14 +1894,40 @@ Display suggestions in grid.
   (use-package unfill)
 #+end_src
 
+** Snippets
 
-** AAS
+*** Yasnippet
+
+YASnippet is a template system for Emacs.
+
+https://github.com/joaotavora/yasnippet
+
+#+begin_src emacs-lisp :lexical t
+  (use-package yasnippet
+    :config
+    :custom
+    (yas-snippet-dirs '("~/.config/emacs/snippets"))
+    :hook
+    (elpaca-after-init . yas-global-mode))
+#+end_src
+
+*** Yankpad
+
+#+begin_src emacs-lisp
+  (use-package yankpad
+    :init
+    (setq yankpad-file "~/Library/Mobile Documents/com~apple~CloudDocs/org/yankpad.org")
+    :general
+    ( "<f6>" #'yankpad-insert))
+#+end_src
+
+*** AAS
 
 #+begin_src emacs-lisp
   (use-package aas)
 #+end_src
 
-*** LAAS
+**** LAAS
 
 #+begin_src emacs-lisp
   (use-package laas
@@ -1910,11 +1936,1366 @@ Display suggestions in grid.
     (LaTeX-mode . laas-mode))
 #+end_src
 
-** ChordPro
+
+* Org Mode
 
 #+begin_src emacs-lisp
-  (use-package chordpro-mode)
+  (use-package org
+    :ensure nil
+    :init
+    ;; (setq org-directory "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/")
+    (setq org-directory "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/")
+    :config
+    (setq org-list-allow-alphabetical t)
+    (setq org-highlight-latex-and-related '(latex script entities))
+    (setq org-startup-indented nil)
+    (setq org-adapt-indentation nil)
+    (setq org-hide-leading-stars nil)
+    (setq org-hide-emphasis-markers t)
+    (setq org-list-indent-offset 2)
+    (setq org-agenda-skip-deadline-prewarning-if-scheduled t)
+    (setq org-use-speed-commands t)
+
+    ;; Hide drawers
+    (setopt org-cycle-hide-drawer-startup t)
+    (setopt org-startup-folded 'nofold)
+
+    (set-face-attribute 'org-level-1 nil :height 1.3 :weight 'bold :inherit 'fixed-pitch)
+    (set-face-attribute 'org-level-2 nil :height 1.2 :weight 'bold :inherit 'fixed-pitch)
+    (set-face-attribute 'org-level-3 nil :height 1.1 :weight 'bold :inherit 'fixed-pitch)
+    (set-face-attribute 'org-level-4 nil :height 1.0 :weight 'bold :inherit 'fixed-pitch)
+    (set-face-attribute 'org-level-5 nil :height 1.0 :weight 'bold :inherit 'fixed-pitch)
+    (set-face-attribute 'org-level-6 nil :height 1.0 :weight 'bold :inherit 'fixed-pitch)
+    (set-face-attribute 'org-level-7 nil :height 1.0 :weight 'bold :inherit 'fixed-pitch)
+    (set-face-attribute 'org-level-8 nil :height 1.0 :weight 'bold :inherit 'fixed-pitch)
+
+    ;; Make the document title a bit bigger
+    (set-face-attribute 'org-document-title nil :weight 'bold :height 1.5)
+
+    ;; Make LaTeX previews larger.
+    (plist-put org-format-latex-options :scale 1.5)
+
+    (setq org-support-shift-select t)
+    (setq org-special-ctrl-a/e t)
+    ;; (setq org-footnote-section nil)
+    (setq org-html-validation-link nil)
+    (setq org-time-stamp-rounding-minutes '(0 15))
+    (setq org-agenda-skip-scheduled-if-deadline-is-shown t)
+    (setq org-agenda-skip-scheduled-if-done t)
+    (setq org-log-done t)
+    (setq org-todo-keyword-faces
+	  '(("DONE" . "green4") ("TODO" . org-warning)))
+    (setq org-agenda-files '("/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/"))
+    (setq org-agenda-start-on-weekday nil)
+    (setq org-agenda-window-setup 'current-window)
+    (setq org-link-frame-setup
+	  '((vm . vm-visit-folder-other-frame)
+	(vm-imap . vm-visit-imap-folder-other-frame)
+	(gnus . org-gnus-no-new-news)
+	(file . find-file)
+	(wl . wl-other-frame)))
+    (require 'org-tempo)
+    ;; Open directory links in Dired.
+    (add-to-list 'org-file-apps '(directory . emacs)))
 #+end_src
+
+Use variable pitch mode in Org and Markdown modes. Toggle with ~C-M-S-s-v~, bound to ~<Caps-Lock>-V~.
+
+#+begin_src emacs-lisp
+  (add-hook 'org-mode-hook #'variable-pitch-mode)
+  (add-hook 'markdown-mode-hook #'variable-pitch-mode)
+
+  (general-define-key
+   "C-M-S-s-v" #'variable-pitch-mode)
+#+end_src
+
+** Org Appear
+
+#+begin_src emacs-lisp
+  (use-package org-appear
+    :commands (org-appear-mode)
+    ;; :hook     (org-mode . org-appear-mode)
+    :config
+    (setq org-hide-emphasis-markers t)  ; Must be activated for org-appear to work
+    (setq org-appear-autoemphasis   t   ; Show bold, italics, verbatim, etc.
+	  org-appear-autolinks      t   ; Show links
+	  org-appear-autosubmarkers t)) ; Show sub and superscripts
+#+end_src
+
+** Org Superstar
+
+#+begin_src emacs-lisp :tangle no
+  (use-package org-superstar
+    :config
+    (setq org-superstar-headline-bullets-list '("●" "○" "▶" "◈" "◇"))
+    :hook (org-mode . org-superstar-mode))
+#+end_src
+
+** Org Modern
+
+#+begin_src emacs-lisp
+  (use-package org-modern
+    :config
+    (add-hook 'org-agenda-finalize-hook #'org-modern-agenda)
+    )
+#+end_src
+
+** Org LaTeX Export
+
+#+begin_src emacs-lisp
+  (require 'ox-beamer)
+  (with-eval-after-load 'ox-latex
+    (add-to-list 'org-latex-classes
+		 '("org-article"
+		   "\\documentclass{article}
+			      [NO-DEFAULT-PACKAGES]
+			      [NO-PACKAGES]"
+		   ("\\section{%s}" . "\\section*{%s}")
+		   ("\\subsection{%s}" . "\\subsection*{%s}")
+		   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+		   ("\\paragraph{%s}" . "\\paragraph*{%s}")
+		   ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+    (add-to-list 'org-latex-classes
+		 '("org-handout"
+		   "\\documentclass{pdfhandout}
+			      [NO-DEFAULT-PACKAGES]
+			      [NO-PACKAGES]"
+		   ("\\section{%s}" . "\\section*{%s}")
+		   ("\\subsection{%s}" . "\\subsection*{%s}")
+		   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+		   ("\\paragraph{%s}" . "\\paragraph*{%s}")
+		   ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+    (add-to-list 'org-latex-classes
+		 '("org-beamer"
+		   "\\documentclass{beamer}
+			      [NO-DEFAULT-PACKAGES]
+			      [NO-PACKAGES]"
+		   ("\\section{%s}" . "\\section*{%s}")
+		   ("\\subsection{%s}" . "\\subsection*{%s}")
+		   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+		   ("\\paragraph{%s}" . "\\paragraph*{%s}")
+		   ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))))
+  (setq org-export-with-smart-quotes t)
+  (with-eval-after-load 'ox-latex
+    (add-to-list 'org-export-smart-quotes-alist
+		 '("en-us"
+		   (primary-opening   :utf-8 "“" :html "&ldquo;" :latex "\\enquote{"  :texinfo "``")
+		   (primary-closing   :utf-8 "”" :html "&rdquo;" :latex "}"           :texinfo "''")
+		   (secondary-opening :utf-8 "‘" :html "&lsquo;" :latex "\\enquote*{" :texinfo "`")
+		   (secondary-closing :utf-8 "’" :html "&rsquo;" :latex "}"           :texinfo "'")
+		   (apostrophe        :utf-8 "’" :html "&rsquo;"))))
+#+end_src
+
+#+begin_src emacs-lisp
+  ;; (setq org-latex-pdf-process '("arara %f"))
+  (setq org-latex-pdf-process '("mkpdf %f"))
+
+  (defun rlr/org-mkpdf ()
+    "Make PDF with pdf latexmk."
+    (interactive)
+    (save-buffer)
+    (org-latex-export-to-latex)
+    (async-shell-command-no-window (concat "mkpdf " (shell-quote-argument(file-name-nondirectory (file-name-with-extension buffer-file-name "tex"))))))
+
+  (defun rlr/org-open-pdf ()
+    "Open PDF in background with default viewer."
+    (interactive)
+    (async-shell-command-no-window (concat "open -g " (shell-quote-argument(file-name-nondirectory (file-name-with-extension buffer-file-name "pdf"))))))
+
+  (defun rlr/org-mklua ()
+    "Make PDF with lua latexmk."
+    (interactive)
+    (save-buffer)
+    (org-latex-export-to-latex)
+    (async-shell-command-no-window (concat "mklua " (shell-quote-argument(file-name-nondirectory (file-name-with-extension buffer-file-name "tex"))))))
+
+  (defun rlr/org-arara ()
+    "Make PDF with Arara."
+    (interactive)
+    (save-buffer)
+    (org-arara-export-to-latex)
+    (async-shell-command-no-window (concat "mkarara " (shell-quote-argument(file-name-sans-extension (buffer-file-name)))".tex")))
+
+  (defun rlr/org-date ()
+    "Update existing date: timestamp on a Hugo post."
+    (interactive)
+    (save-excursion (
+		     goto-char 1)
+		    (re-search-forward "^#\\+date:")
+		    (let ((beg (point)))
+		      (end-of-line)
+		      (delete-region beg (point)))
+		    (insert (concat " " (format-time-string "%B %e, %Y")))))
+
+#+end_src
+
+Use [[https://math.nist.gov/~BMiller/LaTeXML/ussage.html][latexml]] to export latex to html. Load additional packages by adding --preload= flags.
+
+#+begin_src emacs-lisp
+  (setopt
+   org-latex-to-html-convert-command "latexmlc literal:%i --profile=math 2>/dev/null"
+   org-html-with-latex 'html)
+#+end_src
+
+** Org Auto Tangle
+
+Use ~org-auto-tangle~ to generate ~early-init.el~ and ~init.el~ whenever ~README.org~ is saved.
+
+#+begin_src emacs-lisp
+  (use-package org-auto-tangle
+    :hook (org-mode . org-auto-tangle-mode))
+#+end_src
+
+** Org Capture
+
+#+begin_src emacs-lisp
+  ;; Org-capture
+  (setq org-capture-templates
+	'(
+	  ("t" "Todo" entry (file+headline "/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/tasks.org" "Inbox")
+	   "** TODO %?\n  %i\n  %a")
+	  ("e" "Event" entry (file+headline "/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/events.org" "Future")
+	   "** %? %T")
+	  ("b" "Bookmark" entry (file+headline "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/bookmarks.org" "Bookmarks")
+	   "* %?\n:PROPERTIES:\n:CREATED: %U\n:END:\n\n" :empty-lines 1)
+	  ("c" "Quick note" entry (file "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/Documents/notes/quick-notes.org")
+	   "* %?\n:PROPERTIES:\n:CREATED: %U\n:END:\n\n" :empty-lines 1)
+("j" "Journelly Entry" entry
+	   (file "/Users/rlridenour/Library/Mobile Documents/iCloud~com~xenodium~Journelly/Documents/Journelly.org")
+	   "* %U @ -\n%?" :prepend t)
+	  )
+	)
+
+  (with-eval-after-load 'org-capture
+    (add-to-list 'org-capture-templates
+		 '("n" "New note (with Denote)" plain
+		   (file denote-last-path)
+		   #'denote-org-capture
+		   :no-save t
+		   :immediate-finish nil
+		   :kill-buffer t
+		   :jump-to-captured t)))
+
+  (setq org-refile-targets '((org-agenda-files :maxlevel . 1)))
+
+  (define-key global-map "\C-cc" 'org-capture)
+#+end_src
+
+From [[https://christiantietze.de/posts/2025/04/keep-org-mode-items-sorted-alphabetically/][Keep .org File Outline Items Sorted Alphabetically • Christian Tietze]]
+Sort org buffer when saving. Add the following to the beginning of the buffer: "# -*- before-save-hook: (my/org-sort); -*-"
+
+#+begin_src emacs-lisp
+  (defun rlr/org-sort ()
+    (mark-whole-buffer)
+    (org-sort-entries nil ?a))
+
+  (add-to-list 'safe-local-variable-values
+	       '(before-save-hook . (rlr/org-sort)))
+#+end_src
+
+** Org Agenda
+
+#+begin_src emacs-lisp
+  (use-package org-super-agenda
+    :after org
+    :ensure t
+    :config
+    (setq org-agenda-skip-scheduled-if-done t
+	  org-agenda-skip-deadline-if-done t
+	  org-agenda-include-deadlines t
+	  org-agenda-block-separator nil
+	  org-agenda-compact-blocks t
+	  org-agenda-start-day nil ;; i.e. today
+	  org-agenda-span 1
+	  org-agenda-window-setup "current-window"
+	  org-agenda-include-diary nil
+	  org-agenda-start-on-weekday nil)
+    (setq org-agenda-time-grid
+	  '((daily today require-timed remove-match)
+	    ()
+	    "......"
+	    ""))
+
+    (org-super-agenda-mode))
+#+end_src
+
+#+begin_src emacs-lisp
+  (setq org-agenda-custom-commands
+	'(("d" "Agenda for today" agenda ""
+	   ((org-agenda-overriding-header "Today's agenda")
+	    (org-agenda-span 'day)
+	    ))))
+#+end_src
+
+#+begin_src emacs-lisp
+  (defun today-agenda ()
+    "Display today's agenda"
+    (interactive)
+    (org-agenda nil "d")
+    )
+  (today-agenda)
+#+end_src
+
+#+begin_src emacs-lisp
+  (with-eval-after-load 'org
+    (add-to-list
+     'org-agenda-custom-commands
+     `("c" "Today - Full View"
+       ((agenda ""
+		((org-agenda-entry-types '(:timestamp :sexp))
+		 (org-agenda-overriding-header
+		  (concat "CALENDAR Today "
+			  (format-time-string "%a %d" (current-time))))
+		 (org-agenda-span 'day)))
+	(tags-todo "LEVEL=1+inbox"
+		   ((org-agenda-overriding-header "INBOX (Unscheduled)")))
+	(tags-todo "DEADLINE<\"<+1d>\"+DEADLINE>\"<-1d>\""
+		   ((org-agenda-overriding-header "DUE TODAY")
+		    (org-agenda-skip-function
+		     '(org-agenda-skip-entry-if 'notdeadline))
+		    (org-agenda-sorting-strategy '(priority-down))))
+	(tags-todo "DEADLINE<\"<today>\""
+		   ((org-agenda-overriding-header "OVERDUE")
+		    (org-agenda-skip-function
+		     '(org-agenda-skip-entry-if 'notdeadline))
+		    (org-agenda-sorting-strategy '(priority-down))))
+	(agenda ""
+		((org-agenda-entry-types '(:scheduled))
+		 (org-agenda-overriding-header "SCHEDULED")
+		 (org-agenda-skip-function
+		  '(org-agenda-skip-entry-if 'todo 'done))
+		 (org-agenda-sorting-strategy
+		  '(priority-down time-down))
+		 (org-agenda-span 'day)
+		 (org-agenda-start-on-weekday nil)))
+	(todo "DONE"
+	      ((org-agenda-overriding-header "COMPLETED"))))
+       ((org-agenda-format-date "")
+	(org-agenda-start-with-clockreport-mode nil))) t))
+#+end_src
+
+This opens the daily agenda and deletes all other windows.
+
+#+begin_src emacs-lisp
+  (defun agenda-home ()
+    (interactive)
+    (org-agenda-list 1)
+    (delete-other-windows))
+#+end_src
+
+Set the initial frame. This opens the daily agenda on start-up.
+
+#+begin_src emacs-lisp
+  (add-hook 'server-after-make-frame-hook 'agenda-home)
+#+end_src
+
+#+begin_src emacs-lisp
+  (general-define-key
+   "s-d" #'agenda-home)
+#+end_src
+
+#+begin_src emacs-lisp
+  (defun rr/agenda-links ()
+    (end-of-buffer)
+    (insert-file-contents "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/agenda-links.org")
+    (while (org-activate-links (point-max))
+      (goto-char (match-end 0)))
+    ;; (end-of-buffer)
+    ;; (insert (concat "\n\n" (get-votd)))
+    (beginning-of-buffer))
+
+  (add-hook 'org-agenda-finalize-hook #'rr/agenda-links)
+#+end_src
+
+Open links with the return key.
+
+#+begin_src emacs-lisp
+  (setq org-return-follows-link t)
+#+end_src
+
+Use space key to show link hints.
+
+#+begin_src emacs-lisp
+  (general-define-key
+   :keymaps 'org-agenda-mode-map
+   "<SPC>" #'link-hint-open-link)
+#+end_src
+
+Set agenda links as safe.
+
+#+begin_src emacs-lisp
+  (setopt org-link-elisp-skip-confirm-regexp "rlr.*")
+#+end_src
+
+#+begin_src emacs-lisp :tangle no
+  (use-package org-super-agenda
+    :after org
+    :config
+    (setq org-agenda-skip-scheduled-if-done t
+	  org-agenda-skip-deadline-if-done t
+	  org-agenda-include-deadlines t
+	  org-agenda-block-separator nil
+	  org-agenda-compact-blocks t
+	  org-agenda-start-day nil ;; i.e. today
+	  org-agenda-span 1
+	  org-agenda-window-setup "current-window"
+	  org-agenda-include-diary nil
+	  org-agenda-start-on-weekday nil)
+    (setq org-agenda-time-grid
+	  '((daily today require-timed remove-match)
+	    ()
+	    "......"
+	    ""))
+
+    (setq org-agenda-custom-commands
+	  '(("c" "Super view"
+	     ((agenda "" ((org-agenda-overriding-header "")
+			  (org-super-agenda-groups
+			   '((:name "Today"
+				    :time-grid t
+				    :date today
+				    :order 1)))))
+	      (alltodo "" ((org-agenda-overriding-header "")
+			   (org-super-agenda-groups
+			    '((:log t)
+			      (:name "Important"
+				     :priority "A"
+				     :order 4)
+			      (:name "Today's tasks"
+				     :file-path "journal/")
+			      (:name "Due Today"
+				     :deadline today
+				     :order 2)
+			      (:name "Overdue"
+				     :deadline past
+				     :order 3)
+			      (:discard (:not (:todo "TODO")))))))))))
+    (org-super-agenda-mode)
+    (setq org-agenda-span 7)
+    (setq org-agenda-custom-commands
+	  '(("d" "Agenda for today" agenda ""
+	     ((org-agenda-overriding-header "Today's agenda")
+	      (org-agenda-span 'day)
+	      ))))
+    (defun today-agenda ()
+      "Display today's agenda"
+      (interactive)
+      (org-agenda nil "d")
+      )
+    (today-agenda)
+    )
+#+end_src
+
+Use Emacs appointment system for notifications.
+
+#+begin_src emacs-lisp
+  (setq appt-time-msg-list nil)    ;; clear existing appt list
+  ;; (setq appt-message-warning-time '15)  ;; send first warning 15 minutes before appointment
+  (org-agenda-to-appt) ;; generate the appt list from org agenda files on emacs launch
+  (run-at-time "24:01" 3600 'org-agenda-to-appt) ;; update appt list hourly
+  (add-hook 'org-finalize-agenda-hook 'org-agenda-to-appt) ;; update appt list on agenda view
+#+end_src
+
+** Org Bulletproof
+
+I'm not sure what this doing anymore, so I'm going to disable it for now.
+
+#+begin_src emacs-lisp :tangle no
+  (use-package org-bulletproof
+    :after org
+    :config
+    (setq org-bulletproof-default-ordered-bullet "1.")
+    (global-org-bulletproof-mode +1))
+#+end_src
+
+** Org Contrib
+
+#+begin_src emacs-lisp
+  (use-package org-contrib
+    :config
+    (require 'ox-extra)
+    (ox-extras-activate '(ignore-headlines))
+    (require 'org-tempo)
+    (require 'ox-rss))
+#+end_src
+
+** Orgonomic
+
+#+begin_src emacs-lisp
+  (use-package orgonomic
+    :ensure
+    (:host github :repo "aaronjensen/emacs-orgonomic")
+    :hook (org-mode . orgonomic-mode))
+#+end_src
+
+** Org Toggle Emphasis
+
+[[https://gist.github.com/jdtsmith/55e6a660dd4c0779a600ac81bf9bfc23][org-toggle-emphasis: easily toggle emphasis markers: =~*/_+]]
+
+#+begin_src emacs-lisp
+  (defun my/org-toggle-emphasis (type)
+    "Toggle org emphasis TYPE (a character) at point."
+    (cl-labels ((in-emph (re)
+		  "See if in org emphasis given by RE."
+		  (and (org-in-regexp re 2)
+		       (>= (point) (match-beginning 3))
+		       (<= (point) (match-end 4))))
+		(de-emphasize ()
+		  "Remove most recently matched org emphasis markers."
+		  (save-excursion
+		    (replace-match "" nil nil nil 3)
+		    (delete-region (match-end 4) (1+ (match-end 4))))))
+      (let* ((res (vector org-emph-re org-verbatim-re))
+	     (idx (cl-case type (?/ 0) (?* 0) (?_ 0) (?+ 0) (?= 1) (?~ 1)))
+	     (re (aref res idx))
+	     (other-re (aref res (- 1 idx)))
+	     (type-re (string-replace (if (= idx 1) "=~" "*/_+")
+				      (char-to-string type) re))
+	     add-bounds offset is-word)
+	(save-match-data
+	  (if (region-active-p)
+	      (if (in-emph type-re) (de-emphasize) (org-emphasize type))
+	    (if (eq (char-before) type) (backward-char))
+	    (if (in-emph type-re)       ;nothing marked, in emph text?
+		(de-emphasize)
+	      (setq add-bounds          ; check other flavors
+		    (if (or (in-emph re) (in-emph other-re))
+			(cons (match-beginning 4) (match-end 4))
+		      (setq is-word t)
+		      (bounds-of-thing-at-point 'symbol))))
+	    (if add-bounds
+		(let ((off (- (point) (car add-bounds)))
+		      (at-end (= (point) (cdr add-bounds))))
+		  (set-mark (car add-bounds))
+		  (goto-char (cdr add-bounds))
+		  (org-emphasize type)  ;deletes marked region!
+		  (unless is-word       ; delete extra spaces
+		    (goto-char (car add-bounds))
+		    (when (eq (char-after) ?\s) (delete-char 1))
+		    (goto-char (+ 2 (cdr add-bounds)))
+		    (when (eq (char-after) ?\s) (delete-char 1)))
+		  (goto-char (+ (car add-bounds) off
+				(cond ((= off 0) 0) (at-end 2) (t 1)))))
+	      (if is-word (org-emphasize type))))))))
+
+  (general-define-key
+   :keymaps 'org-mode-map
+   "s-<right>" #'org-end-of-line
+   "s-<left>" #'org-beginning-of-line
+   "s-i" (lambda () (interactive) (my/org-toggle-emphasis ?/))
+   "s-b" (lambda () (interactive) (my/org-toggle-emphasis ?*))
+   "C-c e e" (lambda () (interactive) (my/org-toggle-emphasis ?~))
+   "C-c e =" (lambda () (interactive) (my/org-toggle-emphasis ?=))
+   "C-c e _" (lambda () (interactive) (my/org-toggle-emphasis ?_))
+   "C-c e +" (lambda () (interactive) (my/org-toggle-emphasis ?+)))
+#+end_src
+
+** Org Mac Link
+
+#+begin_src emacs-lisp
+  (use-package org-mac-link)
+#+end_src
+
+** Org Publish RSS
+
+[[https://git.sr.ht/~taingram/org-publish-rss][~taingram/org-publish-rss - Automatically generate RSS feeds for org-publish projects - sourcehut git]]
+
+#+begin_src emacs-lisp :tangle no
+  (use-package org-publish-rss
+    :ensure
+    (:type git :sourcehut :repo ~taingram/org-publish-rss))
+#+end_src
+
+** Org Web Tools
+
+#+begin_src emacs-lisp
+  (use-package org-web-tools)
+#+end_src
+
+#+begin_src emacs-lisp
+  (defun rlr/save-web-page-as-org-file ()
+    (interactive)
+    (org-mac-link-safari-get-frontmost-url)
+    (setq rlr-org-link (current-kill 0 t))
+    (setq rlr-org-link (s-chop-left 2 rlr-org-link))
+    (setq rlr-org-link (s-chop-right 2 rlr-org-link))
+    (setq rlr-org-link (s-split "\\]\\[" rlr-org-link))
+    (setq rlr-org-url (pop rlr-org-link))
+    (setq rlr-org-title (pop rlr-org-link))
+    (setq rlr-org-title (s-replace-all '(("." . "") (":" . "") ("/" . "")) rlr-org-title))
+    (setq rlr-org-filename (s-dashed-words rlr-org-title))
+    (org-web-tools-read-url-as-org rlr-org-url)
+    (write-file (concat "~/icloud/web-saves/" rlr-org-title ".org")))
+#+end_src
+
+** Teaching
+
+Set initial filename variable.
+
+#+begin_src emacs-lisp
+  (defvar rlrt-filename)
+#+end_src
+
+Functions for creating handout, syllabus, and lecture files.
+
+Convert title to filename string. Remove punctuation, one or two-letter words, and "the".
+
+#+begin_src emacs-lisp
+  (defun rlrt-make-filename (string)
+    (s-downcase  (s-join "-" (s-split " " (replace-regexp-in-string "\\bthe \\b\\|\\band \\b\\|\\b[a-z]\\b \\|\\b[a-z][a-z]\\b \\|[[:punct:]]" "" string)))))
+#+end_src
+
+#+begin_src emacs-lisp
+  (defun rlrt-new-handout (rlrt-title)
+    (interactive "sTitle: ")
+
+    ;; Make filename
+    (setq rlrt-filename (rlrt-make-filename rlrt-title))
+
+    ;; Create directory
+    (make-directory rlrt-filename)
+
+    ;; Create main org file
+    (find-file (s-concat rlrt-filename "/" rlrt-filename "-handout.org"))
+    (insert (s-concat "#+TITLE: " rlrt-title) ?\n"#+AUTHOR: Dr. Randy Ridenour" ?\n "#+DATE: "(format-time-string "%B %e, %Y") ?\n)
+    (insert-file-contents "~/.config/emacs/teaching-templates/handout/handout.org")
+    (goto-char (point-max))
+    (save-buffer))
+#+end_src
+
+Create a syllabus in the currently visited directory.
+
+#+begin_src emacs-lisp
+  (defun rlrt-new-syllabus (rlrt-title)
+    (interactive "sTitle: ")
+
+    ;; Make filename
+    (setq rlrt-filename (rlrt-make-filename rlrt-title))
+
+    ;; Create directory
+    (make-directory rlrt-filename)
+
+    ;; Create main org file
+    (find-file (s-concat rlrt-filename "/" rlrt-filename "-syllabus.org"))
+    (insert-file-contents "~/.config/emacs/teaching-templates/syllabus/syllabus.org")
+    (goto-char (point-max))
+    (insert (s-concat "#+include: \"" rlrt-filename "-data.org\" :minlevel 1"))
+    (save-buffer)
+    (kill-buffer)
+
+    ;; Create Canvas file
+    (find-file (s-concat rlrt-filename "/canvas.org"))
+    (insert-file-contents "~/.config/emacs/teaching-templates/syllabus/canvas.org")
+    (save-buffer)
+    (kill-buffer)
+
+    ;; Create data file
+    (find-file (s-concat rlrt-filename "/" rlrt-filename "-data.org")))
+#+end_src
+
+Create lecture slides and notes in the currently visited directory.
+
+#+begin_src emacs-lisp
+  (defun rlrt-new-lecture (rlrt-title)
+    (interactive "sTitle: ")
+
+    ;; Make filename
+    (setq rlrt-filename (rlrt-make-filename rlrt-title))
+
+    ;; Create directory
+    (make-directory rlrt-filename)
+#+end_src
+
+Create LaTeX Beamer org file
+
+#+begin_src emacs-lisp
+  (find-file (s-concat rlrt-filename "/" rlrt-filename "-slides.org"))
+  (insert-file-contents "~/.config/emacs/teaching-templates/lecture/slides.org")
+  (goto-char (point-max))
+  (insert (s-concat "#+include: \"" rlrt-filename "-data.org\" :minlevel 1"))
+  (save-buffer)
+  (kill-buffer)
+#+end_src
+
+Create notes org file
+
+#+begin_src emacs-lisp
+  (find-file (s-concat rlrt-filename "/" rlrt-filename "-notes.org"))
+  (insert-file-contents "~/.config/emacs/teaching-templates/lecture/notes.org")
+  (goto-char (point-max))
+  (insert (s-concat "#+include: \"" rlrt-filename "-data.org\" :minlevel 1"))
+  (save-buffer)
+  (kill-buffer)
+#+end_src
+
+Create Canvas file
+#+begin_src emacs-lisp
+  (find-file (s-concat rlrt-filename "/canvas.org"))
+  (insert-file-contents "~/.config/emacs/teaching-templates/lecture/canvas.org")
+  (goto-char (point-max))
+  (save-buffer)
+  (kill-buffer)
+#+end_src
+
+Create data file
+
+#+begin_src emacs-lisp
+  (find-file (s-concat rlrt-filename "/" rlrt-filename "-data.org"))
+  (insert (s-concat "#+TITLE: " rlrt-title) ?\n)
+  (yas-expand-snippet (yas-lookup-snippet "beamer-data")))
+#+end_src
+
+Compile the files.
+
+#+begin_src emacs-lisp
+  (defun make-slides ()
+    (async-shell-command-no-window "mkslides"))
+#+end_src
+
+#+begin_src emacs-lisp
+  (defun make-notes ()
+    (async-shell-command-no-window "mknotes"))
+#+end_src
+
+Compile lecture slides.
+
+#+begin_src emacs-lisp
+  (defun lecture-slides ()
+    "publish org data file as beamer slides"
+    (interactive)
+    (save-buffer)
+    (find-file "*-slides.org" t)
+    (org-beamer-export-to-latex)
+    (kill-buffer)
+    (make-slides)
+    (find-file "*-data.org" t))
+#+end_src
+
+#+begin_src emacs-lisp
+  (defun rlr/create-frametitle ()
+    "Convert title to frametitle."
+    (interactive)
+    (goto-char 1)
+    (while (ignore-errors
+	     (re-search-forward "begin{frame}.*]"))
+      (insert "\n \\frametitle")))
+#+end_src
+
+Compile lecture notes.
+
+#+begin_src emacs-lisp
+  (defun lecture-notes ()
+    "publish org data file as beamer notes"
+    (interactive)
+    (save-buffer)
+    (find-file "*-notes.org" t)
+    (org-beamer-export-to-latex)
+    (kill-buffer)
+    (find-file "*-notes.tex" t)
+    (rlr/create-frametitle)
+    (save-buffer)
+    (kill-buffer)
+    (make-notes)
+    (find-file "*-data.org" t))
+#+end_src
+
+Copy HTML for Canvas pages
+
+#+begin_src emacs-lisp
+  (defun canvas-copy ()
+    "Copy html for canvas pages"
+    (interactive)
+    (save-buffer)
+    (org-html-export-to-html)
+    (shell-command "canvas"))
+#+end_src
+
+Compile Canvas HTML notes.
+
+#+begin_src emacs-lisp
+  (defun canvas-notes ()
+    "Copy HTML slide notes for Canvas"
+    (interactive)
+    (save-buffer)
+    (shell-command "canvas-notes")
+    (find-file "canvas.org")
+    (canvas-copy)
+    (kill-buffer)
+    (delete-file "canvas-data.org"))
+#+end_src
+
+Compile handout
+
+#+begin_src emacs-lisp
+  (defun make-handout ()
+    "publish org data file as LaTeX handout and Canvas HTML"
+    (interactive)
+    (save-buffer)
+    ;; (find-file "*-handout.org" t)
+    (rlr/org-mkpdf)
+    ;; (kill-buffer)
+    ;; (shell-command "canvas-notes")
+    ;; (find-file "canvas.org" t)
+    (org-html-export-to-html)
+    (shell-command "canvas-handout"))
+#+end_src
+
+#+begin_src emacs-lisp
+  (defun make-html ()
+    (interactive)
+    (save-buffer)
+    (org-html-export-to-html)
+    (shell-command "canvas-handout"))
+#+end_src
+
+Compile syllabus.
+
+#+begin_src emacs-lisp
+  (defun make-syllabus ()
+    "publish org data file as LaTeX syllabus and Canvas HTML"
+    (interactive)
+    (save-buffer)
+    (find-file "*-syllabus.org" t)
+    (rlr/org-mkpdf)
+    (kill-buffer)
+    (shell-command "canvas-notes")
+    (find-file "canvas.org" t)
+    (org-html-export-to-html)
+    (shell-command "canvas")
+    (kill-buffer)
+    (delete-file "canvas-data.org")
+    (find-file "*-data.org" t))
+#+end_src
+
+Functions for adding arguments in standard form to Org documents.
+
+#+begin_src emacs-lisp
+  (defun  create-args ()
+    (interactive)
+    (kill-ring-save (region-beginning) (region-end))
+    (exchange-point-and-mark)
+    (yas-expand-snippet (yas-lookup-snippet "arg-wrap-tex"))
+    (previous-line)
+    ;; (previous-line)
+    (org-beginning-of-line)
+    (forward-word)
+    (forward-char)
+    (forward-char)
+    (insert "\\underline{")
+    (org-end-of-line)
+    (insert "}")
+    (next-line)
+    (org-beginning-of-line)
+    (forward-word)
+    (insert "[\\phantom{\\(\\therefore\\)}]")
+    (next-line)
+    (next-line)
+    (org-return)
+    (org-return)
+    (org-yank)
+    (exchange-point-and-mark)
+    (yas-expand-snippet (yas-lookup-snippet "arg-wrap-html")))
+#+end_src
+
+#+begin_src emacs-lisp
+  (defun  create-tex-arg ()
+    (interactive)
+    (yas-expand-snippet (yas-lookup-snippet "arg-wrap-tex"))
+    (previous-line)
+    (previous-line)
+    (forward-word)
+    (forward-char)
+    (forward-char)
+    (insert "\\underline{")
+    (org-end-of-line)
+    (insert "}")
+    (next-line)
+    (org-beginning-of-line)
+    (forward-word)
+    (insert "[\\phantom{\\(\\therefore\\)}]")
+    (next-line)
+    (next-line)
+    (org-return)
+    (org-return))
+#+end_src
+
+Copy slide notes to handout notes.
+
+#+begin_src emacs-lisp
+  (defun duplicate-slide-note ()
+    (interactive)
+    (search-backward ":END:")
+    (next-line)
+    (kill-ring-save (point)
+		    (progn
+		      (search-forward "** ")
+		      (beginning-of-line)
+		      (point))
+		    )
+    (yas-expand-snippet (yas-lookup-snippet "beamer article notes"))
+    (yank))
+
+  (defun duplicate-all-slide-notes ()
+    (interactive)
+    (save-excursion
+      (end-of-buffer)
+      (newline)
+      (newline)
+      ;; Need a blank slide at the end to convert the last note.
+      (insert "** ")
+      (beginning-of-buffer)
+      (while (ignore-errors
+	       (search-forward ":BEAMER_ENV: note"))
+	(next-line)
+	(next-line)
+	(kill-ring-save (point)
+			(progn
+			  (search-forward "** ")
+			  (beginning-of-line)
+			  (point))
+			)
+	(yas-expand-snippet (yas-lookup-snippet "beamer article notes"))
+	(yank))
+      ;; Delete the blank slide that was added earlier.
+      (end-of-buffer)
+      (search-backward "**")
+      (kill-line)
+      )
+    (save-buffer))
+#+end_src
+
+Create new article.
+
+#+begin_src emacs-lisp
+  (defun rlrt-new-article (rlrt-title)
+    (interactive "sTitle: ")
+
+    ;; Make filename
+    (setq rlrt-filename (rlrt-make-filename rlrt-title))
+
+    ;; Create directory
+    (make-directory rlrt-filename)
+
+    (find-file (s-concat rlrt-filename "/" rlrt-filename ".org"))
+    (insert (s-concat "#+TITLE: " rlrt-title) ?\n)
+    (yas-expand-snippet (yas-lookup-snippet "rlrt-pdf-article")))
+#+end_src
+
+Function for converting Org mode files to QTI file for importing into Canvas using https://www.nyit.edu/its/canvas_exam_converter
+
+#+begin_src emacs-lisp
+  (defun convert-qti-nyit ()
+    (interactive)
+    ;; Copy all to a temp buffer and set to text mode.
+    (let ((old-buffer (current-buffer)))
+      (with-temp-buffer
+	(insert-buffer-substring old-buffer)
+	(text-mode)
+	;; convert multiple correct answer and essay questions
+	(beginning-of-buffer)
+	(while (re-search-forward "^[:space:]*-" nil t)
+	  (replace-match ""))
+	;; Change correct multiple answer options to "*"
+	(beginning-of-buffer)
+	(let ((case-fold-search nil))
+	  (while (re-search-forward "\[X\]" nil t)
+	    (replace-match "*")))
+	;; Mark short answer responses with "**"
+	(beginning-of-buffer)
+	(while (re-search-forward "+" nil t)
+	  (replace-match "*"))
+	;; remove whitespace at beginning of lines
+	(beginning-of-buffer)
+	(while (re-search-forward "^\s-*" nil t)
+	  (replace-match ""))
+	(beginning-of-buffer)
+	(while (re-search-forward "\\(^[0-9]\\)" nil t)
+	  (replace-match "\n\\1"))
+	;; move correct answer symbol to beginning of line
+	(beginning-of-buffer)
+	(while (re-search-forward "\\(^.*\\)\\(\*$\\)" nil t)
+	  (replace-match "\*\\1"))
+	(delete-trailing-whitespace)
+	;; delete empty line at end and beginning
+	(end-of-buffer)
+	(delete-char -1)
+	(beginning-of-buffer)
+	(kill-line)
+	;; Copy result to clipboard
+	(clipboard-kill-ring-save (point-min) (point-max))
+	)
+      )
+    (browse-url "https://www.nyit.edu/its/canvas_exam_converter")
+    )
+#+end_src
+
+** Blog
+
+Define directory variables.
+
+#+begin_src emacs-lisp
+  (defvar orgblog-directory "~/sites/orgblog/" "Path to the Org mode blog.")
+  (defvar orgblog-public-directory "~/sites/orgblog/docs/" "Path to the blog public directory.")
+  (defvar orgblog-posts-directory "~/sites/orgblog/posts/" "Path to the blog public directory.")
+  (defvar orgblog-drafts-directory "~/sites/orgblog/drafts/" "Path to the blog public directory.")
+
+#+end_src
+
+Create new post.
+
+#+begin_src emacs-lisp
+  (defun rlrt-new-post (rlrt-title)
+    (interactive "sTitle: ")
+    ;; Make filename
+    (setq rlrt-filename (rlrt-make-filename rlrt-title))
+    (find-file (s-concat orgblog-drafts-directory (format-time-string "%Y-%m-%d-") rlrt-filename ".org"))
+    (insert (s-concat "#+TITLE: " rlrt-title) ?\n)
+    (yas-expand-snippet (yas-lookup-snippet "orgblogt")))
+#+end_src
+
+Insert image.
+
+#+begin_src emacs-lisp
+  (defun orgblog-insert-image ()
+    (interactive)
+    (insert "#+begin_center
+  ,#+ATTR_HTML: :width 100% :height
+  ")
+    (insert "[[" (file-relative-name (read-file-name "Insert file name: " "~/sites/orgblog/images/posts/")) "]]
+  ,#+end_center
+
+  ")
+    )
+#+end_src
+
+Move draft to posts.
+
+#+begin_src emacs-lisp
+  (defun orgblog-publish-draft ()
+    (interactive)
+    (save-buffer)
+    (copy-file (buffer-file-name) "~/sites/orgblog/posts/")
+    (delete-file (buffer-file-name) t)
+    (kill-buffer)
+    (dired "~/sites/orgblog/posts"))
+#+end_src
+
+Publish source to public directory.
+
+#+begin_src emacs-lisp
+  (defun orgblog-build ()
+    (interactive)
+    (progn
+      (find-file "~/sites/orgblog/publish.el")
+      (eval-buffer)
+      (org-publish-all)
+      (webfeeder-build "atom.xml"
+		       "./docs"
+		       "https://randyridenour.net/"
+		       (let ((default-directory (expand-file-name "./docs")))
+			 (remove "posts/index.html"
+				 (directory-files-recursively "posts"
+							      ".*\\.html$")))
+		       :title "Randy Ridenour"
+		       :description "Blog posts by Randy Ridenour")
+      (kill-buffer))
+    (message "Build complete!"))
+#+end_src
+
+Start local server.
+
+#+begin_src emacs-lisp
+  (defun orgblog-serve ()
+    (interactive)
+    (progn
+      (async-shell-command "orgblog-serve")
+      (sleep-for 2)
+      (async-shell-command "open http://localhost:3000")))
+#+end_src
+
+Push changes to Github.
+
+#+begin_src emacs-lisp
+  (defun orgblog-push ()
+    (interactive)
+    (async-shell-command "orgblog-push"))
+#+end_src
+
+Modify footnote section label.
+
+#+begin_src emacs-lisp
+  (setq org-html-footnotes-section "<div id=\"footnotes\">
+  <h2 class=\"footnotes\">%s</h2>
+  <div id=\"text-footnotes\">
+  %s
+  </div>
+  </div>")
+#+end_src
+
+Embed YouTube videos, from [[https://endlessparentheses.com/embedding-youtube-videos-with-org-mode-links.html][Embedding Youtube videos with org-mode links · Endless Parentheses]]. Add link like this: =[[yt:3Aoa-yP5U_Y]]=
+
+#+begin_src emacs-lisp
+  (defvar yt-iframe-format
+    ;; You may want to change your width and height.
+    (concat "<iframe width=\"440\""
+	    " height=\"335\""
+	    " src=\"https://www.youtube.com/embed/%s\""
+	    " frameborder=\"0\""
+	    " allowfullscreen>%s</iframe>"))
+
+  (org-add-link-type
+   "yt"
+   (lambda (handle)
+     (browse-url
+      (concat "https://www.youtube.com/embed/"
+	      handle)))
+   (lambda (path desc backend)
+     (cl-case backend
+       (html (format yt-iframe-format
+		     path (or desc "")))
+       (latex (format "\href{%s}{%s}"
+		      path (or desc "video"))))))
+#+end_src
+
+*** Blog Tags
+
+Select tag from list.
+
+#+begin_src emacs-lisp
+  (defun orgblog-all-tag-lines ()
+    "Get filetag lines from all posts."
+    (let ((post-dir orgblog-posts-directory)
+	  (regex "^#\\+filetags:\\s([a-zA-Z]+)"))
+      (shell-command-to-string
+       (concat "rg --context 0 --no-filename --no-heading --replace \"\\$1\" -- " (shell-quote-argument regex) " " post-dir))))
+
+  (defun orgblog-all-tags ()
+    "Return a list of unique tags from all posts."
+    (delete-dups
+     (split-string (orgblog-all-tag-lines) nil t)))
+
+  (defun orgblog-select-tag ()
+    "Select and insert a tag from tags in the blog."
+    (defvar newtag)
+    (setq newtag (completing-read "Tag: " (orgblog-all-tags))))
+#+end_src
+
+Insert tag to heading and tag line.
+
+#+begin_src emacs-lisp
+  (defun insert-post-tag ()
+    (orgblog-select-tag)
+    (beginning-of-buffer)
+    (search-forward "#+filetags" nil 1)
+    (end-of-line)
+    (insert (concat " " newtag))
+    (beginning-of-buffer)
+    (search-forward "Tagged:")
+    (end-of-line)
+    (insert (concat " [[file:../tags/" newtag ".org][" (s-titleized-words newtag) "]]")))
+#+end_src
+
+Add tagged post to tag page.
+
+#+begin_src emacs-lisp
+  (defun add-post-to-tagfile ()
+    (defvar tagfile)
+    (defvar post-filename)
+    (defvar post-title)
+    (setq tagfile (concat "../tags/" newtag ".org"))
+    (setq post-filename (f-filename (f-this-file)))
+    (progn
+      (beginning-of-buffer)
+      (search-forward "#+title: " nil 1)
+      (setq post-title (buffer-substring (point) (line-end-position))))
+    (when
+	(not (file-exists-p tagfile))
+      (f-append-text (concat "#+title: Tagged: " (s-titleized-words newtag) "\n#+setupfile: ../org-templates/post.org\n") 'utf-8 tagfile))
+    (f-append-text (concat "\n- [[file:../posts/" post-filename "][" post-title "]]") 'utf-8 tagfile))
+#+end_src
+
+Select tag, add tag to to post, then add post to tag page.
+
+#+begin_src emacs-lisp
+  (defun orgblog-add-tag ()
+    (interactive)
+    (orgblog-select-tag)
+    (insert-post-tag)
+    (add-post-to-tagfile)
+    (save-buffer))
+#+end_src
+
+** Htmlize
+
+#+begin_src emacs-lisp
+  (use-package htmlize)
+#+end_src
+
+** Style Text Menu
+
+#+begin_src emacs-lisp :tangle no
+  (require 'cc-style-text-menu)
+#+end_src
+
+** Copy Org Rich Text
+
+From [[https://kitchingroup.cheme.cmu.edu/blog/2016/06/16/Copy-formatted-org-mode-text-from-Emacs-to-other-applications/][Copy formatted org-mode text from Emacs to other applications]]
+
+#+begin_src emacs-lisp
+  (defun formatted-copy ()
+    "Export region to HTML, and copy it to the clipboard."
+    (interactive)
+    (save-window-excursion
+      (let* ((buf (org-export-to-buffer 'html "*Formatted Copy*" nil nil t t))
+	     (html (with-current-buffer buf (buffer-string))))
+	(with-current-buffer buf
+	  (shell-command-on-region
+	   (point-min)
+	   (point-max)
+	   "textutil -stdin -format html -convert rtf -stdout | pbcopy"))
+	(kill-buffer buf))))
+
+  ;; (global-set-key (kbd "H-w") 'formatted-copy)
+#+end_src
+
+
+* LaTeX
+
+#+begin_src emacs-lisp
+  (use-package auctex
+    :ensure
+(auctex :repo "https://git.savannah.gnu.org/git/auctex.git" :branch "main"
+	:pre-build (("make" "elpa"))
+	:build (:not elpaca--compile-info) ;; Make will take care of this step
+	:files ("*.el" "doc/*.info*" "etc" "images" "latex" "style")
+	:version (lambda (_) (require 'auctex) AUCTeX-version))
+    :mode ("\\.tex\\'" . LaTeX-mode)
+    :init
+    (setq TeX-parse-self t
+	  TeX-auto-save t
+	  TeX-electric-math nil
+	  LaTeX-electric-left-right-brace nil
+	  TeX-electric-sub-and-superscript nil
+	  LaTeX-item-indent 0
+	  TeX-quote-after-quote nil
+	  TeX-clean-confirm nil
+	  TeX-source-correlate-mode t
+	  TeX-source-correlate-method 'synctex
+	  TeX-view-program-selection '((output-pdf "PDF Viewer"))
+	  TeX-view-program-list
+	  '(("PDF Viewer" "/Applications/Skim.app/Contents/SharedSupport/displayline -b -g %n %o %b"))))
+#+end_src
+
+** LaTeX Build Functions
+
+#+begin_src emacs-lisp
+  (defun raise-emacs-on-aqua()
+    (shell-command "osascript -e 'tell application \"Emacs\" to activate' "))
+  (add-hook 'server-switch-hook 'raise-emacs-on-aqua)
+  (defun tex-clean ()
+    (interactive)
+    (shell-command "latexmk -c"))
+
+  (defun tex-clean-all ()
+    (interactive)
+    (shell-command "latexmk -C"))
+
+  (defun arara-all ()
+    (interactive)
+    (async-shell-command "mkall"))
+
+  (defun rlr/tex-mkpdf ()
+    "Compile with pdf latexmk."
+    (interactive)
+    (save-buffer)
+    (async-shell-command-no-window (concat "mkpdf " (shell-quote-argument(file-name-nondirectory buffer-file-name))))
+    (TeX-view))
+
+  (defun rlr/tex-mktc ()
+    "Compile continuously with pdf latexmk."
+    (interactive)
+    (async-shell-command-no-window (concat "mkpdfc " (shell-quote-argument(file-name-nondirectory buffer-file-name)))))
+
+  (defun rlr/tex-mklua ()
+    "Compile with lua latexmk."
+    (interactive)
+    (save-buffer)
+    (async-shell-command-no-window (concat "mklua " (shell-quote-argument(file-name-nondirectory buffer-file-name))))
+    (TeX-view))
+
+  (defun rlr/tex-mkluac ()
+    "Compile continuously with lua latexmk."
+    (interactive)
+    (async-shell-command-no-window (concat "mkluac " (shell-quote-argument(file-name-nondirectory buffer-file-name)))))
+
+  (defun latex-word-count ()
+    (interactive)
+    (let* ((this-file (buffer-file-name))
+	   (word-count
+	    (with-output-to-string
+	      (with-current-buffer standard-output
+		(call-process "texcount" nil t nil "-brief" this-file)))))
+      (string-match "\n$" word-count)
+      (message (replace-match "" nil nil word-count))))
+#+end_src
+
+** Math Delimiters
+
+#+begin_src emacs-lisp
+  (use-package math-delimiters
+    :ensure
+    (:type git :host github :repo "oantolin/math-delimiters")
+    :after (:any org latex)
+    :commands (math-delimiters-no-dollars math-delimiters-mode)
+    :hook ((LaTeX-mode . math-delimiters-mode)
+	   (org-mode . math-delimiters-mode))
+    :config (progn
+	      (setq math-delimiters-compressed-display-math nil)
+	      (define-minor-mode math-delimiters-mode
+		"Math Delimeters"
+		:init-value nil
+		:lighter " MD"
+		:keymap (let ((map (make-sparse-keymap)))
+			  (define-key map (kbd "$")  #'math-delimiters-insert)
+			  map))))
+#+end_src
+
+
+* Markdown Mode
+
+#+begin_src emacs-lisp
+  (use-package markdown-mode
+    :mode (("README\\.md\\'" . gfm-mode)
+	   ("\\.md\\'" . markdown-mode)
+	   ("\\.Rmd\\'" . markdown-mode)
+	   ("\\.markdown\\'" . markdown-mode))
+    :config
+    (setq markdown-indent-on-enter 'indent-and-new-item)
+    (setq markdown-asymmetric-header t))
+
+  ;; Convert markdown files to org format.
+  (fset 'convert-markdown-to-org
+	[?\M-< ?\M-% ?* return ?- return ?! ?\M-< ?\C-\M-% ?# ?* backspace backspace ?  ?# ?* ?$ return return ?! ?\M-< ?\M-% ?# return ?* return ?!])
+
+  (fset 'copy-beamer-note
+	(kmacro-lambda-form [?\C-r ?: ?E ?N ?D return down ?\C-  ?\C-s ?* ?* ?  ?N ?o ?t ?e ?s return up ?\M-w ?\C-s ?: ?E ?N ?D return down return ?\s-v return] 0 "%d"))
+#+end_src
+
+From [[http://yummymelon.com/devnull/converting-a-markdown-region-to-org-revisited.html][Charles Choi]].
+
+#+begin_src emacs-lisp
+  (defun cc/markdown-to-org-region (start end)
+    "Convert Markdown formatted text in region (START, END) to Org.
+
+  This command requires that pandoc (man page `pandoc(1)') be
+  installed."
+    (interactive "r")
+    (shell-command-on-region
+     start end
+     "pandoc -f markdown -t org --wrap=preserve" t t))
+#+end_src
+
+* Citations
 
 ** Citar
 
@@ -1933,6 +3314,24 @@ Display suggestions in grid.
        (odt . (csl "chicago-author-date.csl"))
        (t . (csl "chicago-author-date.csl")))))
 #+end_src
+
+
+
+** Ebib
+
+#+begin_src emacs-lisp
+  (use-package ebib
+    :config
+    (setq ebib-bibtex-dialect 'biblatex)
+    ;;(evil-set-initial-state 'ebib-index-mode 'emacs)
+    ;;(evil-set-initial-state 'ebib-entry-mode 'emacs)
+    ;;(evil-set-initial-state 'ebib-log-mode 'emacs)
+    :custom
+    (ebib-preload-bib-files '("~/Dropbox/bibtex/rlr.bib")))
+#+end_src
+
+
+* Notes
 
 ** Denote
 
@@ -2046,18 +3445,367 @@ Search notes with the xapian syntax (+word -word AND NOT etc), <tab> to preview,
 #+end_src
 
 
-** Ebib
+** Notepad
+
+I use this to quickly create a disposable Emacs buffer to write some quick text for pasting into another app. I'm using this with a Keyboard Maestro macro.
+
+Define initial mode to use for notepad buffers. This is so I can use "C-c C-c" to copy and kill.
 
 #+begin_src emacs-lisp
-  (use-package ebib
-    :config
-    (setq ebib-bibtex-dialect 'biblatex)
-    ;;(evil-set-initial-state 'ebib-index-mode 'emacs)
-    ;;(evil-set-initial-state 'ebib-entry-mode 'emacs)
-    ;;(evil-set-initial-state 'ebib-log-mode 'emacs)
-    :custom
-    (ebib-preload-bib-files '("~/Dropbox/bibtex/rlr.bib")))
+  (defvar-keymap notepad-mode-map
+    "C-c C-c" #'copy-kill-buffer)
+
+  (define-derived-mode notepad-mode
+    org-mode "Notepad"
+    "Major mode for scratch buffers."
+    )
 #+end_src
+
+Create notepad buffer
+
+#+begin_src emacs-lisp
+  (defun rlr/create-notepad-buffer ()
+    "Create a new notepad buffer."
+    (interactive)
+    (let ((buf (generate-new-buffer "*notepad*")))
+      (switch-to-buffer buf))
+    (notepad-mode)
+    (shell-command-on-region (point) (if mark-active (mark) (point)) "pbpaste" nil t))
+#+end_src
+
+This calls a fish function that uses command-tab to switch to the previous app and pastes the clipboard.
+
+#+begin_src emacs-lisp
+  (defun app-switch ()
+    (interactive)
+    (shell-command "switch-paste"))
+#+end_src
+
+#+begin_src emacs-lisp
+  (general-define-key
+   "C-s-<tab>" #'app-switch)
+#+end_src
+
+Copy entire buffer then kill. I use this with temporary scratch buffers to write text that will be pasted into other apps.
+
+#+begin_src emacs-lisp
+  (defun copy-kill-buffer ()
+    (interactive)
+    (goto-char (point-max))
+    (newline)
+    (mark-whole-buffer)
+    (copy-region-as-kill 1 (buffer-size))
+    (kill-buffer)
+    ;; (app-switch)
+    (shell-command "open -a ~/icloud/scripts/beep.app"))
+#+end_src
+
+
+* Mail and News
+
+** Mu4e
+
+#+begin_src emacs-lisp
+  (use-feature mu4e
+    :commands (mu4e mu4e-update-mail-and-index)
+    :general
+    (:keymaps 'mu4e-headers-mode-map
+	  "q"  #'kill-current-buffer
+	  "C-<tab>" #'tab-next)
+    (:keymaps 'mu4e-thread-mode-map
+	  "C-<tab>" #'tab-next)
+    (:keymaps 'mu4e-main-mode-map
+	  "q"  #'rlr/quit-mu4e)
+    :after org
+    :config
+    (setq
+     mu4e-split-view 'horizontal
+     mu4e-index-update-error-warning nil
+     mu4e-headers-skip-duplicates  t
+     mu4e-view-show-images t
+     mu4e-view-show-addresses t
+     mu4e-use-fancy-chars t
+     mu4e-compose-format-flowed t
+     mu4e-date-format "%y/%m/%d"
+     mu4e-headers-date-format "%Y/%m/%d"
+     mu4e-change-filenames-when-moving t
+     mu4e-attachment-dir "~/Downloads"
+     mu4e-maildir       "~/.maildir/"   ;; top-level Maildir
+     ;; note that these folders below must start with /
+     ;; the paths are relative to maildir root
+
+     ;; this setting allows to re-sync and re-index mail
+     ;; by pressing U
+     mu4e-get-mail-command "mbsync -a"
+     mu4e-update-interval 300 ;; update every 5 minutes
+     ;; mu4e-headers-auto-update
+     mu4e-completing-read-function 'completing-read
+     mu4e-context-policy 'pick-first
+     mu4e-contexts (list
+		(make-mu4e-context
+		 :name "fastmail"
+		 :match-func
+		 (lambda (msg)
+		 (when msg
+		   (string-prefix-p "/fastmail" (mu4e-message-field msg :maildir))))
+		 :vars '((user-mail-address . "rlridenour@fastmail.com")
+		       (user-full-name    . "Randy Ridenour")
+		       (mu4e-drafts-folder  . "/fastmail/Drafts")
+		       (mu4e-sent-folder  . "/fastmail/Sent")
+		       (mu4e-trash-folder  . "/fastmail/Trash")
+		       (mu4e-refile-folder  . "/fastmail/Archive")
+		       (sendmail-program . "msmtp")
+		       (send-mail-function . smtpmail-send-it)
+		       (message-sendmail-f-is-evil . t)
+		       (message-sendmail-extra-arguments . ("--read-envelope-from"))
+		       (message-send-mail-function . message-send-mail-with-sendmail)
+		       (smtpmail-default-smtp-server . "smtp.fastmail.com")
+		       (smtpmail-smtp-server  . "smtp.fastmail.com")
+		       ))
+		(make-mu4e-context
+		 :name "obu"
+		 :match-func
+		 (lambda (msg)
+		 (when msg
+		   (string-prefix-p "/obu" (mu4e-message-field msg :maildir))))
+		 :vars '((user-mail-address . "randy.ridenour@okbu.edu")
+		       (user-full-name    . "Randy Ridenour")
+		       (mu4e-drafts-folder  . "/obu/Drafts")
+		       (mu4e-sent-folder  . "/obu/Sent")
+		       (mu4e-trash-folder . "/obu/Trash")
+		       (mu4e-refile-folder  . "/obu/Archive")
+		       ;; (sendmail-program . "msmtp")
+		       (send-mail-function . smtpmail-send-it)
+		       (message-sendmail-f-is-evil . t)
+		       (message-sendmail-extra-arguments . ("--read-envelope-from"))
+		       (message-send-mail-function . message-send-mail-with-sendmail)
+		       (smtpmail-smtp-server  . "localhost")
+		       (smtpmail-smtp-user . "randy.ridenour@okbu.edu")
+		       (smtpmail-stream-type . plain)
+		       (smtpmail-smtp-service . 1025)
+		       ))))
+    (display-line-numbers-mode -1)
+    (require 'mu4e-transient)
+    (add-to-list 'mu4e-bookmarks
+	     '( :name "OBU Inbox"
+		:query "maildir:/obu/INBOX AND NOT flag:trashed"
+		:key ?o))
+    (add-to-list 'mu4e-bookmarks
+	     '( :name "Fastmail Inbox"
+		:query "maildir:/fastmail/INBOX AND NOT flag:trashed"
+		:key ?f))
+    ;; (add-to-list 'mu4e-bookmarks
+    ;;	     '(:name "All Inboxes"
+    ;;		   :query "(maildir:/obu/INBOX OR maildir:/fastmail/INBOX) AND NOT flag:trashed"
+    ;;		   :key ?i
+    ;;		   :hide-unread))
+    (add-to-list 'mu4e-bookmarks
+	     '(:name "Unread Inboxes"
+		   :query "flag:unread AND NOT flag:trashed"
+		   :key ?b))
+
+    (setq gnus-blocked-images
+	  (lambda(&optional _ignore)
+	(if (mu4e-message-contact-field-matches
+	     (mu4e-message-at-point) :from "store-news@woot.com")
+	    nil "."))))
+#+end_src
+
+#+begin_src emacs-lisp
+  (use-package org-mime
+    :commands (org-mime-edit-mail-in-org-mode)
+    :config
+    (setq org-mime-export-options '(:section-numbers nil
+					 :with-author nil
+					 :with-toc nil))
+    )
+#+end_src
+
+Quit Mu4e and close tab.
+
+#+begin_src emacs-lisp
+  (defun rlr/quit-mu4e ()
+    (interactive)
+    (mu4e-quit)
+    (rlr/delete-tab-or-frame))
+#+end_src
+
+Mu4e-alert
+
+#+begin_src emacs-lisp
+  (use-package mu4e-alert
+    :config
+    (mu4e-alert-enable-mode-line-display))
+#+end_src
+
+#+begin_src emacs-lisp :tangle no
+  (defun my-mu4e-choose-signature ()
+    "Insert one of a number of sigs"
+    (interactive)
+    (let ((message-signature
+	   (mu4e-read-option "Signature:"
+			     '(("formal" .
+			(concat
+			 "Randy Ridenour, Ph.D.\n"
+			 "Professor of Philosophy\n"
+			 "Oklahoma Baptist University\n\n"
+			 "500 W. University St.\n"
+			 "Shawnee, OK  74804\n"
+			 "Office: (405) 585-4432\n"
+			 ("informal" .
+			  "Joe\n")))))
+	   (message-insert-signature)))
+#+end_src
+
+#+begin_src emacs-lisp
+  (defun obu-signature ()
+    (interactive)
+    (insert (concat
+	 "\n\n"
+	 "--\n"
+	 "Randy Ridenour, Ph.D.\n"
+	 "Professor of Philosophy\n"
+	 "Oklahoma Baptist University\n\n"
+	 "500 W. University St.\n"
+	 "Shawnee, OK  74804\n"
+	 "Office: (405) 585-4432\n")
+	))
+
+  (defun informal-signature ()
+    (interactive)
+    (insert (concat
+	 "\n\n"
+	 "--\n"
+	 "Randy"
+	 )))
+#+end_src
+
+Open mu4e in new tab.
+
+#+begin_src emacs-lisp
+  (defun rlr/open-mu4e-new-tab ()
+    (interactive)
+    (tab-new)
+    (mu4e)
+    (mu4e-update-mail-and-index 1))
+#+end_src
+
+Open mu4e and elfeed in new frame.
+
+#+begin_src emacs-lisp
+  (defun rlr/read-mail-news ()
+    (interactive)
+    ;; (make-frame-command)
+    ;; (agenda-home)
+    (tab-new)
+    (rlr/elfeed-load-db-and-open)
+    (elfeed-update)
+    (tab-new)
+    (mu4e)
+    (mu4e-update-mail-and-index 1)
+    )
+
+  (general-define-key
+   "C-M-s-r" #'rlr/read-mail-news
+   "H-m" #'mu4e-transient-menu)
+#+end_src
+
+*** Mu4e-Views
+
+#+begin_src emacs-lisp :tangle no
+  (use-package mu4e-views
+    :ensure (:type git :host github :repo "lordpretzel/mu4e-views")
+    :after mu4e
+    :config
+    (setq mu4e-views-default-view-method "html") ;; make xwidgets default
+    (mu4e-views-mu4e-use-view-msg-method "html") ;; select the default
+    (setq mu4e-views-next-previous-message-behaviour 'stick-to-current-window) ;; when pressing n and p stay in the current window
+    (setq mu4e-views-auto-view-selected-message t) ;; automatically open messages when moving in the headers view
+    :general
+    (:keymaps 'mu4e-headers-mode-map
+	  "v"  #'mu4e-views-mu4e-select-view-msg-method ;; select viewing method
+	  "M-n" #'mu4e-views-cursor-msg-view-window-down ;; from headers window scroll the email view
+	  "M-p" #'mu4e-views-cursor-msg-view-window-up ;; from headers window scroll the email view
+	  "<SPC<" #'mu4e-views-cursor-msg-view-window-down ;; from headers window scroll the email view
+	  "s-<SPC>" #'mu4e-views-cursor-msg-view-window-up ;; from headers window scroll the email view
+	  "f" #'mu4e-views-toggle-auto-view-selected-message ;; toggle opening messages automatically when moving in the headers view
+	  "i" #'mu4e-views-mu4e-view-as-nonblocked-html ;; show currently selected email with all remote content
+	  ))
+#+end_src
+
+*** Consult MU
+
+#+begin_src emacs-lisp
+  (use-package consult-mu
+    :ensure (:type git :host github :repo "armindarvish/consult-mu" :branch "main" :files (:defaults "extras/*.el"))
+    :after (consult mu4e)
+    :commands (consult-mu)
+    :custom
+    ;;maximum number of results shown in minibuffer
+    (consult-mu-maxnum 200)
+    ;;show preview when pressing any keys
+    (consult-mu-preview-key 'any)
+    ;;do not mark email as read when previewed. If you turn this to t, be aware that the auto-loaded preview if the preview-key above is 'any would also get marked as read!
+    (consult-mu-mark-previewed-as-read nil)
+    ;;mark email as read when selected.
+    (consult-mu-mark-viewed-as-read t)
+    ;;use reply to all when composing reply emails
+    (consult-mu-use-wide-reply nil)
+    ;; define a template for headers view in minibuffer. The example below adjusts the width based on the width of the screen.
+    (consult-mu-headers-template (lambda () (concat "%f" (number-to-string (floor (* (frame-width) 0.15))) "%s" (number-to-string (floor (* (frame-width) 0.5))) "%d13" "%g" "%x")))
+    :config
+    ;;create a list of saved searches for quick access using `histroy-next-element' with `M-n' in minibuffer. Note the "#" character at the beginning of each query! Change these according to
+    (setq consult-mu-saved-searches-dynamics '("#flag:unread"))
+    (setq consult-mu-saved-searches-async '("#flag:unread"))
+    ;; require embark actions for marking, replying, forwarding, etc. directly from minibuffer
+    (require 'consult-mu-embark)
+    ;; require extra module for composing (e.g. for interactive attachment) as well as embark actions
+    (require 'consult-mu-compose)
+    (require 'consult-mu-compose-embark)
+    ;; require extra module for searching contacts and runing embark actions on contacts
+    (require 'consult-mu-contacts)
+    (require 'consult-mu-contacts-embark)
+    ;; change the prefiew key for compose so you don't open a preview of every file when selecting files to attach
+    (setq consult-mu-compose-preview-key "M-o")
+    ;; pick a key to bind to consult-mu-compose-attach in embark-file-map
+    (setq consult-mu-embark-attach-file-key "C-a")
+    (setq consult-mu-contacts-ignore-list '("^.*no.*reply.*"))
+    (setq consult-mu-contacts-ignore-case-fold-search t)
+    (consult-mu-compose-embark-bind-attach-file-key)
+    ;; choose if you want to use dired for attaching files (choice of 'always, 'in-dired, or nil)
+    (setq consult-mu-compose-use-dired-attachment 'in-dired))
+#+end_src
+
+*** Browser
+
+Functions for setting default browser,
+
+#+begin_src emacs-lisp
+  (defun rlr/browser-default ()
+    (interactive)
+    (setq browse-url-browser-function 'browse-url-default-browser))
+
+  (defun rlr/browser-qutebrowser ()
+    (interactive)
+    (setq browse-url-browser-function 'browse-url-generic
+	  browse-url-generic-program "qutebrowser"))
+
+  (defun rlr/browser-eww ()
+    (interactive)
+    (setq browse-url-browser-function 'eww-browse-url))
+
+  (defun rlr/select-browser ()
+    (interactive)
+    (let* ((choices '(("System Default" . rlr/browser-default)
+		("Qutebrowser" . rlr/browser-qutebrowser)
+		("EWW" . rlr/browser-eww)))
+	   (choice   (completing-read "Choose one: " choices)))
+      (call-interactively (cdr (assoc choice choices)))))
+
+  (general-define-key
+   "C-M-S-s-b" #'rlr/select-browser)
+#+end_src
+
 
 ** Elfeed
 
@@ -2146,6 +3894,38 @@ Tag items — from [[https://www.reddit.com/r/emacs/comments/go5d0v/using_emacs_
     :init
     (elfeed-goodies/setup))
 #+end_src
+
+
+** Mastodon
+
+#+begin_src emacs-lisp :tangle no
+  (use-package mastodon
+    :config
+    (mastodon-discover)
+    (setq mastodon-instance-url "https://zirk.us/"
+	  mastodon-active-user "randyridenour"
+	  ;; mastodon-auth-use-auth-source nil
+	  epa-file-encrypt-to "677C0F5EA5535058"))
+#+end_src
+
+Open Mastodon in a new tab
+
+#+begin_src emacs-lisp :tangle no
+  (defun rlr/open-mastodon ()
+    (interactive)
+    (tab-new)
+    (mastodon))
+#+end_src
+
+
+* Miscellaneous Packages
+
+** ChordPro
+
+#+begin_src emacs-lisp
+  (use-package chordpro-mode)
+#+end_src
+
 
 ** EWW
 
@@ -2708,107 +4488,6 @@ Tag items — from [[https://www.reddit.com/r/emacs/comments/go5d0v/using_emacs_
     (isgd-ask-custom-url t))
 #+end_src
 
-** LaTeX
-
-#+begin_src emacs-lisp
-  (use-package auctex
-    :ensure
-(auctex :repo "https://git.savannah.gnu.org/git/auctex.git" :branch "main"
-	:pre-build (("make" "elpa"))
-	:build (:not elpaca--compile-info) ;; Make will take care of this step
-	:files ("*.el" "doc/*.info*" "etc" "images" "latex" "style")
-	:version (lambda (_) (require 'auctex) AUCTeX-version))
-    :mode ("\\.tex\\'" . LaTeX-mode)
-    :init
-    (setq TeX-parse-self t
-	  TeX-auto-save t
-	  TeX-electric-math nil
-	  LaTeX-electric-left-right-brace nil
-	  TeX-electric-sub-and-superscript nil
-	  LaTeX-item-indent 0
-	  TeX-quote-after-quote nil
-	  TeX-clean-confirm nil
-	  TeX-source-correlate-mode t
-	  TeX-source-correlate-method 'synctex
-	  TeX-view-program-selection '((output-pdf "PDF Viewer"))
-	  TeX-view-program-list
-	  '(("PDF Viewer" "/Applications/Skim.app/Contents/SharedSupport/displayline -b -g %n %o %b"))))
-#+end_src
-
-*** LaTeX Build Functions
-
-#+begin_src emacs-lisp
-  (defun raise-emacs-on-aqua()
-    (shell-command "osascript -e 'tell application \"Emacs\" to activate' "))
-  (add-hook 'server-switch-hook 'raise-emacs-on-aqua)
-  (defun tex-clean ()
-    (interactive)
-    (shell-command "latexmk -c"))
-
-  (defun tex-clean-all ()
-    (interactive)
-    (shell-command "latexmk -C"))
-
-  (defun arara-all ()
-    (interactive)
-    (async-shell-command "mkall"))
-
-  (defun rlr/tex-mkpdf ()
-    "Compile with pdf latexmk."
-    (interactive)
-    (save-buffer)
-    (async-shell-command-no-window (concat "mkpdf " (shell-quote-argument(file-name-nondirectory buffer-file-name))))
-    (TeX-view))
-
-  (defun rlr/tex-mktc ()
-    "Compile continuously with pdf latexmk."
-    (interactive)
-    (async-shell-command-no-window (concat "mkpdfc " (shell-quote-argument(file-name-nondirectory buffer-file-name)))))
-
-  (defun rlr/tex-mklua ()
-    "Compile with lua latexmk."
-    (interactive)
-    (save-buffer)
-    (async-shell-command-no-window (concat "mklua " (shell-quote-argument(file-name-nondirectory buffer-file-name))))
-    (TeX-view))
-
-  (defun rlr/tex-mkluac ()
-    "Compile continuously with lua latexmk."
-    (interactive)
-    (async-shell-command-no-window (concat "mkluac " (shell-quote-argument(file-name-nondirectory buffer-file-name)))))
-
-  (defun latex-word-count ()
-    (interactive)
-    (let* ((this-file (buffer-file-name))
-	   (word-count
-	    (with-output-to-string
-	      (with-current-buffer standard-output
-		(call-process "texcount" nil t nil "-brief" this-file)))))
-      (string-match "\n$" word-count)
-      (message (replace-match "" nil nil word-count))))
-#+end_src
-
-*** Math Delimiters
-
-#+begin_src emacs-lisp
-  (use-package math-delimiters
-    :ensure
-    (:type git :host github :repo "oantolin/math-delimiters")
-    :after (:any org latex)
-    :commands (math-delimiters-no-dollars math-delimiters-mode)
-    :hook ((LaTeX-mode . math-delimiters-mode)
-	   (org-mode . math-delimiters-mode))
-    :config (progn
-	      (setq math-delimiters-compressed-display-math nil)
-	      (define-minor-mode math-delimiters-mode
-		"Math Delimeters"
-		:init-value nil
-		:lighter " MD"
-		:keymap (let ((map (make-sparse-keymap)))
-			  (define-key map (kbd "$")  #'math-delimiters-insert)
-			  map))))
-#+end_src
-
 *** Link Hint
 
 #+begin_src emacs-lisp
@@ -2817,1640 +4496,6 @@ Tag items — from [[https://www.reddit.com/r/emacs/comments/go5d0v/using_emacs_
     ("s-," #'link-hint-open-link
      "C-c l o" #'link-hint-open-link
      "C-c l c" #'link-hint-copy-link))
-#+end_src
-
-** Markdown Mode
-
-#+begin_src emacs-lisp
-  (use-package markdown-mode
-    :mode (("README\\.md\\'" . gfm-mode)
-	   ("\\.md\\'" . markdown-mode)
-	   ("\\.Rmd\\'" . markdown-mode)
-	   ("\\.markdown\\'" . markdown-mode))
-    :config
-    (setq markdown-indent-on-enter 'indent-and-new-item)
-    (setq markdown-asymmetric-header t))
-
-  ;; Convert markdown files to org format.
-  (fset 'convert-markdown-to-org
-	[?\M-< ?\M-% ?* return ?- return ?! ?\M-< ?\C-\M-% ?# ?* backspace backspace ?  ?# ?* ?$ return return ?! ?\M-< ?\M-% ?# return ?* return ?!])
-
-  (fset 'copy-beamer-note
-	(kmacro-lambda-form [?\C-r ?: ?E ?N ?D return down ?\C-  ?\C-s ?* ?* ?  ?N ?o ?t ?e ?s return up ?\M-w ?\C-s ?: ?E ?N ?D return down return ?\s-v return] 0 "%d"))
-#+end_src
-
-From [[http://yummymelon.com/devnull/converting-a-markdown-region-to-org-revisited.html][Charles Choi]].
-
-#+begin_src emacs-lisp
-  (defun cc/markdown-to-org-region (start end)
-    "Convert Markdown formatted text in region (START, END) to Org.
-
-  This command requires that pandoc (man page `pandoc(1)') be
-  installed."
-    (interactive "r")
-    (shell-command-on-region
-     start end
-     "pandoc -f markdown -t org --wrap=preserve" t t))
-#+end_src
-
-** Mastodon
-
-#+begin_src emacs-lisp :tangle no
-  (use-package mastodon
-    :config
-    (mastodon-discover)
-    (setq mastodon-instance-url "https://zirk.us/"
-	  mastodon-active-user "randyridenour"
-	  ;; mastodon-auth-use-auth-source nil
-	  epa-file-encrypt-to "677C0F5EA5535058"))
-#+end_src
-
-Open Mastodon in a new tab
-
-#+begin_src emacs-lisp :tangle no
-  (defun rlr/open-mastodon ()
-    (interactive)
-    (tab-new)
-    (mastodon))
-#+end_src
-
-** Notepad
-
-I use this to quickly create a disposable Emacs buffer to write some quick text for pasting into another app. I'm using this with a Keyboard Maestro macro.
-
-Define initial mode to use for notepad buffers. This is so I can use "C-c C-c" to copy and kill.
-
-#+begin_src emacs-lisp
-  (defvar-keymap notepad-mode-map
-    "C-c C-c" #'copy-kill-buffer)
-
-  (define-derived-mode notepad-mode
-    org-mode "Notepad"
-    "Major mode for scratch buffers."
-    )
-#+end_src
-
-Create notepad buffer
-
-#+begin_src emacs-lisp
-  (defun rlr/create-notepad-buffer ()
-    "Create a new notepad buffer."
-    (interactive)
-    (let ((buf (generate-new-buffer "*notepad*")))
-      (switch-to-buffer buf))
-    (notepad-mode)
-    (shell-command-on-region (point) (if mark-active (mark) (point)) "pbpaste" nil t))
-#+end_src
-
-This calls a fish function that uses command-tab to switch to the previous app and pastes the clipboard.
-
-#+begin_src emacs-lisp
-  (defun app-switch ()
-    (interactive)
-    (shell-command "switch-paste"))
-#+end_src
-
-#+begin_src emacs-lisp
-  (general-define-key
-   "C-s-<tab>" #'app-switch)
-#+end_src
-
-Copy entire buffer then kill. I use this with temporary scratch buffers to write text that will be pasted into other apps.
-
-#+begin_src emacs-lisp
-  (defun copy-kill-buffer ()
-    (interactive)
-    (goto-char (point-max))
-    (newline)
-    (mark-whole-buffer)
-    (copy-region-as-kill 1 (buffer-size))
-    (kill-buffer)
-    ;; (app-switch)
-    (shell-command "open -a ~/icloud/scripts/beep.app"))
-#+end_src
-
-** Org
-
-#+begin_src emacs-lisp
-  (use-package org
-    :ensure nil
-    :init
-    ;; (setq org-directory "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/")
-    (setq org-directory "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/")
-    :config
-    (setq org-list-allow-alphabetical t)
-    (setq org-highlight-latex-and-related '(latex script entities))
-    (setq org-startup-indented nil)
-    (setq org-adapt-indentation nil)
-    (setq org-hide-leading-stars nil)
-    (setq org-hide-emphasis-markers t)
-    (setq org-list-indent-offset 2)
-    (setq org-agenda-skip-deadline-prewarning-if-scheduled t)
-    (setq org-use-speed-commands t)
-
-    ;; Hide drawers
-    (setopt org-cycle-hide-drawer-startup t)
-    (setopt org-startup-folded 'nofold)
-
-    (set-face-attribute 'org-level-1 nil :height 1.3 :weight 'bold :inherit 'fixed-pitch)
-    (set-face-attribute 'org-level-2 nil :height 1.2 :weight 'bold :inherit 'fixed-pitch)
-    (set-face-attribute 'org-level-3 nil :height 1.1 :weight 'bold :inherit 'fixed-pitch)
-    (set-face-attribute 'org-level-4 nil :height 1.0 :weight 'bold :inherit 'fixed-pitch)
-    (set-face-attribute 'org-level-5 nil :height 1.0 :weight 'bold :inherit 'fixed-pitch)
-    (set-face-attribute 'org-level-6 nil :height 1.0 :weight 'bold :inherit 'fixed-pitch)
-    (set-face-attribute 'org-level-7 nil :height 1.0 :weight 'bold :inherit 'fixed-pitch)
-    (set-face-attribute 'org-level-8 nil :height 1.0 :weight 'bold :inherit 'fixed-pitch)
-
-    ;; Make the document title a bit bigger
-    (set-face-attribute 'org-document-title nil :weight 'bold :height 1.5)
-
-    ;; Make LaTeX previews larger.
-    (plist-put org-format-latex-options :scale 1.5)
-
-    (setq org-support-shift-select t)
-    (setq org-special-ctrl-a/e t)
-    ;; (setq org-footnote-section nil)
-    (setq org-html-validation-link nil)
-    (setq org-time-stamp-rounding-minutes '(0 15))
-    (setq org-agenda-skip-scheduled-if-deadline-is-shown t)
-    (setq org-agenda-skip-scheduled-if-done t)
-    (setq org-log-done t)
-    (setq org-todo-keyword-faces
-	  '(("DONE" . "green4") ("TODO" . org-warning)))
-    (setq org-agenda-files '("/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/"))
-    (setq org-agenda-start-on-weekday nil)
-    (setq org-agenda-window-setup 'current-window)
-    (setq org-link-frame-setup
-	  '((vm . vm-visit-folder-other-frame)
-	(vm-imap . vm-visit-imap-folder-other-frame)
-	(gnus . org-gnus-no-new-news)
-	(file . find-file)
-	(wl . wl-other-frame)))
-    (require 'org-tempo)
-    ;; Open directory links in Dired.
-    (add-to-list 'org-file-apps '(directory . emacs)))
-#+end_src
-
-Use variable pitch mode in Org and Markdown modes. Toggle with ~C-M-S-s-v~, bound to ~<Caps-Lock>-V~.
-
-#+begin_src emacs-lisp
-  (add-hook 'org-mode-hook #'variable-pitch-mode)
-  (add-hook 'markdown-mode-hook #'variable-pitch-mode)
-
-  (general-define-key
-   "C-M-S-s-v" #'variable-pitch-mode)
-#+end_src
-
-*** Org Appear
-
-#+begin_src emacs-lisp
-  (use-package org-appear
-    :commands (org-appear-mode)
-    ;; :hook     (org-mode . org-appear-mode)
-    :config
-    (setq org-hide-emphasis-markers t)  ; Must be activated for org-appear to work
-    (setq org-appear-autoemphasis   t   ; Show bold, italics, verbatim, etc.
-	  org-appear-autolinks      t   ; Show links
-	  org-appear-autosubmarkers t)) ; Show sub and superscripts
-#+end_src
-
-*** Org Superstar
-
-#+begin_src emacs-lisp :tangle no
-  (use-package org-superstar
-    :config
-    (setq org-superstar-headline-bullets-list '("●" "○" "▶" "◈" "◇"))
-    :hook (org-mode . org-superstar-mode))
-#+end_src
-
-*** Mu4e
-
-#+begin_src emacs-lisp
-  (use-feature mu4e
-    :commands (mu4e mu4e-update-mail-and-index)
-    :general
-    (:keymaps 'mu4e-headers-mode-map
-	  "q"  #'kill-current-buffer
-	  "C-<tab>" #'tab-next)
-    (:keymaps 'mu4e-thread-mode-map
-	  "C-<tab>" #'tab-next)
-    (:keymaps 'mu4e-main-mode-map
-	  "q"  #'rlr/quit-mu4e)
-    :after org
-    :config
-    (setq
-     mu4e-split-view 'horizontal
-     mu4e-index-update-error-warning nil
-     mu4e-headers-skip-duplicates  t
-     mu4e-view-show-images t
-     mu4e-view-show-addresses t
-     mu4e-use-fancy-chars t
-     mu4e-compose-format-flowed t
-     mu4e-date-format "%y/%m/%d"
-     mu4e-headers-date-format "%Y/%m/%d"
-     mu4e-change-filenames-when-moving t
-     mu4e-attachment-dir "~/Downloads"
-     mu4e-maildir       "~/.maildir/"   ;; top-level Maildir
-     ;; note that these folders below must start with /
-     ;; the paths are relative to maildir root
-
-     ;; this setting allows to re-sync and re-index mail
-     ;; by pressing U
-     mu4e-get-mail-command "mbsync -a"
-     mu4e-update-interval 300 ;; update every 5 minutes
-     ;; mu4e-headers-auto-update
-     mu4e-completing-read-function 'completing-read
-     mu4e-context-policy 'pick-first
-     mu4e-contexts (list
-		(make-mu4e-context
-		 :name "fastmail"
-		 :match-func
-		 (lambda (msg)
-		 (when msg
-		   (string-prefix-p "/fastmail" (mu4e-message-field msg :maildir))))
-		 :vars '((user-mail-address . "rlridenour@fastmail.com")
-		       (user-full-name    . "Randy Ridenour")
-		       (mu4e-drafts-folder  . "/fastmail/Drafts")
-		       (mu4e-sent-folder  . "/fastmail/Sent")
-		       (mu4e-trash-folder  . "/fastmail/Trash")
-		       (mu4e-refile-folder  . "/fastmail/Archive")
-		       (sendmail-program . "msmtp")
-		       (send-mail-function . smtpmail-send-it)
-		       (message-sendmail-f-is-evil . t)
-		       (message-sendmail-extra-arguments . ("--read-envelope-from"))
-		       (message-send-mail-function . message-send-mail-with-sendmail)
-		       (smtpmail-default-smtp-server . "smtp.fastmail.com")
-		       (smtpmail-smtp-server  . "smtp.fastmail.com")
-		       ))
-		(make-mu4e-context
-		 :name "obu"
-		 :match-func
-		 (lambda (msg)
-		 (when msg
-		   (string-prefix-p "/obu" (mu4e-message-field msg :maildir))))
-		 :vars '((user-mail-address . "randy.ridenour@okbu.edu")
-		       (user-full-name    . "Randy Ridenour")
-		       (mu4e-drafts-folder  . "/obu/Drafts")
-		       (mu4e-sent-folder  . "/obu/Sent")
-		       (mu4e-trash-folder . "/obu/Trash")
-		       (mu4e-refile-folder  . "/obu/Archive")
-		       ;; (sendmail-program . "msmtp")
-		       (send-mail-function . smtpmail-send-it)
-		       (message-sendmail-f-is-evil . t)
-		       (message-sendmail-extra-arguments . ("--read-envelope-from"))
-		       (message-send-mail-function . message-send-mail-with-sendmail)
-		       (smtpmail-smtp-server  . "localhost")
-		       (smtpmail-smtp-user . "randy.ridenour@okbu.edu")
-		       (smtpmail-stream-type . plain)
-		       (smtpmail-smtp-service . 1025)
-		       ))))
-    (display-line-numbers-mode -1)
-    (require 'mu4e-transient)
-    (add-to-list 'mu4e-bookmarks
-	     '( :name "OBU Inbox"
-		:query "maildir:/obu/INBOX AND NOT flag:trashed"
-		:key ?o))
-    (add-to-list 'mu4e-bookmarks
-	     '( :name "Fastmail Inbox"
-		:query "maildir:/fastmail/INBOX AND NOT flag:trashed"
-		:key ?f))
-    ;; (add-to-list 'mu4e-bookmarks
-    ;;	     '(:name "All Inboxes"
-    ;;		   :query "(maildir:/obu/INBOX OR maildir:/fastmail/INBOX) AND NOT flag:trashed"
-    ;;		   :key ?i
-    ;;		   :hide-unread))
-    (add-to-list 'mu4e-bookmarks
-	     '(:name "Unread Inboxes"
-		   :query "flag:unread AND NOT flag:trashed"
-		   :key ?b))
-
-    (setq gnus-blocked-images
-	  (lambda(&optional _ignore)
-	(if (mu4e-message-contact-field-matches
-	     (mu4e-message-at-point) :from "store-news@woot.com")
-	    nil "."))))
-#+end_src
-
-#+begin_src emacs-lisp
-  (use-package org-mime
-    :commands (org-mime-edit-mail-in-org-mode)
-    :config
-    (setq org-mime-export-options '(:section-numbers nil
-					 :with-author nil
-					 :with-toc nil))
-    )
-#+end_src
-
-Quit Mu4e and close tab.
-
-#+begin_src emacs-lisp
-  (defun rlr/quit-mu4e ()
-    (interactive)
-    (mu4e-quit)
-    (rlr/delete-tab-or-frame))
-#+end_src
-
-Mu4e-alert
-
-#+begin_src emacs-lisp
-  (use-package mu4e-alert
-    :config
-    (mu4e-alert-enable-mode-line-display))
-#+end_src
-
-#+begin_src emacs-lisp :tangle no
-  (defun my-mu4e-choose-signature ()
-    "Insert one of a number of sigs"
-    (interactive)
-    (let ((message-signature
-	   (mu4e-read-option "Signature:"
-			     '(("formal" .
-			(concat
-			 "Randy Ridenour, Ph.D.\n"
-			 "Professor of Philosophy\n"
-			 "Oklahoma Baptist University\n\n"
-			 "500 W. University St.\n"
-			 "Shawnee, OK  74804\n"
-			 "Office: (405) 585-4432\n"
-			 ("informal" .
-			  "Joe\n")))))
-	   (message-insert-signature)))
-#+end_src
-
-#+begin_src emacs-lisp
-  (defun obu-signature ()
-    (interactive)
-    (insert (concat
-	 "\n\n"
-	 "--\n"
-	 "Randy Ridenour, Ph.D.\n"
-	 "Professor of Philosophy\n"
-	 "Oklahoma Baptist University\n\n"
-	 "500 W. University St.\n"
-	 "Shawnee, OK  74804\n"
-	 "Office: (405) 585-4432\n")
-	))
-
-  (defun informal-signature ()
-    (interactive)
-    (insert (concat
-	 "\n\n"
-	 "--\n"
-	 "Randy"
-	 )))
-#+end_src
-
-Open mu4e in new tab.
-
-#+begin_src emacs-lisp
-  (defun rlr/open-mu4e-new-tab ()
-    (interactive)
-    (tab-new)
-    (mu4e)
-    (mu4e-update-mail-and-index 1))
-#+end_src
-
-Open mu4e and elfeed in new frame.
-
-#+begin_src emacs-lisp
-  (defun rlr/read-mail-news ()
-    (interactive)
-    ;; (make-frame-command)
-    ;; (agenda-home)
-    (tab-new)
-    (rlr/elfeed-load-db-and-open)
-    (elfeed-update)
-    (tab-new)
-    (mu4e)
-    (mu4e-update-mail-and-index 1)
-    )
-
-  (general-define-key
-   "C-M-s-r" #'rlr/read-mail-news
-   "H-m" #'mu4e-transient-menu)
-#+end_src
-
-**** Mu4e-Views
-
-#+begin_src emacs-lisp :tangle no
-  (use-package mu4e-views
-    :ensure (:type git :host github :repo "lordpretzel/mu4e-views")
-    :after mu4e
-    :config
-    (setq mu4e-views-default-view-method "html") ;; make xwidgets default
-    (mu4e-views-mu4e-use-view-msg-method "html") ;; select the default
-    (setq mu4e-views-next-previous-message-behaviour 'stick-to-current-window) ;; when pressing n and p stay in the current window
-    (setq mu4e-views-auto-view-selected-message t) ;; automatically open messages when moving in the headers view
-    :general
-    (:keymaps 'mu4e-headers-mode-map
-	  "v"  #'mu4e-views-mu4e-select-view-msg-method ;; select viewing method
-	  "M-n" #'mu4e-views-cursor-msg-view-window-down ;; from headers window scroll the email view
-	  "M-p" #'mu4e-views-cursor-msg-view-window-up ;; from headers window scroll the email view
-	  "<SPC<" #'mu4e-views-cursor-msg-view-window-down ;; from headers window scroll the email view
-	  "s-<SPC>" #'mu4e-views-cursor-msg-view-window-up ;; from headers window scroll the email view
-	  "f" #'mu4e-views-toggle-auto-view-selected-message ;; toggle opening messages automatically when moving in the headers view
-	  "i" #'mu4e-views-mu4e-view-as-nonblocked-html ;; show currently selected email with all remote content
-	  ))
-#+end_src
-
-**** Consult MU
-
-#+begin_src emacs-lisp
-  (use-package consult-mu
-    :ensure (:type git :host github :repo "armindarvish/consult-mu" :branch "main" :files (:defaults "extras/*.el"))
-    :after (consult mu4e)
-    :commands (consult-mu)
-    :custom
-    ;;maximum number of results shown in minibuffer
-    (consult-mu-maxnum 200)
-    ;;show preview when pressing any keys
-    (consult-mu-preview-key 'any)
-    ;;do not mark email as read when previewed. If you turn this to t, be aware that the auto-loaded preview if the preview-key above is 'any would also get marked as read!
-    (consult-mu-mark-previewed-as-read nil)
-    ;;mark email as read when selected.
-    (consult-mu-mark-viewed-as-read t)
-    ;;use reply to all when composing reply emails
-    (consult-mu-use-wide-reply nil)
-    ;; define a template for headers view in minibuffer. The example below adjusts the width based on the width of the screen.
-    (consult-mu-headers-template (lambda () (concat "%f" (number-to-string (floor (* (frame-width) 0.15))) "%s" (number-to-string (floor (* (frame-width) 0.5))) "%d13" "%g" "%x")))
-    :config
-    ;;create a list of saved searches for quick access using `histroy-next-element' with `M-n' in minibuffer. Note the "#" character at the beginning of each query! Change these according to
-    (setq consult-mu-saved-searches-dynamics '("#flag:unread"))
-    (setq consult-mu-saved-searches-async '("#flag:unread"))
-    ;; require embark actions for marking, replying, forwarding, etc. directly from minibuffer
-    (require 'consult-mu-embark)
-    ;; require extra module for composing (e.g. for interactive attachment) as well as embark actions
-    (require 'consult-mu-compose)
-    (require 'consult-mu-compose-embark)
-    ;; require extra module for searching contacts and runing embark actions on contacts
-    (require 'consult-mu-contacts)
-    (require 'consult-mu-contacts-embark)
-    ;; change the prefiew key for compose so you don't open a preview of every file when selecting files to attach
-    (setq consult-mu-compose-preview-key "M-o")
-    ;; pick a key to bind to consult-mu-compose-attach in embark-file-map
-    (setq consult-mu-embark-attach-file-key "C-a")
-    (setq consult-mu-contacts-ignore-list '("^.*no.*reply.*"))
-    (setq consult-mu-contacts-ignore-case-fold-search t)
-    (consult-mu-compose-embark-bind-attach-file-key)
-    ;; choose if you want to use dired for attaching files (choice of 'always, 'in-dired, or nil)
-    (setq consult-mu-compose-use-dired-attachment 'in-dired))
-#+end_src
-
-**** Browser
-
-Functions for setting default browser,
-
-#+begin_src emacs-lisp
-  (defun rlr/browser-default ()
-    (interactive)
-    (setq browse-url-browser-function 'browse-url-default-browser))
-
-  (defun rlr/browser-qutebrowser ()
-    (interactive)
-    (setq browse-url-browser-function 'browse-url-generic
-	  browse-url-generic-program "qutebrowser"))
-
-  (defun rlr/browser-eww ()
-    (interactive)
-    (setq browse-url-browser-function 'eww-browse-url))
-
-  (defun rlr/select-browser ()
-    (interactive)
-    (let* ((choices '(("System Default" . rlr/browser-default)
-		("Qutebrowser" . rlr/browser-qutebrowser)
-		("EWW" . rlr/browser-eww)))
-	   (choice   (completing-read "Choose one: " choices)))
-      (call-interactively (cdr (assoc choice choices)))))
-
-  (general-define-key
-   "C-M-S-s-b" #'rlr/select-browser)
-#+end_src
-
-*** Org Modern
-
-#+begin_src emacs-lisp
-  (use-package org-modern
-    :config
-    (add-hook 'org-agenda-finalize-hook #'org-modern-agenda)
-    )
-#+end_src
-
-*** Org LaTeX Export
-
-#+begin_src emacs-lisp
-  (require 'ox-beamer)
-  (with-eval-after-load 'ox-latex
-    (add-to-list 'org-latex-classes
-		 '("org-article"
-		   "\\documentclass{article}
-			      [NO-DEFAULT-PACKAGES]
-			      [NO-PACKAGES]"
-		   ("\\section{%s}" . "\\section*{%s}")
-		   ("\\subsection{%s}" . "\\subsection*{%s}")
-		   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-		   ("\\paragraph{%s}" . "\\paragraph*{%s}")
-		   ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
-    (add-to-list 'org-latex-classes
-		 '("org-handout"
-		   "\\documentclass{pdfhandout}
-			      [NO-DEFAULT-PACKAGES]
-			      [NO-PACKAGES]"
-		   ("\\section{%s}" . "\\section*{%s}")
-		   ("\\subsection{%s}" . "\\subsection*{%s}")
-		   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-		   ("\\paragraph{%s}" . "\\paragraph*{%s}")
-		   ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
-    (add-to-list 'org-latex-classes
-		 '("org-beamer"
-		   "\\documentclass{beamer}
-			      [NO-DEFAULT-PACKAGES]
-			      [NO-PACKAGES]"
-		   ("\\section{%s}" . "\\section*{%s}")
-		   ("\\subsection{%s}" . "\\subsection*{%s}")
-		   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-		   ("\\paragraph{%s}" . "\\paragraph*{%s}")
-		   ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))))
-  (setq org-export-with-smart-quotes t)
-  (with-eval-after-load 'ox-latex
-    (add-to-list 'org-export-smart-quotes-alist
-		 '("en-us"
-		   (primary-opening   :utf-8 "“" :html "&ldquo;" :latex "\\enquote{"  :texinfo "``")
-		   (primary-closing   :utf-8 "”" :html "&rdquo;" :latex "}"           :texinfo "''")
-		   (secondary-opening :utf-8 "‘" :html "&lsquo;" :latex "\\enquote*{" :texinfo "`")
-		   (secondary-closing :utf-8 "’" :html "&rsquo;" :latex "}"           :texinfo "'")
-		   (apostrophe        :utf-8 "’" :html "&rsquo;"))))
-#+end_src
-
-#+begin_src emacs-lisp
-  ;; (setq org-latex-pdf-process '("arara %f"))
-  (setq org-latex-pdf-process '("mkpdf %f"))
-
-  (defun rlr/org-mkpdf ()
-    "Make PDF with pdf latexmk."
-    (interactive)
-    (save-buffer)
-    (org-latex-export-to-latex)
-    (async-shell-command-no-window (concat "mkpdf " (shell-quote-argument(file-name-nondirectory (file-name-with-extension buffer-file-name "tex"))))))
-
-  (defun rlr/org-open-pdf ()
-    "Open PDF in background with default viewer."
-    (interactive)
-    (async-shell-command-no-window (concat "open -g " (shell-quote-argument(file-name-nondirectory (file-name-with-extension buffer-file-name "pdf"))))))
-
-  (defun rlr/org-mklua ()
-    "Make PDF with lua latexmk."
-    (interactive)
-    (save-buffer)
-    (org-latex-export-to-latex)
-    (async-shell-command-no-window (concat "mklua " (shell-quote-argument(file-name-nondirectory (file-name-with-extension buffer-file-name "tex"))))))
-
-  (defun rlr/org-arara ()
-    "Make PDF with Arara."
-    (interactive)
-    (save-buffer)
-    (org-arara-export-to-latex)
-    (async-shell-command-no-window (concat "mkarara " (shell-quote-argument(file-name-sans-extension (buffer-file-name)))".tex")))
-
-  (defun rlr/org-date ()
-    "Update existing date: timestamp on a Hugo post."
-    (interactive)
-    (save-excursion (
-		     goto-char 1)
-		    (re-search-forward "^#\\+date:")
-		    (let ((beg (point)))
-		      (end-of-line)
-		      (delete-region beg (point)))
-		    (insert (concat " " (format-time-string "%B %e, %Y")))))
-
-#+end_src
-
-Use [[https://math.nist.gov/~BMiller/LaTeXML/ussage.html][latexml]] to export latex to html. Load additional packages by adding --preload= flags.
-
-#+begin_src emacs-lisp
-  (setopt
-   org-latex-to-html-convert-command "latexmlc literal:%i --profile=math 2>/dev/null"
-   org-html-with-latex 'html)
-#+end_src
-
-*** Org Auto Tangle
-
-Use ~org-auto-tangle~ to generate ~early-init.el~ and ~init.el~ whenever ~README.org~ is saved.
-
-#+begin_src emacs-lisp
-  (use-package org-auto-tangle
-    :hook (org-mode . org-auto-tangle-mode))
-#+end_src
-
-*** Org Capture
-
-#+begin_src emacs-lisp
-  ;; Org-capture
-  (setq org-capture-templates
-	'(
-	  ("t" "Todo" entry (file+headline "/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/tasks.org" "Inbox")
-	   "** TODO %?\n  %i\n  %a")
-	  ("e" "Event" entry (file+headline "/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/events.org" "Future")
-	   "** %? %T")
-	  ("b" "Bookmark" entry (file+headline "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/bookmarks.org" "Bookmarks")
-	   "* %?\n:PROPERTIES:\n:CREATED: %U\n:END:\n\n" :empty-lines 1)
-	  ("c" "Quick note" entry (file "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/Documents/notes/quick-notes.org")
-	   "* %?\n:PROPERTIES:\n:CREATED: %U\n:END:\n\n" :empty-lines 1)
-("j" "Journelly Entry" entry
-	   (file "/Users/rlridenour/Library/Mobile Documents/iCloud~com~xenodium~Journelly/Documents/Journelly.org")
-	   "* %U @ -\n%?" :prepend t)
-	  )
-	)
-
-  (with-eval-after-load 'org-capture
-    (add-to-list 'org-capture-templates
-		 '("n" "New note (with Denote)" plain
-		   (file denote-last-path)
-		   #'denote-org-capture
-		   :no-save t
-		   :immediate-finish nil
-		   :kill-buffer t
-		   :jump-to-captured t)))
-
-  (setq org-refile-targets '((org-agenda-files :maxlevel . 1)))
-
-  (define-key global-map "\C-cc" 'org-capture)
-#+end_src
-
-From [[https://christiantietze.de/posts/2025/04/keep-org-mode-items-sorted-alphabetically/][Keep .org File Outline Items Sorted Alphabetically • Christian Tietze]]
-Sort org buffer when saving. Add the following to the beginning of the buffer: "# -*- before-save-hook: (my/org-sort); -*-"
-
-#+begin_src emacs-lisp
-  (defun rlr/org-sort ()
-    (mark-whole-buffer)
-    (org-sort-entries nil ?a))
-
-  (add-to-list 'safe-local-variable-values
-	       '(before-save-hook . (rlr/org-sort)))
-#+end_src
-
-*** Org Agenda
-
-#+begin_src emacs-lisp
-  (use-package org-super-agenda
-    :after org
-    :ensure t
-    :config
-    (setq org-agenda-skip-scheduled-if-done t
-	  org-agenda-skip-deadline-if-done t
-	  org-agenda-include-deadlines t
-	  org-agenda-block-separator nil
-	  org-agenda-compact-blocks t
-	  org-agenda-start-day nil ;; i.e. today
-	  org-agenda-span 1
-	  org-agenda-window-setup "current-window"
-	  org-agenda-include-diary nil
-	  org-agenda-start-on-weekday nil)
-    (setq org-agenda-time-grid
-	  '((daily today require-timed remove-match)
-	    ()
-	    "......"
-	    ""))
-
-    (org-super-agenda-mode))
-#+end_src
-
-#+begin_src emacs-lisp
-  (setq org-agenda-custom-commands
-	'(("d" "Agenda for today" agenda ""
-	   ((org-agenda-overriding-header "Today's agenda")
-	    (org-agenda-span 'day)
-	    ))))
-#+end_src
-
-#+begin_src emacs-lisp
-  (defun today-agenda ()
-    "Display today's agenda"
-    (interactive)
-    (org-agenda nil "d")
-    )
-  (today-agenda)
-#+end_src
-
-#+begin_src emacs-lisp
-  (with-eval-after-load 'org
-    (add-to-list
-     'org-agenda-custom-commands
-     `("c" "Today - Full View"
-       ((agenda ""
-		((org-agenda-entry-types '(:timestamp :sexp))
-		 (org-agenda-overriding-header
-		  (concat "CALENDAR Today "
-			  (format-time-string "%a %d" (current-time))))
-		 (org-agenda-span 'day)))
-	(tags-todo "LEVEL=1+inbox"
-		   ((org-agenda-overriding-header "INBOX (Unscheduled)")))
-	(tags-todo "DEADLINE<\"<+1d>\"+DEADLINE>\"<-1d>\""
-		   ((org-agenda-overriding-header "DUE TODAY")
-		    (org-agenda-skip-function
-		     '(org-agenda-skip-entry-if 'notdeadline))
-		    (org-agenda-sorting-strategy '(priority-down))))
-	(tags-todo "DEADLINE<\"<today>\""
-		   ((org-agenda-overriding-header "OVERDUE")
-		    (org-agenda-skip-function
-		     '(org-agenda-skip-entry-if 'notdeadline))
-		    (org-agenda-sorting-strategy '(priority-down))))
-	(agenda ""
-		((org-agenda-entry-types '(:scheduled))
-		 (org-agenda-overriding-header "SCHEDULED")
-		 (org-agenda-skip-function
-		  '(org-agenda-skip-entry-if 'todo 'done))
-		 (org-agenda-sorting-strategy
-		  '(priority-down time-down))
-		 (org-agenda-span 'day)
-		 (org-agenda-start-on-weekday nil)))
-	(todo "DONE"
-	      ((org-agenda-overriding-header "COMPLETED"))))
-       ((org-agenda-format-date "")
-	(org-agenda-start-with-clockreport-mode nil))) t))
-#+end_src
-
-This opens the daily agenda and deletes all other windows.
-
-#+begin_src emacs-lisp
-  (defun agenda-home ()
-    (interactive)
-    (org-agenda-list 1)
-    (delete-other-windows))
-#+end_src
-
-Set the initial frame. This opens the daily agenda on start-up.
-
-#+begin_src emacs-lisp
-  (add-hook 'server-after-make-frame-hook 'agenda-home)
-#+end_src
-
-#+begin_src emacs-lisp
-  (general-define-key
-   "s-d" #'agenda-home)
-#+end_src
-
-#+begin_src emacs-lisp
-  (defun rr/agenda-links ()
-    (end-of-buffer)
-    (insert-file-contents "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/agenda-links.org")
-    (while (org-activate-links (point-max))
-      (goto-char (match-end 0)))
-    ;; (end-of-buffer)
-    ;; (insert (concat "\n\n" (get-votd)))
-    (beginning-of-buffer))
-
-  (add-hook 'org-agenda-finalize-hook #'rr/agenda-links)
-#+end_src
-
-Open links with the return key.
-
-#+begin_src emacs-lisp
-  (setq org-return-follows-link t)
-#+end_src
-
-Use space key to show link hints.
-
-#+begin_src emacs-lisp
-  (general-define-key
-   :keymaps 'org-agenda-mode-map
-   "<SPC>" #'link-hint-open-link)
-#+end_src
-
-Set agenda links as safe.
-
-#+begin_src emacs-lisp
-  (setopt org-link-elisp-skip-confirm-regexp "rlr.*")
-#+end_src
-
-#+begin_src emacs-lisp :tangle no
-  (use-package org-super-agenda
-    :after org
-    :config
-    (setq org-agenda-skip-scheduled-if-done t
-	  org-agenda-skip-deadline-if-done t
-	  org-agenda-include-deadlines t
-	  org-agenda-block-separator nil
-	  org-agenda-compact-blocks t
-	  org-agenda-start-day nil ;; i.e. today
-	  org-agenda-span 1
-	  org-agenda-window-setup "current-window"
-	  org-agenda-include-diary nil
-	  org-agenda-start-on-weekday nil)
-    (setq org-agenda-time-grid
-	  '((daily today require-timed remove-match)
-	    ()
-	    "......"
-	    ""))
-
-    (setq org-agenda-custom-commands
-	  '(("c" "Super view"
-	     ((agenda "" ((org-agenda-overriding-header "")
-			  (org-super-agenda-groups
-			   '((:name "Today"
-				    :time-grid t
-				    :date today
-				    :order 1)))))
-	      (alltodo "" ((org-agenda-overriding-header "")
-			   (org-super-agenda-groups
-			    '((:log t)
-			      (:name "Important"
-				     :priority "A"
-				     :order 4)
-			      (:name "Today's tasks"
-				     :file-path "journal/")
-			      (:name "Due Today"
-				     :deadline today
-				     :order 2)
-			      (:name "Overdue"
-				     :deadline past
-				     :order 3)
-			      (:discard (:not (:todo "TODO")))))))))))
-    (org-super-agenda-mode)
-    (setq org-agenda-span 7)
-    (setq org-agenda-custom-commands
-	  '(("d" "Agenda for today" agenda ""
-	     ((org-agenda-overriding-header "Today's agenda")
-	      (org-agenda-span 'day)
-	      ))))
-    (defun today-agenda ()
-      "Display today's agenda"
-      (interactive)
-      (org-agenda nil "d")
-      )
-    (today-agenda)
-    )
-#+end_src
-
-Use Emacs appointment system for notifications.
-
-#+begin_src emacs-lisp
-  (setq appt-time-msg-list nil)    ;; clear existing appt list
-  ;; (setq appt-message-warning-time '15)  ;; send first warning 15 minutes before appointment
-  (org-agenda-to-appt) ;; generate the appt list from org agenda files on emacs launch
-  (run-at-time "24:01" 3600 'org-agenda-to-appt) ;; update appt list hourly
-  (add-hook 'org-finalize-agenda-hook 'org-agenda-to-appt) ;; update appt list on agenda view
-#+end_src
-
-*** Org Bulletproof
-
-I'm not sure what this doing anymore, so I'm going to disable it for now.
-
-#+begin_src emacs-lisp :tangle no
-  (use-package org-bulletproof
-    :after org
-    :config
-    (setq org-bulletproof-default-ordered-bullet "1.")
-    (global-org-bulletproof-mode +1))
-#+end_src
-
-*** Org Contrib
-
-#+begin_src emacs-lisp
-  (use-package org-contrib
-    :config
-    (require 'ox-extra)
-    (ox-extras-activate '(ignore-headlines))
-    (require 'org-tempo)
-    (require 'ox-rss))
-#+end_src
-
-*** Orgonomic
-
-#+begin_src emacs-lisp
-  (use-package orgonomic
-    :ensure
-    (:host github :repo "aaronjensen/emacs-orgonomic")
-    :hook (org-mode . orgonomic-mode))
-#+end_src
-
-*** Org Toggle Emphasis
-
-[[https://gist.github.com/jdtsmith/55e6a660dd4c0779a600ac81bf9bfc23][org-toggle-emphasis: easily toggle emphasis markers: =~*/_+]]
-
-#+begin_src emacs-lisp
-  (defun my/org-toggle-emphasis (type)
-    "Toggle org emphasis TYPE (a character) at point."
-    (cl-labels ((in-emph (re)
-		  "See if in org emphasis given by RE."
-		  (and (org-in-regexp re 2)
-		       (>= (point) (match-beginning 3))
-		       (<= (point) (match-end 4))))
-		(de-emphasize ()
-		  "Remove most recently matched org emphasis markers."
-		  (save-excursion
-		    (replace-match "" nil nil nil 3)
-		    (delete-region (match-end 4) (1+ (match-end 4))))))
-      (let* ((res (vector org-emph-re org-verbatim-re))
-	     (idx (cl-case type (?/ 0) (?* 0) (?_ 0) (?+ 0) (?= 1) (?~ 1)))
-	     (re (aref res idx))
-	     (other-re (aref res (- 1 idx)))
-	     (type-re (string-replace (if (= idx 1) "=~" "*/_+")
-				      (char-to-string type) re))
-	     add-bounds offset is-word)
-	(save-match-data
-	  (if (region-active-p)
-	      (if (in-emph type-re) (de-emphasize) (org-emphasize type))
-	    (if (eq (char-before) type) (backward-char))
-	    (if (in-emph type-re)       ;nothing marked, in emph text?
-		(de-emphasize)
-	      (setq add-bounds          ; check other flavors
-		    (if (or (in-emph re) (in-emph other-re))
-			(cons (match-beginning 4) (match-end 4))
-		      (setq is-word t)
-		      (bounds-of-thing-at-point 'symbol))))
-	    (if add-bounds
-		(let ((off (- (point) (car add-bounds)))
-		      (at-end (= (point) (cdr add-bounds))))
-		  (set-mark (car add-bounds))
-		  (goto-char (cdr add-bounds))
-		  (org-emphasize type)  ;deletes marked region!
-		  (unless is-word       ; delete extra spaces
-		    (goto-char (car add-bounds))
-		    (when (eq (char-after) ?\s) (delete-char 1))
-		    (goto-char (+ 2 (cdr add-bounds)))
-		    (when (eq (char-after) ?\s) (delete-char 1)))
-		  (goto-char (+ (car add-bounds) off
-				(cond ((= off 0) 0) (at-end 2) (t 1)))))
-	      (if is-word (org-emphasize type))))))))
-
-  (general-define-key
-   :keymaps 'org-mode-map
-   "s-<right>" #'org-end-of-line
-   "s-<left>" #'org-beginning-of-line
-   "s-i" (lambda () (interactive) (my/org-toggle-emphasis ?/))
-   "s-b" (lambda () (interactive) (my/org-toggle-emphasis ?*))
-   "C-c e e" (lambda () (interactive) (my/org-toggle-emphasis ?~))
-   "C-c e =" (lambda () (interactive) (my/org-toggle-emphasis ?=))
-   "C-c e _" (lambda () (interactive) (my/org-toggle-emphasis ?_))
-   "C-c e +" (lambda () (interactive) (my/org-toggle-emphasis ?+)))
-#+end_src
-
-*** Org Mac Link
-
-#+begin_src emacs-lisp
-  (use-package org-mac-link)
-#+end_src
-
-*** Org Publish RSS
-
-[[https://git.sr.ht/~taingram/org-publish-rss][~taingram/org-publish-rss - Automatically generate RSS feeds for org-publish projects - sourcehut git]]
-
-#+begin_src emacs-lisp :tangle no
-  (use-package org-publish-rss
-    :ensure
-    (:type git :sourcehut :repo ~taingram/org-publish-rss))
-#+end_src
-
-*** Org Web Tools
-
-#+begin_src emacs-lisp
-  (use-package org-web-tools)
-#+end_src
-
-#+begin_src emacs-lisp
-  (defun rlr/save-web-page-as-org-file ()
-    (interactive)
-    (org-mac-link-safari-get-frontmost-url)
-    (setq rlr-org-link (current-kill 0 t))
-    (setq rlr-org-link (s-chop-left 2 rlr-org-link))
-    (setq rlr-org-link (s-chop-right 2 rlr-org-link))
-    (setq rlr-org-link (s-split "\\]\\[" rlr-org-link))
-    (setq rlr-org-url (pop rlr-org-link))
-    (setq rlr-org-title (pop rlr-org-link))
-    (setq rlr-org-title (s-replace-all '(("." . "") (":" . "") ("/" . "")) rlr-org-title))
-    (setq rlr-org-filename (s-dashed-words rlr-org-title))
-    (org-web-tools-read-url-as-org rlr-org-url)
-    (write-file (concat "~/icloud/web-saves/" rlr-org-title ".org")))
-#+end_src
-
-*** Teaching
-
-Set initial filename variable.
-
-#+begin_src emacs-lisp
-  (defvar rlrt-filename)
-#+end_src
-
-Functions for creating handout, syllabus, and lecture files.
-
-Convert title to filename string. Remove punctuation, one or two-letter words, and "the".
-
-#+begin_src emacs-lisp
-  (defun rlrt-make-filename (string)
-    (s-downcase  (s-join "-" (s-split " " (replace-regexp-in-string "\\bthe \\b\\|\\band \\b\\|\\b[a-z]\\b \\|\\b[a-z][a-z]\\b \\|[[:punct:]]" "" string)))))
-#+end_src
-
-#+begin_src emacs-lisp
-  (defun rlrt-new-handout (rlrt-title)
-    (interactive "sTitle: ")
-
-    ;; Make filename
-    (setq rlrt-filename (rlrt-make-filename rlrt-title))
-
-    ;; Create directory
-    (make-directory rlrt-filename)
-
-    ;; Create main org file
-    (find-file (s-concat rlrt-filename "/" rlrt-filename "-handout.org"))
-    (insert (s-concat "#+TITLE: " rlrt-title) ?\n"#+AUTHOR: Dr. Randy Ridenour" ?\n "#+DATE: "(format-time-string "%B %e, %Y") ?\n)
-    (insert-file-contents "~/.config/emacs/teaching-templates/handout/handout.org")
-    (goto-char (point-max))
-    (save-buffer))
-#+end_src
-
-Create a syllabus in the currently visited directory.
-
-#+begin_src emacs-lisp
-  (defun rlrt-new-syllabus (rlrt-title)
-    (interactive "sTitle: ")
-
-    ;; Make filename
-    (setq rlrt-filename (rlrt-make-filename rlrt-title))
-
-    ;; Create directory
-    (make-directory rlrt-filename)
-
-    ;; Create main org file
-    (find-file (s-concat rlrt-filename "/" rlrt-filename "-syllabus.org"))
-    (insert-file-contents "~/.config/emacs/teaching-templates/syllabus/syllabus.org")
-    (goto-char (point-max))
-    (insert (s-concat "#+include: \"" rlrt-filename "-data.org\" :minlevel 1"))
-    (save-buffer)
-    (kill-buffer)
-
-    ;; Create Canvas file
-    (find-file (s-concat rlrt-filename "/canvas.org"))
-    (insert-file-contents "~/.config/emacs/teaching-templates/syllabus/canvas.org")
-    (save-buffer)
-    (kill-buffer)
-
-    ;; Create data file
-    (find-file (s-concat rlrt-filename "/" rlrt-filename "-data.org")))
-#+end_src
-
-Create lecture slides and notes in the currently visited directory.
-
-#+begin_src emacs-lisp
-  (defun rlrt-new-lecture (rlrt-title)
-    (interactive "sTitle: ")
-
-    ;; Make filename
-    (setq rlrt-filename (rlrt-make-filename rlrt-title))
-
-    ;; Create directory
-    (make-directory rlrt-filename)
-#+end_src
-
-Create LaTeX Beamer org file
-
-#+begin_src emacs-lisp
-  (find-file (s-concat rlrt-filename "/" rlrt-filename "-slides.org"))
-  (insert-file-contents "~/.config/emacs/teaching-templates/lecture/slides.org")
-  (goto-char (point-max))
-  (insert (s-concat "#+include: \"" rlrt-filename "-data.org\" :minlevel 1"))
-  (save-buffer)
-  (kill-buffer)
-#+end_src
-
-Create notes org file
-
-#+begin_src emacs-lisp
-  (find-file (s-concat rlrt-filename "/" rlrt-filename "-notes.org"))
-  (insert-file-contents "~/.config/emacs/teaching-templates/lecture/notes.org")
-  (goto-char (point-max))
-  (insert (s-concat "#+include: \"" rlrt-filename "-data.org\" :minlevel 1"))
-  (save-buffer)
-  (kill-buffer)
-#+end_src
-
-Create Canvas file
-#+begin_src emacs-lisp
-  (find-file (s-concat rlrt-filename "/canvas.org"))
-  (insert-file-contents "~/.config/emacs/teaching-templates/lecture/canvas.org")
-  (goto-char (point-max))
-  (save-buffer)
-  (kill-buffer)
-#+end_src
-
-Create data file
-
-#+begin_src emacs-lisp
-  (find-file (s-concat rlrt-filename "/" rlrt-filename "-data.org"))
-  (insert (s-concat "#+TITLE: " rlrt-title) ?\n)
-  (yas-expand-snippet (yas-lookup-snippet "beamer-data")))
-#+end_src
-
-Compile the files.
-
-#+begin_src emacs-lisp
-  (defun make-slides ()
-    (async-shell-command-no-window "mkslides"))
-#+end_src
-
-#+begin_src emacs-lisp
-  (defun make-notes ()
-    (async-shell-command-no-window "mknotes"))
-#+end_src
-
-Compile lecture slides.
-
-#+begin_src emacs-lisp
-  (defun lecture-slides ()
-    "publish org data file as beamer slides"
-    (interactive)
-    (save-buffer)
-    (find-file "*-slides.org" t)
-    (org-beamer-export-to-latex)
-    (kill-buffer)
-    (make-slides)
-    (find-file "*-data.org" t))
-#+end_src
-
-#+begin_src emacs-lisp
-  (defun rlr/create-frametitle ()
-    "Convert title to frametitle."
-    (interactive)
-    (goto-char 1)
-    (while (ignore-errors
-	     (re-search-forward "begin{frame}.*]"))
-      (insert "\n \\frametitle")))
-#+end_src
-
-Compile lecture notes.
-
-#+begin_src emacs-lisp
-  (defun lecture-notes ()
-    "publish org data file as beamer notes"
-    (interactive)
-    (save-buffer)
-    (find-file "*-notes.org" t)
-    (org-beamer-export-to-latex)
-    (kill-buffer)
-    (find-file "*-notes.tex" t)
-    (rlr/create-frametitle)
-    (save-buffer)
-    (kill-buffer)
-    (make-notes)
-    (find-file "*-data.org" t))
-#+end_src
-
-Copy HTML for Canvas pages
-
-#+begin_src emacs-lisp
-  (defun canvas-copy ()
-    "Copy html for canvas pages"
-    (interactive)
-    (save-buffer)
-    (org-html-export-to-html)
-    (shell-command "canvas"))
-#+end_src
-
-Compile Canvas HTML notes.
-
-#+begin_src emacs-lisp
-  (defun canvas-notes ()
-    "Copy HTML slide notes for Canvas"
-    (interactive)
-    (save-buffer)
-    (shell-command "canvas-notes")
-    (find-file "canvas.org")
-    (canvas-copy)
-    (kill-buffer)
-    (delete-file "canvas-data.org"))
-#+end_src
-
-Compile handout
-
-#+begin_src emacs-lisp
-  (defun make-handout ()
-    "publish org data file as LaTeX handout and Canvas HTML"
-    (interactive)
-    (save-buffer)
-    ;; (find-file "*-handout.org" t)
-    (rlr/org-mkpdf)
-    ;; (kill-buffer)
-    ;; (shell-command "canvas-notes")
-    ;; (find-file "canvas.org" t)
-    (org-html-export-to-html)
-    (shell-command "canvas-handout"))
-#+end_src
-
-#+begin_src emacs-lisp
-  (defun make-html ()
-    (interactive)
-    (save-buffer)
-    (org-html-export-to-html)
-    (shell-command "canvas-handout"))
-#+end_src
-
-Compile syllabus.
-
-#+begin_src emacs-lisp
-  (defun make-syllabus ()
-    "publish org data file as LaTeX syllabus and Canvas HTML"
-    (interactive)
-    (save-buffer)
-    (find-file "*-syllabus.org" t)
-    (rlr/org-mkpdf)
-    (kill-buffer)
-    (shell-command "canvas-notes")
-    (find-file "canvas.org" t)
-    (org-html-export-to-html)
-    (shell-command "canvas")
-    (kill-buffer)
-    (delete-file "canvas-data.org")
-    (find-file "*-data.org" t))
-#+end_src
-
-Functions for adding arguments in standard form to Org documents.
-
-#+begin_src emacs-lisp
-  (defun  create-args ()
-    (interactive)
-    (kill-ring-save (region-beginning) (region-end))
-    (exchange-point-and-mark)
-    (yas-expand-snippet (yas-lookup-snippet "arg-wrap-tex"))
-    (previous-line)
-    ;; (previous-line)
-    (org-beginning-of-line)
-    (forward-word)
-    (forward-char)
-    (forward-char)
-    (insert "\\underline{")
-    (org-end-of-line)
-    (insert "}")
-    (next-line)
-    (org-beginning-of-line)
-    (forward-word)
-    (insert "[\\phantom{\\(\\therefore\\)}]")
-    (next-line)
-    (next-line)
-    (org-return)
-    (org-return)
-    (org-yank)
-    (exchange-point-and-mark)
-    (yas-expand-snippet (yas-lookup-snippet "arg-wrap-html")))
-#+end_src
-
-#+begin_src emacs-lisp
-  (defun  create-tex-arg ()
-    (interactive)
-    (yas-expand-snippet (yas-lookup-snippet "arg-wrap-tex"))
-    (previous-line)
-    (previous-line)
-    (forward-word)
-    (forward-char)
-    (forward-char)
-    (insert "\\underline{")
-    (org-end-of-line)
-    (insert "}")
-    (next-line)
-    (org-beginning-of-line)
-    (forward-word)
-    (insert "[\\phantom{\\(\\therefore\\)}]")
-    (next-line)
-    (next-line)
-    (org-return)
-    (org-return))
-#+end_src
-
-Copy slide notes to handout notes.
-
-#+begin_src emacs-lisp
-  (defun duplicate-slide-note ()
-    (interactive)
-    (search-backward ":END:")
-    (next-line)
-    (kill-ring-save (point)
-		    (progn
-		      (search-forward "** ")
-		      (beginning-of-line)
-		      (point))
-		    )
-    (yas-expand-snippet (yas-lookup-snippet "beamer article notes"))
-    (yank))
-
-  (defun duplicate-all-slide-notes ()
-    (interactive)
-    (save-excursion
-      (end-of-buffer)
-      (newline)
-      (newline)
-      ;; Need a blank slide at the end to convert the last note.
-      (insert "** ")
-      (beginning-of-buffer)
-      (while (ignore-errors
-	       (search-forward ":BEAMER_ENV: note"))
-	(next-line)
-	(next-line)
-	(kill-ring-save (point)
-			(progn
-			  (search-forward "** ")
-			  (beginning-of-line)
-			  (point))
-			)
-	(yas-expand-snippet (yas-lookup-snippet "beamer article notes"))
-	(yank))
-      ;; Delete the blank slide that was added earlier.
-      (end-of-buffer)
-      (search-backward "**")
-      (kill-line)
-      )
-    (save-buffer))
-#+end_src
-
-Create new article.
-
-#+begin_src emacs-lisp
-  (defun rlrt-new-article (rlrt-title)
-    (interactive "sTitle: ")
-
-    ;; Make filename
-    (setq rlrt-filename (rlrt-make-filename rlrt-title))
-
-    ;; Create directory
-    (make-directory rlrt-filename)
-
-    (find-file (s-concat rlrt-filename "/" rlrt-filename ".org"))
-    (insert (s-concat "#+TITLE: " rlrt-title) ?\n)
-    (yas-expand-snippet (yas-lookup-snippet "rlrt-pdf-article")))
-#+end_src
-
-Function for converting Org mode files to QTI file for importing into Canvas using https://www.nyit.edu/its/canvas_exam_converter
-
-#+begin_src emacs-lisp
-  (defun convert-qti-nyit ()
-    (interactive)
-    ;; Copy all to a temp buffer and set to text mode.
-    (let ((old-buffer (current-buffer)))
-      (with-temp-buffer
-	(insert-buffer-substring old-buffer)
-	(text-mode)
-	;; convert multiple correct answer and essay questions
-	(beginning-of-buffer)
-	(while (re-search-forward "^[:space:]*-" nil t)
-	  (replace-match ""))
-	;; Change correct multiple answer options to "*"
-	(beginning-of-buffer)
-	(let ((case-fold-search nil))
-	  (while (re-search-forward "\[X\]" nil t)
-	    (replace-match "*")))
-	;; Mark short answer responses with "**"
-	(beginning-of-buffer)
-	(while (re-search-forward "+" nil t)
-	  (replace-match "*"))
-	;; remove whitespace at beginning of lines
-	(beginning-of-buffer)
-	(while (re-search-forward "^\s-*" nil t)
-	  (replace-match ""))
-	(beginning-of-buffer)
-	(while (re-search-forward "\\(^[0-9]\\)" nil t)
-	  (replace-match "\n\\1"))
-	;; move correct answer symbol to beginning of line
-	(beginning-of-buffer)
-	(while (re-search-forward "\\(^.*\\)\\(\*$\\)" nil t)
-	  (replace-match "\*\\1"))
-	(delete-trailing-whitespace)
-	;; delete empty line at end and beginning
-	(end-of-buffer)
-	(delete-char -1)
-	(beginning-of-buffer)
-	(kill-line)
-	;; Copy result to clipboard
-	(clipboard-kill-ring-save (point-min) (point-max))
-	)
-      )
-    (browse-url "https://www.nyit.edu/its/canvas_exam_converter")
-    )
-#+end_src
-
-*** Blog
-
-Define directory variables.
-
-#+begin_src emacs-lisp
-  (defvar orgblog-directory "~/sites/orgblog/" "Path to the Org mode blog.")
-  (defvar orgblog-public-directory "~/sites/orgblog/docs/" "Path to the blog public directory.")
-  (defvar orgblog-posts-directory "~/sites/orgblog/posts/" "Path to the blog public directory.")
-  (defvar orgblog-drafts-directory "~/sites/orgblog/drafts/" "Path to the blog public directory.")
-
-#+end_src
-
-Create new post.
-
-#+begin_src emacs-lisp
-  (defun rlrt-new-post (rlrt-title)
-    (interactive "sTitle: ")
-    ;; Make filename
-    (setq rlrt-filename (rlrt-make-filename rlrt-title))
-    (find-file (s-concat orgblog-drafts-directory (format-time-string "%Y-%m-%d-") rlrt-filename ".org"))
-    (insert (s-concat "#+TITLE: " rlrt-title) ?\n)
-    (yas-expand-snippet (yas-lookup-snippet "orgblogt")))
-#+end_src
-
-Insert image.
-
-#+begin_src emacs-lisp
-  (defun orgblog-insert-image ()
-    (interactive)
-    (insert "#+begin_center
-  ,#+ATTR_HTML: :width 100% :height
-  ")
-    (insert "[[" (file-relative-name (read-file-name "Insert file name: " "~/sites/orgblog/images/posts/")) "]]
-  ,#+end_center
-
-  ")
-    )
-#+end_src
-
-Move draft to posts.
-
-#+begin_src emacs-lisp
-  (defun orgblog-publish-draft ()
-    (interactive)
-    (save-buffer)
-    (copy-file (buffer-file-name) "~/sites/orgblog/posts/")
-    (delete-file (buffer-file-name) t)
-    (kill-buffer)
-    (dired "~/sites/orgblog/posts"))
-#+end_src
-
-Publish source to public directory.
-
-#+begin_src emacs-lisp
-  (defun orgblog-build ()
-    (interactive)
-    (progn
-      (find-file "~/sites/orgblog/publish.el")
-      (eval-buffer)
-      (org-publish-all)
-      (webfeeder-build "atom.xml"
-		       "./docs"
-		       "https://randyridenour.net/"
-		       (let ((default-directory (expand-file-name "./docs")))
-			 (remove "posts/index.html"
-				 (directory-files-recursively "posts"
-							      ".*\\.html$")))
-		       :title "Randy Ridenour"
-		       :description "Blog posts by Randy Ridenour")
-      (kill-buffer))
-    (message "Build complete!"))
-#+end_src
-
-Start local server.
-
-#+begin_src emacs-lisp
-  (defun orgblog-serve ()
-    (interactive)
-    (progn
-      (async-shell-command "orgblog-serve")
-      (sleep-for 2)
-      (async-shell-command "open http://localhost:3000")))
-#+end_src
-
-Push changes to Github.
-
-#+begin_src emacs-lisp
-  (defun orgblog-push ()
-    (interactive)
-    (async-shell-command "orgblog-push"))
-#+end_src
-
-Modify footnote section label.
-
-#+begin_src emacs-lisp
-  (setq org-html-footnotes-section "<div id=\"footnotes\">
-  <h2 class=\"footnotes\">%s</h2>
-  <div id=\"text-footnotes\">
-  %s
-  </div>
-  </div>")
-#+end_src
-
-Embed YouTube videos, from [[https://endlessparentheses.com/embedding-youtube-videos-with-org-mode-links.html][Embedding Youtube videos with org-mode links · Endless Parentheses]]. Add link like this: =[[yt:3Aoa-yP5U_Y]]=
-
-#+begin_src emacs-lisp
-  (defvar yt-iframe-format
-    ;; You may want to change your width and height.
-    (concat "<iframe width=\"440\""
-	    " height=\"335\""
-	    " src=\"https://www.youtube.com/embed/%s\""
-	    " frameborder=\"0\""
-	    " allowfullscreen>%s</iframe>"))
-
-  (org-add-link-type
-   "yt"
-   (lambda (handle)
-     (browse-url
-      (concat "https://www.youtube.com/embed/"
-	      handle)))
-   (lambda (path desc backend)
-     (cl-case backend
-       (html (format yt-iframe-format
-		     path (or desc "")))
-       (latex (format "\href{%s}{%s}"
-		      path (or desc "video"))))))
-#+end_src
-
-**** Blog Tags
-
-Select tag from list.
-
-#+begin_src emacs-lisp
-  (defun orgblog-all-tag-lines ()
-    "Get filetag lines from all posts."
-    (let ((post-dir orgblog-posts-directory)
-	  (regex "^#\\+filetags:\\s([a-zA-Z]+)"))
-      (shell-command-to-string
-       (concat "rg --context 0 --no-filename --no-heading --replace \"\\$1\" -- " (shell-quote-argument regex) " " post-dir))))
-
-  (defun orgblog-all-tags ()
-    "Return a list of unique tags from all posts."
-    (delete-dups
-     (split-string (orgblog-all-tag-lines) nil t)))
-
-  (defun orgblog-select-tag ()
-    "Select and insert a tag from tags in the blog."
-    (defvar newtag)
-    (setq newtag (completing-read "Tag: " (orgblog-all-tags))))
-#+end_src
-
-Insert tag to heading and tag line.
-
-#+begin_src emacs-lisp
-  (defun insert-post-tag ()
-    (orgblog-select-tag)
-    (beginning-of-buffer)
-    (search-forward "#+filetags" nil 1)
-    (end-of-line)
-    (insert (concat " " newtag))
-    (beginning-of-buffer)
-    (search-forward "Tagged:")
-    (end-of-line)
-    (insert (concat " [[file:../tags/" newtag ".org][" (s-titleized-words newtag) "]]")))
-#+end_src
-
-Add tagged post to tag page.
-
-#+begin_src emacs-lisp
-  (defun add-post-to-tagfile ()
-    (defvar tagfile)
-    (defvar post-filename)
-    (defvar post-title)
-    (setq tagfile (concat "../tags/" newtag ".org"))
-    (setq post-filename (f-filename (f-this-file)))
-    (progn
-      (beginning-of-buffer)
-      (search-forward "#+title: " nil 1)
-      (setq post-title (buffer-substring (point) (line-end-position))))
-    (when
-	(not (file-exists-p tagfile))
-      (f-append-text (concat "#+title: Tagged: " (s-titleized-words newtag) "\n#+setupfile: ../org-templates/post.org\n") 'utf-8 tagfile))
-    (f-append-text (concat "\n- [[file:../posts/" post-filename "][" post-title "]]") 'utf-8 tagfile))
-#+end_src
-
-Select tag, add tag to to post, then add post to tag page.
-
-#+begin_src emacs-lisp
-  (defun orgblog-add-tag ()
-    (interactive)
-    (orgblog-select-tag)
-    (insert-post-tag)
-    (add-post-to-tagfile)
-    (save-buffer))
-#+end_src
-
-*** Htmlize
-
-#+begin_src emacs-lisp
-  (use-package htmlize)
-#+end_src
-
-*** Style Text Menu
-
-#+begin_src emacs-lisp :tangle no
-  (require 'cc-style-text-menu)
-#+end_src
-
-*** Copy Org Rich Text
-
-From [[https://kitchingroup.cheme.cmu.edu/blog/2016/06/16/Copy-formatted-org-mode-text-from-Emacs-to-other-applications/][Copy formatted org-mode text from Emacs to other applications]]
-
-#+begin_src emacs-lisp
-  (defun formatted-copy ()
-    "Export region to HTML, and copy it to the clipboard."
-    (interactive)
-    (save-window-excursion
-      (let* ((buf (org-export-to-buffer 'html "*Formatted Copy*" nil nil t t))
-	     (html (with-current-buffer buf (buffer-string))))
-	(with-current-buffer buf
-	  (shell-command-on-region
-	   (point-min)
-	   (point-max)
-	   "textutil -stdin -format html -convert rtf -stdout | pbcopy"))
-	(kill-buffer buf))))
-
-  ;; (global-set-key (kbd "H-w") 'formatted-copy)
 #+end_src
 
 ** Pandoc Mode
@@ -4580,31 +4625,6 @@ This builds the RSS feed for the blog.
 
 #+begin_src emacs-lisp
 (use-package yaml-mode)
-#+end_src
-
-** Yankpad
-
-#+begin_src emacs-lisp
-  (use-package yankpad
-    :init
-    (setq yankpad-file "~/Library/Mobile Documents/com~apple~CloudDocs/org/yankpad.org")
-    :general
-    ( "<f6>" #'yankpad-insert))
-#+end_src
-
-** Yasnippet
-
-YASnippet is a template system for Emacs.
-
-https://github.com/joaotavora/yasnippet
-
-#+begin_src emacs-lisp :lexical t
-  (use-package yasnippet
-    :config
-    :custom
-    (yas-snippet-dirs '("~/.config/emacs/snippets"))
-    :hook
-    (elpaca-after-init . yas-global-mode))
 #+end_src
 
 
