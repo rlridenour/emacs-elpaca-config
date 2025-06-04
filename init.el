@@ -1696,147 +1696,6 @@
   (browse-url "https://www.nyit.edu/its/canvas_exam_converter")
   )
 
-(defvar orgblog-directory "~/sites/orgblog/" "Path to the Org mode blog.")
-(defvar orgblog-public-directory "~/sites/orgblog/docs/" "Path to the blog public directory.")
-(defvar orgblog-posts-directory "~/sites/orgblog/posts/" "Path to the blog public directory.")
-(defvar orgblog-drafts-directory "~/sites/orgblog/drafts/" "Path to the blog public directory.")
-
-(defun rlrt-new-post (rlrt-title)
-  (interactive "sTitle: ")
-  ;; Make filename
-  (setq rlrt-filename (rlrt-make-filename rlrt-title))
-  (find-file (s-concat orgblog-drafts-directory (format-time-string "%Y-%m-%d-") rlrt-filename ".org"))
-  (insert (s-concat "#+TITLE: " rlrt-title) ?\n)
-  (yas-expand-snippet (yas-lookup-snippet "orgblogt")))
-
-(defun orgblog-insert-image ()
-  (interactive)
-  (insert "#+begin_center
-#+ATTR_HTML: :width 100% :height
-")
-  (insert "[[" (file-relative-name (read-file-name "Insert file name: " "~/sites/orgblog/images/posts/")) "]]
-#+end_center
-
-")
-  )
-
-(defun orgblog-publish-draft ()
-  (interactive)
-  (save-buffer)
-  (copy-file (buffer-file-name) "~/sites/orgblog/posts/")
-  (delete-file (buffer-file-name) t)
-  (kill-buffer)
-  (dired "~/sites/orgblog/posts"))
-
-(defun orgblog-build ()
-  (interactive)
-  (progn
-    (find-file "~/sites/orgblog/publish.el")
-    (eval-buffer)
-    (org-publish-all)
-    (webfeeder-build "atom.xml"
-		       "./docs"
-		       "https://randyridenour.net/"
-		       (let ((default-directory (expand-file-name "./docs")))
-			 (remove "posts/index.html"
-				 (directory-files-recursively "posts"
-							      ".*\\.html$")))
-		       :title "Randy Ridenour"
-		       :description "Blog posts by Randy Ridenour")
-    (kill-buffer))
-  (message "Build complete!"))
-
-(defun orgblog-serve ()
-  (interactive)
-  (progn
-    (async-shell-command "orgblog-serve")
-    (sleep-for 2)
-    (async-shell-command "open http://localhost:3000")))
-
-(defun orgblog-push ()
-  (interactive)
-  (async-shell-command "orgblog-push"))
-
-(setq org-html-footnotes-section "<div id=\"footnotes\">
-<h2 class=\"footnotes\">%s</h2>
-<div id=\"text-footnotes\">
-%s
-</div>
-</div>")
-
-(defvar yt-iframe-format
-  ;; You may want to change your width and height.
-  (concat "<iframe width=\"440\""
-	    " height=\"335\""
-	    " src=\"https://www.youtube.com/embed/%s\""
-	    " frameborder=\"0\""
-	    " allowfullscreen>%s</iframe>"))
-
-(org-add-link-type
- "yt"
- (lambda (handle)
-   (browse-url
-    (concat "https://www.youtube.com/embed/"
-	      handle)))
- (lambda (path desc backend)
-   (cl-case backend
-     (html (format yt-iframe-format
-		     path (or desc "")))
-     (latex (format "\href{%s}{%s}"
-		      path (or desc "video"))))))
-
-(defun orgblog-all-tag-lines ()
-  "Get filetag lines from all posts."
-  (let ((post-dir orgblog-posts-directory)
-	  (regex "^#\\+filetags:\\s([a-zA-Z]+)"))
-    (shell-command-to-string
-     (concat "rg --context 0 --no-filename --no-heading --replace \"\\$1\" -- " (shell-quote-argument regex) " " post-dir))))
-
-(defun orgblog-all-tags ()
-  "Return a list of unique tags from all posts."
-  (delete-dups
-   (split-string (orgblog-all-tag-lines) nil t)))
-
-(defun orgblog-select-tag ()
-  "Select and insert a tag from tags in the blog."
-  (defvar newtag)
-  (setq newtag (completing-read "Tag: " (orgblog-all-tags))))
-
-(defun insert-post-tag ()
-  (orgblog-select-tag)
-  (beginning-of-buffer)
-  (search-forward "#+filetags" nil 1)
-  (end-of-line)
-  (insert (concat " " newtag))
-  (beginning-of-buffer)
-  (search-forward "Tagged:")
-  (end-of-line)
-  (insert (concat " [[file:../tags/" newtag ".org][" (s-titleized-words newtag) "]]")))
-
-(defun add-post-to-tagfile ()
-  (defvar tagfile)
-  (defvar post-filename)
-  (defvar post-title)
-  (setq tagfile (concat "../tags/" newtag ".org"))
-  (setq post-filename (f-filename (f-this-file)))
-  (progn
-    (beginning-of-buffer)
-    (search-forward "#+title: " nil 1)
-    (setq post-title (buffer-substring (point) (line-end-position))))
-  (when
-	(not (file-exists-p tagfile))
-    (f-append-text (concat "#+title: Tagged: " (s-titleized-words newtag) "\n#+setupfile: ../org-templates/post.org\n") 'utf-8 tagfile))
-  (f-append-text (concat "\n- [[file:../posts/" post-filename "][" post-title "]]") 'utf-8 tagfile))
-
-(defun orgblog-add-tag ()
-  (interactive)
-  (orgblog-select-tag)
-  (insert-post-tag)
-  (add-post-to-tagfile)
-  (save-buffer))
-
-(use-package htmlize)
-
 (defun formatted-copy ()
   "Export region to HTML, and copy it to the clipboard."
   (interactive)
@@ -1966,6 +1825,8 @@ installed."
   (shell-command-on-region
    start end
    "pandoc -f markdown -t org --wrap=preserve" t t))
+
+(use-package pandoc-mode)
 
 (use-package citar
   :bind (("C-c C-b" . citar-insert-citation)
@@ -2386,7 +2247,164 @@ installed."
   ;; (setq rmh-elfeed-org-auto-ignore-invalid-feeds t)
   )
 
-(use-package chordpro-mode)
+(defvar orgblog-directory "~/sites/orgblog/" "Path to the Org mode blog.")
+(defvar orgblog-public-directory "~/sites/orgblog/docs/" "Path to the blog public directory.")
+(defvar orgblog-posts-directory "~/sites/orgblog/posts/" "Path to the blog public directory.")
+(defvar orgblog-drafts-directory "~/sites/orgblog/drafts/" "Path to the blog public directory.")
+
+(defun rlrt-new-post (rlrt-title)
+  (interactive "sTitle: ")
+  ;; Make filename
+  (setq rlrt-filename (rlrt-make-filename rlrt-title))
+  (find-file (s-concat orgblog-drafts-directory (format-time-string "%Y-%m-%d-") rlrt-filename ".org"))
+  (insert (s-concat "#+TITLE: " rlrt-title) ?\n)
+  (yas-expand-snippet (yas-lookup-snippet "orgblogt")))
+
+(defun orgblog-insert-image ()
+  (interactive)
+  (insert "#+begin_center
+#+ATTR_HTML: :width 100% :height
+")
+  (insert "[[" (file-relative-name (read-file-name "Insert file name: " "~/sites/orgblog/images/posts/")) "]]
+#+end_center
+
+")
+  )
+
+(defun orgblog-publish-draft ()
+  (interactive)
+  (save-buffer)
+  (copy-file (buffer-file-name) "~/sites/orgblog/posts/")
+  (delete-file (buffer-file-name) t)
+  (kill-buffer)
+  (dired "~/sites/orgblog/posts"))
+
+(defun orgblog-build ()
+  (interactive)
+  (progn
+    (find-file "~/sites/orgblog/publish.el")
+    (eval-buffer)
+    (org-publish-all)
+    (webfeeder-build "atom.xml"
+		       "./docs"
+		       "https://randyridenour.net/"
+		       (let ((default-directory (expand-file-name "./docs")))
+			 (remove "posts/index.html"
+				 (directory-files-recursively "posts"
+							      ".*\\.html$")))
+		       :title "Randy Ridenour"
+		       :description "Blog posts by Randy Ridenour")
+    (kill-buffer))
+  (message "Build complete!"))
+
+(defun orgblog-serve ()
+  (interactive)
+  (progn
+    (async-shell-command "orgblog-serve")
+    (sleep-for 2)
+    (async-shell-command "open http://localhost:3000")))
+
+(defun orgblog-push ()
+  (interactive)
+  (async-shell-command "orgblog-push"))
+
+(setq org-html-footnotes-section "<div id=\"footnotes\">
+<h2 class=\"footnotes\">%s</h2>
+<div id=\"text-footnotes\">
+%s
+</div>
+</div>")
+
+(defvar yt-iframe-format
+  ;; You may want to change your width and height.
+  (concat "<iframe width=\"440\""
+	    " height=\"335\""
+	    " src=\"https://www.youtube.com/embed/%s\""
+	    " frameborder=\"0\""
+	    " allowfullscreen>%s</iframe>"))
+
+(org-add-link-type
+ "yt"
+ (lambda (handle)
+   (browse-url
+    (concat "https://www.youtube.com/embed/"
+	      handle)))
+ (lambda (path desc backend)
+   (cl-case backend
+     (html (format yt-iframe-format
+		     path (or desc "")))
+     (latex (format "\href{%s}{%s}"
+		      path (or desc "video"))))))
+
+(use-package webfeeder)
+
+(defun orgblog-all-tag-lines ()
+  "Get filetag lines from all posts."
+  (let ((post-dir orgblog-posts-directory)
+	  (regex "^#\\+filetags:\\s([a-zA-Z]+)"))
+    (shell-command-to-string
+     (concat "rg --context 0 --no-filename --no-heading --replace \"\\$1\" -- " (shell-quote-argument regex) " " post-dir))))
+
+(defun orgblog-all-tags ()
+  "Return a list of unique tags from all posts."
+  (delete-dups
+   (split-string (orgblog-all-tag-lines) nil t)))
+
+(defun orgblog-select-tag ()
+  "Select and insert a tag from tags in the blog."
+  (defvar newtag)
+  (setq newtag (completing-read "Tag: " (orgblog-all-tags))))
+
+(defun insert-post-tag ()
+  (orgblog-select-tag)
+  (beginning-of-buffer)
+  (search-forward "#+filetags" nil 1)
+  (end-of-line)
+  (insert (concat " " newtag))
+  (beginning-of-buffer)
+  (search-forward "Tagged:")
+  (end-of-line)
+  (insert (concat " [[file:../tags/" newtag ".org][" (s-titleized-words newtag) "]]")))
+
+(defun add-post-to-tagfile ()
+  (defvar tagfile)
+  (defvar post-filename)
+  (defvar post-title)
+  (setq tagfile (concat "../tags/" newtag ".org"))
+  (setq post-filename (f-filename (f-this-file)))
+  (progn
+    (beginning-of-buffer)
+    (search-forward "#+title: " nil 1)
+    (setq post-title (buffer-substring (point) (line-end-position))))
+  (when
+	(not (file-exists-p tagfile))
+    (f-append-text (concat "#+title: Tagged: " (s-titleized-words newtag) "\n#+setupfile: ../org-templates/post.org\n") 'utf-8 tagfile))
+  (f-append-text (concat "\n- [[file:../posts/" post-filename "][" post-title "]]") 'utf-8 tagfile))
+
+(defun orgblog-add-tag ()
+  (interactive)
+  (orgblog-select-tag)
+  (insert-post-tag)
+  (add-post-to-tagfile)
+  (save-buffer))
+
+(use-package website2org
+  :ensure (:host github :repo "rtrppl/website2org")
+  :config
+  (setq website2org-directory "~/icloud/web-saves/website2org/") ;; if needed, see below
+  (setq website2org-additional-meta nil)
+  :bind
+  (:map global-map)
+  ("C-M-s-<down>" . website2org)
+  ("C-M-s-<up>" . website2org-temp))
+
+(use-package htmlize)
+
+(use-package emmet-mode
+  :general
+  (:keymaps 'html-mode-map
+	      "C-M-S-s-<right>" #'emmet-next-edit-point
+	      "C-M-S-s-<left>" #'emmet-prev-edit-point))
 
 (use-feature eww
   :config
@@ -2482,11 +2500,16 @@ installed."
   (setq rlr-org-url (pop rlr-org-link))
   (eww rlr-org-url))
 
-(use-package emmet-mode
+(use-package isgd
+  :custom
+  (isgd-logstats nil)
+  (isgd-ask-custom-url t))
+
+(use-package link-hint
   :general
-  (:keymaps 'html-mode-map
-	      "C-M-S-s-<right>" #'emmet-next-edit-point
-	      "C-M-S-s-<left>" #'emmet-prev-edit-point))
+  ("s-," #'link-hint-open-link
+   "C-c l o" #'link-hint-open-link
+   "C-c l c" #'link-hint-copy-link))
 
 (use-package fish-mode)
 
@@ -2496,6 +2519,21 @@ installed."
   (when (and (executable-find "fish")
 	       (require 'fish-completion nil t))
     (global-fish-completion-mode)))
+
+(use-package sly)
+
+(use-package yaml-mode)
+
+(use-package pdf-tools
+  :hook (pdf-view-mode . (lambda () (display-line-numbers-mode -1)))
+  :init
+  (pdf-loader-install)
+  :config
+  (setq-default pdf-view-display-size 'fit-width)
+  :general
+  (:keymaps 'pdf-view-mode-map
+	      "C-s" #'isearch-forward)
+  )
 
 (defun rr/insert-unicode (unicode-name)
   "Same as C-x 8 enter UNICODE-NAME."
@@ -2901,32 +2939,6 @@ installed."
  ;; "s-b" #'hydra-buffer/body
  "C-x 9" #'hydra-logic/body)
 
-(use-package isgd
-  :custom
-  (isgd-logstats nil)
-  (isgd-ask-custom-url t))
-
-(use-package link-hint
-  :general
-  ("s-," #'link-hint-open-link
-   "C-c l o" #'link-hint-open-link
-   "C-c l c" #'link-hint-copy-link))
-
-(use-package pandoc-mode)
-
-(use-package pdf-tools
-  :hook (pdf-view-mode . (lambda () (display-line-numbers-mode -1)))
-  :init
-  (pdf-loader-install)
-  :config
-  (setq-default pdf-view-display-size 'fit-width)
-  :general
-  (:keymaps 'pdf-view-mode-map
-	      "C-s" #'isearch-forward)
-  )
-
-(use-package sly)
-
 (defun rlr/votd ()
   (interactive)
   (switch-to-buffer (generate-new-buffer-name "*Verse of the Day*"))
@@ -2979,19 +2991,7 @@ installed."
     (error
      (format "Today's verse could not be fetched: %s" (error-message-string err)))))
 
-(use-package webfeeder)
-
-(use-package website2org
-  :ensure (:host github :repo "rtrppl/website2org")
-  :config
-  (setq website2org-directory "~/icloud/web-saves/website2org/") ;; if needed, see below
-  (setq website2org-additional-meta nil)
-  :bind
-  (:map global-map)
-  ("C-M-s-<down>" . website2org)
-  ("C-M-s-<up>" . website2org-temp))
-
-(use-package yaml-mode)
+(use-package chordpro-mode)
 
 (general-define-key
  "C-+" #'text-scale-increase

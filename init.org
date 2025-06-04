@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2025-06-04 07:09:07 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2025-06-04 09:31:53 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -201,7 +201,6 @@ Add some space between lines.
   ;; End:
 #+end_src
 
-
 * Package Management
 
 #+begin_src emacs-lisp
@@ -371,7 +370,6 @@ From [[https://github.com/mickeynp/discover.el][mickeynp/discover.el: Discover m
     (global-discover-mode 1))
 #+end_src
 
-
 * File Locations
 ** Set Path
 
@@ -496,8 +494,6 @@ Open Emacs init file in fixed-pitch mode.
     (progn (find-file "~/.config/emacs/init.org")
 	   (variable-pitch-mode -1)))
 #+end_src
-
-
 
 * Completion
 
@@ -627,7 +623,6 @@ Enrich existing commands with completion annotations
     :config
     (load "~/Dropbox/emacs/my-emacs-abbrev"))
 #+end_src
-
 
 * Settings
 
@@ -894,8 +889,6 @@ Increase number of recent files shown.
     (recentf-max-saved-items 1000 "Save more recent files"))
 #+end_src
 
-
-
 Open files to the last edited position.
 
 #+begin_src emacs-lisp
@@ -1112,7 +1105,6 @@ Use ~persistent-scratch~ to save scratch file between sessions.
     (setq project-vc-ignores '("*.aux" "*.bbl" "*.bcf" "*.blg" "*.fdb_latexmk" "*.fls" "*.log" "*.out" "*.run.xml" "*.run.xml" "*.synctex.gz" "auto/" "*.pdf"))
     (setq project-vc-extra-root-markers '(".proj")))
 #+end_src
-
 
 ** Windows
 
@@ -1488,7 +1480,6 @@ https://github.com/amno1/emacs-term-toggle
     )
 #+end_src
 
-
 *** Async Shell Command Buffers
 
 Don't ask to create new shell buffers.
@@ -1542,7 +1533,6 @@ Go to current directory in Ghostty.
   (use-package tldr)
 #+end_src
 
-
 ** Help
 
 Make help buffers active when created, so pressing "q" will immediately close them.
@@ -1574,7 +1564,6 @@ Helpful gives better contextual information in help buffers.
 #+begin_src emacs-lisp
   (use-package helpful)
 #+end_src
-
 
 * Editing 
 
@@ -1935,7 +1924,6 @@ https://github.com/joaotavora/yasnippet
     :hook
     (LaTeX-mode . laas-mode))
 #+end_src
-
 
 * Org Mode
 
@@ -2496,16 +2484,6 @@ I'm not sure what this doing anymore, so I'm going to disable it for now.
   (use-package org-mac-link)
 #+end_src
 
-** Org Publish RSS
-
-[[https://git.sr.ht/~taingram/org-publish-rss][~taingram/org-publish-rss - Automatically generate RSS feeds for org-publish projects - sourcehut git]]
-
-#+begin_src emacs-lisp :tangle no
-  (use-package org-publish-rss
-    :ensure
-    (:type git :sourcehut :repo ~taingram/org-publish-rss))
-#+end_src
-
 ** Org Web Tools
 
 #+begin_src emacs-lisp
@@ -2929,208 +2907,6 @@ Function for converting Org mode files to QTI file for importing into Canvas usi
     )
 #+end_src
 
-** Blog
-
-Define directory variables.
-
-#+begin_src emacs-lisp
-  (defvar orgblog-directory "~/sites/orgblog/" "Path to the Org mode blog.")
-  (defvar orgblog-public-directory "~/sites/orgblog/docs/" "Path to the blog public directory.")
-  (defvar orgblog-posts-directory "~/sites/orgblog/posts/" "Path to the blog public directory.")
-  (defvar orgblog-drafts-directory "~/sites/orgblog/drafts/" "Path to the blog public directory.")
-
-#+end_src
-
-Create new post.
-
-#+begin_src emacs-lisp
-  (defun rlrt-new-post (rlrt-title)
-    (interactive "sTitle: ")
-    ;; Make filename
-    (setq rlrt-filename (rlrt-make-filename rlrt-title))
-    (find-file (s-concat orgblog-drafts-directory (format-time-string "%Y-%m-%d-") rlrt-filename ".org"))
-    (insert (s-concat "#+TITLE: " rlrt-title) ?\n)
-    (yas-expand-snippet (yas-lookup-snippet "orgblogt")))
-#+end_src
-
-Insert image.
-
-#+begin_src emacs-lisp
-  (defun orgblog-insert-image ()
-    (interactive)
-    (insert "#+begin_center
-  ,#+ATTR_HTML: :width 100% :height
-  ")
-    (insert "[[" (file-relative-name (read-file-name "Insert file name: " "~/sites/orgblog/images/posts/")) "]]
-  ,#+end_center
-
-  ")
-    )
-#+end_src
-
-Move draft to posts.
-
-#+begin_src emacs-lisp
-  (defun orgblog-publish-draft ()
-    (interactive)
-    (save-buffer)
-    (copy-file (buffer-file-name) "~/sites/orgblog/posts/")
-    (delete-file (buffer-file-name) t)
-    (kill-buffer)
-    (dired "~/sites/orgblog/posts"))
-#+end_src
-
-Publish source to public directory.
-
-#+begin_src emacs-lisp
-  (defun orgblog-build ()
-    (interactive)
-    (progn
-      (find-file "~/sites/orgblog/publish.el")
-      (eval-buffer)
-      (org-publish-all)
-      (webfeeder-build "atom.xml"
-		       "./docs"
-		       "https://randyridenour.net/"
-		       (let ((default-directory (expand-file-name "./docs")))
-			 (remove "posts/index.html"
-				 (directory-files-recursively "posts"
-							      ".*\\.html$")))
-		       :title "Randy Ridenour"
-		       :description "Blog posts by Randy Ridenour")
-      (kill-buffer))
-    (message "Build complete!"))
-#+end_src
-
-Start local server.
-
-#+begin_src emacs-lisp
-  (defun orgblog-serve ()
-    (interactive)
-    (progn
-      (async-shell-command "orgblog-serve")
-      (sleep-for 2)
-      (async-shell-command "open http://localhost:3000")))
-#+end_src
-
-Push changes to Github.
-
-#+begin_src emacs-lisp
-  (defun orgblog-push ()
-    (interactive)
-    (async-shell-command "orgblog-push"))
-#+end_src
-
-Modify footnote section label.
-
-#+begin_src emacs-lisp
-  (setq org-html-footnotes-section "<div id=\"footnotes\">
-  <h2 class=\"footnotes\">%s</h2>
-  <div id=\"text-footnotes\">
-  %s
-  </div>
-  </div>")
-#+end_src
-
-Embed YouTube videos, from [[https://endlessparentheses.com/embedding-youtube-videos-with-org-mode-links.html][Embedding Youtube videos with org-mode links · Endless Parentheses]]. Add link like this: =[[yt:3Aoa-yP5U_Y]]=
-
-#+begin_src emacs-lisp
-  (defvar yt-iframe-format
-    ;; You may want to change your width and height.
-    (concat "<iframe width=\"440\""
-	    " height=\"335\""
-	    " src=\"https://www.youtube.com/embed/%s\""
-	    " frameborder=\"0\""
-	    " allowfullscreen>%s</iframe>"))
-
-  (org-add-link-type
-   "yt"
-   (lambda (handle)
-     (browse-url
-      (concat "https://www.youtube.com/embed/"
-	      handle)))
-   (lambda (path desc backend)
-     (cl-case backend
-       (html (format yt-iframe-format
-		     path (or desc "")))
-       (latex (format "\href{%s}{%s}"
-		      path (or desc "video"))))))
-#+end_src
-
-*** Blog Tags
-
-Select tag from list.
-
-#+begin_src emacs-lisp
-  (defun orgblog-all-tag-lines ()
-    "Get filetag lines from all posts."
-    (let ((post-dir orgblog-posts-directory)
-	  (regex "^#\\+filetags:\\s([a-zA-Z]+)"))
-      (shell-command-to-string
-       (concat "rg --context 0 --no-filename --no-heading --replace \"\\$1\" -- " (shell-quote-argument regex) " " post-dir))))
-
-  (defun orgblog-all-tags ()
-    "Return a list of unique tags from all posts."
-    (delete-dups
-     (split-string (orgblog-all-tag-lines) nil t)))
-
-  (defun orgblog-select-tag ()
-    "Select and insert a tag from tags in the blog."
-    (defvar newtag)
-    (setq newtag (completing-read "Tag: " (orgblog-all-tags))))
-#+end_src
-
-Insert tag to heading and tag line.
-
-#+begin_src emacs-lisp
-  (defun insert-post-tag ()
-    (orgblog-select-tag)
-    (beginning-of-buffer)
-    (search-forward "#+filetags" nil 1)
-    (end-of-line)
-    (insert (concat " " newtag))
-    (beginning-of-buffer)
-    (search-forward "Tagged:")
-    (end-of-line)
-    (insert (concat " [[file:../tags/" newtag ".org][" (s-titleized-words newtag) "]]")))
-#+end_src
-
-Add tagged post to tag page.
-
-#+begin_src emacs-lisp
-  (defun add-post-to-tagfile ()
-    (defvar tagfile)
-    (defvar post-filename)
-    (defvar post-title)
-    (setq tagfile (concat "../tags/" newtag ".org"))
-    (setq post-filename (f-filename (f-this-file)))
-    (progn
-      (beginning-of-buffer)
-      (search-forward "#+title: " nil 1)
-      (setq post-title (buffer-substring (point) (line-end-position))))
-    (when
-	(not (file-exists-p tagfile))
-      (f-append-text (concat "#+title: Tagged: " (s-titleized-words newtag) "\n#+setupfile: ../org-templates/post.org\n") 'utf-8 tagfile))
-    (f-append-text (concat "\n- [[file:../posts/" post-filename "][" post-title "]]") 'utf-8 tagfile))
-#+end_src
-
-Select tag, add tag to to post, then add post to tag page.
-
-#+begin_src emacs-lisp
-  (defun orgblog-add-tag ()
-    (interactive)
-    (orgblog-select-tag)
-    (insert-post-tag)
-    (add-post-to-tagfile)
-    (save-buffer))
-#+end_src
-
-** Htmlize
-
-#+begin_src emacs-lisp
-  (use-package htmlize)
-#+end_src
-
 ** Style Text Menu
 
 #+begin_src emacs-lisp :tangle no
@@ -3157,7 +2933,6 @@ From [[https://kitchingroup.cheme.cmu.edu/blog/2016/06/16/Copy-formatted-org-mod
 
   ;; (global-set-key (kbd "H-w") 'formatted-copy)
 #+end_src
-
 
 * LaTeX
 
@@ -3260,7 +3035,6 @@ From [[https://kitchingroup.cheme.cmu.edu/blog/2016/06/16/Copy-formatted-org-mod
 			  map))))
 #+end_src
 
-
 * Markdown Mode
 
 #+begin_src emacs-lisp
@@ -3295,6 +3069,14 @@ From [[http://yummymelon.com/devnull/converting-a-markdown-region-to-org-revisit
      "pandoc -f markdown -t org --wrap=preserve" t t))
 #+end_src
 
+*** Pandoc Mode
+
+I don't need to use Pandoc much since everything stays in Org. It might come in handy for an occasional conversion from Markdown.
+
+#+begin_src emacs-lisp
+  (use-package pandoc-mode)
+#+end_src
+
 * Citations
 
 ** Citar
@@ -3315,8 +3097,6 @@ From [[http://yummymelon.com/devnull/converting-a-markdown-region-to-org-revisit
        (t . (csl "chicago-author-date.csl")))))
 #+end_src
 
-
-
 ** Ebib
 
 #+begin_src emacs-lisp
@@ -3329,7 +3109,6 @@ From [[http://yummymelon.com/devnull/converting-a-markdown-region-to-org-revisit
     :custom
     (ebib-preload-bib-files '("~/Dropbox/bibtex/rlr.bib")))
 #+end_src
-
 
 * Notes
 
@@ -3444,7 +3223,6 @@ Search notes with the xapian syntax (+word -word AND NOT etc), <tab> to preview,
     (denote-search-format-heading-function #'denote-search-format-heading-with-keywords))
 #+end_src
 
-
 ** Notepad
 
 I use this to quickly create a disposable Emacs buffer to write some quick text for pasting into another app. I'm using this with a Keyboard Maestro macro.
@@ -3499,7 +3277,6 @@ Copy entire buffer then kill. I use this with temporary scratch buffers to write
     ;; (app-switch)
     (shell-command "open -a ~/icloud/scripts/beep.app"))
 #+end_src
-
 
 * Mail and News
 
@@ -3806,7 +3583,6 @@ Functions for setting default browser,
    "C-M-S-s-b" #'rlr/select-browser)
 #+end_src
 
-
 ** Elfeed
 
 #+begin_src emacs-lisp
@@ -3895,7 +3671,6 @@ Tag items — from [[https://www.reddit.com/r/emacs/comments/go5d0v/using_emacs_
     (elfeed-goodies/setup))
 #+end_src
 
-
 ** Mastodon
 
 #+begin_src emacs-lisp :tangle no
@@ -3917,15 +3692,251 @@ Open Mastodon in a new tab
     (mastodon))
 #+end_src
 
+* HTML and Web
 
-* Miscellaneous Packages
+** Blog
 
-** ChordPro
+Define directory variables.
 
 #+begin_src emacs-lisp
-  (use-package chordpro-mode)
+  (defvar orgblog-directory "~/sites/orgblog/" "Path to the Org mode blog.")
+  (defvar orgblog-public-directory "~/sites/orgblog/docs/" "Path to the blog public directory.")
+  (defvar orgblog-posts-directory "~/sites/orgblog/posts/" "Path to the blog public directory.")
+  (defvar orgblog-drafts-directory "~/sites/orgblog/drafts/" "Path to the blog public directory.")
+
 #+end_src
 
+Create new post.
+
+#+begin_src emacs-lisp
+  (defun rlrt-new-post (rlrt-title)
+    (interactive "sTitle: ")
+    ;; Make filename
+    (setq rlrt-filename (rlrt-make-filename rlrt-title))
+    (find-file (s-concat orgblog-drafts-directory (format-time-string "%Y-%m-%d-") rlrt-filename ".org"))
+    (insert (s-concat "#+TITLE: " rlrt-title) ?\n)
+    (yas-expand-snippet (yas-lookup-snippet "orgblogt")))
+#+end_src
+
+Insert image.
+
+#+begin_src emacs-lisp
+  (defun orgblog-insert-image ()
+    (interactive)
+    (insert "#+begin_center
+  ,#+ATTR_HTML: :width 100% :height
+  ")
+    (insert "[[" (file-relative-name (read-file-name "Insert file name: " "~/sites/orgblog/images/posts/")) "]]
+  ,#+end_center
+
+  ")
+    )
+#+end_src
+
+Move draft to posts.
+
+#+begin_src emacs-lisp
+  (defun orgblog-publish-draft ()
+    (interactive)
+    (save-buffer)
+    (copy-file (buffer-file-name) "~/sites/orgblog/posts/")
+    (delete-file (buffer-file-name) t)
+    (kill-buffer)
+    (dired "~/sites/orgblog/posts"))
+#+end_src
+
+Publish source to public directory.
+
+#+begin_src emacs-lisp
+  (defun orgblog-build ()
+    (interactive)
+    (progn
+      (find-file "~/sites/orgblog/publish.el")
+      (eval-buffer)
+      (org-publish-all)
+      (webfeeder-build "atom.xml"
+		       "./docs"
+		       "https://randyridenour.net/"
+		       (let ((default-directory (expand-file-name "./docs")))
+			 (remove "posts/index.html"
+				 (directory-files-recursively "posts"
+							      ".*\\.html$")))
+		       :title "Randy Ridenour"
+		       :description "Blog posts by Randy Ridenour")
+      (kill-buffer))
+    (message "Build complete!"))
+#+end_src
+
+Start local server.
+
+#+begin_src emacs-lisp
+  (defun orgblog-serve ()
+    (interactive)
+    (progn
+      (async-shell-command "orgblog-serve")
+      (sleep-for 2)
+      (async-shell-command "open http://localhost:3000")))
+#+end_src
+
+Push changes to Github.
+
+#+begin_src emacs-lisp
+  (defun orgblog-push ()
+    (interactive)
+    (async-shell-command "orgblog-push"))
+#+end_src
+
+Modify footnote section label.
+
+#+begin_src emacs-lisp
+  (setq org-html-footnotes-section "<div id=\"footnotes\">
+  <h2 class=\"footnotes\">%s</h2>
+  <div id=\"text-footnotes\">
+  %s
+  </div>
+  </div>")
+#+end_src
+
+Embed YouTube videos, from [[https://endlessparentheses.com/embedding-youtube-videos-with-org-mode-links.html][Embedding Youtube videos with org-mode links · Endless Parentheses]]. Add link like this: =[[yt:3Aoa-yP5U_Y]]=
+
+#+begin_src emacs-lisp
+  (defvar yt-iframe-format
+    ;; You may want to change your width and height.
+    (concat "<iframe width=\"440\""
+	    " height=\"335\""
+	    " src=\"https://www.youtube.com/embed/%s\""
+	    " frameborder=\"0\""
+	    " allowfullscreen>%s</iframe>"))
+
+  (org-add-link-type
+   "yt"
+   (lambda (handle)
+     (browse-url
+      (concat "https://www.youtube.com/embed/"
+	      handle)))
+   (lambda (path desc backend)
+     (cl-case backend
+       (html (format yt-iframe-format
+		     path (or desc "")))
+       (latex (format "\href{%s}{%s}"
+		      path (or desc "video"))))))
+#+end_src
+
+*** Webfeeder
+
+This builds the RSS feed for the blog.
+
+#+begin_src emacs-lisp
+  (use-package webfeeder)
+#+end_src
+
+*** Org Publish RSS
+
+[[https://git.sr.ht/~taingram/org-publish-rss][~taingram/org-publish-rss - Automatically generate RSS feeds for org-publish projects - sourcehut git]]
+
+#+begin_src emacs-lisp :tangle no
+  (use-package org-publish-rss
+    :ensure
+    (:type git :sourcehut :repo ~taingram/org-publish-rss))
+#+end_src
+
+*** Blog Tags
+
+Select tag from list.
+
+#+begin_src emacs-lisp
+  (defun orgblog-all-tag-lines ()
+    "Get filetag lines from all posts."
+    (let ((post-dir orgblog-posts-directory)
+	  (regex "^#\\+filetags:\\s([a-zA-Z]+)"))
+      (shell-command-to-string
+       (concat "rg --context 0 --no-filename --no-heading --replace \"\\$1\" -- " (shell-quote-argument regex) " " post-dir))))
+
+  (defun orgblog-all-tags ()
+    "Return a list of unique tags from all posts."
+    (delete-dups
+     (split-string (orgblog-all-tag-lines) nil t)))
+
+  (defun orgblog-select-tag ()
+    "Select and insert a tag from tags in the blog."
+    (defvar newtag)
+    (setq newtag (completing-read "Tag: " (orgblog-all-tags))))
+#+end_src
+
+Insert tag to heading and tag line.
+
+#+begin_src emacs-lisp
+  (defun insert-post-tag ()
+    (orgblog-select-tag)
+    (beginning-of-buffer)
+    (search-forward "#+filetags" nil 1)
+    (end-of-line)
+    (insert (concat " " newtag))
+    (beginning-of-buffer)
+    (search-forward "Tagged:")
+    (end-of-line)
+    (insert (concat " [[file:../tags/" newtag ".org][" (s-titleized-words newtag) "]]")))
+#+end_src
+
+Add tagged post to tag page.
+
+#+begin_src emacs-lisp
+  (defun add-post-to-tagfile ()
+    (defvar tagfile)
+    (defvar post-filename)
+    (defvar post-title)
+    (setq tagfile (concat "../tags/" newtag ".org"))
+    (setq post-filename (f-filename (f-this-file)))
+    (progn
+      (beginning-of-buffer)
+      (search-forward "#+title: " nil 1)
+      (setq post-title (buffer-substring (point) (line-end-position))))
+    (when
+	(not (file-exists-p tagfile))
+      (f-append-text (concat "#+title: Tagged: " (s-titleized-words newtag) "\n#+setupfile: ../org-templates/post.org\n") 'utf-8 tagfile))
+    (f-append-text (concat "\n- [[file:../posts/" post-filename "][" post-title "]]") 'utf-8 tagfile))
+#+end_src
+
+Select tag, add tag to to post, then add post to tag page.
+
+#+begin_src emacs-lisp
+  (defun orgblog-add-tag ()
+    (interactive)
+    (orgblog-select-tag)
+    (insert-post-tag)
+    (add-post-to-tagfile)
+    (save-buffer))
+#+end_src
+
+** Website2org
+
+#+begin_src emacs-lisp
+  (use-package website2org
+    :ensure (:host github :repo "rtrppl/website2org")
+    :config
+    (setq website2org-directory "~/icloud/web-saves/website2org/") ;; if needed, see below
+    (setq website2org-additional-meta nil)
+    :bind
+    (:map global-map)
+    ("C-M-s-<down>" . website2org)
+    ("C-M-s-<up>" . website2org-temp))
+#+end_src
+
+** Htmlize
+
+#+begin_src emacs-lisp
+  (use-package htmlize)
+#+end_src
+
+** Emmet
+
+#+begin_src emacs-lisp
+  (use-package emmet-mode
+    :general
+    (:keymaps 'html-mode-map
+	      "C-M-S-s-<right>" #'emmet-next-edit-point
+	      "C-M-S-s-<left>" #'emmet-prev-edit-point))
+#+end_src
 
 ** EWW
 
@@ -4029,15 +4040,28 @@ Open Mastodon in a new tab
     (eww rlr-org-url))
 #+end_src
 
-** Emmet
+** ISGD
+
+Shorten URL's with the is.gd service.
 
 #+begin_src emacs-lisp
-  (use-package emmet-mode
-    :general
-    (:keymaps 'html-mode-map
-	      "C-M-S-s-<right>" #'emmet-next-edit-point
-	      "C-M-S-s-<left>" #'emmet-prev-edit-point))
+  (use-package isgd
+    :custom
+    (isgd-logstats nil)
+    (isgd-ask-custom-url t))
 #+end_src
+
+** Link Hint
+
+#+begin_src emacs-lisp
+  (use-package link-hint
+    :general
+    ("s-," #'link-hint-open-link
+     "C-c l o" #'link-hint-open-link
+     "C-c l c" #'link-hint-copy-link))
+#+end_src
+
+* Coding
 
 ** Fish
 
@@ -4054,6 +4078,35 @@ Open Mastodon in a new tab
     (when (and (executable-find "fish")
 	       (require 'fish-completion nil t))
       (global-fish-completion-mode)))
+#+end_src
+
+** Common Lisp
+
+SLY is Sylvester the Cat's Common Lisp IDE for Emacs.
+
+#+begin_src emacs-lisp
+  (use-package sly)
+#+end_src
+
+** YAML
+
+#+begin_src emacs-lisp
+(use-package yaml-mode)
+#+end_src
+
+* PDF-Tools
+
+#+begin_src emacs-lisp
+  (use-package pdf-tools
+    :hook (pdf-view-mode . (lambda () (display-line-numbers-mode -1)))
+    :init
+    (pdf-loader-install)
+    :config
+    (setq-default pdf-view-display-size 'fit-width)
+    :general
+    (:keymaps 'pdf-view-mode-map
+	      "C-s" #'isearch-forward)
+    )
 #+end_src
 
 ** Hydras
@@ -4479,52 +4532,6 @@ Open Mastodon in a new tab
    "C-x 9" #'hydra-logic/body)
 #+end_src
 
-** ISGD
-
-#+begin_src emacs-lisp
-  (use-package isgd
-    :custom
-    (isgd-logstats nil)
-    (isgd-ask-custom-url t))
-#+end_src
-
-*** Link Hint
-
-#+begin_src emacs-lisp
-  (use-package link-hint
-    :general
-    ("s-," #'link-hint-open-link
-     "C-c l o" #'link-hint-open-link
-     "C-c l c" #'link-hint-copy-link))
-#+end_src
-
-** Pandoc Mode
-
-#+begin_src emacs-lisp
-  (use-package pandoc-mode)
-#+end_src
-
-** PDF-Tools
-
-#+begin_src emacs-lisp
-  (use-package pdf-tools
-    :hook (pdf-view-mode . (lambda () (display-line-numbers-mode -1)))
-    :init
-    (pdf-loader-install)
-    :config
-    (setq-default pdf-view-display-size 'fit-width)
-    :general
-    (:keymaps 'pdf-view-mode-map
-	      "C-s" #'isearch-forward)
-    )
-#+end_src
-
-** SLY
-
-#+begin_src emacs-lisp
-  (use-package sly)
-#+end_src
-
 ** VOTD
 
 Bible verse of the day from Bible Gateway.
@@ -4599,34 +4606,15 @@ Modified votd.el from [[https://github.com/kristjoc/votd/tree/main][kristjoc/vot
        (format "Today's verse could not be fetched: %s" (error-message-string err)))))
 #+end_src
 
-** Webfeeder
+* Music
 
-This builds the RSS feed for the blog.
+** ChordPro
 
-#+begin_src emacs-lisp
-  (use-package webfeeder)
-#+end_src
-
-** Website2org
+Make chord charts.
 
 #+begin_src emacs-lisp
-  (use-package website2org
-    :ensure (:host github :repo "rtrppl/website2org")
-    :config
-    (setq website2org-directory "~/icloud/web-saves/website2org/") ;; if needed, see below
-    (setq website2org-additional-meta nil)
-    :bind
-    (:map global-map)
-    ("C-M-s-<down>" . website2org)
-    ("C-M-s-<up>" . website2org-temp))
+  (use-package chordpro-mode)
 #+end_src
-
-** YAML
-
-#+begin_src emacs-lisp
-(use-package yaml-mode)
-#+end_src
-
 
 * Keybindings
 
@@ -4833,7 +4821,6 @@ Open fish functions directory.
    )
 #+end_src
 
-
 * Finish
 
 This reloads the Emacs config file to test changes.
@@ -4849,7 +4836,6 @@ Set default directory.
 #+begin_src emacs-lisp
   (setq default-directory "~/")
 #+end_src
-
 
 * Footer
 
