@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2025-06-04 11:48:43 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2025-06-04 13:23:09 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -723,6 +723,9 @@ World clock settings.
 	holiday-bahai-holidays nil           ;these religions have MANY holidays
 	holiday-islamic-holidays nil         ;... that I don't get off
 	)
+
+  (general-define-key
+   "<f8>" #'calendar)
 #+end_src
 
 Display line and column numbers in the modeline.
@@ -4722,23 +4725,6 @@ Make chord charts.
 
 #+begin_src emacs-lisp
   (use-package chordpro-mode)
-#+end_src
-
-* Keybindings
-
-** Search Keybindings
-
-#+begin_src emacs-lisp
-  (general-define-key
-   "s-l" #'hydra-locate/body
-   )
-#+end_src
-
-** Other Keybindings
-
-#+begin_src emacs-lisp
-  (general-define-key
-   "<f8>" #'calendar)
 #+end_src
 
 ** Prefix Keybindings

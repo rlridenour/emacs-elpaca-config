@@ -315,6 +315,9 @@
 	holiday-islamic-holidays nil         ;... that I don't get off
 	)
 
+(general-define-key
+ "<f8>" #'calendar)
+
 (line-number-mode)
 (column-number-mode)
 
@@ -3071,13 +3074,6 @@ installed."
      (format "Today's verse could not be fetched: %s" (error-message-string err)))))
 
 (use-package chordpro-mode)
-
-(general-define-key
- "s-l" #'hydra-locate/body
- )
-
-(general-define-key
- "<f8>" #'calendar)
 
 (general-define-key
  :prefix "C-c"
