@@ -112,6 +112,10 @@
 	      "s-." #'casual-calendar-tmenu)
   )
 
+(use-package discover
+  :config
+  (global-discover-mode 1))
+
 (use-package exec-path-from-shell
   :config
   (exec-path-from-shell-initialize))
@@ -169,6 +173,97 @@
   (interactive)
   (progn (find-file "~/.config/emacs/init.org")
 	   (variable-pitch-mode -1)))
+
+(use-package vertico
+  :demand
+  :custom (vertico-cycle t)
+  :config
+  (setf (car vertico-multiline) "\n") ;; don't replace newlines
+  (vertico-mode)
+  (vertico-multiform-mode 1)
+  (setq vertico-multiform-categories
+	  '((file grid)
+	    (jinx grid (vertico-grid-annotate . 20))
+	    (citar buffer)))
+  (setq vertico-cycle t) ;; enable cycling for 'vertico-next' and 'vertico-prev'
+  (add-hook 'rfn-eshadow-update-overlay-hook #'vertico-directory-tidy)
+  :general
+  (:keymaps 'vertico-map
+	      ;; keybindings to cycle through vertico results.
+	      "C-h" #'+minibuffer-up-dir
+	      "<backspace>" 'vertico-directory-delete-char
+	      "RET" 'vertico-directory-enter))
+
+(use-package orderless
+  :custom
+  (completion-styles '(orderless basic))
+  (completion-category-overrides '((file (styles partial-completion)))))
+
+(use-package marginalia
+  :config (marginalia-mode))
+
+(use-package consult
+  :demand
+  :config
+  (defun rlr/consult-rg ()
+    "Function for `consult-ripgrep' with the `universal-argument'."
+    (interactive)
+    (consult-ripgrep (list 4)))
+
+  (defun rlr/consult-fd ()
+    "Function for `consult-find' with the `universal-argument'."
+    (interactive)
+    (consult-find (list 4)))
+  :general
+  ("C-x b" #'consult-buffer))
+
+(use-package embark
+  :general
+  ("C-." #'embark-act)
+  ("C-:" #'embark-dwim)
+  ("C-h B" #'embark-bindings) ;; alternative for `describe-bindings'
+  :init
+  (setq prefix-help-command #'embark-prefix-help-command)
+  :config
+  (add-to-list 'display-buffer-alist
+		 '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+		   nil
+		   (window-parameters (mode-line-format . none)))))
+
+(use-package embark-consult
+  :hook
+  (embark-collect-mode . consult-preview-at-point-mode))
+
+(use-package cape
+  :commands (cape-file)
+  :general (:prefix "M-p"
+		      "p" 'completion-at-point ;; capf
+		      "d" 'cape-dabbrev        ;; or dabbrev-completion
+		      "a" 'cape-abbrev
+		      "w" 'cape-dict
+		      "\\" 'cape-tex
+		      "_" 'cape-tex
+		      "^" 'cape-tex)
+  :init
+  ;; Add to the global default value of `completion-at-point-functions' which is
+  ;; used by `completion-at-point'.  The order of the functions matters, the
+  ;; first function returning a result wins.  Note that the list of buffer-local
+  ;; completion functions takes precedence over the global list.
+  (add-hook 'completion-at-point-functions #'cape-dabbrev)
+  (add-hook 'completion-at-point-functions #'cape-file)
+  (add-hook 'completion-at-point-functions #'cape-elisp-block)
+  (add-hook 'completion-at-point-functions #'cape-history)
+  )
+
+(use-package corfu
+  :custom
+  (corfu-cycle t)
+  :config
+  (global-corfu-mode))
+
+(use-feature abbrev
+  :config
+  (load "~/Dropbox/emacs/my-emacs-abbrev"))
 
 (set-language-environment "UTF-8")
 (set-default-coding-systems 'utf-8)
@@ -229,6 +324,10 @@
 (show-paren-mode)
 (setq show-paren-delay 0)
 
+(use-feature savehist
+  :config
+  (savehist-mode 1))
+
 (use-package modus-themes
   :demand
   :config
@@ -274,6 +373,34 @@
   (spacious-padding-mode 1)
   :general
   ("C-M-s-p" #'spacious-padding-mode))
+
+(use-package modern-tab-bar
+  :ensure
+  (:host github :repo "aaronjensen/emacs-modern-tab-bar")
+  :init
+  (setq tab-bar-show t
+	  tab-bar-new-button nil
+	  tab-bar-close-button-show nil)
+  (modern-tab-bar-mode))
+
+(defun rlr/find-file-new-tab ()
+  "Open new tab and select recent file."
+  (interactive)
+  (tab-new)
+  (consult-buffer))
+
+(use-package pulsar
+  :config
+  (pulsar-global-mode 1))
+
+(use-package olivetti)
+
+(use-feature recentf
+  :init
+  (recentf-mode)
+  :custom
+  (recentf-max-menu-items 1000 "Offer more recent files in menu")
+  (recentf-max-saved-items 1000 "Save more recent files"))
 
 (setq save-place-file (expand-file-name "saveplaces" rr-cache-dir))
 (save-place-mode)
@@ -346,8 +473,6 @@
 
 (setq save-interprogram-paste-before-kill t)
 
-(setq initial-major-mode 'org-mode)
-
 (setq default-input-method 'TeX)
 
 (delete-selection-mode 1)
@@ -359,6 +484,32 @@
 	time-stamp-line-limit 10     ; Check first 10 buffer lines for Time-stamp: <>
 	time-stamp-format "Last changed %Y-%02m-%02d %02H:%02M:%02S by %u")
 (add-hook 'write-file-hooks 'time-stamp) ; Update when saving.
+
+(setq initial-major-mode 'org-mode)
+
+(defun unkillable-scratch-buffer ()
+  (if (equal (buffer-name (current-buffer)) "*scratch*")
+	(progn
+	  (delete-region (point-min) (point-max))
+	  nil)
+    t))
+(add-hook 'kill-buffer-query-functions 'unkillable-scratch-buffer)
+
+(defun goto-scratch ()
+  "this sends you to the scratch buffer"
+  (interactive)
+  (let ((goto-scratch-buffer (get-buffer-create "*scratch*")))
+    (switch-to-buffer goto-scratch-buffer)
+    (org-mode)))
+
+(use-package persistent-scratch
+  :init
+  (persistent-scratch-setup-default))
+
+(use-feature project
+  :init
+  (setq project-vc-ignores '("*.aux" "*.bbl" "*.bcf" "*.blg" "*.fdb_latexmk" "*.fls" "*.log" "*.out" "*.run.xml" "*.run.xml" "*.synctex.gz" "auto/" "*.pdf"))
+  (setq project-vc-extra-root-markers '(".proj")))
 
 (use-package ace-window
   :config
@@ -522,6 +673,97 @@
 
 (use-package deadgrep)
 
+(use-package dired+
+  :demand
+  :ensure (:host github :repo "emacsmirror/dired-plus"))
+
+(defun hide-dired-details-include-all-subdir-paths ()
+  (save-excursion
+    (goto-char (point-min))
+    (while (re-search-forward dired-subdir-regexp nil t)
+	(let* ((match-bounds (cons (match-beginning 1) (match-end 1)))
+	       (path (file-name-directory (buffer-substring (car match-bounds)
+							    (cdr match-bounds))))
+	       (path-start (car match-bounds))
+	       (path-end (+ (car match-bounds) (length path)))
+	       (inhibit-read-only t))
+	  (put-text-property path-start path-end
+			     'invisible 'dired-hide-details-information)))))
+
+(use-feature dired
+  :hook ((dired-mode . dired-hide-details-mode)
+	   (dired-after-readin . hide-dired-details-include-all-subdir-paths)))
+
+(use-package diredfl
+  :ensure t
+  :config
+  (diredfl-global-mode 1))
+
+(use-package dired-x
+  :ensure nil
+  :config
+  (progn
+    (setq dired-omit-verbose nil)
+    ;; toggle `dired-omit-mode' with C-x M-o
+    (setq dired-omit-files
+	    (concat dired-omit-files "\\|^.DS_STORE$\\|^.projectile$\\|^\\..+$"))
+    (setq-default dired-omit-extensions '(".fdb_latexmk" ".aux" ".bbl" ".blg" ".fls" ".glo" ".idx" ".ilg" ".ind" ".ist" ".log" ".out" ".gz" ".DS_Store" ".xml" ".bcf" ".nav" ".snm" ".toc"))))
+
+(with-after-elpaca-init
+ (add-hook 'dired-mode-hook #'dired-omit-mode))
+
+(setq dired-dwim-target t)
+
+(setopt dired-keep-marker-rename 82)
+
+(defun rlr/dired-search-and-enter ()
+  "Search file or directory with `consult-line' and then visit it."
+  (interactive)
+  (consult-line)
+  (dired-find-file))
+
+(defun my-substspaces (str)
+  (subst-char-in-string ?\s ?- str))
+
+(defun my-dired-substspaces (&optional arg)
+  "Rename all marked (or next ARG) files so that spaces are replaced with underscores."
+  (interactive "P")
+  (dired-rename-non-directory #'my-substspaces "Rename by substituting spaces" arg))
+
+(general-define-key
+ :keymaps 'dired-mode-map
+ "M-<RET>" #'crux-open-with
+ "j" #'rlr/dired-search-and-enter
+ "s-j" #'rlr/dired-search-and-enter
+ "%s" #'my-dired-substspaces)
+
+(use-package reveal-in-osx-finder)
+
+(use-package eat
+  :demand
+  :ensure
+  (:host codeberg
+	   :repo "akib/emacs-eat"
+	   :files ("*.el" ("term" "term/*.el") "*.texi"
+		   "*.ti" ("terminfo/e" "terminfo/e/*")
+		   ("terminfo/65" "terminfo/65/*")
+		   ("integration" "integration/*")
+		   (:exclude ".dir-locals.el" "*-tests.el"))))
+
+(use-package term-toggle
+  :demand
+  :ensure
+  (:host github :repo "amno1/emacs-term-toggle")
+  :config
+  (setq term-toggle-no-confirm-exit t)
+  (defun term-toggle-eat ()
+    "Toggle `term'."
+    (interactive) (term-toggle 'eat))
+  :general
+  ("<f2>" #'term-toggle-eat
+   "<S-f2>" #'term-toggle-eshell)
+  )
+
 (setq async-shell-command-buffer "new-buffer")
 
 (defun async-shell-command-no-window
@@ -547,6 +789,8 @@
   ("C-`" #'terminal-here-launch)
   )
 
+(use-package tldr)
+
 (setq help-window-select t)
 (setq Man-notify-method 'aggressive)
 
@@ -558,10 +802,6 @@
   )
 
 (use-package helpful)
-
-(use-feature abbrev
-  :config
-  (load "~/Dropbox/emacs/my-emacs-abbrev"))
 
 (defun insert-date-string ()
   "Insert current date yyyymmdd."
@@ -622,12 +862,9 @@
   (beginning-of-buffer)
   (replace-regexp "^\n\n+" "\n"))
 
-(use-package aas)
-
-(use-package laas
-  :after auctex
-  :hook
-  (LaTeX-mode . laas-mode))
+(use-package evil-nerd-commenter
+  :general
+  ("M-;" #'evilnc-comment-or-uncomment-lines))
 
 (use-package accent
   :config
@@ -639,26 +876,62 @@
   :config
   (global-aggressive-indent-mode 1))
 
-(use-package cape
-  :commands (cape-file)
-  :general (:prefix "M-p"
-		      "p" 'completion-at-point ;; capf
-		      "d" 'cape-dabbrev        ;; or dabbrev-completion
-		      "a" 'cape-abbrev
-		      "w" 'cape-dict
-		      "\\" 'cape-tex
-		      "_" 'cape-tex
-		      "^" 'cape-tex)
+(use-package crux
+  :general
+  ("s-p" #'crux-create-scratch-buffer
+   "<escape>" #'crux-keyboard-quit-dwim
+   [remap keyboard-quit] #'crux-keyboard-quit-dwim))
+
+(use-package
+  god-mode
+  :general
+  (:keymaps 'god-local-mode-map
+	      "."  #'repeat)
+  :init (setq god-mode-enable-function-key-translation nil)
+  (key-chord-define-global "jk" #'god-mode-all)
+  :config
+  (add-hook 'god-mode-enabled-hook (lambda () (setq cursor-type 'hbar)))
+  (add-hook 'god-mode-disabled-hook (lambda () (setq cursor-type 'box))))
+
+(use-package expand-region
+  :general ("C-=" #'er/expand-region))
+
+(use-package hungry-delete
+  :config
+  (global-hungry-delete-mode))
+
+(use-package transient)
+(use-package hl-todo
+  :ensure (:depth nil))
+
+(use-package magit
   :init
-  ;; Add to the global default value of `completion-at-point-functions' which is
-  ;; used by `completion-at-point'.  The order of the functions matters, the
-  ;; first function returning a result wins.  Note that the list of buffer-local
-  ;; completion functions takes precedence over the global list.
-  (add-hook 'completion-at-point-functions #'cape-dabbrev)
-  (add-hook 'completion-at-point-functions #'cape-file)
-  (add-hook 'completion-at-point-functions #'cape-elisp-block)
-  (add-hook 'completion-at-point-functions #'cape-history)
-  )
+  (require 'transient)
+  :custom
+  (magit-repository-directories (list (cons elpaca-repos-directory 1)))
+  (magit-diff-refine-hunk 'all)
+  :config
+  (transient-bind-q-to-quit))
+
+(use-package jinx
+  :init
+  (setenv "PKG_CONFIG_PATH" (concat "/opt/homebrew/opt/glib/lib/pkgconfig/:" (getenv "PKG_CONFIG_PATH")))
+  :config
+  (setq ispell-silently-savep t)
+  :hook (emacs-startup . global-jinx-mode)
+  :general
+  ([remap ispell-word] #'jinx-correct
+   "<f7>" #'jinx-correct
+   "S-<f7>" #'jinx-correct-all))
+
+(use-package osx-dictionary)
+
+(use-package aas)
+
+(use-package laas
+  :after auctex
+  :hook
+  (LaTeX-mode . laas-mode))
 
 (use-package chordpro-mode)
 
@@ -675,33 +948,6 @@
      (latex biblatex)
      (odt . (csl "chicago-author-date.csl"))
      (t . (csl "chicago-author-date.csl")))))
-
-(use-package consult
-  :demand
-  :config
-  (defun rlr/consult-rg ()
-    "Function for `consult-ripgrep' with the `universal-argument'."
-    (interactive)
-    (consult-ripgrep (list 4)))
-
-  (defun rlr/consult-fd ()
-    "Function for `consult-find' with the `universal-argument'."
-    (interactive)
-    (consult-find (list 4)))
-  :general
-  ("C-x b" #'consult-buffer))
-
-(use-package corfu
-  :custom
-  (corfu-cycle t)
-  :config
-  (global-corfu-mode))
-
-(use-package crux
-  :general
-  ("s-p" #'crux-create-scratch-buffer
-   "<escape>" #'crux-keyboard-quit-dwim
-   [remap keyboard-quit] #'crux-keyboard-quit-dwim))
 
 (use-package denote
   :config
@@ -777,74 +1023,6 @@
   ;; Display keywords in results buffer
   (denote-search-format-heading-function #'denote-search-format-heading-with-keywords))
 
-(use-package dired+
-  :demand
-  :ensure (:host github :repo "emacsmirror/dired-plus"))
-
-(defun hide-dired-details-include-all-subdir-paths ()
-  (save-excursion
-    (goto-char (point-min))
-    (while (re-search-forward dired-subdir-regexp nil t)
-	(let* ((match-bounds (cons (match-beginning 1) (match-end 1)))
-	       (path (file-name-directory (buffer-substring (car match-bounds)
-							    (cdr match-bounds))))
-	       (path-start (car match-bounds))
-	       (path-end (+ (car match-bounds) (length path)))
-	       (inhibit-read-only t))
-	  (put-text-property path-start path-end
-			     'invisible 'dired-hide-details-information)))))
-
-(use-feature dired
-  :hook ((dired-mode . dired-hide-details-mode)
-	   (dired-after-readin . hide-dired-details-include-all-subdir-paths)))
-
-(use-package diredfl
-  :ensure t
-  :config
-  (diredfl-global-mode 1))
-
-(use-package dired-x
-  :ensure nil
-  :config
-  (progn
-    (setq dired-omit-verbose nil)
-    ;; toggle `dired-omit-mode' with C-x M-o
-    (setq dired-omit-files
-	    (concat dired-omit-files "\\|^.DS_STORE$\\|^.projectile$\\|^\\..+$"))
-    (setq-default dired-omit-extensions '(".fdb_latexmk" ".aux" ".bbl" ".blg" ".fls" ".glo" ".idx" ".ilg" ".ind" ".ist" ".log" ".out" ".gz" ".DS_Store" ".xml" ".bcf" ".nav" ".snm" ".toc"))))
-
-(with-after-elpaca-init
- (add-hook 'dired-mode-hook #'dired-omit-mode))
-
-(setq dired-dwim-target t)
-
-(setopt dired-keep-marker-rename 82)
-
-(defun rlr/dired-search-and-enter ()
-  "Search file or directory with `consult-line' and then visit it."
-  (interactive)
-  (consult-line)
-  (dired-find-file))
-
-(defun my-substspaces (str)
-  (subst-char-in-string ?\s ?- str))
-
-(defun my-dired-substspaces (&optional arg)
-  "Rename all marked (or next ARG) files so that spaces are replaced with underscores."
-  (interactive "P")
-  (dired-rename-non-directory #'my-substspaces "Rename by substituting spaces" arg))
-
-(general-define-key
- :keymaps 'dired-mode-map
- "M-<RET>" #'crux-open-with
- "j" #'rlr/dired-search-and-enter
- "s-j" #'rlr/dired-search-and-enter
- "%s" #'my-dired-substspaces)
-
-(use-package discover
-  :config
-  (global-discover-mode 1))
-
 (use-package ebib
   :config
   (setq ebib-bibtex-dialect 'biblatex)
@@ -915,36 +1093,6 @@
   :config
   ;; (setq rmh-elfeed-org-auto-ignore-invalid-feeds t)
   )
-
-(use-package embark
-  :general
-  ("C-." #'embark-act)
-  ("C-:" #'embark-dwim)
-  ("C-h B" #'embark-bindings) ;; alternative for `describe-bindings'
-  :init
-  (setq prefix-help-command #'embark-prefix-help-command)
-  :config
-  (add-to-list 'display-buffer-alist
-		 '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
-		   nil
-		   (window-parameters (mode-line-format . none)))))
-
-(use-package embark-consult
-  :hook
-  (embark-collect-mode . consult-preview-at-point-mode))
-
-(use-package evil
-  :init
-  (setq evil-respect-visual-line-mode t
-	  evil-track-eol nil
-	  evil-want-fine-undo t
-	  evil-disable-insert-state-bindings t)
-  :config
-  (evil-mode -1))
-
-(use-package evil-nerd-commenter
-  :general
-  ("M-;" #'evilnc-comment-or-uncomment-lines))
 
 (use-feature eww
   :config
@@ -1046,9 +1194,6 @@
 	      "C-M-S-s-<right>" #'emmet-next-edit-point
 	      "C-M-S-s-<left>" #'emmet-prev-edit-point))
 
-(use-package expand-region
-  :general ("C-=" #'er/expand-region))
-
 (use-package fish-mode)
 
 (use-package fish-completion
@@ -1057,25 +1202,6 @@
   (when (and (executable-find "fish")
 	       (require 'fish-completion nil t))
     (global-fish-completion-mode)))
-
-(use-package
-  god-mode
-  :general
-  (:keymaps 'god-local-mode-map
-	      "."  #'repeat)
-  :init (setq god-mode-enable-function-key-translation nil)
-  (key-chord-define-global "jk" #'god-mode-all)
-  :config
-  (add-hook 'god-mode-enabled-hook (lambda () (setq cursor-type 'hbar)))
-  (add-hook 'god-mode-disabled-hook (lambda () (setq cursor-type 'box))))
-
-(use-feature savehist
-  :config
-  (savehist-mode 1))
-
-(use-package hungry-delete
-  :config
-  (global-hungry-delete-mode))
 
 (defun rr/insert-unicode (unicode-name)
   "Same as C-x 8 enter UNICODE-NAME."
@@ -1486,17 +1612,6 @@
   (isgd-logstats nil)
   (isgd-ask-custom-url t))
 
-(use-package jinx
-  :init
-  (setenv "PKG_CONFIG_PATH" (concat "/opt/homebrew/opt/glib/lib/pkgconfig/:" (getenv "PKG_CONFIG_PATH")))
-  :config
-  (setq ispell-silently-savep t)
-  :hook (emacs-startup . global-jinx-mode)
-  :general
-  ([remap ispell-word] #'jinx-correct
-   "<f7>" #'jinx-correct
-   "S-<f7>" #'jinx-correct-all))
-
 (use-package auctex
     :ensure
 (auctex :repo "https://git.savannah.gnu.org/git/auctex.git" :branch "main"
@@ -1592,22 +1707,6 @@
    "C-c l o" #'link-hint-open-link
    "C-c l c" #'link-hint-copy-link))
 
-(use-package transient)
-(use-package hl-todo
-  :ensure (:depth nil))
-
-(use-package magit
-  :init
-  (require 'transient)
-  :custom
-  (magit-repository-directories (list (cons elpaca-repos-directory 1)))
-  (magit-diff-refine-hunk 'all)
-  :config
-  (transient-bind-q-to-quit))
-
-(use-package marginalia
-  :config (marginalia-mode))
-
 (use-package markdown-mode
   :mode (("README\\.md\\'" . gfm-mode)
 	   ("\\.md\\'" . markdown-mode)
@@ -1633,21 +1732,6 @@ installed."
   (shell-command-on-region
    start end
    "pandoc -f markdown -t org --wrap=preserve" t t))
-
-(use-package modern-tab-bar
-  :ensure
-  (:host github :repo "aaronjensen/emacs-modern-tab-bar")
-  :init
-  (setq tab-bar-show t
-	  tab-bar-new-button nil
-	  tab-bar-close-button-show nil)
-  (modern-tab-bar-mode))
-
-(defun rlr/find-file-new-tab ()
-  "Open new tab and select recent file."
-  (interactive)
-  (tab-new)
-  (consult-buffer))
 
 (defvar-keymap notepad-mode-map
   "C-c C-c" #'copy-kill-buffer)
@@ -1681,13 +1765,6 @@ installed."
   (kill-buffer)
   ;; (app-switch)
   (shell-command "open -a ~/icloud/scripts/beep.app"))
-
-(use-package olivetti)
-
-(use-package orderless
-  :custom
-  (completion-styles '(orderless basic))
-  (completion-category-overrides '((file (styles partial-completion)))))
 
 (use-package org
   :ensure nil
@@ -2781,8 +2858,6 @@ installed."
 
 ;; (global-set-key (kbd "H-w") 'formatted-copy)
 
-(use-package osx-dictionary)
-
 (use-package pandoc-mode)
 
 (use-package pdf-tools
@@ -2796,46 +2871,12 @@ installed."
 	      "C-s" #'isearch-forward)
   )
 
-(defun unkillable-scratch-buffer ()
-  (if (equal (buffer-name (current-buffer)) "*scratch*")
-	(progn
-	  (delete-region (point-min) (point-max))
-	  nil)
-    t))
-(add-hook 'kill-buffer-query-functions 'unkillable-scratch-buffer)
-
-(defun goto-scratch ()
-  "this sends you to the scratch buffer"
-  (interactive)
-  (let ((goto-scratch-buffer (get-buffer-create "*scratch*")))
-    (switch-to-buffer goto-scratch-buffer)
-    (org-mode)))
-
-(use-package persistent-scratch
-  :init
-  (persistent-scratch-setup-default))
-
-(use-feature project
-  :init
-  (setq project-vc-ignores '("*.aux" "*.bbl" "*.bcf" "*.blg" "*.fdb_latexmk" "*.fls" "*.log" "*.out" "*.run.xml" "*.run.xml" "*.synctex.gz" "auto/" "*.pdf"))
-  (setq project-vc-extra-root-markers '(".proj")))
-
-(use-package pulsar
-  :config
-  (pulsar-global-mode 1))
-
-(use-feature recentf
-  :init
-  (recentf-mode)
-  :custom
-  (recentf-max-menu-items 1000 "Offer more recent files in menu")
-  (recentf-max-saved-items 1000 "Save more recent files"))
-
-(use-package reveal-in-osx-finder)
-
 (use-package shrink-whitespace)
 
-(use-package sly)
+(use-package visual-regexp
+  :general
+  ("C-c r" #'vr/replace)
+  ("C-c q" #'vr/query-replace))
 
 (use-package smartparens
   :hook (prog-mode text-mode markdown-mode) ;; add `smartparens-mode` to these hooks
@@ -2859,63 +2900,19 @@ installed."
   (add-to-list 'super-save-hook-triggers 'find-file-hook)
   (super-save-mode +1))
 
-(use-package term-toggle
-  :demand
-  :ensure
-  (:host github :repo "amno1/emacs-term-toggle")
-  :config
-  (setq term-toggle-no-confirm-exit t)
-  (defun term-toggle-eat ()
-    "Toggle `term'."
-    (interactive) (term-toggle 'eat))
-  :general
-  ("<f2>" #'term-toggle-eat
-   "<S-f2>" #'term-toggle-eshell)
-  )
-
 (use-package titlecase
   :config
   (setq titlecase-style "chicago"))
 
-(use-package tldr)
+(use-package vundo
+  :custom
+  (vundo-glyph-alist vundo-unicode-symbols)
+  :bind
+  ("C-x u" . vundo))
 
 (use-package unfill)
 
-(use-package vertico
-  :demand
-  :custom (vertico-cycle t)
-  :config
-  (setf (car vertico-multiline) "\n") ;; don't replace newlines
-  (vertico-mode)
-  ;; (setq vertico-multiform-commands
-  ;;  '((consult-line
-  ;;       posframe
-  ;;       (vertico-posframe-poshandler . posframe-poshandler-frame-top-center)
-  ;;       (vertico-posframe-border-width . 10)
-  ;;       ;; NOTE: This is useful when emacs is used in both in X and
-  ;;       ;; terminal, for posframe do not work well in terminal, so
-  ;;       ;; vertico-buffer-mode will be used as fallback at the
-  ;;       ;; moment.
-  ;;       (vertico-posframe-fallback-mode . vertico-buffer-mode))
-  ;;      (t posframe)))
-  (vertico-multiform-mode 1)
-  (setq vertico-multiform-categories
-	  '((file grid)
-	    (jinx grid (vertico-grid-annotate . 20))
-	    (citar buffer)))
-  (setq vertico-cycle t) ;; enable cycling for 'vertico-next' and 'vertico-prev'
-  (add-hook 'rfn-eshadow-update-overlay-hook #'vertico-directory-tidy)
-  :general
-  (:keymaps 'vertico-map
-	      ;; keybindings to cycle through vertico results.
-	      "C-h" #'+minibuffer-up-dir
-	      "<backspace>" 'vertico-directory-delete-char
-	      "RET" 'vertico-directory-enter))
-
-(use-package visual-regexp
-  :general
-  ("C-c r" #'vr/replace)
-  ("C-c q" #'vr/query-replace))
+(use-package sly)
 
 (defun rlr/votd ()
   (interactive)
@@ -2968,12 +2965,6 @@ installed."
 	(rlr/fetch-daily-bible-verse)
     (error
      (format "Today's verse could not be fetched: %s" (error-message-string err)))))
-
-(use-package vundo
-  :custom
-  (vundo-glyph-alist vundo-unicode-symbols)
-  :bind
-  ("C-x u" . vundo))
 
 (use-package webfeeder)
 
