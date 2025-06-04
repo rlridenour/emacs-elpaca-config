@@ -174,6 +174,10 @@
   (progn (find-file "~/.config/emacs/init.org")
 	   (variable-pitch-mode -1)))
 
+(defun open-fish-functions ()
+  (interactive)
+  (dired "~/.config/fish/functions"))
+
 (use-package vertico
   :demand
   :custom (vertico-cycle t)
@@ -209,19 +213,27 @@
     "Function for `consult-ripgrep' with the `universal-argument'."
     (interactive)
     (consult-ripgrep (list 4)))
-
   (defun rlr/consult-fd ()
     "Function for `consult-find' with the `universal-argument'."
     (interactive)
     (consult-find (list 4)))
   :general
-  ("C-x b" #'consult-buffer))
+  ("C-x b" #'consult-buffer
+   "s-r" #'consult-buffer
+   "M-s-r" #'consult-buffer-other-window
+   "s-f" #'consult-line
+   "M-y" #'consult-yank-pop
+   "C-x 4 b" #'consult-buffer-other-window
+   "C-x 5 b" #'consult-buffer-other-frame
+   "C-x r x" #'consult-register
+   "M-s m" #'consult-multi-occur))
 
 (use-package embark
   :general
-  ("C-." #'embark-act)
-  ("C-:" #'embark-dwim)
-  ("C-h B" #'embark-bindings) ;; alternative for `describe-bindings'
+  ("C-." #'embark-act
+   "C-S-a" #'embark-act
+   "C-:" #'embark-dwim
+   "C-h B" #'embark-bindings)
   :init
   (setq prefix-help-command #'embark-prefix-help-command)
   :config
@@ -395,6 +407,14 @@
 
 (use-package olivetti)
 
+(general-define-key
+ "C-+" #'text-scale-increase
+ "C--" #'text-scale-decrease)
+
+(global-set-key (kbd "<pinch>") 'ignore)
+(global-set-key (kbd "<C-wheel-up>") 'ignore)
+(global-set-key (kbd "<C-wheel-down>") 'ignore)
+
 (use-feature recentf
   :init
   (recentf-mode)
@@ -485,6 +505,14 @@
 	time-stamp-format "Last changed %Y-%02m-%02d %02H:%02M:%02S by %u")
 (add-hook 'write-file-hooks 'time-stamp) ; Update when saving.
 
+(general-define-key
+ "C-x c" #'save-buffers-kill-emacs
+ "C-x C-b" #'ibuffer
+ "s-o" #'find-file
+ "s-k" #'kill-current-buffer
+ "M-s-k" #'kill-buffer-and-window
+ "s-K" #'nuke-all-buffers)
+
 (setq initial-major-mode 'org-mode)
 
 (defun unkillable-scratch-buffer ()
@@ -496,11 +524,14 @@
 (add-hook 'kill-buffer-query-functions 'unkillable-scratch-buffer)
 
 (defun goto-scratch ()
-  "this sends you to the scratch buffer"
-  (interactive)
-  (let ((goto-scratch-buffer (get-buffer-create "*scratch*")))
-    (switch-to-buffer goto-scratch-buffer)
-    (org-mode)))
+    "this sends you to the scratch buffer"
+    (interactive)
+    (let ((goto-scratch-buffer (get-buffer-create "*scratch*")))
+      (switch-to-buffer goto-scratch-buffer)
+      (org-mode)))
+
+(general-define-key
+   "C-M-S-s-s" #'goto-scratch)
 
 (use-package persistent-scratch
   :init
@@ -626,6 +657,26 @@
 	  (tab-close)
 	(error (delete-frame)))))
 
+(general-define-key
+ "s-0" #'delete-window
+ "s-1" #'delete-other-windows
+ "s-2" #'rlr/find-file-below
+ "s-3" #'rlr/find-file-right
+ "s-4" #'split-window-below-focus
+ "s-5" #'split-window-right-focus
+ "s-6" #'toggle-window-split
+ "S-C-<left>" #'shrink-window-horizontally
+ "S-C-<right>" #'enlarge-window-horizontally
+ "S-C-<down>" #'shrink-window
+ "S-C-<up>" #'enlarge-window
+ "C-x w" #'delete-frame
+ ;; "M-o" #'crux-other-window-or-switch-buffer
+ "s-\"" #'previous-window-any-frame
+ "s-t" #'tab-new
+ "s-T" #'rlr/find-file-new-tab
+ "s-w" #'rlr/delete-tab-or-frame
+ "s-W" #'rlr/kill-buffer-delete-tab-or-frame)
+
 (setq case-replace nil)
 
 (setq isearch-lazy-count t)
@@ -671,7 +722,9 @@
 
 (use-package wgrep)
 
-(use-package deadgrep)
+(use-package deadgrep
+  :general
+  ("<f5>" #'deadgrep))
 
 (use-package dired+
   :demand
@@ -732,7 +785,6 @@
 
 (general-define-key
  :keymaps 'dired-mode-map
- "M-<RET>" #'crux-open-with
  "j" #'rlr/dired-search-and-enter
  "s-j" #'rlr/dired-search-and-enter
  "%s" #'my-dired-substspaces)
@@ -879,8 +931,13 @@
 (use-package crux
   :general
   ("s-p" #'crux-create-scratch-buffer
+   "s-j" #'crux-top-join-line
+   "<S-return>" #'crux-smart-open-line
+   "<C-S-return>" #'crux-smart-open-line-above
    "<escape>" #'crux-keyboard-quit-dwim
-   [remap keyboard-quit] #'crux-keyboard-quit-dwim))
+   [remap keyboard-quit] #'crux-keyboard-quit-dwim)
+  (:keymaps 'dired-mode-map
+	  "M-<RET>" #'crux-open-with))
 
 (use-package
   god-mode
@@ -926,7 +983,9 @@
 
 (use-package osx-dictionary)
 
-(use-package shrink-whitespace)
+(use-package shrink-whitespace
+  :general
+  ("M-=" #'shrink-whitespace))
 
 (use-package visual-regexp
   :general
@@ -987,6 +1046,23 @@
   :hook
   (LaTeX-mode . laas-mode))
 
+(general-define-key
+ "<s-up>" #'beginning-of-buffer
+ "<s-down>" #'end-of-buffer
+ "<s-right>" #'end-of-visual-line
+ "<s-left>" #'beginning-of-visual-line
+ "<M-down>" #'forward-paragraph
+ "<M-up>" #'backward-paragraph
+ "M-u" #'upcase-dwim
+ "M-l" #'downcase-dwim
+ "M-c" #'capitalize-dwim
+ "RET" #'newline-and-indent
+ "M-/" #'hippie-expand
+ "<s-backspace>" #'kill-whole-line
+ "<C-d d>" #'insert-standard-date
+ "M-q" #'reformat-paragraph
+ "M-#" #'dictionary-lookup-definition)
+
 (use-package org
   :ensure nil
   :init
@@ -1037,10 +1113,10 @@
   (setq org-agenda-window-setup 'current-window)
   (setq org-link-frame-setup
 	  '((vm . vm-visit-folder-other-frame)
-	(vm-imap . vm-visit-imap-folder-other-frame)
-	(gnus . org-gnus-no-new-news)
-	(file . find-file)
-	(wl . wl-other-frame)))
+	    (vm-imap . vm-visit-imap-folder-other-frame)
+	    (gnus . org-gnus-no-new-news)
+	    (file . find-file)
+	    (wl . wl-other-frame)))
   (require 'org-tempo)
   ;; Open directory links in Dired.
   (add-to-list 'org-file-apps '(directory . emacs)))
@@ -1155,7 +1231,7 @@
   :hook (org-mode . org-auto-tangle-mode))
 
 ;; Org-capture
-  (setq org-capture-templates
+(setq org-capture-templates
 	'(
 	  ("t" "Todo" entry (file+headline "/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/tasks.org" "Inbox")
 	   "** TODO %?\n  %i\n  %a")
@@ -1165,14 +1241,14 @@
 	   "* %?\n:PROPERTIES:\n:CREATED: %U\n:END:\n\n" :empty-lines 1)
 	  ("c" "Quick note" entry (file "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/Documents/notes/quick-notes.org")
 	   "* %?\n:PROPERTIES:\n:CREATED: %U\n:END:\n\n" :empty-lines 1)
-("j" "Journelly Entry" entry
+	  ("j" "Journelly Entry" entry
 	   (file "/Users/rlridenour/Library/Mobile Documents/iCloud~com~xenodium~Journelly/Documents/Journelly.org")
 	   "* %U @ -\n%?" :prepend t)
 	  )
 	)
 
-  (with-eval-after-load 'org-capture
-    (add-to-list 'org-capture-templates
+(with-eval-after-load 'org-capture
+  (add-to-list 'org-capture-templates
 		 '("n" "New note (with Denote)" plain
 		   (file denote-last-path)
 		   #'denote-org-capture
@@ -1181,9 +1257,9 @@
 		   :kill-buffer t
 		   :jump-to-captured t)))
 
-  (setq org-refile-targets '((org-agenda-files :maxlevel . 1)))
+(setq org-refile-targets '((org-agenda-files :maxlevel . 1)))
 
-  (define-key global-map "\C-cc" 'org-capture)
+(define-key global-map "\C-cc" 'org-capture)
 
 (defun rlr/org-sort ()
   (mark-whole-buffer)
@@ -1712,15 +1788,15 @@
 ;; (global-set-key (kbd "H-w") 'formatted-copy)
 
 (use-package auctex
-    :ensure
-(auctex :repo "https://git.savannah.gnu.org/git/auctex.git" :branch "main"
-	:pre-build (("make" "elpa"))
-	:build (:not elpaca--compile-info) ;; Make will take care of this step
-	:files ("*.el" "doc/*.info*" "etc" "images" "latex" "style")
-	:version (lambda (_) (require 'auctex) AUCTeX-version))
-    :mode ("\\.tex\\'" . LaTeX-mode)
-    :init
-    (setq TeX-parse-self t
+  :ensure
+  (auctex :repo "https://git.savannah.gnu.org/git/auctex.git" :branch "main"
+	    :pre-build (("make" "elpa"))
+	    :build (:not elpaca--compile-info) ;; Make will take care of this step
+	    :files ("*.el" "doc/*.info*" "etc" "images" "latex" "style")
+	    :version (lambda (_) (require 'auctex) AUCTeX-version))
+  :mode ("\\.tex\\'" . LaTeX-mode)
+  :init
+  (setq TeX-parse-self t
 	  TeX-auto-save t
 	  TeX-electric-math nil
 	  LaTeX-electric-left-right-brace nil
@@ -1958,16 +2034,19 @@ installed."
   ;; (app-switch)
   (shell-command "open -a ~/icloud/scripts/beep.app"))
 
+(general-define-key
+ "C-M-S-s-k" #'copy-kill-buffer)
+
 (use-feature mu4e
   :commands (mu4e mu4e-update-mail-and-index)
   :general
   (:keymaps 'mu4e-headers-mode-map
-	  "q"  #'kill-current-buffer
-	  "C-<tab>" #'tab-next)
+	      "q"  #'kill-current-buffer
+	      "C-<tab>" #'tab-next)
   (:keymaps 'mu4e-thread-mode-map
-	  "C-<tab>" #'tab-next)
+	      "C-<tab>" #'tab-next)
   (:keymaps 'mu4e-main-mode-map
-	  "q"  #'rlr/quit-mu4e)
+	      "q"  #'rlr/quit-mu4e)
   :after org
   :config
   (setq
@@ -1994,80 +2073,80 @@ installed."
    mu4e-completing-read-function 'completing-read
    mu4e-context-policy 'pick-first
    mu4e-contexts (list
-		(make-mu4e-context
-		 :name "fastmail"
-		 :match-func
-		 (lambda (msg)
-		 (when msg
-		   (string-prefix-p "/fastmail" (mu4e-message-field msg :maildir))))
-		 :vars '((user-mail-address . "rlridenour@fastmail.com")
-		       (user-full-name    . "Randy Ridenour")
-		       (mu4e-drafts-folder  . "/fastmail/Drafts")
-		       (mu4e-sent-folder  . "/fastmail/Sent")
-		       (mu4e-trash-folder  . "/fastmail/Trash")
-		       (mu4e-refile-folder  . "/fastmail/Archive")
-		       (sendmail-program . "msmtp")
-		       (send-mail-function . smtpmail-send-it)
-		       (message-sendmail-f-is-evil . t)
-		       (message-sendmail-extra-arguments . ("--read-envelope-from"))
-		       (message-send-mail-function . message-send-mail-with-sendmail)
-		       (smtpmail-default-smtp-server . "smtp.fastmail.com")
-		       (smtpmail-smtp-server  . "smtp.fastmail.com")
-		       ))
-		(make-mu4e-context
-		 :name "obu"
-		 :match-func
-		 (lambda (msg)
-		 (when msg
-		   (string-prefix-p "/obu" (mu4e-message-field msg :maildir))))
-		 :vars '((user-mail-address . "randy.ridenour@okbu.edu")
-		       (user-full-name    . "Randy Ridenour")
-		       (mu4e-drafts-folder  . "/obu/Drafts")
-		       (mu4e-sent-folder  . "/obu/Sent")
-		       (mu4e-trash-folder . "/obu/Trash")
-		       (mu4e-refile-folder  . "/obu/Archive")
-		       ;; (sendmail-program . "msmtp")
-		       (send-mail-function . smtpmail-send-it)
-		       (message-sendmail-f-is-evil . t)
-		       (message-sendmail-extra-arguments . ("--read-envelope-from"))
-		       (message-send-mail-function . message-send-mail-with-sendmail)
-		       (smtpmail-smtp-server  . "localhost")
-		       (smtpmail-smtp-user . "randy.ridenour@okbu.edu")
-		       (smtpmail-stream-type . plain)
-		       (smtpmail-smtp-service . 1025)
-		       ))))
+		    (make-mu4e-context
+		     :name "fastmail"
+		     :match-func
+		     (lambda (msg)
+		       (when msg
+			 (string-prefix-p "/fastmail" (mu4e-message-field msg :maildir))))
+		     :vars '((user-mail-address . "rlridenour@fastmail.com")
+			     (user-full-name    . "Randy Ridenour")
+			     (mu4e-drafts-folder  . "/fastmail/Drafts")
+			     (mu4e-sent-folder  . "/fastmail/Sent")
+			     (mu4e-trash-folder  . "/fastmail/Trash")
+			     (mu4e-refile-folder  . "/fastmail/Archive")
+			     (sendmail-program . "msmtp")
+			     (send-mail-function . smtpmail-send-it)
+			     (message-sendmail-f-is-evil . t)
+			     (message-sendmail-extra-arguments . ("--read-envelope-from"))
+			     (message-send-mail-function . message-send-mail-with-sendmail)
+			     (smtpmail-default-smtp-server . "smtp.fastmail.com")
+			     (smtpmail-smtp-server  . "smtp.fastmail.com")
+			     ))
+		    (make-mu4e-context
+		     :name "obu"
+		     :match-func
+		     (lambda (msg)
+		       (when msg
+			 (string-prefix-p "/obu" (mu4e-message-field msg :maildir))))
+		     :vars '((user-mail-address . "randy.ridenour@okbu.edu")
+			     (user-full-name    . "Randy Ridenour")
+			     (mu4e-drafts-folder  . "/obu/Drafts")
+			     (mu4e-sent-folder  . "/obu/Sent")
+			     (mu4e-trash-folder . "/obu/Trash")
+			     (mu4e-refile-folder  . "/obu/Archive")
+			     ;; (sendmail-program . "msmtp")
+			     (send-mail-function . smtpmail-send-it)
+			     (message-sendmail-f-is-evil . t)
+			     (message-sendmail-extra-arguments . ("--read-envelope-from"))
+			     (message-send-mail-function . message-send-mail-with-sendmail)
+			     (smtpmail-smtp-server  . "localhost")
+			     (smtpmail-smtp-user . "randy.ridenour@okbu.edu")
+			     (smtpmail-stream-type . plain)
+			     (smtpmail-smtp-service . 1025)
+			     ))))
   (display-line-numbers-mode -1)
   (require 'mu4e-transient)
   (add-to-list 'mu4e-bookmarks
-	     '( :name "OBU Inbox"
-		:query "maildir:/obu/INBOX AND NOT flag:trashed"
-		:key ?o))
+		 '( :name "OBU Inbox"
+		    :query "maildir:/obu/INBOX AND NOT flag:trashed"
+		    :key ?o))
   (add-to-list 'mu4e-bookmarks
-	     '( :name "Fastmail Inbox"
-		:query "maildir:/fastmail/INBOX AND NOT flag:trashed"
-		:key ?f))
+		 '( :name "Fastmail Inbox"
+		    :query "maildir:/fastmail/INBOX AND NOT flag:trashed"
+		    :key ?f))
   ;; (add-to-list 'mu4e-bookmarks
-  ;;	     '(:name "All Inboxes"
-  ;;		   :query "(maildir:/obu/INBOX OR maildir:/fastmail/INBOX) AND NOT flag:trashed"
-  ;;		   :key ?i
-  ;;		   :hide-unread))
+  ;;       '(:name "All Inboxes"
+  ;;             :query "(maildir:/obu/INBOX OR maildir:/fastmail/INBOX) AND NOT flag:trashed"
+  ;;             :key ?i
+  ;;             :hide-unread))
   (add-to-list 'mu4e-bookmarks
-	     '(:name "Unread Inboxes"
-		   :query "flag:unread AND NOT flag:trashed"
-		   :key ?b))
+		 '(:name "Unread Inboxes"
+			 :query "flag:unread AND NOT flag:trashed"
+			 :key ?b))
 
   (setq gnus-blocked-images
 	  (lambda(&optional _ignore)
-	(if (mu4e-message-contact-field-matches
-	     (mu4e-message-at-point) :from "store-news@woot.com")
-	    nil "."))))
+	    (if (mu4e-message-contact-field-matches
+		 (mu4e-message-at-point) :from "store-news@woot.com")
+		nil "."))))
 
 (use-package org-mime
   :commands (org-mime-edit-mail-in-org-mode)
   :config
   (setq org-mime-export-options '(:section-numbers nil
-					 :with-author nil
-					 :with-toc nil))
+						     :with-author nil
+						     :with-toc nil))
   )
 
 (defun rlr/quit-mu4e ()
@@ -2082,23 +2161,23 @@ installed."
 (defun obu-signature ()
   (interactive)
   (insert (concat
-	 "\n\n"
-	 "--\n"
-	 "Randy Ridenour, Ph.D.\n"
-	 "Professor of Philosophy\n"
-	 "Oklahoma Baptist University\n\n"
-	 "500 W. University St.\n"
-	 "Shawnee, OK  74804\n"
-	 "Office: (405) 585-4432\n")
-	))
+	     "\n\n"
+	     "--\n"
+	     "Randy Ridenour, Ph.D.\n"
+	     "Professor of Philosophy\n"
+	     "Oklahoma Baptist University\n\n"
+	     "500 W. University St.\n"
+	     "Shawnee, OK  74804\n"
+	     "Office: (405) 585-4432\n")
+	    ))
 
 (defun informal-signature ()
   (interactive)
   (insert (concat
-	 "\n\n"
-	 "--\n"
-	 "Randy"
-	 )))
+	     "\n\n"
+	     "--\n"
+	     "Randy"
+	     )))
 
 (defun rlr/open-mu4e-new-tab ()
   (interactive)
@@ -2177,8 +2256,8 @@ installed."
 (defun rlr/select-browser ()
   (interactive)
   (let* ((choices '(("System Default" . rlr/browser-default)
-		("Qutebrowser" . rlr/browser-qutebrowser)
-		("EWW" . rlr/browser-eww)))
+		      ("Qutebrowser" . rlr/browser-qutebrowser)
+		      ("EWW" . rlr/browser-eww)))
 	   (choice   (completing-read "Choose one: " choices)))
     (call-interactively (cdr (assoc choice choices)))))
 
@@ -2438,12 +2517,12 @@ installed."
     )
   :general
   (:keymaps 'eww-mode-map
-	  "I" #'rlr/eww-toggle-images
-	  "f" #'link-hint-open-link
-	  "F" #'rlr/open-eww-link-new-buffer
-	  "T" #'eww-toggle-fonts)
+	      "I" #'rlr/eww-toggle-images
+	      "f" #'link-hint-open-link
+	      "F" #'rlr/open-eww-link-new-buffer
+	      "T" #'eww-toggle-fonts)
   (:keymaps 'eww-link-keymap
-	  "I" #'rlr/eww-toggle-images)
+	      "I" #'rlr/eww-toggle-images)
   )
 
 (with-after-elpaca-init
@@ -2994,100 +3073,11 @@ installed."
 (use-package chordpro-mode)
 
 (general-define-key
- "C-+" #'text-scale-increase
- "C--" #'text-scale-decrease)
-
-(global-set-key (kbd "<pinch>") 'ignore)
-(global-set-key (kbd "<C-wheel-up>") 'ignore)
-(global-set-key (kbd "<C-wheel-down>") 'ignore)
-
-(general-define-key
- "C-x c" #'save-buffers-kill-emacs
- "C-x C-b" #'ibuffer
- "s-o" #'find-file
- "s-k" #'kill-current-buffer
- "M-s-k" #'kill-buffer-and-window
- "s-K" #'nuke-all-buffers
- "s-r" #'consult-buffer
- "M-s-r" #'consult-buffer-other-window
- "C-S-a" #'embark-act
- "C-M-S-s-k" #'copy-kill-buffer
- "C-M-S-s-s" #'goto-scratch)
-
-(general-define-key
- "s-0" #'delete-window
- "s-1" #'delete-other-windows
- "s-2" #'rlr/find-file-below
- "s-3" #'rlr/find-file-right
- "s-4" #'split-window-below-focus
- "s-5" #'split-window-right-focus
- "s-6" #'toggle-window-split
- "S-C-<left>" #'shrink-window-horizontally
- "S-C-<right>" #'enlarge-window-horizontally
- "S-C-<down>" #'shrink-window
- "S-C-<up>" #'enlarge-window
- "C-x w" #'delete-frame
- ;; "M-o" #'crux-other-window-or-switch-buffer
- "s-\"" #'previous-window-any-frame)
-
-(general-define-key
- "s-t" #'tab-new
- "s-T" #'rlr/find-file-new-tab
- "s-w" #'rlr/delete-tab-or-frame
- "s-W" #'rlr/kill-buffer-delete-tab-or-frame)
-
-(general-define-key
  "s-l" #'hydra-locate/body
- "s-f" #'consult-line
- "<f5>" #'deadgrep
- ;; "C-s" #'consult-isearch
- ;; "C-r" #'consult-isearch-reverse
  )
 
 (general-define-key
- "<s-up>" #'beginning-of-buffer
- "<s-down>" #'end-of-buffer
- "<s-right>" #'end-of-visual-line
- "<s-left>" #'beginning-of-visual-line
- "<M-down>" #'forward-paragraph
- "<M-up>" #'backward-paragraph
- "M-u" #'upcase-dwim
- "M-l" #'downcase-dwim
- "M-c" #'capitalize-dwim
- "RET" #'newline-and-indent
- "M-/" #'hippie-expand
- "<s-backspace>" #'kill-whole-line
- "s-j" #'crux-top-join-line
- "<S-return>" #'crux-smart-open-line
- "<C-S-return>" #'crux-smart-open-line-above
- "<C-d d>" #'insert-standard-date
-
- "M-y" #'consult-yank-pop
-
- "M-q" #'reformat-paragraph
- "M-#" #'dictionary-lookup-definition
- "M-=" #'shrink-whitespace
- "s-l" #'hydra-locate/body
- "s-f" #'consult-line
- "<f5>" #'deadgrep)
-
-(general-define-key
- ;; Editing
- ;; "s-/" #'avy-goto-char-timer
- "C-x 4 b" #'consult-buffer-other-window
- "C-x 5 b" #'consult-buffer-other-frame
- "C-x r x" #'consult-register
- "M-s m" #'consult-multi-occur
- "<f8>" #'calendar
- )
-
-(defun open-emacs-config ()
-  (interactive)
-  (find-file "~/.config/emacs/README.org"))
-
-(defun open-fish-functions ()
-  (interactive)
-  (dired "~/.config/fish/functions"))
+ "<f8>" #'calendar)
 
 (general-define-key
  :prefix "C-c"

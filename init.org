@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2025-06-04 09:31:53 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2025-06-04 11:48:43 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -484,7 +484,9 @@ Send deleted files to an Emacs folder in system trash.
 	trash-directory "~/.Trash/emacs")
 #+end_src
 
-** Open Emacs Init
+** Open Config
+
+*** Emacs Config
 
 Open Emacs init file in fixed-pitch mode.
 
@@ -493,6 +495,16 @@ Open Emacs init file in fixed-pitch mode.
     (interactive)
     (progn (find-file "~/.config/emacs/init.org")
 	   (variable-pitch-mode -1)))
+#+end_src
+
+*** Fish Functions
+
+Open fish functions directory.
+
+#+begin_src emacs-lisp
+  (defun open-fish-functions ()
+    (interactive)
+    (dired "~/.config/fish/functions"))
 #+end_src
 
 * Completion
@@ -549,13 +561,20 @@ Enrich existing commands with completion annotations
       "Function for `consult-ripgrep' with the `universal-argument'."
       (interactive)
       (consult-ripgrep (list 4)))
-
     (defun rlr/consult-fd ()
       "Function for `consult-find' with the `universal-argument'."
       (interactive)
       (consult-find (list 4)))
     :general
-    ("C-x b" #'consult-buffer))
+    ("C-x b" #'consult-buffer
+     "s-r" #'consult-buffer
+     "M-s-r" #'consult-buffer-other-window
+     "s-f" #'consult-line
+     "M-y" #'consult-yank-pop
+     "C-x 4 b" #'consult-buffer-other-window
+     "C-x 5 b" #'consult-buffer-other-frame
+     "C-x r x" #'consult-register
+     "M-s m" #'consult-multi-occur))
 #+end_src
 
 ** Embark
@@ -563,9 +582,10 @@ Enrich existing commands with completion annotations
 #+begin_src emacs-lisp
   (use-package embark
     :general
-    ("C-." #'embark-act)
-    ("C-:" #'embark-dwim)
-    ("C-h B" #'embark-bindings) ;; alternative for `describe-bindings'
+    ("C-." #'embark-act
+     "C-S-a" #'embark-act
+     "C-:" #'embark-dwim
+     "C-h B" #'embark-bindings)
     :init
     (setq prefix-help-command #'embark-prefix-help-command)
     :config
@@ -573,7 +593,7 @@ Enrich existing commands with completion annotations
 		 '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
 		   nil
 		   (window-parameters (mode-line-format . none)))))
-#+end_src
+    #+end_src
 
 #+begin_src emacs-lisp
   (use-package embark-consult
@@ -625,7 +645,6 @@ Enrich existing commands with completion annotations
 #+end_src
 
 * Settings
-
 ** Miscellaneous
 
 UTF-8 as default.
@@ -872,6 +891,22 @@ I can't imagine wanting the same buffer in two tabs, so this calls consult-buffe
   (use-package olivetti)
 #+end_src
 
+*** Text Scaling
+
+#+begin_src emacs-lisp
+  (general-define-key
+   "C-+" #'text-scale-increase
+   "C--" #'text-scale-decrease)
+#+end_src
+
+Disable changing text size with mouse and trackpad
+
+#+begin_src emacs-lisp
+  (global-set-key (kbd "<pinch>") 'ignore)
+  (global-set-key (kbd "<C-wheel-up>") 'ignore)
+  (global-set-key (kbd "<C-wheel-down>") 'ignore)
+#+end_src
+
 ** Menus
 
 *** Pretty Hydra
@@ -1056,6 +1091,20 @@ Add automatic time stamps to files, from [[https://olddeuteronomy.github.io/post
   (add-hook 'write-file-hooks 'time-stamp) ; Update when saving.
 #+end_src
 
+** Buffer Keybindings
+
+Keybindings for files and buffers.
+
+#+begin_src emacs-lisp
+  (general-define-key
+   "C-x c" #'save-buffers-kill-emacs
+   "C-x C-b" #'ibuffer
+   "s-o" #'find-file
+   "s-k" #'kill-current-buffer
+   "M-s-k" #'kill-buffer-and-window
+   "s-K" #'nuke-all-buffers)
+#+end_src
+
 ** Scratch
 
 Remove scratch buffer message and set the mode to org-mode.
@@ -1087,6 +1136,9 @@ Create a new scratch buffer after saving.
     (let ((goto-scratch-buffer (get-buffer-create "*scratch*")))
       (switch-to-buffer goto-scratch-buffer)
       (org-mode)))
+
+(general-define-key
+   "C-M-S-s-s" #'goto-scratch)
 #+end_src
 
 Use ~persistent-scratch~ to save scratch file between sessions.
@@ -1132,7 +1184,7 @@ Use ~persistent-scratch~ to save scratch file between sessions.
 	(ace-window t))))
 #+end_src
 
-*** Window Functions 
+*** Window Functions
 
 #+begin_src emacs-lisp
   (defun delete-window-balance ()
@@ -1251,6 +1303,30 @@ If more than one window, delete the window; if only one window, delete the tab; 
 	(error (delete-frame)))))
 #+end_src
 
+*** Window and Tab Keybindings
+
+#+begin_src emacs-lisp
+  (general-define-key
+   "s-0" #'delete-window
+   "s-1" #'delete-other-windows
+   "s-2" #'rlr/find-file-below
+   "s-3" #'rlr/find-file-right
+   "s-4" #'split-window-below-focus
+   "s-5" #'split-window-right-focus
+   "s-6" #'toggle-window-split
+   "S-C-<left>" #'shrink-window-horizontally
+   "S-C-<right>" #'enlarge-window-horizontally
+   "S-C-<down>" #'shrink-window
+   "S-C-<up>" #'enlarge-window
+   "C-x w" #'delete-frame
+   ;; "M-o" #'crux-other-window-or-switch-buffer
+   "s-\"" #'previous-window-any-frame
+   "s-t" #'tab-new
+   "s-T" #'rlr/find-file-new-tab
+   "s-w" #'rlr/delete-tab-or-frame
+   "s-W" #'rlr/kill-buffer-delete-tab-or-frame)
+#+end_src
+
 ** Search
 
 Don't preserve case in replacements.
@@ -1335,7 +1411,9 @@ Find non-ascii characters in buffer.
 *** Deadgrep
 
 #+begin_src emacs-lisp
-  (use-package deadgrep)
+  (use-package deadgrep
+    :general
+    ("<f5>" #'deadgrep))
 #+end_src
 
 ** Dired
@@ -1432,11 +1510,10 @@ Replace spaces in file names with hyphens using "%s" in dired.
 #+begin_src emacs-lisp
   (general-define-key
    :keymaps 'dired-mode-map
-   "M-<RET>" #'crux-open-with
    "j" #'rlr/dired-search-and-enter
    "s-j" #'rlr/dired-search-and-enter
    "%s" #'my-dired-substspaces)
-#+end_src
+   #+end_src
 
 *** Reveal in Finder
 
@@ -1449,10 +1526,10 @@ Replace spaces in file names with hyphens using "%s" in dired.
 *** Eat
 
 #+begin_src emacs-lisp
-(use-package eat
-  :demand
-  :ensure
-  (:host codeberg
+  (use-package eat
+    :demand
+    :ensure
+    (:host codeberg
 	   :repo "akib/emacs-eat"
 	   :files ("*.el" ("term" "term/*.el") "*.texi"
 		   "*.ti" ("terminfo/e" "terminfo/e/*")
@@ -1565,7 +1642,7 @@ Helpful gives better contextual information in help buffers.
   (use-package helpful)
 #+end_src
 
-* Editing 
+* Editing
 
 ** Miscellaneous Functions
 
@@ -1684,8 +1761,13 @@ Accent allows easy insertion of accented characters. Place the mark on the chara
   (use-package crux
     :general
     ("s-p" #'crux-create-scratch-buffer
+     "s-j" #'crux-top-join-line
+     "<S-return>" #'crux-smart-open-line
+     "<C-S-return>" #'crux-smart-open-line-above
      "<escape>" #'crux-keyboard-quit-dwim
-     [remap keyboard-quit] #'crux-keyboard-quit-dwim))
+     [remap keyboard-quit] #'crux-keyboard-quit-dwim)
+    (:keymaps 'dired-mode-map
+	  "M-<RET>" #'crux-open-with))
 #+end_src
 
 ** Evil Mode
@@ -1811,7 +1893,9 @@ Display suggestions in grid.
 ** Shrink Whitespace
 
 #+begin_src emacs-lisp
-  (use-package shrink-whitespace)
+  (use-package shrink-whitespace
+    :general
+    ("M-=" #'shrink-whitespace))
 #+end_src
 
 ** Visual-Regexp
@@ -1925,6 +2009,27 @@ https://github.com/joaotavora/yasnippet
     (LaTeX-mode . laas-mode))
 #+end_src
 
+** Editing Keybindings
+
+#+begin_src emacs-lisp
+  (general-define-key
+   "<s-up>" #'beginning-of-buffer
+   "<s-down>" #'end-of-buffer
+   "<s-right>" #'end-of-visual-line
+   "<s-left>" #'beginning-of-visual-line
+   "<M-down>" #'forward-paragraph
+   "<M-up>" #'backward-paragraph
+   "M-u" #'upcase-dwim
+   "M-l" #'downcase-dwim
+   "M-c" #'capitalize-dwim
+   "RET" #'newline-and-indent
+   "M-/" #'hippie-expand
+   "<s-backspace>" #'kill-whole-line
+   "<C-d d>" #'insert-standard-date
+   "M-q" #'reformat-paragraph
+   "M-#" #'dictionary-lookup-definition)
+#+end_src
+
 * Org Mode
 
 #+begin_src emacs-lisp
@@ -1978,10 +2083,10 @@ https://github.com/joaotavora/yasnippet
     (setq org-agenda-window-setup 'current-window)
     (setq org-link-frame-setup
 	  '((vm . vm-visit-folder-other-frame)
-	(vm-imap . vm-visit-imap-folder-other-frame)
-	(gnus . org-gnus-no-new-news)
-	(file . find-file)
-	(wl . wl-other-frame)))
+	    (vm-imap . vm-visit-imap-folder-other-frame)
+	    (gnus . org-gnus-no-new-news)
+	    (file . find-file)
+	    (wl . wl-other-frame)))
     (require 'org-tempo)
     ;; Open directory links in Dired.
     (add-to-list 'org-file-apps '(directory . emacs)))
@@ -2148,7 +2253,7 @@ Use ~org-auto-tangle~ to generate ~early-init.el~ and ~init.el~ whenever ~README
 	   "* %?\n:PROPERTIES:\n:CREATED: %U\n:END:\n\n" :empty-lines 1)
 	  ("c" "Quick note" entry (file "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/Documents/notes/quick-notes.org")
 	   "* %?\n:PROPERTIES:\n:CREATED: %U\n:END:\n\n" :empty-lines 1)
-("j" "Journelly Entry" entry
+	  ("j" "Journelly Entry" entry
 	   (file "/Users/rlridenour/Library/Mobile Documents/iCloud~com~xenodium~Journelly/Documents/Journelly.org")
 	   "* %U @ -\n%?" :prepend t)
 	  )
@@ -2939,11 +3044,11 @@ From [[https://kitchingroup.cheme.cmu.edu/blog/2016/06/16/Copy-formatted-org-mod
 #+begin_src emacs-lisp
   (use-package auctex
     :ensure
-(auctex :repo "https://git.savannah.gnu.org/git/auctex.git" :branch "main"
-	:pre-build (("make" "elpa"))
-	:build (:not elpaca--compile-info) ;; Make will take care of this step
-	:files ("*.el" "doc/*.info*" "etc" "images" "latex" "style")
-	:version (lambda (_) (require 'auctex) AUCTeX-version))
+    (auctex :repo "https://git.savannah.gnu.org/git/auctex.git" :branch "main"
+	    :pre-build (("make" "elpa"))
+	    :build (:not elpaca--compile-info) ;; Make will take care of this step
+	    :files ("*.el" "doc/*.info*" "etc" "images" "latex" "style")
+	    :version (lambda (_) (require 'auctex) AUCTeX-version))
     :mode ("\\.tex\\'" . LaTeX-mode)
     :init
     (setq TeX-parse-self t
@@ -3276,6 +3381,9 @@ Copy entire buffer then kill. I use this with temporary scratch buffers to write
     (kill-buffer)
     ;; (app-switch)
     (shell-command "open -a ~/icloud/scripts/beep.app"))
+
+  (general-define-key
+   "C-M-S-s-k" #'copy-kill-buffer)
 #+end_src
 
 * Mail and News
@@ -3287,12 +3395,12 @@ Copy entire buffer then kill. I use this with temporary scratch buffers to write
     :commands (mu4e mu4e-update-mail-and-index)
     :general
     (:keymaps 'mu4e-headers-mode-map
-	  "q"  #'kill-current-buffer
-	  "C-<tab>" #'tab-next)
+	      "q"  #'kill-current-buffer
+	      "C-<tab>" #'tab-next)
     (:keymaps 'mu4e-thread-mode-map
-	  "C-<tab>" #'tab-next)
+	      "C-<tab>" #'tab-next)
     (:keymaps 'mu4e-main-mode-map
-	  "q"  #'rlr/quit-mu4e)
+	      "q"  #'rlr/quit-mu4e)
     :after org
     :config
     (setq
@@ -3319,73 +3427,73 @@ Copy entire buffer then kill. I use this with temporary scratch buffers to write
      mu4e-completing-read-function 'completing-read
      mu4e-context-policy 'pick-first
      mu4e-contexts (list
-		(make-mu4e-context
-		 :name "fastmail"
-		 :match-func
-		 (lambda (msg)
-		 (when msg
-		   (string-prefix-p "/fastmail" (mu4e-message-field msg :maildir))))
-		 :vars '((user-mail-address . "rlridenour@fastmail.com")
-		       (user-full-name    . "Randy Ridenour")
-		       (mu4e-drafts-folder  . "/fastmail/Drafts")
-		       (mu4e-sent-folder  . "/fastmail/Sent")
-		       (mu4e-trash-folder  . "/fastmail/Trash")
-		       (mu4e-refile-folder  . "/fastmail/Archive")
-		       (sendmail-program . "msmtp")
-		       (send-mail-function . smtpmail-send-it)
-		       (message-sendmail-f-is-evil . t)
-		       (message-sendmail-extra-arguments . ("--read-envelope-from"))
-		       (message-send-mail-function . message-send-mail-with-sendmail)
-		       (smtpmail-default-smtp-server . "smtp.fastmail.com")
-		       (smtpmail-smtp-server  . "smtp.fastmail.com")
-		       ))
-		(make-mu4e-context
-		 :name "obu"
-		 :match-func
-		 (lambda (msg)
-		 (when msg
-		   (string-prefix-p "/obu" (mu4e-message-field msg :maildir))))
-		 :vars '((user-mail-address . "randy.ridenour@okbu.edu")
-		       (user-full-name    . "Randy Ridenour")
-		       (mu4e-drafts-folder  . "/obu/Drafts")
-		       (mu4e-sent-folder  . "/obu/Sent")
-		       (mu4e-trash-folder . "/obu/Trash")
-		       (mu4e-refile-folder  . "/obu/Archive")
-		       ;; (sendmail-program . "msmtp")
-		       (send-mail-function . smtpmail-send-it)
-		       (message-sendmail-f-is-evil . t)
-		       (message-sendmail-extra-arguments . ("--read-envelope-from"))
-		       (message-send-mail-function . message-send-mail-with-sendmail)
-		       (smtpmail-smtp-server  . "localhost")
-		       (smtpmail-smtp-user . "randy.ridenour@okbu.edu")
-		       (smtpmail-stream-type . plain)
-		       (smtpmail-smtp-service . 1025)
-		       ))))
+		    (make-mu4e-context
+		     :name "fastmail"
+		     :match-func
+		     (lambda (msg)
+		       (when msg
+			 (string-prefix-p "/fastmail" (mu4e-message-field msg :maildir))))
+		     :vars '((user-mail-address . "rlridenour@fastmail.com")
+			     (user-full-name    . "Randy Ridenour")
+			     (mu4e-drafts-folder  . "/fastmail/Drafts")
+			     (mu4e-sent-folder  . "/fastmail/Sent")
+			     (mu4e-trash-folder  . "/fastmail/Trash")
+			     (mu4e-refile-folder  . "/fastmail/Archive")
+			     (sendmail-program . "msmtp")
+			     (send-mail-function . smtpmail-send-it)
+			     (message-sendmail-f-is-evil . t)
+			     (message-sendmail-extra-arguments . ("--read-envelope-from"))
+			     (message-send-mail-function . message-send-mail-with-sendmail)
+			     (smtpmail-default-smtp-server . "smtp.fastmail.com")
+			     (smtpmail-smtp-server  . "smtp.fastmail.com")
+			     ))
+		    (make-mu4e-context
+		     :name "obu"
+		     :match-func
+		     (lambda (msg)
+		       (when msg
+			 (string-prefix-p "/obu" (mu4e-message-field msg :maildir))))
+		     :vars '((user-mail-address . "randy.ridenour@okbu.edu")
+			     (user-full-name    . "Randy Ridenour")
+			     (mu4e-drafts-folder  . "/obu/Drafts")
+			     (mu4e-sent-folder  . "/obu/Sent")
+			     (mu4e-trash-folder . "/obu/Trash")
+			     (mu4e-refile-folder  . "/obu/Archive")
+			     ;; (sendmail-program . "msmtp")
+			     (send-mail-function . smtpmail-send-it)
+			     (message-sendmail-f-is-evil . t)
+			     (message-sendmail-extra-arguments . ("--read-envelope-from"))
+			     (message-send-mail-function . message-send-mail-with-sendmail)
+			     (smtpmail-smtp-server  . "localhost")
+			     (smtpmail-smtp-user . "randy.ridenour@okbu.edu")
+			     (smtpmail-stream-type . plain)
+			     (smtpmail-smtp-service . 1025)
+			     ))))
     (display-line-numbers-mode -1)
     (require 'mu4e-transient)
     (add-to-list 'mu4e-bookmarks
-	     '( :name "OBU Inbox"
-		:query "maildir:/obu/INBOX AND NOT flag:trashed"
-		:key ?o))
+		 '( :name "OBU Inbox"
+		    :query "maildir:/obu/INBOX AND NOT flag:trashed"
+		    :key ?o))
     (add-to-list 'mu4e-bookmarks
-	     '( :name "Fastmail Inbox"
-		:query "maildir:/fastmail/INBOX AND NOT flag:trashed"
-		:key ?f))
+		 '( :name "Fastmail Inbox"
+		    :query "maildir:/fastmail/INBOX AND NOT flag:trashed"
+		    :key ?f))
     ;; (add-to-list 'mu4e-bookmarks
-    ;;	     '(:name "All Inboxes"
-    ;;		   :query "(maildir:/obu/INBOX OR maildir:/fastmail/INBOX) AND NOT flag:trashed"
-    ;;		   :key ?i
-    ;;		   :hide-unread))
+    ;;       '(:name "All Inboxes"
+    ;;             :query "(maildir:/obu/INBOX OR maildir:/fastmail/INBOX) AND NOT flag:trashed"
+    ;;             :key ?i
+    ;;             :hide-unread))
     (add-to-list 'mu4e-bookmarks
-	     '(:name "Unread Inboxes"
-		   :query "flag:unread AND NOT flag:trashed"
-		   :key ?b))
+		 '(:name "Unread Inboxes"
+			 :query "flag:unread AND NOT flag:trashed"
+			 :key ?b))
 
     (setq gnus-blocked-images
 	  (lambda(&optional _ignore)
-	(if (mu4e-message-contact-field-matches
-	     (mu4e-message-at-point) :from "store-news@woot.com")
-	    nil "."))))
+	    (if (mu4e-message-contact-field-matches
+		 (mu4e-message-at-point) :from "store-news@woot.com")
+		nil "."))))
 #+end_src
 
 #+begin_src emacs-lisp
@@ -3393,8 +3501,8 @@ Copy entire buffer then kill. I use this with temporary scratch buffers to write
     :commands (org-mime-edit-mail-in-org-mode)
     :config
     (setq org-mime-export-options '(:section-numbers nil
-					 :with-author nil
-					 :with-toc nil))
+						     :with-author nil
+						     :with-toc nil))
     )
 #+end_src
 
@@ -3422,15 +3530,15 @@ Mu4e-alert
     (let ((message-signature
 	   (mu4e-read-option "Signature:"
 			     '(("formal" .
-			(concat
-			 "Randy Ridenour, Ph.D.\n"
-			 "Professor of Philosophy\n"
-			 "Oklahoma Baptist University\n\n"
-			 "500 W. University St.\n"
-			 "Shawnee, OK  74804\n"
-			 "Office: (405) 585-4432\n"
-			 ("informal" .
-			  "Joe\n")))))
+				(concat
+				 "Randy Ridenour, Ph.D.\n"
+				 "Professor of Philosophy\n"
+				 "Oklahoma Baptist University\n\n"
+				 "500 W. University St.\n"
+				 "Shawnee, OK  74804\n"
+				 "Office: (405) 585-4432\n"
+				 ("informal" .
+				  "Joe\n")))))
 	   (message-insert-signature)))
 #+end_src
 
@@ -3438,23 +3546,23 @@ Mu4e-alert
   (defun obu-signature ()
     (interactive)
     (insert (concat
-	 "\n\n"
-	 "--\n"
-	 "Randy Ridenour, Ph.D.\n"
-	 "Professor of Philosophy\n"
-	 "Oklahoma Baptist University\n\n"
-	 "500 W. University St.\n"
-	 "Shawnee, OK  74804\n"
-	 "Office: (405) 585-4432\n")
-	))
+	     "\n\n"
+	     "--\n"
+	     "Randy Ridenour, Ph.D.\n"
+	     "Professor of Philosophy\n"
+	     "Oklahoma Baptist University\n\n"
+	     "500 W. University St.\n"
+	     "Shawnee, OK  74804\n"
+	     "Office: (405) 585-4432\n")
+	    ))
 
   (defun informal-signature ()
     (interactive)
     (insert (concat
-	 "\n\n"
-	 "--\n"
-	 "Randy"
-	 )))
+	     "\n\n"
+	     "--\n"
+	     "Randy"
+	     )))
 #+end_src
 
 Open mu4e in new tab.
@@ -3500,14 +3608,14 @@ Open mu4e and elfeed in new frame.
     (setq mu4e-views-auto-view-selected-message t) ;; automatically open messages when moving in the headers view
     :general
     (:keymaps 'mu4e-headers-mode-map
-	  "v"  #'mu4e-views-mu4e-select-view-msg-method ;; select viewing method
-	  "M-n" #'mu4e-views-cursor-msg-view-window-down ;; from headers window scroll the email view
-	  "M-p" #'mu4e-views-cursor-msg-view-window-up ;; from headers window scroll the email view
-	  "<SPC<" #'mu4e-views-cursor-msg-view-window-down ;; from headers window scroll the email view
-	  "s-<SPC>" #'mu4e-views-cursor-msg-view-window-up ;; from headers window scroll the email view
-	  "f" #'mu4e-views-toggle-auto-view-selected-message ;; toggle opening messages automatically when moving in the headers view
-	  "i" #'mu4e-views-mu4e-view-as-nonblocked-html ;; show currently selected email with all remote content
-	  ))
+	      "v"  #'mu4e-views-mu4e-select-view-msg-method ;; select viewing method
+	      "M-n" #'mu4e-views-cursor-msg-view-window-down ;; from headers window scroll the email view
+	      "M-p" #'mu4e-views-cursor-msg-view-window-up ;; from headers window scroll the email view
+	      "<SPC<" #'mu4e-views-cursor-msg-view-window-down ;; from headers window scroll the email view
+	      "s-<SPC>" #'mu4e-views-cursor-msg-view-window-up ;; from headers window scroll the email view
+	      "f" #'mu4e-views-toggle-auto-view-selected-message ;; toggle opening messages automatically when moving in the headers view
+	      "i" #'mu4e-views-mu4e-view-as-nonblocked-html ;; show currently selected email with all remote content
+	      ))
 #+end_src
 
 *** Consult MU
@@ -3574,8 +3682,8 @@ Functions for setting default browser,
   (defun rlr/select-browser ()
     (interactive)
     (let* ((choices '(("System Default" . rlr/browser-default)
-		("Qutebrowser" . rlr/browser-qutebrowser)
-		("EWW" . rlr/browser-eww)))
+		      ("Qutebrowser" . rlr/browser-qutebrowser)
+		      ("EWW" . rlr/browser-eww)))
 	   (choice   (completing-read "Choose one: " choices)))
       (call-interactively (cdr (assoc choice choices)))))
 
@@ -3973,12 +4081,12 @@ Select tag, add tag to to post, then add post to tag page.
       )
     :general
     (:keymaps 'eww-mode-map
-	  "I" #'rlr/eww-toggle-images
-	  "f" #'link-hint-open-link
-	  "F" #'rlr/open-eww-link-new-buffer
-	  "T" #'eww-toggle-fonts)
+	      "I" #'rlr/eww-toggle-images
+	      "f" #'link-hint-open-link
+	      "F" #'rlr/open-eww-link-new-buffer
+	      "T" #'eww-toggle-fonts)
     (:keymaps 'eww-link-keymap
-	  "I" #'rlr/eww-toggle-images)
+	      "I" #'rlr/eww-toggle-images)
     )
 #+end_src
 
@@ -4091,7 +4199,7 @@ SLY is Sylvester the Cat's Common Lisp IDE for Emacs.
 ** YAML
 
 #+begin_src emacs-lisp
-(use-package yaml-mode)
+  (use-package yaml-mode)
 #+end_src
 
 * PDF-Tools
@@ -4618,147 +4726,22 @@ Make chord charts.
 
 * Keybindings
 
-** Appearance Keybindings
-
-#+begin_src emacs-lisp
-  (general-define-key
-   "C-+" #'text-scale-increase
-   "C--" #'text-scale-decrease)
-#+end_src
-
-Disable changing text size with mouse and trackpad
-
-#+begin_src emacs-lisp
-  (global-set-key (kbd "<pinch>") 'ignore)
-  (global-set-key (kbd "<C-wheel-up>") 'ignore)
-  (global-set-key (kbd "<C-wheel-down>") 'ignore)
-#+end_src
-
-** Buffer Keybindings
-
-Keybindings for files and buffers.
-
-#+begin_src emacs-lisp
-  (general-define-key
-   "C-x c" #'save-buffers-kill-emacs
-   "C-x C-b" #'ibuffer
-   "s-o" #'find-file
-   "s-k" #'kill-current-buffer
-   "M-s-k" #'kill-buffer-and-window
-   "s-K" #'nuke-all-buffers
-   "s-r" #'consult-buffer
-   "M-s-r" #'consult-buffer-other-window
-   "C-S-a" #'embark-act
-   "C-M-S-s-k" #'copy-kill-buffer
-   "C-M-S-s-s" #'goto-scratch)
-#+end_src
-
-** Window Keybindings
-
-#+begin_src emacs-lisp
-  (general-define-key
-   "s-0" #'delete-window
-   "s-1" #'delete-other-windows
-   "s-2" #'rlr/find-file-below
-   "s-3" #'rlr/find-file-right
-   "s-4" #'split-window-below-focus
-   "s-5" #'split-window-right-focus
-   "s-6" #'toggle-window-split
-   "S-C-<left>" #'shrink-window-horizontally
-   "S-C-<right>" #'enlarge-window-horizontally
-   "S-C-<down>" #'shrink-window
-   "S-C-<up>" #'enlarge-window
-   "C-x w" #'delete-frame
-   ;; "M-o" #'crux-other-window-or-switch-buffer
-   "s-\"" #'previous-window-any-frame)
-#+end_src
-
-** Tab Keybindings
-
-#+begin_src emacs-lisp
-  (general-define-key
-   "s-t" #'tab-new
-   "s-T" #'rlr/find-file-new-tab
-   "s-w" #'rlr/delete-tab-or-frame
-   "s-W" #'rlr/kill-buffer-delete-tab-or-frame)
-#+end_src
-
 ** Search Keybindings
 
 #+begin_src emacs-lisp
   (general-define-key
    "s-l" #'hydra-locate/body
-   "s-f" #'consult-line
-   "<f5>" #'deadgrep
-   ;; "C-s" #'consult-isearch
-   ;; "C-r" #'consult-isearch-reverse
    )
-#+end_src
-
-** Editing Keybindings
-
-#+begin_src emacs-lisp
-  (general-define-key
-   "<s-up>" #'beginning-of-buffer
-   "<s-down>" #'end-of-buffer
-   "<s-right>" #'end-of-visual-line
-   "<s-left>" #'beginning-of-visual-line
-   "<M-down>" #'forward-paragraph
-   "<M-up>" #'backward-paragraph
-   "M-u" #'upcase-dwim
-   "M-l" #'downcase-dwim
-   "M-c" #'capitalize-dwim
-   "RET" #'newline-and-indent
-   "M-/" #'hippie-expand
-   "<s-backspace>" #'kill-whole-line
-   "s-j" #'crux-top-join-line
-   "<S-return>" #'crux-smart-open-line
-   "<C-S-return>" #'crux-smart-open-line-above
-   "<C-d d>" #'insert-standard-date
-
-   "M-y" #'consult-yank-pop
-
-   "M-q" #'reformat-paragraph
-   "M-#" #'dictionary-lookup-definition
-   "M-=" #'shrink-whitespace
-   "s-l" #'hydra-locate/body
-   "s-f" #'consult-line
-   "<f5>" #'deadgrep)
 #+end_src
 
 ** Other Keybindings
 
 #+begin_src emacs-lisp
   (general-define-key
-   ;; Editing
-   ;; "s-/" #'avy-goto-char-timer
-   "C-x 4 b" #'consult-buffer-other-window
-   "C-x 5 b" #'consult-buffer-other-frame
-   "C-x r x" #'consult-register
-   "M-s m" #'consult-multi-occur
-   "<f8>" #'calendar
-   )
+   "<f8>" #'calendar)
 #+end_src
 
 ** Prefix Keybindings
-
-Some functions that are used below.
-
-Open Emacs configuration file.
-
-#+begin_src emacs-lisp
-  (defun open-emacs-config ()
-    (interactive)
-    (find-file "~/.config/emacs/README.org"))
-#+end_src
-
-Open fish functions directory.
-
-#+begin_src emacs-lisp
-  (defun open-fish-functions ()
-    (interactive)
-    (dired "~/.config/fish/functions"))
-#+end_src
 
 #+begin_src emacs-lisp
   (general-define-key
