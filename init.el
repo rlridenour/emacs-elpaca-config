@@ -77,8 +77,8 @@
     "s-,"))
 
 (use-package key-chord
-:config
-(key-chord-mode 1))
+  :config
+  (key-chord-mode 1))
 
 (use-package major-mode-hydra
   :commands (pretty-hydra-define)
@@ -375,19 +375,20 @@
 (use-package spacious-padding
   :demand
   :after modus-themes doom-modeline
-  :config
+  :init
   (setq spacious-padding-subtle-mode-line t)
   (setq spacious-padding-widths
 	  '( :internal-border-width 30
-	 :header-line-width 4
-	 :mode-line-width 10
-	 :tab-width 4
-	 :right-divider-width 30
-	 :scroll-bar-width 8
-	 :fringe-width 8))
-  (spacious-padding-mode 1)
+	     :header-line-width 4
+	     :mode-line-width 10
+	     :tab-width 4
+	     :right-divider-width 30
+	     :scroll-bar-width 8
+	     :fringe-width 8))
   :general
   ("C-M-s-p" #'spacious-padding-mode))
+
+(add-hook 'server-after-make-frame-hook #'spacious-padding-mode)
 
 (use-package modern-tab-bar
   :ensure
@@ -527,14 +528,14 @@
 (add-hook 'kill-buffer-query-functions 'unkillable-scratch-buffer)
 
 (defun goto-scratch ()
-    "this sends you to the scratch buffer"
-    (interactive)
-    (let ((goto-scratch-buffer (get-buffer-create "*scratch*")))
-      (switch-to-buffer goto-scratch-buffer)
-      (org-mode)))
+  "this sends you to the scratch buffer"
+  (interactive)
+  (let ((goto-scratch-buffer (get-buffer-create "*scratch*")))
+    (switch-to-buffer goto-scratch-buffer)
+    (org-mode)))
 
 (general-define-key
-   "C-M-S-s-s" #'goto-scratch)
+ "C-M-S-s-s" #'goto-scratch)
 
 (use-package persistent-scratch
   :init
@@ -1351,7 +1352,7 @@
   (org-agenda-list 1)
   (delete-other-windows))
 
-(add-hook 'server-after-make-frame-hook 'agenda-home)
+(add-hook 'server-after-make-frame-hook #'agenda-home)
 
 (general-define-key
  "s-d" #'agenda-home)
@@ -2853,7 +2854,7 @@ installed."
 
 (general-define-key
  "H-h" #'hydra-hydras/body
- "H-l" #'hydra-locate/body
+ "s-l" #'hydra-locate/body
  "s-n" #'hydra-new/body
  "H-t" #'hydra-toggle/body
  "H-w" #'hydra-window/body
@@ -2861,233 +2862,233 @@ installed."
  "C-x 9" #'hydra-logic/body)
 
 (with-after-elpaca-init
-   (major-mode-hydra-define dashboard-mode
-     (:quit-key "q")
-     ("Open"
-	(("m" consult-bookmark "bookmarks")
-	 ("a" consult-org-agenda "consult-agenda")
-	 ("t" (find-file "/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/tasks.org") "open tasks")
-	 ("b" (find-file "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/bookmarks.org") "web bookmarks")))))
+ (major-mode-hydra-define dashboard-mode
+   (:quit-key "q")
+   ("Open"
+    (("m" consult-bookmark "bookmarks")
+     ("a" consult-org-agenda "consult-agenda")
+     ("t" (find-file "/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/tasks.org") "open tasks")
+     ("b" (find-file "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/bookmarks.org") "web bookmarks")))))
 
 (with-after-elpaca-init
-     (major-mode-hydra-define org-agenda-mode
-       (:quit-key "q")
-       ("Open"
-	(
-	 ("a" consult-org-agenda "consult-agenda")
-	 ("b" consult-bookmark "bookmarks")
-	 ("m" mu4e "rlr/read-mail-news")
-	 ("t" (find-file "/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/tasks.org") "open tasks")
-	 ("w" (find-file "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/bookmarks.org") "web bookmarks"))
-	"Classes"
-	(("1" (dired "~/icloud/teaching/intro/lectures") "Intro")
-	 ("2" (dired "~/icloud/teaching/medieval/lectures") "Medieval")
-	 ("3" (dired "~/icloud/teaching/logic/lectures") "Logic")
-	 ("4" (dired "~/icloud/teaching/language/lectures") "Language")
-	 )
-	"Actions"
-	(("s" rlr/save-web-page-as-org-file "Save Safari page as Org")
-	 ("e" rlr/open-safari-page-in-eww "Open Safari page in EWW")))))
+ (major-mode-hydra-define org-agenda-mode
+   (:quit-key "q")
+   ("Open"
+    (
+     ("a" consult-org-agenda "consult-agenda")
+     ("b" consult-bookmark "bookmarks")
+     ("m" mu4e "rlr/read-mail-news")
+     ("t" (find-file "/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/tasks.org") "open tasks")
+     ("w" (find-file "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/bookmarks.org") "web bookmarks"))
+    "Classes"
+    (("1" (dired "~/icloud/teaching/intro/lectures") "Intro")
+     ("2" (dired "~/icloud/teaching/medieval/lectures") "Medieval")
+     ("3" (dired "~/icloud/teaching/logic/lectures") "Logic")
+     ("4" (dired "~/icloud/teaching/language/lectures") "Language")
+     )
+    "Actions"
+    (("s" rlr/save-web-page-as-org-file "Save Safari page as Org")
+     ("e" rlr/open-safari-page-in-eww "Open Safari page in EWW")))))
 
 (with-after-elpaca-init
-     (major-mode-hydra-define eww-mode
-       (:quit-key "q")
-       ("A"
-	(
-	 ;; ("G" eww "Eww Open Browser")
-	 ("g" eww-reload "Eww Reload")
-	 ("6" eww-open-in-new-buffer "Open in new buffer")
-	 ("l" eww-back-url "Back Url")
-	 ("r" eww-forward-url "Forward Url")
-	 ("N" eww-next-url "Next Url")
-	 ("P" eww-previous-url "Previous Url")
-	 ("u" eww-up-url "Up Url")
-	 ("&" eww-browse-with-external-browser "Open in External Browser")
-	 ("d" eww-download "Download")
-	 ("w" eww-copy-page-url "Copy Url Page")
-	 );end theme
-	"B"
-	(
-	 ("T" rlr/eww-toggle-images "Toggle Image Display")
-	 (">" shr-next-link "Shr Next Link")
-	 ("<" shr-previous-link "Shr Previous Link")
-	 ("n" scroll-down-command "Scroll Down")
-	 ("C" url-cookie-list "Url Cookie List")
-	 ("v" eww-view-source "View Source")
-	 ("R" eww-readable "Make Readable")
-	 ("H" eww-list-histories "List History")
-	 ("E" eww-set-character-encoding "Character Encoding")
-	 ("s" eww-switch-to-buffer "Switch to Buffer")
-	 ("S" eww-list-buffers "List Buffers")
-	 );end highlighting
+ (major-mode-hydra-define eww-mode
+   (:quit-key "q")
+   ("A"
+    (
+     ;; ("G" eww "Eww Open Browser")
+     ("g" eww-reload "Eww Reload")
+     ("6" eww-open-in-new-buffer "Open in new buffer")
+     ("l" eww-back-url "Back Url")
+     ("r" eww-forward-url "Forward Url")
+     ("N" eww-next-url "Next Url")
+     ("P" eww-previous-url "Previous Url")
+     ("u" eww-up-url "Up Url")
+     ("&" eww-browse-with-external-browser "Open in External Browser")
+     ("d" eww-download "Download")
+     ("w" eww-copy-page-url "Copy Url Page")
+     );end theme
+    "B"
+    (
+     ("T" rlr/eww-toggle-images "Toggle Image Display")
+     (">" shr-next-link "Shr Next Link")
+     ("<" shr-previous-link "Shr Previous Link")
+     ("n" scroll-down-command "Scroll Down")
+     ("C" url-cookie-list "Url Cookie List")
+     ("v" eww-view-source "View Source")
+     ("R" eww-readable "Make Readable")
+     ("H" eww-list-histories "List History")
+     ("E" eww-set-character-encoding "Character Encoding")
+     ("s" eww-switch-to-buffer "Switch to Buffer")
+     ("S" eww-list-buffers "List Buffers")
+     );end highlighting
 
-	"C"
-	(
-	 ("1" rrnet "randyridenour.net")
-	 ("2" sep "SEP")
-	 ("F" eww-toggle-fonts "Toggle Fonts")
-	 ("D" eww-toggle-paragraph-direction "Toggle Paragraph Direction")
-	 ("c" eww-toggle-colors "Toggle Colors")
-	 ("b" eww-add-bookmark "Add Bookmark")
-	 ("B" eww-list-bookmarks "List Bookmarks")
-	 ("=" eww-next-bookmark "Next Bookmark")
-	 ("-" eww-previous-bookmark "Previous Bookmark")
-	 ("O" jao-eww-to-org "Make Org Version")
-	 ("<SPC>" nil "Quit" :color pink)))))
-
-(with-after-elpaca-init
-     (major-mode-hydra-define markdown-mode
-       (:quit-key "q")
-       ("Format"
-	(("h" markdown-insert-header-dwim "header")
-	 ("l" markdown-insert-link "link")
-	 ("u" markdown-insert-uri "url")
-	 ("f" markdown-insert-footnote "footnote")
-	 ("w" markdown-insert-wiki-link "wiki")
-	 ("r" markdown-insert-reference-link-dwim "r-link")
-	 ("n" markdown-cleanup-list-numbers "clean-lists")
-	 ("c" markdown-complete-buffer "complete")))))
+    "C"
+    (
+     ("1" rrnet "randyridenour.net")
+     ("2" sep "SEP")
+     ("F" eww-toggle-fonts "Toggle Fonts")
+     ("D" eww-toggle-paragraph-direction "Toggle Paragraph Direction")
+     ("c" eww-toggle-colors "Toggle Colors")
+     ("b" eww-add-bookmark "Add Bookmark")
+     ("B" eww-list-bookmarks "List Bookmarks")
+     ("=" eww-next-bookmark "Next Bookmark")
+     ("-" eww-previous-bookmark "Previous Bookmark")
+     ("O" jao-eww-to-org "Make Org Version")
+     ("<SPC>" nil "Quit" :color pink)))))
 
 (with-after-elpaca-init
-     (major-mode-hydra-define LaTeX-mode
-       (:quit-key "q")
-       ("Bibtex"
-	(("r" citar-insert-citation "citation"))
-	"LaTeXmk"
-	(("m" rlr/tex-mkpdf "PDFLaTeX")
-	 ("l" rlr/tex-mklua "LuaLaTeX")
-	 ("w" rlr/tex-mktc "watch PDFLaTeX")
-	 ("L" rlr/tex-mklua "watch LuaLaTeX")
-	 ("c" tex-clean "clean aux")
-	 ("C" tex-clean-all "clean all")
-	 ("n" latex-word-count "word count")))))
+ (major-mode-hydra-define markdown-mode
+   (:quit-key "q")
+   ("Format"
+    (("h" markdown-insert-header-dwim "header")
+     ("l" markdown-insert-link "link")
+     ("u" markdown-insert-uri "url")
+     ("f" markdown-insert-footnote "footnote")
+     ("w" markdown-insert-wiki-link "wiki")
+     ("r" markdown-insert-reference-link-dwim "r-link")
+     ("n" markdown-cleanup-list-numbers "clean-lists")
+     ("c" markdown-complete-buffer "complete")))))
 
 (with-after-elpaca-init
-     (major-mode-hydra-define org-mode
-       (:quit-key "q")
-       ("Export"
-	(("m" rlr/org-mkpdf "Make PDF with PDFLaTeX")
-	 ("p" rlr/org-open-pdf "View PDF")
-	 ("h" make-html "HTML")
-	 ("l" rlr/org-mklua "Make PDF with LuaLaTeX")
-	 ("el" org-latex-export-to-latex "Org to LaTeX")
-	 ("eb" org-beamer-export-to-pdf "Org to Beamer-PDF")
-	 ("eB" org-beamer-export-to-latex "Org to Beamer-LaTeX")
-	 ("s" lecture-slides "Lecture slides")
-	 ("n" lecture-notes "Lecture notes")
-	 ("ep" present "Present slides")
-	 ("ec" canvas-copy "Copy HTML for Canvas")
-	 ("es" canvas-notes "HTML Canvas notes")
-	 ("eS" make-syllabus "Syllabus")
-	 ("eh" make-handout "Handout")
-	 ("c" tex-clean "clean aux")
-	 ("C" tex-clean-all "clean all"))
-	"Edit"
-	(("a" org-appear-mode :toggle t)
-	 ("dd" org-deadline "deadline")
-	 ("ds" org-schedule "schedule")
-	 ("r" org-refile "refile")
-	 ("du" rlr/org-date "update date stamp")
-	 ;; ("fn" org-footnote-new "insert footnote")
-	 ("ff" org-footnote-action "edit footnote")
-	 ("fc" citar-insert-citation "citation")
-	 ("il" org-mac-link-safari-insert-frontmost-url "insert safari link")
-	 ("y" yankpad-set-category "set yankpad"))
-	"View"
-	(("vi" consult-org-heading "iMenu")
-	 ("vu" org-toggle-pretty-entities "org-pretty")
-	 ("vI" org-toggle-inline-images "Inline images"))
-	"Blog"
-	(("bn" rlrt-new-post "New draft")
-	 ("bt" orgblog-add-tag "Add tag")
-	 ("bi" orgblog-insert-image "Insert image")
-	 ("bp" orgblog-publish-draft "Publish draft")
-	 ("bb" orgblog-build "Build site")
-	 ("bs" orgblog-serve "Serve site")
-	 ("bd" orgblog-push "Push to Github"))
-	"Notes"
-	(("1" denote-link "link to note")))))
+ (major-mode-hydra-define LaTeX-mode
+   (:quit-key "q")
+   ("Bibtex"
+    (("r" citar-insert-citation "citation"))
+    "LaTeXmk"
+    (("m" rlr/tex-mkpdf "PDFLaTeX")
+     ("l" rlr/tex-mklua "LuaLaTeX")
+     ("w" rlr/tex-mktc "watch PDFLaTeX")
+     ("L" rlr/tex-mklua "watch LuaLaTeX")
+     ("c" tex-clean "clean aux")
+     ("C" tex-clean-all "clean all")
+     ("n" latex-word-count "word count")))))
 
 (with-after-elpaca-init
-     (major-mode-hydra-define dired-mode
-       (:quit-key "q")
-       ("New"
-	(("a" rlrt-new-article "article")
-	 ("l" rlrt-new-lecture "lecture")
-	 ("h" rlrt-new-handout "handout")
-	 ("s" rlrt-new-syllabus "syllabus"))
-	"Tools"
-	(("d" crux-open-with "Open in default program")
-	 ("." dired-omit-mode "Show hidden files")
-	 ("p" diredp-copy-abs-filenames-as-kill "Copy filename and path")
-	 ("n" dired-toggle-read-only "edit Filenames"))
-	"Blog"
-	(("bn" rlrt-new-post "New draft")
-	 ("bb" orgblog-build "Build Site")
-	 ("bs" orgblog-serve "Serve Site")
-	 ("bd" orgblog-push "Push to Github")))))
+ (major-mode-hydra-define org-mode
+   (:quit-key "q")
+   ("Export"
+    (("m" rlr/org-mkpdf "Make PDF with PDFLaTeX")
+     ("p" rlr/org-open-pdf "View PDF")
+     ("h" make-html "HTML")
+     ("l" rlr/org-mklua "Make PDF with LuaLaTeX")
+     ("el" org-latex-export-to-latex "Org to LaTeX")
+     ("eb" org-beamer-export-to-pdf "Org to Beamer-PDF")
+     ("eB" org-beamer-export-to-latex "Org to Beamer-LaTeX")
+     ("s" lecture-slides "Lecture slides")
+     ("n" lecture-notes "Lecture notes")
+     ("ep" present "Present slides")
+     ("ec" canvas-copy "Copy HTML for Canvas")
+     ("es" canvas-notes "HTML Canvas notes")
+     ("eS" make-syllabus "Syllabus")
+     ("eh" make-handout "Handout")
+     ("c" tex-clean "clean aux")
+     ("C" tex-clean-all "clean all"))
+    "Edit"
+    (("a" org-appear-mode :toggle t)
+     ("dd" org-deadline "deadline")
+     ("ds" org-schedule "schedule")
+     ("r" org-refile "refile")
+     ("du" rlr/org-date "update date stamp")
+     ;; ("fn" org-footnote-new "insert footnote")
+     ("ff" org-footnote-action "edit footnote")
+     ("fc" citar-insert-citation "citation")
+     ("il" org-mac-link-safari-insert-frontmost-url "insert safari link")
+     ("y" yankpad-set-category "set yankpad"))
+    "View"
+    (("vi" consult-org-heading "iMenu")
+     ("vu" org-toggle-pretty-entities "org-pretty")
+     ("vI" org-toggle-inline-images "Inline images"))
+    "Blog"
+    (("bn" rlrt-new-post "New draft")
+     ("bt" orgblog-add-tag "Add tag")
+     ("bi" orgblog-insert-image "Insert image")
+     ("bp" orgblog-publish-draft "Publish draft")
+     ("bb" orgblog-build "Build site")
+     ("bs" orgblog-serve "Serve site")
+     ("bd" orgblog-push "Push to Github"))
+    "Notes"
+    (("1" denote-link "link to note")))))
 
 (with-after-elpaca-init
-     (major-mode-hydra-define css-mode
-       (:quit-key "q")
-       ("Blog"
-	(("bn" rlrt-new-post "New draft")
-	 ("bb" orgblog-build "Build Site")
-	 ("bs" orgblog-serve "Serve Site")
-	 ("bd" orgblog-push "Push to Github")))))
+ (major-mode-hydra-define dired-mode
+   (:quit-key "q")
+   ("New"
+    (("a" rlrt-new-article "article")
+     ("l" rlrt-new-lecture "lecture")
+     ("h" rlrt-new-handout "handout")
+     ("s" rlrt-new-syllabus "syllabus"))
+    "Tools"
+    (("d" crux-open-with "Open in default program")
+     ("." dired-omit-mode "Show hidden files")
+     ("p" diredp-copy-abs-filenames-as-kill "Copy filename and path")
+     ("n" dired-toggle-read-only "edit Filenames"))
+    "Blog"
+    (("bn" rlrt-new-post "New draft")
+     ("bb" orgblog-build "Build Site")
+     ("bs" orgblog-serve "Serve Site")
+     ("bd" orgblog-push "Push to Github")))))
 
 (with-after-elpaca-init
-     (major-mode-hydra-define denote-menu-mode
-       (:quit-key "q")
-       ("Tools"
-	(("f" denote-menu-filter "Filter by regex")
-	 ("k" denote-menu-filter-by-keyword "Filter by keyword")
-	 ("c" denote-menu-clear-filters "Clear filters")
-	 ("d" denote-menu-export-to-dired "Dired")))))
+ (major-mode-hydra-define css-mode
+   (:quit-key "q")
+   ("Blog"
+    (("bn" rlrt-new-post "New draft")
+     ("bb" orgblog-build "Build Site")
+     ("bs" orgblog-serve "Serve Site")
+     ("bd" orgblog-push "Push to Github")))))
 
 (with-after-elpaca-init
-     (major-mode-hydra-define mu4e-main-mode
-       (:quit-key "q")
-       ("Message"
-	(
-	 ("n" mu4e-compose-mail "New")
-	 ("e" mu4e-view-save-attachments "Save attachments")
-	 ))))
+ (major-mode-hydra-define denote-menu-mode
+   (:quit-key "q")
+   ("Tools"
+    (("f" denote-menu-filter "Filter by regex")
+     ("k" denote-menu-filter-by-keyword "Filter by keyword")
+     ("c" denote-menu-clear-filters "Clear filters")
+     ("d" denote-menu-export-to-dired "Dired")))))
 
 (with-after-elpaca-init
-     (major-mode-hydra-define mu4e-headers-mode
-       (:quit-key "q")
-       ("Message"
-	(
-	 ("n" mu4e-compose-mail "New")
-	 ("r" mu4e-compose-reply "Reply")
-	 ("a"  mu4e-compose-wide-reply "Reply All")
-	 ))))
+ (major-mode-hydra-define mu4e-main-mode
+   (:quit-key "q")
+   ("Message"
+    (
+     ("n" mu4e-compose-mail "New")
+     ("e" mu4e-view-save-attachments "Save attachments")
+     ))))
 
 (with-after-elpaca-init
-     (major-mode-hydra-define mu4e-view-mode
-       (:quit-key "q")
-       ("Message"
-	(
-	 ("n" mu4e-compose-mail "New")
-	 ("r" mu4e-compose-reply "Reply")
-	 ("a"  mu4e-compose-wide-reply "Reply All")
-	 )
-	"Browser"
-	(
-	 ("bd" rlr/browser-default "System default")
-	 ("bq" rlr/browser-qutebrowser "Qutebrowser")
-	 ("be" rlr/browser-eww "EWW")
-	 ))))
+ (major-mode-hydra-define mu4e-headers-mode
+   (:quit-key "q")
+   ("Message"
+    (
+     ("n" mu4e-compose-mail "New")
+     ("r" mu4e-compose-reply "Reply")
+     ("a"  mu4e-compose-wide-reply "Reply All")
+     ))))
 
 (with-after-elpaca-init
-     (major-mode-hydra-define mu4e-compose-mode
-       (:quit-key "q")
-       ("Compose with Org"
-	(
-	 ("o" org-mime-edit-mail-in-org-mode "Edit in org")
-	 ("r" org-mime-htmlize "Org to HTML")
-	 ))))
+ (major-mode-hydra-define mu4e-view-mode
+   (:quit-key "q")
+   ("Message"
+    (
+     ("n" mu4e-compose-mail "New")
+     ("r" mu4e-compose-reply "Reply")
+     ("a"  mu4e-compose-wide-reply "Reply All")
+     )
+    "Browser"
+    (
+     ("bd" rlr/browser-default "System default")
+     ("bq" rlr/browser-qutebrowser "Qutebrowser")
+     ("be" rlr/browser-eww "EWW")
+     ))))
+
+(with-after-elpaca-init
+ (major-mode-hydra-define mu4e-compose-mode
+   (:quit-key "q")
+   ("Compose with Org"
+    (
+     ("o" org-mime-edit-mail-in-org-mode "Edit in org")
+     ("r" org-mime-htmlize "Org to HTML")
+     ))))
 
 (general-define-key
  :prefix "C-c"
