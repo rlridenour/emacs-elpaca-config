@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2025-06-05 07:27:02 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2025-06-05 14:15:47 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -3349,8 +3349,8 @@ I use this to quickly create a disposable Emacs buffer to write some quick text 
 Define initial mode to use for notepad buffers. This is so I can use "C-c C-c" to copy and kill.
 
 #+begin_src emacs-lisp
-  (defvar-keymap notepad-mode-map
-    "C-c C-c" #'copy-kill-buffer)
+  ;; (defvar-keymap notepad-mode-map
+  ;;   "C-c C-c" #'copy-kill-buffer)
 
   (define-derived-mode notepad-mode
     org-mode "Notepad"
@@ -3367,20 +3367,7 @@ Create notepad buffer
     (let ((buf (generate-new-buffer "*notepad*")))
       (switch-to-buffer buf))
     (notepad-mode)
-    (shell-command-on-region (point) (if mark-active (mark) (point)) "pbpaste" nil t))
-#+end_src
-
-This calls a fish function that uses command-tab to switch to the previous app and pastes the clipboard.
-
-#+begin_src emacs-lisp
-  (defun app-switch ()
-    (interactive)
-    (shell-command "switch-paste"))
-#+end_src
-
-#+begin_src emacs-lisp
-  (general-define-key
-   "C-s-<tab>" #'app-switch)
+    (insert (shell-command-to-string "pbpaste")))
 #+end_src
 
 Copy entire buffer then kill. I use this with temporary scratch buffers to write text that will be pasted into other apps.
@@ -3393,8 +3380,7 @@ Copy entire buffer then kill. I use this with temporary scratch buffers to write
     (mark-whole-buffer)
     (copy-region-as-kill 1 (buffer-size))
     (kill-buffer)
-    ;; (app-switch)
-    (shell-command "open -a ~/icloud/scripts/beep.app"))
+    (message "Copied to clipboard!"))
 
   (general-define-key
    "C-M-S-s-k" #'copy-kill-buffer)

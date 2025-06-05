@@ -2009,8 +2009,8 @@ installed."
   ;; Display keywords in results buffer
   (denote-search-format-heading-function #'denote-search-format-heading-with-keywords))
 
-(defvar-keymap notepad-mode-map
-  "C-c C-c" #'copy-kill-buffer)
+;; (defvar-keymap notepad-mode-map
+;;   "C-c C-c" #'copy-kill-buffer)
 
 (define-derived-mode notepad-mode
   org-mode "Notepad"
@@ -2023,14 +2023,7 @@ installed."
   (let ((buf (generate-new-buffer "*notepad*")))
     (switch-to-buffer buf))
   (notepad-mode)
-  (shell-command-on-region (point) (if mark-active (mark) (point)) "pbpaste" nil t))
-
-(defun app-switch ()
-  (interactive)
-  (shell-command "switch-paste"))
-
-(general-define-key
- "C-s-<tab>" #'app-switch)
+  (insert (shell-command-to-string "pbpaste")))
 
 (defun copy-kill-buffer ()
   (interactive)
@@ -2039,8 +2032,7 @@ installed."
   (mark-whole-buffer)
   (copy-region-as-kill 1 (buffer-size))
   (kill-buffer)
-  ;; (app-switch)
-  (shell-command "open -a ~/icloud/scripts/beep.app"))
+  (message "Copied to clipboard!"))
 
 (general-define-key
  "C-M-S-s-k" #'copy-kill-buffer)
