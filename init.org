@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2025-06-05 14:15:47 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2025-06-07 10:38:28 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -140,13 +140,6 @@ Bring new frame to front. From [[https://www.reddit.com/r/emacs/comments/1g2hkh8
 		     "-e"
 		     "tell application \"Emacs\" to activate")))
   (add-hook 'server-after-make-frame-hook #'initd/bring-emacs-to-front)
-#+end_src
-
-Set the frame title format.
-
-#+begin_src emacs-lisp :tangle no
-  (setq-default cursor-in-non-selected-windows nil
-		frame-title-format '("%f [%m]"))
 #+end_src
 
 Set window title to file name.
@@ -775,12 +768,6 @@ Set server to use tcp for [[http://yummymelon.com/scrim/][Scrim]]
   (setq server-use-tcp t)
   (server-start)
   (require 'org-protocol)
-#+end_src
-
-Auto insert close bracket.
-
-#+begin_src emacs-lisp :tangle no
-  (electric-pair-mode 1)
 #+end_src
 
 Immediately highlight matching pairs of parentheses and quotes.
@@ -1784,19 +1771,6 @@ Accent allows easy insertion of accented characters. Place the mark on the chara
 	  "M-<RET>" #'crux-open-with))
 #+end_src
 
-** Evil Mode
-
-#+begin_src emacs-lisp :tangle no
-  (use-package evil
-    :init
-    (setq evil-respect-visual-line-mode t
-	  evil-track-eol nil
-	  evil-want-fine-undo t
-	  evil-disable-insert-state-bindings t)
-    :config
-    (evil-mode -1))
-#+end_src
-
 ** God-Mode
 
 #+begin_src emacs-lisp
@@ -1865,7 +1839,7 @@ For spell-checking
 
 Display suggestions in grid.
 
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (with-after-elpaca-init
    (add-to-list 'vertico-multiform-categories
 		'(jinx grid (vertico-grid-annotate . 20))))
@@ -2127,15 +2101,6 @@ Use variable pitch mode in Org and Markdown modes. Toggle with ~C-M-S-s-v~, boun
     (setq org-appear-autoemphasis   t   ; Show bold, italics, verbatim, etc.
 	  org-appear-autolinks      t   ; Show links
 	  org-appear-autosubmarkers t)) ; Show sub and superscripts
-#+end_src
-
-** Org Superstar
-
-#+begin_src emacs-lisp :tangle no
-  (use-package org-superstar
-    :config
-    (setq org-superstar-headline-bullets-list '("●" "○" "▶" "◈" "◇"))
-    :hook (org-mode . org-superstar-mode))
 #+end_src
 
 ** Org Modern
@@ -2501,18 +2466,6 @@ Use Emacs appointment system for notifications.
   (org-agenda-to-appt) ;; generate the appt list from org agenda files on emacs launch
   (run-at-time "24:01" 3600 'org-agenda-to-appt) ;; update appt list hourly
   (add-hook 'org-finalize-agenda-hook 'org-agenda-to-appt) ;; update appt list on agenda view
-#+end_src
-
-** Org Bulletproof
-
-I'm not sure what this doing anymore, so I'm going to disable it for now.
-
-#+begin_src emacs-lisp :tangle no
-  (use-package org-bulletproof
-    :after org
-    :config
-    (setq org-bulletproof-default-ordered-bullet "1.")
-    (global-org-bulletproof-mode +1))
 #+end_src
 
 ** Org Contrib
@@ -3026,12 +2979,6 @@ Function for converting Org mode files to QTI file for importing into Canvas usi
     )
 #+end_src
 
-** Style Text Menu
-
-#+begin_src emacs-lisp :tangle no
-  (require 'cc-style-text-menu)
-#+end_src
-
 ** Copy Org Rich Text
 
 From [[https://kitchingroup.cheme.cmu.edu/blog/2016/06/16/Copy-formatted-org-mode-text-from-Emacs-to-other-applications/][Copy formatted org-mode text from Emacs to other applications]]
@@ -3313,23 +3260,6 @@ I don't need to use Pandoc much since everything stays in Org. It might come in 
     :after denote)
 #+end_src
 
-Search notes with the xapian syntax (+word -word AND NOT etc), <tab> to preview, <enter> to open the file in the same buffer.
-
-#+begin_src emacs-lisp :tangle no
-  (use-package xeft
-    :commands (xeft)
-    :config
-    (custom-set-faces '(xeft-excerpt-title ((t (:weight bold)))))
-    (custom-set-faces '(xeft-excerpt-body ((t (:height 150)))))
-    :custom
-    ;; Default extension for files created with xeft
-    (xeft-default-extension "org")
-    ;; Where is my search source
-    (xeft-directory rr-notes-dir)
-    ;; Only parse the root directory
-    (xeft-recursive nil))
-#+end_src
-
 [[https://github.com/lmq-10/denote-search][Denote Search]] — [[https://github.com/lmq-10/denote-search/blob/main/README.org][manual]].
 
 #+begin_src emacs-lisp
@@ -3523,25 +3453,6 @@ Mu4e-alert
     (mu4e-alert-enable-mode-line-display))
 #+end_src
 
-#+begin_src emacs-lisp :tangle no
-  (defun my-mu4e-choose-signature ()
-    "Insert one of a number of sigs"
-    (interactive)
-    (let ((message-signature
-	   (mu4e-read-option "Signature:"
-			     '(("formal" .
-				(concat
-				 "Randy Ridenour, Ph.D.\n"
-				 "Professor of Philosophy\n"
-				 "Oklahoma Baptist University\n\n"
-				 "500 W. University St.\n"
-				 "Shawnee, OK  74804\n"
-				 "Office: (405) 585-4432\n"
-				 ("informal" .
-				  "Joe\n")))))
-	   (message-insert-signature)))
-#+end_src
-
 #+begin_src emacs-lisp
   (defun obu-signature ()
     (interactive)
@@ -3593,29 +3504,6 @@ Open mu4e and elfeed in new frame.
   (general-define-key
    "C-M-s-r" #'rlr/read-mail-news
    "H-m" #'mu4e-transient-menu)
-#+end_src
-
-*** Mu4e-Views
-
-#+begin_src emacs-lisp :tangle no
-  (use-package mu4e-views
-    :ensure (:type git :host github :repo "lordpretzel/mu4e-views")
-    :after mu4e
-    :config
-    (setq mu4e-views-default-view-method "html") ;; make xwidgets default
-    (mu4e-views-mu4e-use-view-msg-method "html") ;; select the default
-    (setq mu4e-views-next-previous-message-behaviour 'stick-to-current-window) ;; when pressing n and p stay in the current window
-    (setq mu4e-views-auto-view-selected-message t) ;; automatically open messages when moving in the headers view
-    :general
-    (:keymaps 'mu4e-headers-mode-map
-	      "v"  #'mu4e-views-mu4e-select-view-msg-method ;; select viewing method
-	      "M-n" #'mu4e-views-cursor-msg-view-window-down ;; from headers window scroll the email view
-	      "M-p" #'mu4e-views-cursor-msg-view-window-up ;; from headers window scroll the email view
-	      "<SPC<" #'mu4e-views-cursor-msg-view-window-down ;; from headers window scroll the email view
-	      "s-<SPC>" #'mu4e-views-cursor-msg-view-window-up ;; from headers window scroll the email view
-	      "f" #'mu4e-views-toggle-auto-view-selected-message ;; toggle opening messages automatically when moving in the headers view
-	      "i" #'mu4e-views-mu4e-view-as-nonblocked-html ;; show currently selected email with all remote content
-	      ))
 #+end_src
 
 *** Consult MU
@@ -3765,18 +3653,6 @@ Tag items — from [[https://www.reddit.com/r/emacs/comments/go5d0v/using_emacs_
     :config
     ;; (setq rmh-elfeed-org-auto-ignore-invalid-feeds t)
     )
-#+end_src
-
-#+begin_src emacs-lisp :tangle no
-  (use-package elfeed-curate
-    :after elfeed)
-#+end_src
-
-#+begin_src emacs-lisp :tangle no
-  (use-package elfeed-goodies
-    :after elfeed
-    :init
-    (elfeed-goodies/setup))
 #+end_src
 
 ** Mastodon
@@ -3936,16 +3812,6 @@ This builds the RSS feed for the blog.
 
 #+begin_src emacs-lisp
   (use-package webfeeder)
-#+end_src
-
-*** Org Publish RSS
-
-[[https://git.sr.ht/~taingram/org-publish-rss][~taingram/org-publish-rss - Automatically generate RSS feeds for org-publish projects - sourcehut git]]
-
-#+begin_src emacs-lisp :tangle no
-  (use-package org-publish-rss
-    :ensure
-    (:type git :sourcehut :repo ~taingram/org-publish-rss))
 #+end_src
 
 *** Blog Tags
@@ -4215,80 +4081,6 @@ SLY is Sylvester the Cat's Common Lisp IDE for Emacs.
     (:keymaps 'pdf-view-mode-map
 	      "C-s" #'isearch-forward)
     )
-#+end_src
-
-** VOTD
-
-Bible verse of the day from Bible Gateway.
-
-#+begin_src emacs-lisp :tangle no
-  (use-package votd
-    :demand
-    :custom
-    (votd-bible-version "NRSVUE")
-    :ensure (:type git :host github :repo "kristjoc/votd"))
-#+end_src
-
-Modified votd.el from [[https://github.com/kristjoc/votd/tree/main][kristjoc/votd: An Emacs package that fetches the verse of the day from BibleGateway]].
-
-#+begin_src emacs-lisp
-  (defun rlr/votd ()
-    (interactive)
-    (switch-to-buffer (generate-new-buffer-name "*Verse of the Day*"))
-    (insert (concat "Verse of the Day — " (format-time-string "%B %e, %Y") "\n\n" (rlr/get-votd))))
-#+end_src
-
-#+begin_src emacs-lisp
-  (defun decode-html-entities (text)
-    "Decode HTML entities in TEXT."
-    (when text
-      (let ((entity-map '(("&ldquo;" . "\"")
-			  ("&rdquo;" . "\"")
-			  ("&#8212;" . "--")
-			  ("&#8217;" . "'")
-			  ("&#8220;" . "\"")
-			  ("&#8221;" . "\"")))
-	    (decoded text))
-	(dolist (entity entity-map)
-	  (setq decoded (replace-regexp-in-string (car entity) (cdr entity) decoded)))
-	decoded)))
-#+end_src
-
-#+begin_src emacs-lisp
-  (defun rlr/fetch-daily-bible-verse ()
-    (interactive)
-    "Fetch the daily Bible verse from BibleGateway API."
-    (let ((url-request-method "GET")
-	  (url "https://www.biblegateway.com/votd/get/?format=json&version=NRSVUE"))
-      (with-current-buffer (url-retrieve-synchronously url t t)
-	(goto-char (point-min))
-	(when (search-forward "\n\n" nil t)
-	  (let* ((json-string (buffer-substring-no-properties (point) (point-max)))
-		 (json-object-type 'hash-table)
-		 (json-array-type 'list)
-		 (json-key-type 'string)
-		 (json-data (json-read-from-string json-string))
-		 (votd (gethash "votd" json-data))
-		 (raw-text (gethash "text" votd))
-		 (verse-text (decode-html-entities raw-text))
-		 (clean-verse (replace-regexp-in-string "[\"]" "" verse-text))
-		 ;; (formatted-verse (format-verse-text clean-verse))
-		 (verse-reference (gethash "display_ref" votd))
-		 (fill-width 80))
-	(format "%s\n%s"
-		    clean-verse
-		    (let ((ref-text verse-reference))
-		(concat "\n" (make-string (- fill-width (length ref-text)) ?\s)
-			      ref-text " (NRSVue)"))))))))
-#+end_src
-
-#+begin_src emacs-lisp
-  (defun rlr/get-votd ()
-    "Get the daily verse and handle errors."
-    (condition-case err
-	(rlr/fetch-daily-bible-verse)
-      (error
-       (format "Today's verse could not be fetched: %s" (error-message-string err)))))
 #+end_src
 
 * Music
