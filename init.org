@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2025-06-08 18:37:22 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2025-06-12 08:03:52 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -1726,6 +1726,24 @@ Insert unicode symbols, used in hydras for writing short logic and math formulas
     (insert-char (gethash unicode-name (ucs-names))))
 #+end_src
 
+Make open-line behave like Vim, from [[https://www.reddit.com/r/emacs/comments/1l21cgo/fortnightly_tips_tricks_and_questions_20250603/][Fortnightly Tips, Tricks, and Questions — 2025-06-03 / week 22 : r/emacs]]
+#+begin_src emacs-lisp
+  (defun open-line (n)
+    "Replacing builtin function"
+    (interactive "*p")
+    (end-of-line)
+    (newline n))
+
+  (defun open-line-above (n)
+    (interactive "*p")
+    (beginning-of-line)
+    (newline n)
+    (previous-line n))
+
+  (general-define-key
+   "C-S-o" #'open-line-above)
+#+end_src
+
 ** Evil Nerd Commenter
 
 #+begin_src emacs-lisp
@@ -1953,6 +1971,14 @@ Display suggestions in grid.
 
 #+begin_src emacs-lisp
   (use-package unfill)
+#+end_src
+
+** WS-Butler
+
+Strips trailing whitespace when saving the file.
+
+#+begin_src emacs-lisp
+(use-package ws-butler)
 #+end_src
 
 ** Snippets
@@ -2397,65 +2423,6 @@ Set agenda links as safe.
 
 #+begin_src emacs-lisp
   (setopt org-link-elisp-skip-confirm-regexp "rlr.*")
-#+end_src
-
-#+begin_src emacs-lisp :tangle no
-  (use-package org-super-agenda
-    :after org
-    :config
-    (setq org-agenda-skip-scheduled-if-done t
-	  org-agenda-skip-deadline-if-done t
-	  org-agenda-include-deadlines t
-	  org-agenda-block-separator nil
-	  org-agenda-compact-blocks t
-	  org-agenda-start-day nil ;; i.e. today
-	  org-agenda-span 1
-	  org-agenda-window-setup "current-window"
-	  org-agenda-include-diary nil
-	  org-agenda-start-on-weekday nil)
-    (setq org-agenda-time-grid
-	  '((daily today require-timed remove-match)
-	    ()
-	    "......"
-	    ""))
-
-    (setq org-agenda-custom-commands
-	  '(("c" "Super view"
-	     ((agenda "" ((org-agenda-overriding-header "")
-			  (org-super-agenda-groups
-			   '((:name "Today"
-				    :time-grid t
-				    :date today
-				    :order 1)))))
-	      (alltodo "" ((org-agenda-overriding-header "")
-			   (org-super-agenda-groups
-			    '((:log t)
-			      (:name "Important"
-				     :priority "A"
-				     :order 4)
-			      (:name "Today's tasks"
-				     :file-path "journal/")
-			      (:name "Due Today"
-				     :deadline today
-				     :order 2)
-			      (:name "Overdue"
-				     :deadline past
-				     :order 3)
-			      (:discard (:not (:todo "TODO")))))))))))
-    (org-super-agenda-mode)
-    (setq org-agenda-span 7)
-    (setq org-agenda-custom-commands
-	  '(("d" "Agenda for today" agenda ""
-	     ((org-agenda-overriding-header "Today's agenda")
-	      (org-agenda-span 'day)
-	      ))))
-    (defun today-agenda ()
-      "Display today's agenda"
-      (interactive)
-      (org-agenda nil "d")
-      )
-    (today-agenda)
-    )
 #+end_src
 
 Use Emacs appointment system for notifications.
@@ -4628,6 +4595,19 @@ This reloads the Emacs config file to test changes.
   (defun reload-user-init-file()
     (interactive)
     (load-file user-init-file))
+#+end_src
+
+Display Startup Time
+
+#+begin_src emacs-lisp
+  (defun rlr/display-startup-time ()
+    (message "Emacs loaded in %s with %d garbage collections."
+	     (format "%.2f seconds"
+		     (float-time
+		(time-subtract after-init-time before-init-time)))
+	     gcs-done))
+
+  (add-hook 'emacs-startup-hook #'rlr/display-startup-time)
 #+end_src
 
 Set default directory.

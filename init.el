@@ -922,6 +922,21 @@
   "Same as C-x 8 enter UNICODE-NAME."
   (insert-char (gethash unicode-name (ucs-names))))
 
+(defun open-line (n)
+  "Replacing builtin function"
+  (interactive "*p")
+  (end-of-line)
+  (newline n))
+
+(defun open-line-above (n)
+  (interactive "*p")
+  (beginning-of-line)
+  (newline n)
+  (previous-line n))
+
+(general-define-key
+ "C-S-o" #'open-line-above)
+
 (use-package evil-nerd-commenter
   :general
   ("M-;" #'evilnc-comment-or-uncomment-lines))
@@ -1037,6 +1052,8 @@
   ("C-x u" . vundo))
 
 (use-package unfill)
+
+(use-package ws-butler)
 
 (use-package yasnippet
   :config
@@ -3096,6 +3113,15 @@ installed."
 (defun reload-user-init-file()
   (interactive)
   (load-file user-init-file))
+
+(defun rlr/display-startup-time ()
+  (message "Emacs loaded in %s with %d garbage collections."
+	     (format "%.2f seconds"
+		     (float-time
+		(time-subtract after-init-time before-init-time)))
+	     gcs-done))
+
+(add-hook 'emacs-startup-hook #'rlr/display-startup-time)
 
 (setq default-directory "~/")
 
