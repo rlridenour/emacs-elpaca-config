@@ -365,10 +365,9 @@
 (use-package doom-modeline
   :init
   :config
-  (setq doom-modeline-enable-word-count t)
-  (setq doom-modeline-continuous-word-count-modes '(markdown-mode gfm-mode org-mode))
-  (setq display-time-day-and-date t)
-  (setq doom-modeline-modal t)
+  (setopt doom-modeline-enable-word-count t)
+  (setopt doom-modeline-continuous-word-count-modes '(markdown-mode gfm-mode org-mode))
+  (setopt display-time-day-and-date t)
   :hook
   (elpaca-after-init . doom-modeline-mode))
 
@@ -790,7 +789,7 @@
 (general-define-key
  :keymaps 'dired-mode-map
  "j" #'rlr/dired-search-and-enter
- "s-j" #'rlr/dired-search-and-enter
+ "J" #'dired-goto-file
  "%s" #'my-dired-substspaces)
 
 (use-package reveal-in-osx-finder)
