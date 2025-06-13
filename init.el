@@ -705,8 +705,7 @@
   ("M-g a" #'casual-avy-tmenu))
 
 (use-package fzf
-  :bind
-  ;; Don't forget to set keybinds!
+  :commands (fzf fzf-directory)
   :config
   (setq fzf/args "-x --color bw --print-query --margin=1,0 --no-hscroll"
 	  fzf/executable "fzf"
@@ -1047,8 +1046,8 @@
 (use-package vundo
   :custom
   (vundo-glyph-alist vundo-unicode-symbols)
-  :bind
-  ("C-x u" . vundo))
+  :general
+  ("C-x u" #'vundo))
 
 (use-package unfill)
 
@@ -1933,18 +1932,19 @@ installed."
 (use-package pandoc-mode)
 
 (use-package citar
-  :bind (("C-c C-b" . citar-insert-citation)
-	   :map minibuffer-local-map
-	   ("M-b" . citar-insert-preset))
-  :custom
-  (org-cite-global-bibliography '("~/Dropbox/bibtex/rlr.bib"))
-  (citar-bibliography '("~/Dropbox/bibtex/rlr.bib"))
-  (org-cite-csl-styles-dir "/usr/local/texlive/2024/texmf-dist/tex/latex/citation-style-language/styles")
-  (org-cite-export-processors
-   '((md . (csl "chicago-author-date.csl"))
-     (latex biblatex)
-     (odt . (csl "chicago-author-date.csl"))
-     (t . (csl "chicago-author-date.csl")))))
+    :general 
+("C-c C-b" #'citar-insert-citation)
+	   (:keymaps 'minibuffer-local-map
+	   "M-b" #'citar-insert-preset)
+    :custom
+    (org-cite-global-bibliography '("~/Dropbox/bibtex/rlr.bib"))
+    (citar-bibliography '("~/Dropbox/bibtex/rlr.bib"))
+    (org-cite-csl-styles-dir "/usr/local/texlive/2024/texmf-dist/tex/latex/citation-style-language/styles")
+    (org-cite-export-processors
+     '((md . (csl "chicago-author-date.csl"))
+       (latex biblatex)
+       (odt . (csl "chicago-author-date.csl"))
+       (t . (csl "chicago-author-date.csl")))))
 
 (use-package ebib
   :config
@@ -2492,10 +2492,9 @@ installed."
   :config
   (setq website2org-directory "~/icloud/web-saves/website2org/") ;; if needed, see below
   (setq website2org-additional-meta nil)
-  :bind
-  (:map global-map)
-  ("C-M-s-<down>" . website2org)
-  ("C-M-s-<up>" . website2org-temp))
+  :general
+  ("C-M-s-<down>" #'website2org
+  "C-M-s-<up>" #'website2org-temp))
 
 (use-package htmlize)
 
