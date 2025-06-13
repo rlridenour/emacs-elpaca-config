@@ -2624,18 +2624,24 @@ installed."
    "C-c l o" #'link-hint-open-link
    "C-c l c" #'link-hint-copy-link))
 
-(use-package fish-mode)
+(use-package fish-mode
+  :mode ("\\.fish\\'" . Fish-mode))
 
 (use-package fish-completion
   :ensure (:type git :host github :repo "LemonBreezes/emacs-fish-completion")
+  :defer 30
   :config
   (when (and (executable-find "fish")
-	       (require 'fish-completion nil t))
+	   (require 'fish-completion nil t))
     (global-fish-completion-mode)))
 
-(use-package sly)
+(use-package sly
+  :config
+  (setq inferior-lisp-program "/opt/homebrew/bin/sbcl")
+  :commands sly)
 
-(use-package yaml-mode)
+(use-package yaml-mode
+  :mode ("\\.yml\\'" . YAML-mode))
 
 (use-package pdf-tools
   :hook (pdf-view-mode . (lambda () (display-line-numbers-mode -1)))
@@ -2648,7 +2654,8 @@ installed."
 	      "C-s" #'isearch-forward)
   )
 
-(use-package chordpro-mode)
+(use-package chordpro-mode
+:mode ("\\.cho\\'" . chordpro-mode))
 
 (with-after-elpaca-init
  (pretty-hydra-define hydra-toggle

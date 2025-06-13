@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2025-06-13 08:45:39 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2025-06-13 09:00:21 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -4045,17 +4045,19 @@ Shorten URL's with the is.gd service.
 ** Fish
 
 #+begin_src emacs-lisp
-  (use-package fish-mode)
-#+end_src
+  (use-package fish-mode
+    :mode ("\\.fish\\'" . Fish-mode))
+  #+end_src
 
 *** Emacs Fish Completion
 
 #+begin_src emacs-lisp
   (use-package fish-completion
     :ensure (:type git :host github :repo "LemonBreezes/emacs-fish-completion")
+    :defer 30
     :config
     (when (and (executable-find "fish")
-	       (require 'fish-completion nil t))
+	   (require 'fish-completion nil t))
       (global-fish-completion-mode)))
 #+end_src
 
@@ -4064,13 +4066,17 @@ Shorten URL's with the is.gd service.
 SLY is Sylvester the Cat's Common Lisp IDE for Emacs.
 
 #+begin_src emacs-lisp
-  (use-package sly)
+  (use-package sly
+    :config
+    (setq inferior-lisp-program "/opt/homebrew/bin/sbcl")
+    :commands sly)
 #+end_src
 
 ** YAML
 
 #+begin_src emacs-lisp
-  (use-package yaml-mode)
+  (use-package yaml-mode
+    :mode ("\\.yml\\'" . YAML-mode))
 #+end_src
 
 * PDF-Tools
@@ -4095,7 +4101,8 @@ SLY is Sylvester the Cat's Common Lisp IDE for Emacs.
 Make chord charts.
 
 #+begin_src emacs-lisp
-  (use-package chordpro-mode)
+  (use-package chordpro-mode
+:mode ("\\.cho\\'" . chordpro-mode))
 #+end_src
 
 * Keybindings
