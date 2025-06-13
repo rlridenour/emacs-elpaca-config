@@ -113,6 +113,7 @@
   )
 
 (use-package discover
+  :defer 10
   :config
   (global-discover-mode 1))
 
@@ -187,23 +188,25 @@
   (vertico-multiform-mode 1)
   (setq vertico-multiform-categories
 	  '((file grid)
-	    (jinx grid (vertico-grid-annotate . 20))
-	    (citar buffer)))
+	(jinx grid (vertico-grid-annotate . 20))
+	(citar buffer)))
   (setq vertico-cycle t) ;; enable cycling for 'vertico-next' and 'vertico-prev'
   (add-hook 'rfn-eshadow-update-overlay-hook #'vertico-directory-tidy)
   :general
   (:keymaps 'vertico-map
-	      ;; keybindings to cycle through vertico results.
-	      "C-h" #'+minibuffer-up-dir
-	      "<backspace>" 'vertico-directory-delete-char
-	      "RET" 'vertico-directory-enter))
+	  ;; keybindings to cycle through vertico results.
+	  "C-h" #'+minibuffer-up-dir
+	  "<backspace>" 'vertico-directory-delete-char
+	  "RET" 'vertico-directory-enter))
 
 (use-package orderless
+  :defer 1
   :custom
   (completion-styles '(orderless basic))
   (completion-category-overrides '((file (styles partial-completion)))))
 
 (use-package marginalia
+  :defer 1
   :config (marginalia-mode))
 
 (use-package consult
@@ -243,6 +246,7 @@
 		   (window-parameters (mode-line-format . none)))))
 
 (use-package embark-consult
+  :after embark
   :hook
   (embark-collect-mode . consult-preview-at-point-mode))
 
@@ -268,6 +272,7 @@
   )
 
 (use-package corfu
+  :defer 5
   :custom
   (corfu-cycle t)
   :config
@@ -405,6 +410,7 @@
   (consult-buffer))
 
 (use-package pulsar
+  :defer 10
   :config
   (pulsar-global-mode 1))
 
@@ -537,8 +543,9 @@
  "C-M-S-s-s" #'goto-scratch)
 
 (use-package persistent-scratch
-  :init
-  (persistent-scratch-setup-default))
+:defer 10
+    :init
+    (persistent-scratch-setup-default))
 
 (use-feature project
   :init
@@ -719,10 +726,12 @@
 	  fzf/window-height 15))
 
 (use-package rg
+  :commands rg
   :config
   (rg-enable-default-bindings))
 
-(use-package wgrep)
+(use-package wgrep
+  :defer 10)
 
 (use-package deadgrep
   :general
@@ -750,7 +759,7 @@
 	   (dired-after-readin . hide-dired-details-include-all-subdir-paths)))
 
 (use-package diredfl
-  :ensure t
+  :defer 1
   :config
   (diredfl-global-mode 1))
 
@@ -791,23 +800,25 @@
  "J" #'dired-goto-file
  "%s" #'my-dired-substspaces)
 
-(use-package reveal-in-osx-finder)
+(use-package reveal-in-osx-finder
+  :defer 10)
 
 (use-package eat
+  :defer 10
   :demand
   :ensure
   (:host codeberg
 	   :repo "akib/emacs-eat"
 	   :files ("*.el" ("term" "term/*.el") "*.texi"
-		   "*.ti" ("terminfo/e" "terminfo/e/*")
-		   ("terminfo/65" "terminfo/65/*")
-		   ("integration" "integration/*")
-		   (:exclude ".dir-locals.el" "*-tests.el"))))
+	       "*.ti" ("terminfo/e" "terminfo/e/*")
+	       ("terminfo/65" "terminfo/65/*")
+	       ("integration" "integration/*")
+	       (:exclude ".dir-locals.el" "*-tests.el"))))
 
 (use-package term-toggle
-  :demand
   :ensure
   (:host github :repo "amno1/emacs-term-toggle")
+  :defer 5
   :config
   (setq term-toggle-no-confirm-exit t)
   (defun term-toggle-eat ()
@@ -837,25 +848,31 @@
 (use-package terminal-here
   :ensure
   (:host github :repo "davidshepherd7/terminal-here")
+  :defer 1
   :config
   (setq terminal-here-mac-terminal-command 'ghostty)
   :general
   ("C-`" #'terminal-here-launch)
   )
 
-(use-package tldr)
+(use-package tldr
+  :commands tldr)
 
 (setq help-window-select t)
 (setq Man-notify-method 'aggressive)
 
 (use-package which-key
-  :demand
+  :defer 1
   :config
   (setq which-key-popup-type 'minibuffer)
   (which-key-mode)
   )
 
-(use-package helpful)
+(use-package helpful
+  :general
+  ("C-h v" #'helpful-variable
+   "C-h k" #'helpful-key
+   "C-h x" #'helpful-command))
 
 (defun insert-date-string ()
   "Insert current date yyyymmdd."
@@ -946,6 +963,7 @@
   ("C-x C-a" #'accent-menu))
 
 (use-package aggressive-indent
+  :defer 5
   :config
   (global-aggressive-indent-mode 1))
 
@@ -975,12 +993,14 @@
   :general ("C-=" #'er/expand-region))
 
 (use-package hungry-delete
+  :defer 5
   :config
   (global-hungry-delete-mode))
 
-(use-package transient)
+;; (use-package transient)
 (use-package hl-todo
-  :ensure (:depth nil))
+  :ensure (:depth nil)
+  :after magit)
 
 (use-package magit
   :init
@@ -989,7 +1009,8 @@
   (magit-repository-directories (list (cons elpaca-repos-directory 1)))
   (magit-diff-refine-hunk 'all)
   :config
-  (transient-bind-q-to-quit))
+  (transient-bind-q-to-quit)
+  :commands magit-status)
 
 (use-package jinx
   :init
@@ -1006,7 +1027,8 @@
  (add-to-list 'vertico-multiform-categories
 		'(jinx grid (vertico-grid-annotate . 20))))
 
-(use-package osx-dictionary)
+(use-package osx-dictionary
+  :defer 10)
 
 (use-package shrink-whitespace
   :general
@@ -1024,9 +1046,9 @@
   (require 'smartparens-config))
 
 (use-package speedrect
-  :demand
   :ensure
   (:host github :repo "jdtsmith/speedrect")
+  :defer 10
   :config (speedrect-mode))
 
 (use-package super-save
@@ -1040,8 +1062,9 @@
   (super-save-mode +1))
 
 (use-package titlecase
-  :config
-  (setq titlecase-style "chicago"))
+    :config
+    (setq titlecase-style "chicago")
+:commands titlecase-dwim)
 
 (use-package vundo
   :custom
@@ -1049,9 +1072,11 @@
   :general
   ("C-x u" #'vundo))
 
-(use-package unfill)
+(use-package unfill
+:commands unfill-paragraph)
 
-(use-package ws-butler)
+(use-package ws-butler
+:defer 10)
 
 (use-package yasnippet
   :config
@@ -1065,13 +1090,6 @@
   (setq yankpad-file "~/Library/Mobile Documents/com~apple~CloudDocs/org/yankpad.org")
   :general
   ( "<f6>" #'yankpad-insert))
-
-(use-package aas)
-
-(use-package laas
-  :after auctex
-  :hook
-  (LaTeX-mode . laas-mode))
 
 (general-define-key
  "<s-up>" #'beginning-of-buffer
@@ -1155,18 +1173,20 @@
  "C-M-S-s-v" #'variable-pitch-mode)
 
 (use-package org-appear
-  :commands (org-appear-mode)
-  ;; :hook     (org-mode . org-appear-mode)
-  :config
-  (setq org-hide-emphasis-markers t)  ; Must be activated for org-appear to work
-  (setq org-appear-autoemphasis   t   ; Show bold, italics, verbatim, etc.
+:after org
+    :commands (org-appear-mode)
+    ;; :hook     (org-mode . org-appear-mode)
+    :config
+    (setq org-hide-emphasis-markers t)  ; Must be activated for org-appear to work
+    (setq org-appear-autoemphasis   t   ; Show bold, italics, verbatim, etc.
 	  org-appear-autolinks      t   ; Show links
 	  org-appear-autosubmarkers t)) ; Show sub and superscripts
 
 (use-package org-modern
-  :config
-  (add-hook 'org-agenda-finalize-hook #'org-modern-agenda)
-  )
+:after org
+    :config
+    (add-hook 'org-agenda-finalize-hook #'org-modern-agenda)
+    )
 
 (require 'ox-beamer)
 (with-eval-after-load 'ox-latex
@@ -1255,7 +1275,8 @@
  org-html-with-latex 'html)
 
 (use-package org-auto-tangle
-  :hook (org-mode . org-auto-tangle-mode))
+:after org
+    :hook (org-mode . org-auto-tangle-mode))
 
 ;; Org-capture
 (setq org-capture-templates
@@ -1297,7 +1318,6 @@
 
 (use-package org-super-agenda
   :after org
-  :ensure t
   :config
   (setq org-agenda-skip-scheduled-if-done t
 	  org-agenda-skip-deadline-if-done t
@@ -1402,11 +1422,12 @@
 (add-hook 'org-finalize-agenda-hook 'org-agenda-to-appt) ;; update appt list on agenda view
 
 (use-package org-contrib
-  :config
-  (require 'ox-extra)
-  (ox-extras-activate '(ignore-headlines))
-  (require 'org-tempo)
-  (require 'ox-rss))
+:after org
+    :config
+    (require 'ox-extra)
+    (ox-extras-activate '(ignore-headlines))
+    (require 'org-tempo)
+    (require 'ox-rss))
 
 (use-package orgonomic
   :ensure
@@ -1469,9 +1490,11 @@
  "C-c e _" (lambda () (interactive) (my/org-toggle-emphasis ?_))
  "C-c e +" (lambda () (interactive) (my/org-toggle-emphasis ?+)))
 
-(use-package org-mac-link)
+(use-package org-mac-link
+:defer 1)
 
-(use-package org-web-tools)
+(use-package org-web-tools
+  :defer 10)
 
 (defun rlr/save-web-page-as-org-file ()
   (interactive)
@@ -1929,24 +1952,26 @@ installed."
    start end
    "pandoc -f markdown -t org --wrap=preserve" t t))
 
-(use-package pandoc-mode)
+(use-package pandoc-mode
+  :defer 30)
 
 (use-package citar
-    :general 
-("C-c C-b" #'citar-insert-citation)
-	   (:keymaps 'minibuffer-local-map
-	   "M-b" #'citar-insert-preset)
-    :custom
-    (org-cite-global-bibliography '("~/Dropbox/bibtex/rlr.bib"))
-    (citar-bibliography '("~/Dropbox/bibtex/rlr.bib"))
-    (org-cite-csl-styles-dir "/usr/local/texlive/2024/texmf-dist/tex/latex/citation-style-language/styles")
-    (org-cite-export-processors
-     '((md . (csl "chicago-author-date.csl"))
-       (latex biblatex)
-       (odt . (csl "chicago-author-date.csl"))
-       (t . (csl "chicago-author-date.csl")))))
+  :general
+  ("C-c C-b" #'citar-insert-citation)
+  (:keymaps 'minibuffer-local-map
+	  "M-b" #'citar-insert-preset)
+  :custom
+  (org-cite-global-bibliography '("~/Dropbox/bibtex/rlr.bib"))
+  (citar-bibliography '("~/Dropbox/bibtex/rlr.bib"))
+  (org-cite-csl-styles-dir "/usr/local/texlive/2024/texmf-dist/tex/latex/citation-style-language/styles")
+  (org-cite-export-processors
+   '((md . (csl "chicago-author-date.csl"))
+     (latex biblatex)
+     (odt . (csl "chicago-author-date.csl"))
+     (t . (csl "chicago-author-date.csl")))))
 
 (use-package ebib
+  :defer 30
   :config
   (setq ebib-bibtex-dialect 'biblatex)
   ;;(evil-set-initial-state 'ebib-index-mode 'emacs)
@@ -1956,12 +1981,13 @@ installed."
   (ebib-preload-bib-files '("~/Dropbox/bibtex/rlr.bib")))
 
 (use-package denote
-  :config
-  (setq denote-directory "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/Documents/notes/denote/")
-  (setq denote-infer-keywords t)
-  (setq denote-sort-keywords t)
-  (setq denote-prompts '(title keywords))
-  (setq denote-date-format nil))
+    :config
+    (setq denote-directory "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/Documents/notes/denote/")
+    (setq denote-infer-keywords t)
+    (setq denote-sort-keywords t)
+    (setq denote-prompts '(title keywords))
+    (setq denote-date-format nil)
+:commands denote)
 
 (use-package consult-denote
   :general
@@ -1990,30 +2016,13 @@ installed."
     denote-org-dblock-insert-missing-links
     denote-org-dblock-insert-files-as-headings))
 
-(use-package denote-journal
-  :ensure (:type git :host github :repo "protesilaos/denote-journal")
-  ;; Bind those to some key for your convenience.
-  :commands ( denote-journal-new-entry
-		denote-journal-new-or-existing-entry
-		denote-journal-link-or-create-entry )
-  :hook (calendar-mode . denote-journal-calendar-mode)
-  :config
-  ;; Use the "journal" subdirectory of the `denote-directory'.  Set this
-  ;; to nil to use the `denote-directory' instead.
-  (setq denote-journal-directory
-	  (expand-file-name "journal" denote-directory))
-  ;; Default keyword for new journal entries. It can also be a list of
-  ;; strings.
-  (setq denote-journal-keyword "journal")
-  ;; Read the doc string of `denote-journal-title-format'.
-  (setq denote-journal-title-format 'day-date-month-year))
-
 (use-package consult-notes
+  :after (consult denote)
   :config
   (consult-notes-denote-mode))
 
 (use-package citar-denote
-  :after citar denote
+  :after (citar denote)
   :config
   (citar-denote-mode)
   (setq citar-open-always-create-notes t))
@@ -2022,12 +2031,13 @@ installed."
   :after denote)
 
 (use-package denote-search
-  :ensure (:host github :repo "lmq-10/denote-search")
-  :custom
-  ;; Disable help string (set it once you learn the commands)
-  ;; (denote-search-help-string "")
-  ;; Display keywords in results buffer
-  (denote-search-format-heading-function #'denote-search-format-heading-with-keywords))
+    :ensure (:host github :repo "lmq-10/denote-search")
+:defer 10
+    :custom
+    ;; Disable help string (set it once you learn the commands)
+    ;; (denote-search-help-string "")
+    ;; Display keywords in results buffer
+    (denote-search-format-heading-function #'denote-search-format-heading-with-keywords))
 
 ;; (defvar-keymap notepad-mode-map
 ;;   "C-c C-c" #'copy-kill-buffer)
@@ -2175,6 +2185,7 @@ installed."
   (rlr/delete-tab-or-frame))
 
 (use-package mu4e-alert
+  :after mu4e
   :config
   (mu4e-alert-enable-mode-line-display))
 
@@ -2291,9 +2302,10 @@ installed."
   :config
   :general
   (:keymaps 'elfeed-search-mode-map
-	      "q" #'rlr/elfeed-save-db-and-quit)
+	  "q" #'rlr/elfeed-save-db-and-quit)
   (:keymaps 'elfeed-show-mode-map
-	      "S-<SPC>" #'scroll-down))
+	  "S-<SPC>" #'scroll-down)
+  :commands elfeed)
 
 (defun rlr/elfeed-load-db-and-open ()
   "Load elfeed db before opening"
@@ -2435,7 +2447,8 @@ installed."
      (latex (format "\href{%s}{%s}"
 		      path (or desc "video"))))))
 
-(use-package webfeeder)
+(use-package webfeeder
+  :defer 30)
 
 (defun orgblog-all-tag-lines ()
   "Get filetag lines from all posts."
@@ -2494,9 +2507,10 @@ installed."
   (setq website2org-additional-meta nil)
   :general
   ("C-M-s-<down>" #'website2org
-  "C-M-s-<up>" #'website2org-temp))
+   "C-M-s-<up>" #'website2org-temp))
 
-(use-package htmlize)
+(use-package htmlize
+  :defer 10)
 
 (use-package emmet-mode
   :general
@@ -2599,9 +2613,10 @@ installed."
   (eww rlr-org-url))
 
 (use-package isgd
-  :custom
-  (isgd-logstats nil)
-  (isgd-ask-custom-url t))
+    :custom
+    (isgd-logstats nil)
+    (isgd-ask-custom-url t)
+:commands (isgd-replace-url-at-point isgd-copy-url-at-point))
 
 (use-package link-hint
   :general

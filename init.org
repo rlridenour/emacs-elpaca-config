@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2025-06-13 06:50:14 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2025-06-13 08:45:39 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -359,6 +359,7 @@ From [[https://github.com/mickeynp/discover.el][mickeynp/discover.el: Discover m
 
 #+begin_src emacs-lisp
   (use-package discover
+    :defer 10
     :config
     (global-discover-mode 1))
 #+end_src
@@ -514,22 +515,23 @@ Open fish functions directory.
     (vertico-multiform-mode 1)
     (setq vertico-multiform-categories
 	  '((file grid)
-	    (jinx grid (vertico-grid-annotate . 20))
-	    (citar buffer)))
+	(jinx grid (vertico-grid-annotate . 20))
+	(citar buffer)))
     (setq vertico-cycle t) ;; enable cycling for 'vertico-next' and 'vertico-prev'
     (add-hook 'rfn-eshadow-update-overlay-hook #'vertico-directory-tidy)
     :general
     (:keymaps 'vertico-map
-	      ;; keybindings to cycle through vertico results.
-	      "C-h" #'+minibuffer-up-dir
-	      "<backspace>" 'vertico-directory-delete-char
-	      "RET" 'vertico-directory-enter))
+	  ;; keybindings to cycle through vertico results.
+	  "C-h" #'+minibuffer-up-dir
+	  "<backspace>" 'vertico-directory-delete-char
+	  "RET" 'vertico-directory-enter))
 #+end_src
 
 ** Orderless
 
 #+begin_src emacs-lisp :lexical t
   (use-package orderless
+    :defer 1
     :custom
     (completion-styles '(orderless basic))
     (completion-category-overrides '((file (styles partial-completion)))))
@@ -541,6 +543,7 @@ Enrich existing commands with completion annotations
 
 #+begin_src emacs-lisp :lexical t
   (use-package marginalia
+    :defer 1
     :config (marginalia-mode))
 #+end_src
 
@@ -590,9 +593,10 @@ Enrich existing commands with completion annotations
 
 #+begin_src emacs-lisp
   (use-package embark-consult
+    :after embark
     :hook
     (embark-collect-mode . consult-preview-at-point-mode))
-#+end_src
+    #+end_src
 
 ** Cape
 
@@ -623,6 +627,7 @@ Enrich existing commands with completion annotations
 
 #+begin_src emacs-lisp
   (use-package corfu
+    :defer 5
     :custom
     (corfu-cycle t)
     :config
@@ -873,6 +878,7 @@ I can't imagine wanting the same buffer in two tabs, so this calls consult-buffe
 
 #+begin_src emacs-lisp
   (use-package pulsar
+    :defer 10
     :config
     (pulsar-global-mode 1))
 #+end_src
@@ -1137,6 +1143,7 @@ Use ~persistent-scratch~ to save scratch file between sessions.
 
 #+begin_src emacs-lisp
   (use-package persistent-scratch
+:defer 10
     :init
     (persistent-scratch-setup-default))
 #+end_src
@@ -1389,14 +1396,16 @@ Find non-ascii characters in buffer.
 
 #+begin_src emacs-lisp
   (use-package rg
+    :commands rg
     :config
     (rg-enable-default-bindings))
-#+end_src
+    #+end_src
 
 *** Wgrep
 
 #+begin_src emacs-lisp
-  (use-package wgrep)
+  (use-package wgrep
+    :defer 10)
 #+end_src
 
 *** Deadgrep
@@ -1440,7 +1449,7 @@ Add some color with diredfl.
 
 #+begin_src emacs-lisp
   (use-package diredfl
-    :ensure t
+    :defer 1
     :config
     (diredfl-global-mode 1))
 #+end_src
@@ -1509,8 +1518,9 @@ Replace spaces in file names with hyphens using "%s" in dired.
 *** Reveal in Finder
 
 #+begin_src emacs-lisp
-  (use-package reveal-in-osx-finder)
-#+end_src
+  (use-package reveal-in-osx-finder
+    :defer 10)
+  #+end_src
 
 ** Shells
 
@@ -1518,15 +1528,16 @@ Replace spaces in file names with hyphens using "%s" in dired.
 
 #+begin_src emacs-lisp
   (use-package eat
+    :defer 10
     :demand
     :ensure
     (:host codeberg
 	   :repo "akib/emacs-eat"
 	   :files ("*.el" ("term" "term/*.el") "*.texi"
-		   "*.ti" ("terminfo/e" "terminfo/e/*")
-		   ("terminfo/65" "terminfo/65/*")
-		   ("integration" "integration/*")
-		   (:exclude ".dir-locals.el" "*-tests.el"))))
+	       "*.ti" ("terminfo/e" "terminfo/e/*")
+	       ("terminfo/65" "terminfo/65/*")
+	       ("integration" "integration/*")
+	       (:exclude ".dir-locals.el" "*-tests.el"))))
 #+end_src
 
 *** Term Toggle
@@ -1534,9 +1545,9 @@ https://github.com/amno1/emacs-term-toggle
 
 #+begin_src emacs-lisp
   (use-package term-toggle
-    :demand
     :ensure
     (:host github :repo "amno1/emacs-term-toggle")
+    :defer 5
     :config
     (setq term-toggle-no-confirm-exit t)
     (defun term-toggle-eat ()
@@ -1546,7 +1557,7 @@ https://github.com/amno1/emacs-term-toggle
     ("<f2>" #'term-toggle-eat
      "<S-f2>" #'term-toggle-eshell)
     )
-#+end_src
+    #+end_src
 
 *** Async Shell Command Buffers
 
@@ -1588,6 +1599,7 @@ Go to current directory in Ghostty.
   (use-package terminal-here
     :ensure
     (:host github :repo "davidshepherd7/terminal-here")
+    :defer 1
     :config
     (setq terminal-here-mac-terminal-command 'ghostty)
     :general
@@ -1598,7 +1610,8 @@ Go to current directory in Ghostty.
 *** TLDR
 
 #+begin_src emacs-lisp
-  (use-package tldr)
+  (use-package tldr
+    :commands tldr)
 #+end_src
 
 ** Help
@@ -1618,7 +1631,7 @@ https://github.com/justbur/emacs-which-key
 #+end_quote
 #+begin_src emacs-lisp :lexical t
   (use-package which-key
-    :demand
+    :defer 1
     :config
     (setq which-key-popup-type 'minibuffer)
     (which-key-mode)
@@ -1630,7 +1643,11 @@ https://github.com/justbur/emacs-which-key
 Helpful gives better contextual information in help buffers.
 
 #+begin_src emacs-lisp
-  (use-package helpful)
+  (use-package helpful
+    :general
+    ("C-h v" #'helpful-variable
+     "C-h k" #'helpful-key
+     "C-h x" #'helpful-command))
 #+end_src
 
 * Editing
@@ -1768,9 +1785,10 @@ Accent allows easy insertion of accented characters. Place the mark on the chara
 
 #+begin_src emacs-lisp
   (use-package aggressive-indent
+    :defer 5
     :config
     (global-aggressive-indent-mode 1))
-#+end_src
+    #+end_src
 
 ** Crux
 
@@ -1813,6 +1831,7 @@ Accent allows easy insertion of accented characters. Place the mark on the chara
 
 #+begin_src emacs-lisp
   (use-package hungry-delete
+    :defer 5
     :config
     (global-hungry-delete-mode))
 #+end_src
@@ -1820,9 +1839,10 @@ Accent allows easy insertion of accented characters. Place the mark on the chara
 ** Magit
 
 #+begin_src emacs-lisp
-  (use-package transient)
+  ;; (use-package transient)
   (use-package hl-todo
-    :ensure (:depth nil))
+    :ensure (:depth nil)
+    :after magit)
 #+end_src
 
 #+begin_src emacs-lisp
@@ -1833,7 +1853,8 @@ Accent allows easy insertion of accented characters. Place the mark on the chara
     (magit-repository-directories (list (cons elpaca-repos-directory 1)))
     (magit-diff-refine-hunk 'all)
     :config
-    (transient-bind-q-to-quit))
+    (transient-bind-q-to-quit)
+    :commands magit-status)
 #+end_src
 
 ** Jinx
@@ -1864,7 +1885,8 @@ Display suggestions in grid.
 ** OSX Dictionary
 
 #+begin_src emacs-lisp
-  (use-package osx-dictionary)
+  (use-package osx-dictionary
+    :defer 10)
 #+end_src
 
 ** Selected
@@ -1877,21 +1899,21 @@ Display suggestions in grid.
     (selected-global-mode)
     :general
     (:keymaps 'selected-keymap
-	      "j" #'next-line
-	      "k" #'previous-line
-	      "l" #'forward-char
-	      "h" #'backward-char
-	      "d" #'downcase-dwim
-	      "f" #'forward-word
-	      "b" #'backward-word
-	      "e" #'forward-sentence
-	      "a" #'backward-sentence
-	      "}" #'forward-paragraph
-	      "{" #'backward-paragraph
-	      "u" #'upcase-dwim
-	      "c" #'capitalize-dwim
-	      "C" #'count-words-region
-	      "m" #'apply-macro-to-region-lines))
+	  "j" #'next-line
+	  "k" #'previous-line
+	  "l" #'forward-char
+	  "h" #'backward-char
+	  "d" #'downcase-dwim
+	  "f" #'forward-word
+	  "b" #'backward-word
+	  "e" #'forward-sentence
+	  "a" #'backward-sentence
+	  "}" #'forward-paragraph
+	  "{" #'backward-paragraph
+	  "u" #'upcase-dwim
+	  "c" #'capitalize-dwim
+	  "C" #'count-words-region
+	  "m" #'apply-macro-to-region-lines))
 #+end_src
 
 ** Shrink Whitespace
@@ -1925,9 +1947,9 @@ Display suggestions in grid.
 
 #+begin_src emacs-lisp
   (use-package speedrect
-    :demand
     :ensure
     (:host github :repo "jdtsmith/speedrect")
+    :defer 10
     :config (speedrect-mode))
 #+end_src
 
@@ -1952,7 +1974,8 @@ Display suggestions in grid.
 #+begin_src emacs-lisp
   (use-package titlecase
     :config
-    (setq titlecase-style "chicago"))
+    (setq titlecase-style "chicago")
+:commands titlecase-dwim)
 #+end_src
 
 ** Vundo
@@ -1968,7 +1991,8 @@ Display suggestions in grid.
 ** Unfill
 
 #+begin_src emacs-lisp
-  (use-package unfill)
+  (use-package unfill
+:commands unfill-paragraph)
 #+end_src
 
 ** WS-Butler
@@ -1976,7 +2000,8 @@ Display suggestions in grid.
 Strips trailing whitespace when saving the file.
 
 #+begin_src emacs-lisp
-(use-package ws-butler)
+(use-package ws-butler
+:defer 10)
 #+end_src
 
 ** Snippets
@@ -2008,13 +2033,13 @@ https://github.com/joaotavora/yasnippet
 
 *** AAS
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package aas)
 #+end_src
 
 **** LAAS
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package laas
     :after auctex
     :hook
@@ -2118,6 +2143,7 @@ Use variable pitch mode in Org and Markdown modes. Toggle with ~C-M-S-s-v~, boun
 
 #+begin_src emacs-lisp
   (use-package org-appear
+:after org
     :commands (org-appear-mode)
     ;; :hook     (org-mode . org-appear-mode)
     :config
@@ -2131,6 +2157,7 @@ Use variable pitch mode in Org and Markdown modes. Toggle with ~C-M-S-s-v~, boun
 
 #+begin_src emacs-lisp
   (use-package org-modern
+:after org
     :config
     (add-hook 'org-agenda-finalize-hook #'org-modern-agenda)
     )
@@ -2239,6 +2266,7 @@ Use ~org-auto-tangle~ to generate ~early-init.el~ and ~init.el~ whenever ~README
 
 #+begin_src emacs-lisp
   (use-package org-auto-tangle
+:after org
     :hook (org-mode . org-auto-tangle-mode))
 #+end_src
 
@@ -2294,7 +2322,6 @@ Sort org buffer when saving. Add the following to the beginning of the buffer: "
 #+begin_src emacs-lisp
   (use-package org-super-agenda
     :after org
-    :ensure t
     :config
     (setq org-agenda-skip-scheduled-if-done t
 	  org-agenda-skip-deadline-if-done t
@@ -2437,6 +2464,7 @@ Use Emacs appointment system for notifications.
 
 #+begin_src emacs-lisp
   (use-package org-contrib
+:after org
     :config
     (require 'ox-extra)
     (ox-extras-activate '(ignore-headlines))
@@ -2518,14 +2546,16 @@ Use Emacs appointment system for notifications.
 ** Org Mac Link
 
 #+begin_src emacs-lisp
-  (use-package org-mac-link)
+  (use-package org-mac-link
+:defer 1)
 #+end_src
 
 ** Org Web Tools
 
 #+begin_src emacs-lisp
-  (use-package org-web-tools)
-#+end_src
+  (use-package org-web-tools
+    :defer 10)
+  #+end_src
 
 #+begin_src emacs-lisp
   (defun rlr/save-web-page-as-org-file ()
@@ -3105,7 +3135,8 @@ From [[http://yummymelon.com/devnull/converting-a-markdown-region-to-org-revisit
 I don't need to use Pandoc much since everything stays in Org. It might come in handy for an occasional conversion from Markdown.
 
 #+begin_src emacs-lisp
-  (use-package pandoc-mode)
+  (use-package pandoc-mode
+    :defer 30)
 #+end_src
 
 * Citations
@@ -3114,10 +3145,10 @@ I don't need to use Pandoc much since everything stays in Org. It might come in 
 
 #+begin_src emacs-lisp
   (use-package citar
-    :general 
-("C-c C-b" #'citar-insert-citation)
-	   (:keymaps 'minibuffer-local-map
-	   "M-b" #'citar-insert-preset)
+    :general
+    ("C-c C-b" #'citar-insert-citation)
+    (:keymaps 'minibuffer-local-map
+	  "M-b" #'citar-insert-preset)
     :custom
     (org-cite-global-bibliography '("~/Dropbox/bibtex/rlr.bib"))
     (citar-bibliography '("~/Dropbox/bibtex/rlr.bib"))
@@ -3133,6 +3164,7 @@ I don't need to use Pandoc much since everything stays in Org. It might come in 
 
 #+begin_src emacs-lisp
   (use-package ebib
+    :defer 30
     :config
     (setq ebib-bibtex-dialect 'biblatex)
     ;;(evil-set-initial-state 'ebib-index-mode 'emacs)
@@ -3153,7 +3185,8 @@ I don't need to use Pandoc much since everything stays in Org. It might come in 
     (setq denote-infer-keywords t)
     (setq denote-sort-keywords t)
     (setq denote-prompts '(title keywords))
-    (setq denote-date-format nil))
+    (setq denote-date-format nil)
+:commands denote)
 #+end_src
 
 #+begin_src emacs-lisp
@@ -3187,7 +3220,7 @@ I don't need to use Pandoc much since everything stays in Org. It might come in 
       denote-org-dblock-insert-files-as-headings))
 #+end_src
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package denote-journal
     :ensure (:type git :host github :repo "protesilaos/denote-journal")
     ;; Bind those to some key for your convenience.
@@ -3209,13 +3242,14 @@ I don't need to use Pandoc much since everything stays in Org. It might come in 
 
 #+begin_src emacs-lisp
   (use-package consult-notes
+    :after (consult denote)
     :config
     (consult-notes-denote-mode))
 #+end_src
 
 #+begin_src emacs-lisp
   (use-package citar-denote
-    :after citar denote
+    :after (citar denote)
     :config
     (citar-denote-mode)
     (setq citar-open-always-create-notes t))
@@ -3231,6 +3265,7 @@ I don't need to use Pandoc much since everything stays in Org. It might come in 
 #+begin_src emacs-lisp
   (use-package denote-search
     :ensure (:host github :repo "lmq-10/denote-search")
+:defer 10
     :custom
     ;; Disable help string (set it once you learn the commands)
     ;; (denote-search-help-string "")
@@ -3415,6 +3450,7 @@ Mu4e-alert
 
 #+begin_src emacs-lisp
   (use-package mu4e-alert
+    :after mu4e
     :config
     (mu4e-alert-enable-mode-line-display))
 #+end_src
@@ -3555,9 +3591,10 @@ Functions for setting default browser,
     :config
     :general
     (:keymaps 'elfeed-search-mode-map
-	      "q" #'rlr/elfeed-save-db-and-quit)
+	  "q" #'rlr/elfeed-save-db-and-quit)
     (:keymaps 'elfeed-show-mode-map
-	      "S-<SPC>" #'scroll-down))
+	  "S-<SPC>" #'scroll-down)
+    :commands elfeed)
 #+end_src
 
 Functions for syncing the database between machines.
@@ -3777,8 +3814,9 @@ Embed YouTube videos, from [[https://endlessparentheses.com/embedding-youtube-vi
 This builds the RSS feed for the blog.
 
 #+begin_src emacs-lisp
-  (use-package webfeeder)
-#+end_src
+  (use-package webfeeder
+    :defer 30)
+  #+end_src
 
 *** Blog Tags
 
@@ -3858,13 +3896,14 @@ Select tag, add tag to to post, then add post to tag page.
     (setq website2org-additional-meta nil)
     :general
     ("C-M-s-<down>" #'website2org
-    "C-M-s-<up>" #'website2org-temp))
+     "C-M-s-<up>" #'website2org-temp))
 #+end_src
 
 ** Htmlize
 
 #+begin_src emacs-lisp
-  (use-package htmlize)
+  (use-package htmlize
+    :defer 10)
 #+end_src
 
 ** Emmet
@@ -3987,7 +4026,8 @@ Shorten URL's with the is.gd service.
   (use-package isgd
     :custom
     (isgd-logstats nil)
-    (isgd-ask-custom-url t))
+    (isgd-ask-custom-url t)
+:commands (isgd-replace-url-at-point isgd-copy-url-at-point))
 #+end_src
 
 ** Link Hint
