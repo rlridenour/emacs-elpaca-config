@@ -848,12 +848,10 @@
 (use-package terminal-here
   :ensure
   (:host github :repo "davidshepherd7/terminal-here")
-  :defer 1
   :config
   (setq terminal-here-mac-terminal-command 'ghostty)
   :general
-  ("C-`" #'terminal-here-launch)
-  )
+  ("C-c t" #'terminal-here-launch))
 
 (use-package tldr
   :commands tldr)
@@ -952,6 +950,16 @@
 (general-define-key
  "C-S-o" #'open-line-above)
 
+(defun push-mark-no-activate ()
+  "Pushes `point' to `mark-ring' and does not activate the region
+   Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
+  (interactive)
+  (push-mark (point) t nil)
+  (message "Pushed mark to ring"))
+
+(general-define-key "C-`" #'push-mark-no-activate)
+(general-define-key "M-`" #'consult-mark)
+
 (use-package evil-nerd-commenter
   :general
   ("M-;" #'evilnc-comment-or-uncomment-lines))
@@ -997,7 +1005,7 @@
   :config
   (global-hungry-delete-mode))
 
-;; (use-package transient)
+(use-package transient)
 (use-package hl-todo
   :ensure (:depth nil)
   :after magit)

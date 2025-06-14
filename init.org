@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2025-06-13 09:00:21 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2025-06-14 09:05:32 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -1599,12 +1599,10 @@ Go to current directory in Ghostty.
   (use-package terminal-here
     :ensure
     (:host github :repo "davidshepherd7/terminal-here")
-    :defer 1
     :config
     (setq terminal-here-mac-terminal-command 'ghostty)
     :general
-    ("C-`" #'terminal-here-launch)
-    )
+    ("C-c t" #'terminal-here-launch))
 #+end_src
 
 *** TLDR
@@ -1759,6 +1757,20 @@ Make open-line behave like Vim, from [[https://www.reddit.com/r/emacs/comments/1
    "C-S-o" #'open-line-above)
 #+end_src
 
+Set the mark at a location without highlighting anything with =C-`=. This is useful for marking locations for easy return. From [[https://www.masteringemacs.org/article/fixing-mark-commands-transient-mark-mode][Fixing the mark commands in transient mark mode - Mastering Emacs]]. Use =M-`= to bring up the list of marks with =consult-mark=.
+
+#+begin_src emacs-lisp
+(defun push-mark-no-activate ()
+  "Pushes `point' to `mark-ring' and does not activate the region
+   Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
+  (interactive)
+  (push-mark (point) t nil)
+  (message "Pushed mark to ring"))
+
+(general-define-key "C-`" #'push-mark-no-activate)
+(general-define-key "M-`" #'consult-mark)
+#+end_src
+
 ** Evil Nerd Commenter
 
 #+begin_src emacs-lisp
@@ -1839,7 +1851,7 @@ Accent allows easy insertion of accented characters. Place the mark on the chara
 ** Magit
 
 #+begin_src emacs-lisp
-  ;; (use-package transient)
+  (use-package transient)
   (use-package hl-todo
     :ensure (:depth nil)
     :after magit)
