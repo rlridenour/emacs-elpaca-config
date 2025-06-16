@@ -2357,6 +2357,29 @@ installed."
  "L" (lambda () (interactive) (elfeed-search-set-filter "+readlater"))
  )
 
+(defun rlr/elfeed-show-toggle-tag (tag)
+  "Toggle tag for elfeed article."
+  (interactive)
+  (if (elfeed-tagged-p tag elfeed-show-entry)
+	(elfeed-show-untag tag)
+    (elfeed-show-tag tag)))
+
+(defun rlr/elfeed-show-toggle-starred ()
+  "Toggle starred tag for elfeed article"
+  (interactive)
+  (rlr/elfeed-show-toggle-tag 'starred))
+
+(defun rlr/elfeed-show-toggle-readlater ()
+  "Toggle starred tag for elfeed article"
+  (interactive)
+  (rlr/elfeed-show-toggle-tag 'readlater))
+
+(general-define-key
+ :keymaps 'elfeed-show-mode-map
+ "l" #'rlr/elfeed-show-toggle-readlater
+ "m" #'rlr/elfeed-show-toggle-starred
+ )
+
 (use-package elfeed-org
   :after elfeed
   :init

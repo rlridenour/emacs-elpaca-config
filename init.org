@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2025-06-14 09:05:32 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2025-06-16 06:38:33 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -3658,6 +3658,37 @@ Tag items — from [[https://www.reddit.com/r/emacs/comments/go5d0v/using_emacs_
    "L" (lambda () (interactive) (elfeed-search-set-filter "+readlater"))
    )
 #+end_src
+
+
+These functions are for toggling tags when viewing single Elfeed entries. From [[https://github.com/sfromm/emacs.d][sfromm/emacs.d: emacs configuration]]
+
+#+begin_src emacs-lisp
+  (defun rlr/elfeed-show-toggle-tag (tag)
+    "Toggle tag for elfeed article."
+    (interactive)
+    (if (elfeed-tagged-p tag elfeed-show-entry)
+	(elfeed-show-untag tag)
+      (elfeed-show-tag tag)))
+
+  (defun rlr/elfeed-show-toggle-starred ()
+    "Toggle starred tag for elfeed article"
+    (interactive)
+    (rlr/elfeed-show-toggle-tag 'starred))
+
+  (defun rlr/elfeed-show-toggle-readlater ()
+    "Toggle starred tag for elfeed article"
+    (interactive)
+    (rlr/elfeed-show-toggle-tag 'readlater))
+
+  (general-define-key
+   :keymaps 'elfeed-show-mode-map
+   "l" #'rlr/elfeed-show-toggle-readlater
+   "m" #'rlr/elfeed-show-toggle-starred
+   )
+#+end_src
+
+
+
 
 #+begin_src emacs-lisp
   (use-package elfeed-org
