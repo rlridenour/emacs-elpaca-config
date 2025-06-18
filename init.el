@@ -1288,30 +1288,32 @@
 
 ;; Org-capture
 (setq org-capture-templates
-	'(
-	  ("t" "Todo" entry (file+headline "/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/tasks.org" "Inbox")
-	   "** TODO %?\n  %i\n  %a")
-	  ("e" "Event" entry (file+headline "/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/events.org" "Future")
-	   "** %? %T")
-	  ("b" "Bookmark" entry (file+headline "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/bookmarks.org" "Inbox")
-	   "* %?\n:PROPERTIES:\n:CREATED: %U\n:END:\n\n" :empty-lines 1)
-	  ("c" "Quick note" entry (file "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/Documents/notes/quick-notes.org")
-	   "* %?\n:PROPERTIES:\n:CREATED: %U\n:END:\n\n" :empty-lines 1)
-	  ("j" "Journelly Entry" entry
-	   (file "/Users/rlridenour/Library/Mobile Documents/iCloud~com~xenodium~Journelly/Documents/Journelly.org")
-	   "* %U @ -\n%?" :prepend t)))
+      '(
+        ("t" "Todo" entry (file+headline "/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/tasks.org" "Inbox")
+         "** TODO %?\n  %i\n  %a")
+        ("e" "Event" entry (file+headline "/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/events.org" "Future")
+         "** %? %T")
+        ("b" "Bookmark" entry (file+headline "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/bookmarks.org" "Inbox")
+         "* %?\n:PROPERTIES:\n:CREATED: %U\n:END:\n\n" :empty-lines 1)
+        ("c" "Quick note" entry (file "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/Documents/notes/quick-notes.org")
+         "* %?\n:PROPERTIES:\n:CREATED: %U\n:END:\n\n" :empty-lines 1)
+        ("j" "Journelly Entry" entry
+         (file "/Users/rlridenour/Library/Mobile Documents/iCloud~com~xenodium~Journelly/Documents/Journelly.org")
+         "* %U @ -\n%?" :prepend t)))
 
 (with-eval-after-load 'org-capture
   (add-to-list 'org-capture-templates
-		 '("n" "New note (with Denote)" plain
-		   (file denote-last-path)
-		   #'denote-org-capture
-		   :no-save t
-		   :immediate-finish nil
-		   :kill-buffer t
-		   :jump-to-captured t)))
+	     '("n" "New note (with Denote)" plain
+	       (file denote-last-path)
+	       #'denote-org-capture
+	       :no-save t
+	       :immediate-finish nil
+	       :kill-buffer t
+	       :jump-to-captured t)))
 
-(setq org-refile-targets '((org-agenda-files :maxlevel . 1)))
+(setq org-refile-targets
+      '((nil :maxlevel . 1)
+        (org-agenda-files :maxlevel . 1)))
 
 (define-key global-map "\C-cc" 'org-capture)
 
