@@ -1288,32 +1288,32 @@
 
 ;; Org-capture
 (setq org-capture-templates
-      '(
-        ("t" "Todo" entry (file+headline "/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/tasks.org" "Inbox")
-         "** TODO %?\n  %i\n  %a")
-        ("e" "Event" entry (file+headline "/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/events.org" "Future")
-         "** %? %T")
-        ("b" "Bookmark" entry (file+headline "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/bookmarks.org" "Inbox")
-         "* %?\n:PROPERTIES:\n:CREATED: %U\n:END:\n\n" :empty-lines 1)
-        ("c" "Quick note" entry (file "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/Documents/notes/quick-notes.org")
-         "* %?\n:PROPERTIES:\n:CREATED: %U\n:END:\n\n" :empty-lines 1)
-        ("j" "Journelly Entry" entry
-         (file "/Users/rlridenour/Library/Mobile Documents/iCloud~com~xenodium~Journelly/Documents/Journelly.org")
-         "* %U @ -\n%?" :prepend t)))
+	'(
+	  ("t" "Todo" entry (file+headline "/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/tasks.org" "Inbox")
+	   "** TODO %?\n  %i\n  %a")
+	  ("e" "Event" entry (file+headline "/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/events.org" "Future")
+	   "** %? %T")
+	  ("b" "Bookmark" entry (file+headline "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/bookmarks.org" "Inbox")
+	   "* %?\n:PROPERTIES:\n:CREATED: %U\n:END:\n\n" :empty-lines 1)
+	  ("c" "Quick note" entry (file "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/Documents/notes/quick-notes.org")
+	   "* %?\n:PROPERTIES:\n:CREATED: %U\n:END:\n\n" :empty-lines 1)
+	  ("j" "Journelly Entry" entry
+	   (file "/Users/rlridenour/Library/Mobile Documents/iCloud~com~xenodium~Journelly/Documents/Journelly.org")
+	   "* %U @ -\n%?" :prepend t)))
 
 (with-eval-after-load 'org-capture
   (add-to-list 'org-capture-templates
-	     '("n" "New note (with Denote)" plain
-	       (file denote-last-path)
-	       #'denote-org-capture
-	       :no-save t
-	       :immediate-finish nil
-	       :kill-buffer t
-	       :jump-to-captured t)))
+	         '("n" "New note (with Denote)" plain
+	           (file denote-last-path)
+	           #'denote-org-capture
+	           :no-save t
+	           :immediate-finish nil
+	           :kill-buffer t
+	           :jump-to-captured t)))
 
 (setq org-refile-targets
-      '((nil :maxlevel . 1)
-        (org-agenda-files :maxlevel . 1)))
+	'((nil :maxlevel . 1)
+	  (org-agenda-files :maxlevel . 1)))
 
 (define-key global-map "\C-cc" 'org-capture)
 
@@ -2642,6 +2642,86 @@ installed."
   (setq rlr-org-link (s-split "\\]\\[" rlr-org-link))
   (setq rlr-org-url (pop rlr-org-link))
   (eww rlr-org-url))
+
+(defun nrsv-open-eww ()
+  (interactive)
+  (setq nrsv-passage (read-string "Passage: "))
+  (setq nrsv-passage (s-replace " " "%20" oremus-passage))
+  (setq oremus-link (concat "https://bible.oremus.org/?version=NRSV&passage=" oremus-passage "&vnum=NO&fnote=NO&omithidden=YES"))
+  (eww-browse-url oremus-link))
+
+(defun nrsv-open-default-browser ()
+  (interactive)
+  (setq nrsv-passage (read-string "Passage: "))
+  (setq nrsv-passage (s-replace " " "%20" oremus-passage))
+  (setq oremus-link (concat "https://bible.oremus.org/?version=NRSV&passage=" oremus-passage "&vnum=NO&fnote=NO&omithidden=YES"))
+  (browse-url oremus-link))
+
+(defun oremus-eww-cleanup ()
+  (interactive)
+  (beginning-of-buffer)
+  (while (re-search-forward "" nil t)
+    (replace-match "\""))
+  (beginning-of-buffer)
+  (while (re-search-forward "" nil t)
+    (replace-match "\""))
+  (beginning-of-buffer)
+  (while (re-search-forward "" nil t)
+    (replace-match "\'"))
+  (beginning-of-buffer)
+  (while (re-search-forward "" nil t)
+    (replace-match "\'"))
+  (beginning-of-buffer)
+  (while (re-search-forward "" nil t)
+    (replace-match "\'"))
+  (beginning-of-buffer)
+  (while (re-search-forward "" nil t)
+    (replace-match "—"))
+  )
+
+(defun nrsv-insert-passage ()
+  (interactive)
+  (setq oremus-passage (read-string "Passage: "))
+  (setq oremus-passage (s-replace " " "%20" oremus-passage))
+  (setq oremus-link (concat "https://bible.oremus.org/?version=NRSV&passage=" oremus-passage "&vnum=NO&fnote=NO&omithidden=YES"))
+  (switch-to-buffer (url-retrieve-synchronously oremus-link))
+  (beginning-of-buffer)
+  (search-forward "passageref\">")
+  (kill-region (point) 1)
+  (search-forward "</div><!-- class=\"bibletext\" -->")
+  (beginning-of-line)
+  (kill-region (point) (point-max))
+  (beginning-of-buffer)
+  (while (re-search-forward "<p>" nil t)
+    (replace-match "\n"))
+  (beginning-of-buffer)
+  (while (re-search-forward "<!.+?->" nil t)
+    (replace-match ""))
+  (beginning-of-buffer)
+  (while (re-search-forward "<.+?>" nil t)
+    (replace-match ""))
+  (beginning-of-buffer)
+  (while (re-search-forward "&nbsp;" nil t)
+    (replace-match " "))
+  (beginning-of-buffer)
+  (while (re-search-forward "&#147;" nil t)
+    (replace-match "\""))
+  (beginning-of-buffer)
+  (while (re-search-forward "&#148;" nil t)
+    (replace-match "\""))
+  (beginning-of-buffer)
+  (while (re-search-forward "&#145;" nil t)
+    (replace-match "\'"))
+  (beginning-of-buffer)
+  (while (re-search-forward "&#146;" nil t)
+    (replace-match "\'"))
+  (beginning-of-buffer)
+  (while (re-search-forward "&#151;" nil t)
+    (replace-match "---"))
+  (delete-extra-blank-lines)
+  (clipboard-kill-ring-save (point-min) (point-max))
+  (kill-buffer)
+  (yank))
 
 (use-package isgd
     :custom
