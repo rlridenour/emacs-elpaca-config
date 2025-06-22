@@ -1303,13 +1303,13 @@
 
 (with-eval-after-load 'org-capture
   (add-to-list 'org-capture-templates
-	         '("n" "New note (with Denote)" plain
-	           (file denote-last-path)
-	           #'denote-org-capture
-	           :no-save t
-	           :immediate-finish nil
-	           :kill-buffer t
-	           :jump-to-captured t)))
+		 '("n" "New note (with Denote)" plain
+		   (file denote-last-path)
+		   #'denote-org-capture
+		   :no-save t
+		   :immediate-finish nil
+		   :kill-buffer t
+		   :jump-to-captured t)))
 
 (setq org-refile-targets
 	'((nil :maxlevel . 1)
@@ -2079,80 +2079,82 @@ installed."
   :commands (mu4e mu4e-update-mail-and-index)
   :general
   (:keymaps 'mu4e-headers-mode-map
-	      "q"  #'kill-current-buffer
-	      "C-<tab>" #'tab-next)
+	  "q"  #'kill-current-buffer
+	  "C-<tab>" #'tab-next)
   (:keymaps 'mu4e-thread-mode-map
-	      "C-<tab>" #'tab-next)
+	  "C-<tab>" #'tab-next)
   (:keymaps 'mu4e-main-mode-map
-	      "q"  #'rlr/quit-mu4e)
+	  "q"  #'rlr/quit-mu4e)
+  (:keymaps 'mu4e-view-mode-map
+	  "," #'link-hint-open-link
+	  "C-," #'mu4e-sexp-at-point)
   :after org
   :config
-  (setq
-   mu4e-split-view 'horizontal
-   mu4e-index-update-error-warning nil
-   mu4e-headers-skip-duplicates  t
-   mu4e-view-show-images t
-   mu4e-view-show-addresses t
-   mu4e-use-fancy-chars t
-   mu4e-compose-format-flowed t
-   mu4e-date-format "%y/%m/%d"
-   mu4e-headers-date-format "%Y/%m/%d"
-   mu4e-change-filenames-when-moving t
-   mu4e-attachment-dir "~/Downloads"
-   mu4e-maildir       "~/.maildir/"   ;; top-level Maildir
-   ;; note that these folders below must start with /
-   ;; the paths are relative to maildir root
+  (setq mu4e-split-view 'horizontal)
+  (setq mu4e-index-update-error-warning nil)
+  (setq mu4e-headers-skip-duplicates  t)
+  (setq mu4e-view-show-images t)
+  (setq mu4e-view-show-addresses t)
+  (setq mu4e-use-fancy-chars t)
+  (setq mu4e-compose-format-flowed t)
+  (setq mu4e-date-format "%y/%m/%d")
+  (setq mu4e-headers-date-format "%Y/%m/%d")
+  (setq mu4e-change-filenames-when-moving t)
+  (setq mu4e-attachment-dir "~/Downloads")
+  (setq mu4e-maildir       "~/.maildir/")   ;; top-level Maildir
+  ;; note that these folders below must start with /
+  ;; the paths are relative to maildir root
 
-   ;; this setting allows to re-sync and re-index mail
-   ;; by pressing U
-   mu4e-get-mail-command "mbsync -a"
-   mu4e-update-interval 300 ;; update every 5 minutes
-   ;; mu4e-headers-auto-update
-   mu4e-completing-read-function 'completing-read
-   mu4e-context-policy 'pick-first
-   mu4e-contexts (list
-		    (make-mu4e-context
-		     :name "fastmail"
-		     :match-func
-		     (lambda (msg)
-		       (when msg
-			 (string-prefix-p "/fastmail" (mu4e-message-field msg :maildir))))
-		     :vars '((user-mail-address . "rlridenour@fastmail.com")
-			     (user-full-name    . "Randy Ridenour")
-			     (mu4e-drafts-folder  . "/fastmail/Drafts")
-			     (mu4e-sent-folder  . "/fastmail/Sent")
-			     (mu4e-trash-folder  . "/fastmail/Trash")
-			     (mu4e-refile-folder  . "/fastmail/Archive")
-			     (sendmail-program . "msmtp")
-			     (send-mail-function . smtpmail-send-it)
-			     (message-sendmail-f-is-evil . t)
-			     (message-sendmail-extra-arguments . ("--read-envelope-from"))
-			     (message-send-mail-function . message-send-mail-with-sendmail)
-			     (smtpmail-default-smtp-server . "smtp.fastmail.com")
-			     (smtpmail-smtp-server  . "smtp.fastmail.com")
-			     ))
-		    (make-mu4e-context
-		     :name "obu"
-		     :match-func
-		     (lambda (msg)
-		       (when msg
-			 (string-prefix-p "/obu" (mu4e-message-field msg :maildir))))
-		     :vars '((user-mail-address . "randy.ridenour@okbu.edu")
-			     (user-full-name    . "Randy Ridenour")
-			     (mu4e-drafts-folder  . "/obu/Drafts")
-			     (mu4e-sent-folder  . "/obu/Sent")
-			     (mu4e-trash-folder . "/obu/Trash")
-			     (mu4e-refile-folder  . "/obu/Archive")
-			     ;; (sendmail-program . "msmtp")
-			     (send-mail-function . smtpmail-send-it)
-			     (message-sendmail-f-is-evil . t)
-			     (message-sendmail-extra-arguments . ("--read-envelope-from"))
-			     (message-send-mail-function . message-send-mail-with-sendmail)
-			     (smtpmail-smtp-server  . "localhost")
-			     (smtpmail-smtp-user . "randy.ridenour@okbu.edu")
-			     (smtpmail-stream-type . plain)
-			     (smtpmail-smtp-service . 1025)
-			     ))))
+  ;; this setting allows to re-sync and re-index mail
+  ;; by pressing U
+  (setq mu4e-get-mail-command "mbsync -a")
+  (setq mu4e-update-interval 300) ;; update every 5 minutes
+  ;; mu4e-headers-auto-update
+  (setq mu4e-completing-read-function 'completing-read)
+  (setq mu4e-context-policy 'pick-first)
+  (setq mu4e-contexts
+	  `(,(make-mu4e-context
+	  :name "fastmail"
+	  :match-func
+	  (lambda (msg)
+		(when msg
+	      (string-prefix-p "/fastmail" (mu4e-message-field msg :maildir))))
+	  :vars '((user-mail-address . "rlridenour@fastmail.com")
+		(user-full-name    . "Randy Ridenour")
+		(mu4e-drafts-folder  . "/fastmail/Drafts")
+		(mu4e-sent-folder  . "/fastmail/Sent")
+		(mu4e-trash-folder  . "/fastmail/Trash")
+		(mu4e-refile-folder  . "/fastmail/Archive")
+		(sendmail-program . "msmtp")
+		(send-mail-function . smtpmail-send-it)
+		(message-sendmail-f-is-evil . t)
+		(message-sendmail-extra-arguments . ("--read-envelope-from"))
+		(message-send-mail-function . message-send-mail-with-sendmail)
+		(smtpmail-default-smtp-server . "smtp.fastmail.com")
+		(smtpmail-smtp-server  . "smtp.fastmail.com")
+		))
+	,(make-mu4e-context
+	  :name "obu"
+	  :match-func
+	  (lambda (msg)
+		(when msg
+	      (string-prefix-p "/obu" (mu4e-message-field msg :maildir))))
+	  :vars '((user-mail-address . "randy.ridenour@okbu.edu")
+		(user-full-name    . "Randy Ridenour")
+		(mu4e-drafts-folder  . "/obu/Drafts")
+		(mu4e-sent-folder  . "/obu/Sent")
+		(mu4e-trash-folder . "/obu/Trash")
+		(mu4e-refile-folder  . "/obu/Archive")
+		;; (sendmail-program . "msmtp")
+		(send-mail-function . smtpmail-send-it)
+		(message-sendmail-f-is-evil . t)
+		(message-sendmail-extra-arguments . ("--read-envelope-from"))
+		(message-send-mail-function . message-send-mail-with-sendmail)
+		(smtpmail-smtp-server  . "localhost")
+		(smtpmail-smtp-user . "randy.ridenour@okbu.edu")
+		(smtpmail-stream-type . plain)
+		(smtpmail-smtp-service . 1025)
+		))))
   (display-line-numbers-mode -1)
   (require 'mu4e-transient)
   (add-to-list 'mu4e-bookmarks
@@ -2170,12 +2172,12 @@ installed."
   ;;             :hide-unread))
   (add-to-list 'mu4e-bookmarks
 		 '(:name "Unread Inboxes"
-			 :query "flag:unread AND NOT flag:trashed"
-			 :key ?b))
+		   :query "flag:unread AND NOT flag:trashed"
+		   :key ?b))
 
   (setq gnus-blocked-images
 	  (lambda(&optional _ignore)
-	    (if (mu4e-message-contact-field-matches
+	(if (mu4e-message-contact-field-matches
 		 (mu4e-message-at-point) :from "store-news@woot.com")
 		nil "."))))
 
@@ -2238,7 +2240,9 @@ installed."
 
 (general-define-key
  "C-M-s-r" #'rlr/read-mail-news
- "H-m" #'mu4e-transient-menu)
+ "H-m" #'mu4e-transient-menu
+ "C-M-S-s-m" #'mu4e
+ )
 
 (use-package consult-mu
   :ensure (:type git :host github :repo "armindarvish/consult-mu" :branch "main" :files (:defaults "extras/*.el"))
@@ -2312,7 +2316,8 @@ installed."
   (:keymaps 'elfeed-search-mode-map
 	  "q" #'rlr/elfeed-save-db-and-quit)
   (:keymaps 'elfeed-show-mode-map
-	  "S-<SPC>" #'scroll-down)
+	  "S-<SPC>" #'scroll-down
+	  "," #'link-hint-open-link)
   :commands elfeed)
 
 (defun rlr/elfeed-load-db-and-open ()
