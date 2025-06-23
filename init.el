@@ -2241,8 +2241,7 @@ installed."
 (general-define-key
  "C-M-s-r" #'rlr/read-mail-news
  "H-m" #'mu4e-transient-menu
- "C-M-S-s-m" #'mu4e
- )
+ "C-M-S-s-m" #'rlr/open-mu4e-new-tab)
 
 (use-package consult-mu
   :ensure (:type git :host github :repo "armindarvish/consult-mu" :branch "main" :files (:defaults "extras/*.el"))
@@ -2313,7 +2312,7 @@ installed."
   (setq elfeed-db-directory "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/elfeed")
   :config
   :general
-  ("C-M-S-s-e" #'elfeed)
+  ("C-M-S-s-e" #'rlr/open-elfeed-new-tab)
   (:keymaps 'elfeed-search-mode-map
 	  "q" #'rlr/elfeed-save-db-and-quit)
   (:keymaps 'elfeed-show-mode-map

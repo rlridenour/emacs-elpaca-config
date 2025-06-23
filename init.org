@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2025-06-22 16:37:14 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2025-06-23 14:06:50 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -3520,8 +3520,7 @@ Open mu4e and elfeed in new frame.
   (general-define-key
    "C-M-s-r" #'rlr/read-mail-news
    "H-m" #'mu4e-transient-menu
-   "C-M-S-s-m" #'mu4e
-   )
+   "C-M-S-s-m" #'rlr/open-mu4e-new-tab)
 #+end_src
 
 *** Consult MU
@@ -3606,7 +3605,7 @@ Functions for setting default browser,
     (setq elfeed-db-directory "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/elfeed")
     :config
     :general
-    ("C-M-S-s-e" #'elfeed)
+    ("C-M-S-s-e" #'rlr/open-elfeed-new-tab)
     (:keymaps 'elfeed-search-mode-map
 	  "q" #'rlr/elfeed-save-db-and-quit)
     (:keymaps 'elfeed-show-mode-map
