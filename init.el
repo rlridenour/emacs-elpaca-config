@@ -2313,6 +2313,7 @@ installed."
   (setq elfeed-db-directory "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/elfeed")
   :config
   :general
+  ("C-M-S-s-e" #'elfeed)
   (:keymaps 'elfeed-search-mode-map
 	  "q" #'rlr/elfeed-save-db-and-quit)
   (:keymaps 'elfeed-show-mode-map
@@ -2769,6 +2770,10 @@ installed."
   (:keymaps 'pdf-view-mode-map
 	      "C-s" #'isearch-forward)
   )
+
+(use-feature calc
+:general
+("C-M-S-s-c" #'calc))
 
 (use-package chordpro-mode
 :mode ("\\.cho\\'" . chordpro-mode))

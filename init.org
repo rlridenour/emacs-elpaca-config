@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2025-06-21 18:11:17 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2025-06-22 16:37:14 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -3606,6 +3606,7 @@ Functions for setting default browser,
     (setq elfeed-db-directory "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/elfeed")
     :config
     :general
+    ("C-M-S-s-e" #'elfeed)
     (:keymaps 'elfeed-search-mode-map
 	  "q" #'rlr/elfeed-save-db-and-quit)
     (:keymaps 'elfeed-show-mode-map
@@ -4228,6 +4229,16 @@ SLY is Sylvester the Cat's Common Lisp IDE for Emacs.
 	      "C-s" #'isearch-forward)
     )
 #+end_src
+
+* Calc
+
+#+begin_src emacs-lisp
+(use-feature calc
+:general
+("C-M-S-s-c" #'calc))
+#+end_src
+
+
 
 * Music
 
