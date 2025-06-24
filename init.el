@@ -2047,13 +2047,13 @@ installed."
     ;; Display keywords in results buffer
     (denote-search-format-heading-function #'denote-search-format-heading-with-keywords))
 
-;; (defvar-keymap notepad-mode-map
-;;   "C-c C-c" #'copy-kill-buffer)
+(general-define-key
+ :keymaps 'notepad-mode-map
+ "C-c C-c" #'copy-kill-buffer)
 
 (define-derived-mode notepad-mode
   org-mode "Notepad"
-  "Major mode for scratch buffers."
-  )
+  "Major mode for scratch buffers.")
 
 (defun rlr/create-notepad-buffer ()
   "Create a new notepad buffer."
@@ -2117,7 +2117,7 @@ installed."
 	  :name "fastmail"
 	  :match-func
 	  (lambda (msg)
-		(when msg
+	    (when msg
 	      (string-prefix-p "/fastmail" (mu4e-message-field msg :maildir))))
 	  :vars '((user-mail-address . "rlridenour@fastmail.com")
 		(user-full-name    . "Randy Ridenour")
@@ -2137,7 +2137,7 @@ installed."
 	  :name "obu"
 	  :match-func
 	  (lambda (msg)
-		(when msg
+	    (when msg
 	      (string-prefix-p "/obu" (mu4e-message-field msg :maildir))))
 	  :vars '((user-mail-address . "randy.ridenour@okbu.edu")
 		(user-full-name    . "Randy Ridenour")
@@ -2158,28 +2158,28 @@ installed."
   (display-line-numbers-mode -1)
   (require 'mu4e-transient)
   (add-to-list 'mu4e-bookmarks
-		 '( :name "OBU Inbox"
-		    :query "maildir:/obu/INBOX AND NOT flag:trashed"
-		    :key ?o))
+	     '( :name "OBU Inbox"
+		:query "maildir:/obu/INBOX AND NOT flag:trashed"
+		:key ?o))
   (add-to-list 'mu4e-bookmarks
-		 '( :name "Fastmail Inbox"
-		    :query "maildir:/fastmail/INBOX AND NOT flag:trashed"
-		    :key ?f))
+	     '( :name "Fastmail Inbox"
+		:query "maildir:/fastmail/INBOX AND NOT flag:trashed"
+		:key ?f))
   ;; (add-to-list 'mu4e-bookmarks
   ;;       '(:name "All Inboxes"
   ;;             :query "(maildir:/obu/INBOX OR maildir:/fastmail/INBOX) AND NOT flag:trashed"
   ;;             :key ?i
   ;;             :hide-unread))
   (add-to-list 'mu4e-bookmarks
-		 '(:name "Unread Inboxes"
+	     '(:name "Unread Inboxes"
 		   :query "flag:unread AND NOT flag:trashed"
 		   :key ?b))
 
   (setq gnus-blocked-images
 	  (lambda(&optional _ignore)
 	(if (mu4e-message-contact-field-matches
-		 (mu4e-message-at-point) :from "store-news@woot.com")
-		nil "."))))
+	     (mu4e-message-at-point) :from "store-news@woot.com")
+	    nil "."))))
 
 (use-package org-mime
   :commands (org-mime-edit-mail-in-org-mode)
