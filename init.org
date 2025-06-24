@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2025-06-24 16:51:46 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2025-06-24 18:30:09 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -573,6 +573,21 @@ Enrich existing commands with completion annotations
      "M-s m" #'consult-multi-occur))
 #+end_src
 
+
+*** Consult Dir
+
+#+begin_src emacs-lisp
+  (use-package consult-dir
+    :general
+    ("C-x C-d" #'consult-dir)
+    (:keymaps 'vertico-map
+	  "C-x C-d" #'consult-dir
+	  "C-x C-j" #'consult-dir-jump-file))
+#+end_src
+
+
+
+
 ** Embark
 
 #+begin_src emacs-lisp
@@ -586,9 +601,9 @@ Enrich existing commands with completion annotations
     (setq prefix-help-command #'embark-prefix-help-command)
     :config
     (add-to-list 'display-buffer-alist
-		 '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
-		   nil
-		   (window-parameters (mode-line-format . none)))))
+	     '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+	       nil
+	       (window-parameters (mode-line-format . none)))))
 #+end_src
 
 #+begin_src emacs-lisp

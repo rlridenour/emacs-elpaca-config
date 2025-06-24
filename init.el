@@ -231,6 +231,13 @@
    "C-x r x" #'consult-register
    "M-s m" #'consult-multi-occur))
 
+(use-package consult-dir
+  :general
+  ("C-x C-d" #'consult-dir)
+  (:keymaps 'vertico-map
+	  "C-x C-d" #'consult-dir
+	  "C-x C-j" #'consult-dir-jump-file))
+
 (use-package embark
   :general
   ("C-." #'embark-act
@@ -241,9 +248,9 @@
   (setq prefix-help-command #'embark-prefix-help-command)
   :config
   (add-to-list 'display-buffer-alist
-		 '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
-		   nil
-		   (window-parameters (mode-line-format . none)))))
+	     '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+	       nil
+	       (window-parameters (mode-line-format . none)))))
 
 (use-package embark-consult
   :after embark
