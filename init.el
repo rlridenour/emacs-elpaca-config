@@ -2094,7 +2094,9 @@ installed."
 	  "q"  #'rlr/quit-mu4e)
   (:keymaps 'mu4e-view-mode-map
 	  "," #'link-hint-open-link
-	  "C-," #'mu4e-sexp-at-point)
+	  "C-," #'mu4e-sexp-at-point
+	  "R" #'message-reply
+	  "W" #'message-wide-reply)
   :after org
   :config
   (setq mu4e-split-view 'horizontal)
@@ -2108,16 +2110,17 @@ installed."
   (setq mu4e-headers-date-format "%Y/%m/%d")
   (setq mu4e-change-filenames-when-moving t)
   (setq mu4e-attachment-dir "~/Downloads")
-  (setq mu4e-maildir       "~/.maildir/")   ;; top-level Maildir
-  ;; note that these folders below must start with /
-  ;; the paths are relative to maildir root
-
-  ;; this setting allows to re-sync and re-index mail
-  ;; by pressing U
+  (setq mu4e-maildir       "~/.maildir/")
+  (setq mu4e-mu-allow-temp-file t)
   (setq mu4e-get-mail-command "mbsync -a")
   (setq mu4e-update-interval 300) ;; update every 5 minutes
   ;; mu4e-headers-auto-update
-  (setq mu4e-completing-read-function 'completing-read)
+  (setq mu4e-read-option-use-builtin nil
+	  mu4e-completing-read-function 'completing-read)
+  ;; customize the reply-quote-string
+  (setq message-citation-line-format "On %a %d %b %Y at %R, %f wrote:\n")
+  ;; choose to use the formatted string
+  (setq message-citation-line-function 'message-insert-formatted-citation-line)
   (setq mu4e-context-policy 'pick-first)
   (setq mu4e-contexts
 	  `(,(make-mu4e-context
@@ -2400,6 +2403,11 @@ installed."
   :config
   ;; (setq rmh-elfeed-org-auto-ignore-invalid-feeds t)
   )
+
+(use-package elfeed-webkit
+  :general
+  (:keymaps 'elfeed-show-mode-map
+	      "%"  #'elfeed-webkit-toggle))
 
 (defvar orgblog-directory "~/sites/orgblog/" "Path to the Org mode blog.")
 (defvar orgblog-public-directory "~/sites/orgblog/docs/" "Path to the blog public directory.")
