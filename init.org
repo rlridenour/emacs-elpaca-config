@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2025-06-26 09:11:37 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2025-06-27 11:32:07 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -573,7 +573,6 @@ Enrich existing commands with completion annotations
      "M-s m" #'consult-multi-occur))
 #+end_src
 
-
 *** Consult Dir
 
 #+begin_src emacs-lisp
@@ -584,9 +583,6 @@ Enrich existing commands with completion annotations
 	  "C-x C-d" #'consult-dir
 	  "C-x C-j" #'consult-dir-jump-file))
 #+end_src
-
-
-
 
 ** Embark
 
@@ -3729,8 +3725,6 @@ This uses webkit to display HTML in Elfeed.
 	      "%"  #'elfeed-webkit-toggle))
 #+end_src
 
-
-
 ** Mastodon
 
 #+begin_src emacs-lisp :tangle no
@@ -4181,7 +4175,6 @@ Open NRSV passage using [[https://bible.oremus.org/][oremus Bible Browser]].
     (yank))
 #+end_src
 
-
 ** ISGD
 
 Shorten URL's with the is.gd service.
@@ -4266,8 +4259,6 @@ SLY is Sylvester the Cat's Common Lisp IDE for Emacs.
 ("C-M-S-s-c" #'calc))
 #+end_src
 
-
-
 * Music
 
 ** ChordPro
@@ -4307,7 +4298,7 @@ Make chord charts.
        ("W" wc-mode "word-count" :toggle t)
        ("S" auto-save-visited-mode "auto-save" :toggle t)
        ("C" cua-selection-mode "rectangle" :toggle t)))))
-#+end_src
+       #+end_src
 
 #+begin_src emacs-lisp
   (with-after-elpaca-init
@@ -4362,23 +4353,21 @@ Make chord charts.
    (pretty-hydra-define hydra-window
      (:color teal :quit-key "q" title: "Windows")
      ("Windows"
-      (("w" other-window "cycle windows" :exit nil)
-       ("a" ace-window "ace window")
-       ("m" minimize-window "minimize window")
-       ("s" crux-transpose-windows "swap windows")
-       ("S" shrink-window-if-larger-than-buffer "shrink to fit")
-       ("b" balance-windows "balance windows")
-       ("t" toggle-window-split "toggle split")
-       ("T" enlarge-window" grow taller" :exit nil)
-       ("G" enlarge-window-horizontally "grow wider" :exit nil)
-       ("o" delete-other-windows "kill other windows"))
+      (("w m" minimize-window "minimize window")
+       ("w s" crux-transpose-windows "swap windows")
+       ("w S" shrink-window-if-larger-than-buffer "shrink to fit")
+       ("w b" balance-windows "balance windows")
+       ("w t" toggle-window-split "toggle split")
+       ("w v" enlarge-window" grow taller" :exit nil)
+       ("w h" enlarge-window-horizontally "grow wider" :exit nil))
       "Frames"
-      (("M" iconify-frame "minimize frame")
-       ("d" delete-other-frames "delete other frames")
-       ("D" delete-frame "delete this frame")
-       ("i" make-frame-invisible "invisible frame")
-       ("f" toggle-frame-fullscreen "fullscreen")
-       ("n" make-frame-command "new frame"))
+      (("f m" iconify-frame "minimize frame")
+       ("f d" delete-other-frames "delete other frames"))
+      "Tabs"
+      (("t c" tab-close-other "close other tabs")
+       ("t m" tab-move "move tab right")
+       ("t b" tab-bar-history-back "restore previous windows")
+       ("t f" tab-bar-history-forward "undo restore windows"))
       "Writeroom"
       (("W" writeroom-mode "toggle writeroom")
        ("M" writeroom-toggle-mode-line "toggle modeline")))))
