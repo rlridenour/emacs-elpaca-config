@@ -718,6 +718,9 @@
   :general
   ("M-g a" #'casual-avy-tmenu))
 
+(use-package easy-find
+:ensure (:type git :host github :repo "emacselements/easy-find"))
+
 (use-package fzf
   :commands (fzf fzf-directory)
   :config
@@ -1006,6 +1009,13 @@
 
 (use-package expand-region
   :general ("C-=" #'er/expand-region))
+
+(use-package fold-and-focus
+:ensure (:type git :host sourcehut :repo "flandrew/fold-and-focus")
+:config
+  (global-fold-and-focus-org-mode)
+  (global-fold-and-focus-md-mode)
+  (global-fold-and-focus-el-mode))
 
 (use-package hungry-delete
   :defer 5
@@ -1442,7 +1452,8 @@
     (require 'ox-extra)
     (ox-extras-activate '(ignore-headlines))
     (require 'org-tempo)
-    (require 'ox-rss))
+    ;; (require 'ox-rss)
+)
 
 (use-package orgonomic
   :ensure
@@ -2083,121 +2094,105 @@ installed."
  "C-M-S-s-k" #'copy-kill-buffer)
 
 (use-feature mu4e
-  :commands (mu4e mu4e-update-mail-and-index)
-  :general
-  (:keymaps 'mu4e-headers-mode-map
+    :commands (mu4e mu4e-update-mail-and-index)
+    :general
+    (:keymaps 'mu4e-headers-mode-map
 	  "q"  #'kill-current-buffer
 	  "C-<tab>" #'tab-next)
-  (:keymaps 'mu4e-thread-mode-map
+    (:keymaps 'mu4e-thread-mode-map
 	  "C-<tab>" #'tab-next)
-  (:keymaps 'mu4e-main-mode-map
+    (:keymaps 'mu4e-main-mode-map
 	  "q"  #'rlr/quit-mu4e)
-  (:keymaps 'mu4e-view-mode-map
+    (:keymaps 'mu4e-view-mode-map
 	  "," #'link-hint-open-link
-	  "C-," #'mu4e-sexp-at-point
-	  "R" #'message-reply
-	  "W" #'message-wide-reply)
-  :after org
-  :config
-  (setq mu4e-split-view 'horizontal)
-  (setq mu4e-index-update-error-warning nil)
-  (setq mu4e-headers-skip-duplicates  t)
-  (setq mu4e-view-show-images t)
-  (setq mu4e-view-show-addresses t)
-  (setq mu4e-use-fancy-chars t)
-  (setq mu4e-compose-format-flowed t)
-  (setq mu4e-date-format "%y/%m/%d")
-  (setq mu4e-headers-date-format "%Y/%m/%d")
-  (setq mu4e-change-filenames-when-moving t)
-  (setq mu4e-attachment-dir "~/Downloads")
-  (setq mu4e-maildir       "~/.maildir/")
-  (setq mu4e-mu-allow-temp-file t)
-  (setq mu4e-get-mail-command "mbsync -a")
-  (setq mu4e-update-interval 300) ;; update every 5 minutes
-  ;; mu4e-headers-auto-update
-  (setq mu4e-read-option-use-builtin nil
+	  "C-," #'mu4e-sexp-at-point)
+    :after org
+    :config
+    (setq mail-user-agent 'mu4e-user-agent)
+    (setq mu4e-maildir "~/.maildir/")
+    (setq mu4e-get-mail-command "mbsync -a")
+    (setq mu4e-update-interval 300) ;; update every 5 minutes
+    (setq mu4e-read-option-use-builtin nil
 	  mu4e-completing-read-function 'completing-read)
-  ;; customize the reply-quote-string
-  (setq message-citation-line-format "On %a %d %b %Y at %R, %f wrote:\n")
-  ;; choose to use the formatted string
-  (setq message-citation-line-function 'message-insert-formatted-citation-line)
-  (setq mu4e-context-policy 'pick-first)
-  (setq mu4e-contexts
-	  `(,(make-mu4e-context
-	  :name "fastmail"
-	  :match-func
-	  (lambda (msg)
-	    (when msg
-	      (string-prefix-p "/fastmail" (mu4e-message-field msg :maildir))))
-	  :vars '((user-mail-address . "rlridenour@fastmail.com")
-		(user-full-name    . "Randy Ridenour")
-		(mu4e-drafts-folder  . "/fastmail/Drafts")
-		(mu4e-sent-folder  . "/fastmail/Sent")
-		(mu4e-trash-folder  . "/fastmail/Trash")
-		(mu4e-refile-folder  . "/fastmail/Archive")
-		(sendmail-program . "msmtp")
-		(send-mail-function . smtpmail-send-it)
-		(message-sendmail-f-is-evil . t)
-		(message-sendmail-extra-arguments . ("--read-envelope-from"))
-		(message-send-mail-function . message-send-mail-with-sendmail)
-		(smtpmail-default-smtp-server . "smtp.fastmail.com")
-		(smtpmail-smtp-server  . "smtp.fastmail.com")
-		))
-	,(make-mu4e-context
-	  :name "obu"
-	  :match-func
-	  (lambda (msg)
-	    (when msg
-	      (string-prefix-p "/obu" (mu4e-message-field msg :maildir))))
-	  :vars '((user-mail-address . "randy.ridenour@okbu.edu")
-		(user-full-name    . "Randy Ridenour")
-		(mu4e-drafts-folder  . "/obu/Drafts")
-		(mu4e-sent-folder  . "/obu/Sent")
-		(mu4e-trash-folder . "/obu/Trash")
-		(mu4e-refile-folder  . "/obu/Archive")
-		;; (sendmail-program . "msmtp")
-		(send-mail-function . smtpmail-send-it)
-		(message-sendmail-f-is-evil . t)
-		(message-sendmail-extra-arguments . ("--read-envelope-from"))
-		(message-send-mail-function . message-send-mail-with-sendmail)
-		(smtpmail-smtp-server  . "localhost")
-		(smtpmail-smtp-user . "randy.ridenour@okbu.edu")
-		(smtpmail-stream-type . plain)
-		(smtpmail-smtp-service . 1025)
-		))))
-  (display-line-numbers-mode -1)
-  (require 'mu4e-transient)
-  (add-to-list 'mu4e-bookmarks
+    (setq mu4e-split-view 'horizontal)
+    (setq mu4e-index-update-error-warning nil)
+    (setq mu4e-headers-skip-duplicates  t)
+    (setq mu4e-view-show-images t)
+    (setq mu4e-view-show-addresses t)
+    (setq mu4e-use-fancy-chars t)
+    (setq mu4e-compose-format-flowed t)
+    (setq mu4e-date-format "%y/%m/%d")
+    (setq mu4e-headers-date-format "%Y/%m/%d")
+    (setq mu4e-change-filenames-when-moving t)
+;; customize the reply-quote-string
+    (setq message-citation-line-format "On %a %d %b %Y at %R, %f wrote:\n")
+    ;; choose to use the formatted string
+    (setq message-citation-line-function 'message-insert-formatted-citation-line)
+    (setq mu4e-attachment-dir "~/Downloads")
+    (setq mu4e-context-policy 'pick-first)
+    (setq  mu4e-contexts (list
+		    (make-mu4e-context
+		     :name "fastmail"
+		     :match-func
+		     (lambda (msg)
+		       (when msg
+			 (string-prefix-p "/fastmail" (mu4e-message-field msg :maildir))))
+		     :vars '((user-mail-address . "rlridenour@fastmail.com")
+			   (user-full-name    . "Randy Ridenour")
+			   (mu4e-drafts-folder  . "/fastmail/Drafts")
+			   (mu4e-sent-folder  . "/fastmail/Sent")
+			   (mu4e-trash-folder  . "/fastmail/Trash")
+			   (mu4e-refile-folder  . "/fastmail/Archive")
+			   (sendmail-program . "msmtp")
+			   (send-mail-function . smtpmail-send-it)
+			   (message-sendmail-f-is-evil . t)
+			   (message-sendmail-extra-arguments . ("--read-envelope-from"))
+			   (message-send-mail-function . message-send-mail-with-sendmail)
+			   (smtpmail-default-smtp-server . "smtp.fastmail.com")
+			   (smtpmail-smtp-server  . "smtp.fastmail.com")
+			   ))
+		    (make-mu4e-context
+		     :name "obu"
+		     :match-func
+		     (lambda (msg)
+		       (when msg
+			 (string-prefix-p "/obu" (mu4e-message-field msg :maildir))))
+		     :vars '((user-mail-address . "randy.ridenour@okbu.edu")
+			   (user-full-name    . "Randy Ridenour")
+			   (mu4e-drafts-folder  . "/obu/Drafts")
+			   (mu4e-sent-folder  . "/obu/Sent")
+			   (mu4e-trash-folder . "/obu/Trash")
+			   (mu4e-refile-folder  . "/obu/Archive")
+			   ;; (sendmail-program . "msmtp")
+			   (send-mail-function . smtpmail-send-it)
+			   (message-sendmail-f-is-evil . t)
+			   (message-sendmail-extra-arguments . ("--read-envelope-from"))
+			   (message-send-mail-function . message-send-mail-with-sendmail)
+			   (smtpmail-smtp-server  . "localhost")
+			   (smtpmail-smtp-user . "randy.ridenour@okbu.edu")
+			   (smtpmail-stream-type . plain)
+			   (smtpmail-smtp-service . 1025)
+			   ))))
+    (add-to-list 'mu4e-bookmarks
 	     '( :name "OBU Inbox"
 		:query "maildir:/obu/INBOX AND NOT flag:trashed"
 		:key ?o))
-  (add-to-list 'mu4e-bookmarks
+    (add-to-list 'mu4e-bookmarks
 	     '( :name "Fastmail Inbox"
 		:query "maildir:/fastmail/INBOX AND NOT flag:trashed"
 		:key ?f))
-  ;; (add-to-list 'mu4e-bookmarks
-  ;;       '(:name "All Inboxes"
-  ;;             :query "(maildir:/obu/INBOX OR maildir:/fastmail/INBOX) AND NOT flag:trashed"
-  ;;             :key ?i
-  ;;             :hide-unread))
-  (add-to-list 'mu4e-bookmarks
+    (add-to-list 'mu4e-bookmarks
 	     '(:name "Unread Inboxes"
 		   :query "flag:unread AND NOT flag:trashed"
 		   :key ?b))
-
-  (setq gnus-blocked-images
-	  (lambda(&optional _ignore)
-	(if (mu4e-message-contact-field-matches
-	     (mu4e-message-at-point) :from "store-news@woot.com")
-	    nil "."))))
+    (require 'mu4e-transient))
 
 (use-package org-mime
   :commands (org-mime-edit-mail-in-org-mode)
   :config
   (setq org-mime-export-options '(:section-numbers nil
 						     :with-author nil
-						     :with-toc nil))
-  )
+						     :with-toc nil)))
 
 (defun rlr/quit-mu4e ()
   (interactive)
