@@ -4,13 +4,10 @@
 # group: skeleton
 # name: luaarticle
 # --
-% arara: latexmk: { engine: lualatex }
-
 \documentclass[11pt]{article}
-
-\usepackage{graphicx,epstopdf,amsmath,amssymb,url}
-\usepackage{microtype,todonotes}
-\usepackage[american]{babel}
+\usepackage{graphicx,epstopdf,amsmath,amssymb,url,tabularray}
+\usepackage{polyglossia}
+\setdefaultlanguage{english}
 \usepackage[letterpaper,centering]{geometry}
 \usepackage[sf,sc]{titlesec}
 \usepackage[parfill]{parskip} % Line between paragraphs
@@ -22,14 +19,15 @@
 \usepackage[autostyle]{csquotes}
 \clubpenalty = 10000 % Reduce orphans and widows
 \widowpenalty = 10000
-
 \usepackage[authordate,url=false,isbn=false,backend=biber]{biblatex-chicago} %Change authordate to notes if desired.
 \addbibresource{/Users/rlridenour/Dropbox/bibtex/rlr.bib}
-
-
-\usepackage{lualatex-math,luatextra}
-\usepackage{libertinus}
-\usepackage{unicode-math}
+% \usepackage{lualatex-math,luatextra}
+\usepackage{fontspec}
+\usepackage[math-style=upright]{unicode-math}
+\setmainfont{Libertinus Serif}
+\setmathfont[AutoFakeBold]{Libertinus Math}
+\setsansfont[Numbers=OldStyle]{Libertinus Sans}
+\fontspec{inconsolata}
 \usepackage[unicode=true]{hyperref}
 
 \title{${1:Title}}

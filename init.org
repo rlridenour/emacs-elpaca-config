@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2025-07-01 14:16:47 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2025-07-02 05:53:25 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -1368,7 +1368,6 @@ Find non-ascii characters in buffer.
     (occur "[^[:ascii:]]"))
 #+end_src
 
-
 *** Avy
 
 #+begin_src emacs-lisp
@@ -1394,8 +1393,6 @@ Find non-ascii characters in buffer.
   (use-package easy-find
   :ensure (:type git :host github :repo "emacselements/easy-find"))
 #+end_src
-
-
 
 *** FZF
 
@@ -3370,115 +3367,6 @@ Copy entire buffer then kill. I use this with temporary scratch buffers to write
 
 ** Mu4e
 
-#+begin_src emacs-lisp :tangle no
-  (use-feature mu4e
-    :commands (mu4e mu4e-update-mail-and-index)
-    :general
-    (:keymaps 'mu4e-headers-mode-map
-	  "q"  #'kill-current-buffer
-	  "C-<tab>" #'tab-next)
-    (:keymaps 'mu4e-thread-mode-map
-	  "C-<tab>" #'tab-next)
-    (:keymaps 'mu4e-main-mode-map
-	  "q"  #'rlr/quit-mu4e)
-    (:keymaps 'mu4e-view-mode-map
-	  "," #'link-hint-open-link
-	  "C-," #'mu4e-sexp-at-point)
-    :after org
-    :config
-    ;; (setq mu4e-split-view 'horizontal)
-    ;; (setq mu4e-index-update-error-warning nil)
-    ;; (setq mu4e-headers-skip-duplicates  t)
-    ;; (setq mu4e-view-show-images t)
-    ;; (setq mu4e-view-show-addresses t)
-    ;; (setq mu4e-use-fancy-chars t)
-    ;; (setq mu4e-compose-format-flowed t)
-    ;; (setq mu4e-date-format "%y/%m/%d")
-    ;; (setq mu4e-headers-date-format "%Y/%m/%d")
-    (setq mu4e-change-filenames-when-moving t)
-    (setq mu4e-attachment-dir "~/Downloads")
-    (setq mu4e-maildir       "~/.maildir/")
-    ;; (setq mu4e-mu-allow-temp-file t)
-    (setq mu4e-get-mail-command "mbsync -a")
-    (setq mu4e-update-interval 300) ;; update every 5 minutes
-    ;; mu4e-headers-auto-update
-    (setq mu4e-read-option-use-builtin nil
-	  mu4e-completing-read-function 'completing-read)
-    ;; customize the reply-quote-string
-    ;; (setq message-citation-line-format "On %a %d %b %Y at %R, %f wrote:\n")
-    ;; choose to use the formatted string
-    ;; (setq message-citation-line-function 'message-insert-formatted-citation-line)
-    (setq mu4e-context-policy 'pick-first)
-    (setq mu4e-contexts
-	  `(,(make-mu4e-context
-	  :name "fastmail"
-	  :match-func
-	  (lambda (msg)
-	    (when msg
-	      (string-prefix-p "/fastmail" (mu4e-message-field msg :maildir))))
-	  :vars '((user-mail-address . "rlridenour@fastmail.com")
-		(user-full-name    . "Randy Ridenour")
-		(mu4e-drafts-folder  . "/fastmail/Drafts")
-		(mu4e-sent-folder  . "/fastmail/Sent")
-		(mu4e-trash-folder  . "/fastmail/Trash")
-		(mu4e-refile-folder  . "/fastmail/Archive")
-		(sendmail-program . "msmtp")
-		(send-mail-function . smtpmail-send-it)
-		(message-sendmail-f-is-evil . t)
-		(message-sendmail-extra-arguments . ("--read-envelope-from"))
-		(message-send-mail-function . message-send-mail-with-sendmail)
-		(smtpmail-default-smtp-server . "smtp.fastmail.com")
-		(smtpmail-smtp-server  . "smtp.fastmail.com")
-		))
-	,(make-mu4e-context
-	  :name "obu"
-	  :match-func
-	  (lambda (msg)
-	    (when msg
-	      (string-prefix-p "/obu" (mu4e-message-field msg :maildir))))
-	  :vars '((user-mail-address . "randy.ridenour@okbu.edu")
-		(user-full-name    . "Randy Ridenour")
-		(mu4e-drafts-folder  . "/obu/Drafts")
-		(mu4e-sent-folder  . "/obu/Sent")
-		(mu4e-trash-folder . "/obu/Trash")
-		(mu4e-refile-folder  . "/obu/Archive")
-		;; (sendmail-program . "msmtp")
-		(send-mail-function . smtpmail-send-it)
-		(message-sendmail-f-is-evil . t)
-		(message-sendmail-extra-arguments . ("--read-envelope-from"))
-		(message-send-mail-function . message-send-mail-with-sendmail)
-		(smtpmail-smtp-server  . "localhost")
-		(smtpmail-smtp-user . "randy.ridenour@okbu.edu")
-		(smtpmail-stream-type . plain)
-		(smtpmail-smtp-service . 1025)
-		))))
-    (display-line-numbers-mode -1)
-    (require 'mu4e-transient)
-    (add-to-list 'mu4e-bookmarks
-	     '( :name "OBU Inbox"
-		:query "maildir:/obu/INBOX AND NOT flag:trashed"
-		:key ?o))
-    (add-to-list 'mu4e-bookmarks
-	     '( :name "Fastmail Inbox"
-		:query "maildir:/fastmail/INBOX AND NOT flag:trashed"
-		:key ?f))
-    ;; (add-to-list 'mu4e-bookmarks
-    ;;       '(:name "All Inboxes"
-    ;;             :query "(maildir:/obu/INBOX OR maildir:/fastmail/INBOX) AND NOT flag:trashed"
-    ;;             :key ?i
-    ;;             :hide-unread))
-    (add-to-list 'mu4e-bookmarks
-	     '(:name "Unread Inboxes"
-		   :query "flag:unread AND NOT flag:trashed"
-		   :key ?b))
-
-    (setq gnus-blocked-images
-	  (lambda(&optional _ignore)
-	(if (mu4e-message-contact-field-matches
-	     (mu4e-message-at-point) :from "store-news@woot.com")
-	    nil "."))))
-#+end_src
-
 #+begin_src emacs-lisp
   (use-feature mu4e
     :commands (mu4e mu4e-update-mail-and-index)
@@ -3573,6 +3461,28 @@ Copy entire buffer then kill. I use this with temporary scratch buffers to write
 		   :query "flag:unread AND NOT flag:trashed"
 		   :key ?b))
     (require 'mu4e-transient))
+#+end_src
+
+This asks before sending messages without subjects. From [[https://emacs.stackexchange.com/questions/41175/how-to-warn-before-sending-email-if-subject-is-empty][message mode - How to warn before sending email if Subject: is empty - Emacs Stack Exchange]]
+
+#+begin_src emacs-lisp
+(defun my-confirm-empty-subject ()
+  "Allow user to quit when current message subject is empty."
+  (or (message-field-value "Subject")
+      (yes-or-no-p "Really send without Subject? ")
+      (keyboard-quit)))
+
+(add-hook 'message-send-hook #'my-confirm-empty-subject)
+#+end_src
+
+Show images from Woot.
+
+#+begin_src emacs-lisp
+    (setq gnus-blocked-images
+	  (lambda(&optional _ignore)
+	(if (mu4e-message-contact-field-matches
+	     (mu4e-message-at-point) :from "store-news@woot.com")
+	    nil ".")))
 #+end_src
 
 #+begin_src emacs-lisp

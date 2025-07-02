@@ -2187,6 +2187,20 @@ installed."
 		   :key ?b))
     (require 'mu4e-transient))
 
+(defun my-confirm-empty-subject ()
+  "Allow user to quit when current message subject is empty."
+  (or (message-field-value "Subject")
+      (yes-or-no-p "Really send without Subject? ")
+      (keyboard-quit)))
+
+(add-hook 'message-send-hook #'my-confirm-empty-subject)
+
+(setq gnus-blocked-images
+	  (lambda(&optional _ignore)
+	(if (mu4e-message-contact-field-matches
+	     (mu4e-message-at-point) :from "store-news@woot.com")
+	    nil ".")))
+
 (use-package org-mime
   :commands (org-mime-edit-mail-in-org-mode)
   :config
