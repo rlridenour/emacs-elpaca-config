@@ -1033,6 +1033,7 @@
   :custom
   (magit-repository-directories (list (cons elpaca-repos-directory 1)))
   (magit-diff-refine-hunk 'all)
+  (magit-git-executable "/opt/homebrew/bin/git")
   :config
   (transient-bind-q-to-quit)
   :commands magit-status)
@@ -1096,6 +1097,10 @@
   (vundo-glyph-alist vundo-unicode-symbols)
   :general
   ("C-x u" #'vundo))
+
+(setq undo-limit 67108864) ; 64mb.
+(setq undo-strong-limit 100663296) ; 96mb.
+(setq undo-outer-limit 1006632960) ; 960mb.
 
 (use-package unfill
 :commands unfill-paragraph)
@@ -3078,8 +3083,9 @@ installed."
    ("Bibtex"
     (("r" citar-insert-citation "citation"))
     "LaTeXmk"
-    (("m" rlr/tex-mkpdf "PDFLaTeX")
-     ("l" rlr/tex-mklua "LuaLaTeX")
+    (
+     ("m" rlr/tex-mklua "LuaLaTeX")
+     ("p" rlr/tex-mkpdf "PDFLaTeX")
      ("w" rlr/tex-mktc "watch PDFLaTeX")
      ("L" rlr/tex-mklua "watch LuaLaTeX")
      ("c" tex-clean "clean aux")
@@ -3090,10 +3096,11 @@ installed."
  (major-mode-hydra-define org-mode
    (:quit-key "q")
    ("Export"
-    (("m" rlr/org-mkpdf "Make PDF with PDFLaTeX")
-     ("p" rlr/org-open-pdf "View PDF")
+    (
+     ("m" rlr/org-mklua "Make PDF with LuaLaTeX")
+     ("p" rlr/org-mkpdf "Make PDF with PDFLaTeX")
+     ("o" rlr/org-open-pdf "View PDF")
      ("h" make-html "HTML")
-     ("l" rlr/org-mklua "Make PDF with LuaLaTeX")
      ("el" org-latex-export-to-latex "Org to LaTeX")
      ("eb" org-beamer-export-to-pdf "Org to Beamer-PDF")
      ("eB" org-beamer-export-to-latex "Org to Beamer-LaTeX")

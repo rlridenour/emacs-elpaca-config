@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2025-07-02 05:53:25 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2025-07-04 15:44:52 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -1897,6 +1897,7 @@ Accent allows easy insertion of accented characters. Place the mark on the chara
     :custom
     (magit-repository-directories (list (cons elpaca-repos-directory 1)))
     (magit-diff-refine-hunk 'all)
+    (magit-git-executable "/opt/homebrew/bin/git")
     :config
     (transient-bind-q-to-quit)
     :commands magit-status)
@@ -2032,6 +2033,17 @@ Display suggestions in grid.
     :general
     ("C-x u" #'vundo))
 #+end_src
+
+Raise the undo limits.
+
+#+begin_src emacs-lisp
+(setq undo-limit 67108864) ; 64mb.
+(setq undo-strong-limit 100663296) ; 96mb.
+(setq undo-outer-limit 1006632960) ; 960mb.
+#+end_src
+
+
+
 
 ** Unfill
 
@@ -4506,6 +4518,8 @@ Make chord charts.
 
 ** Major-Mode Hydras
 
+*** Dashboard Mode
+
 #+begin_src emacs-lisp
   (with-after-elpaca-init
    (major-mode-hydra-define dashboard-mode
@@ -4516,6 +4530,8 @@ Make chord charts.
        ("t" (find-file "/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/tasks.org") "open tasks")
        ("b" (find-file "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/bookmarks.org") "web bookmarks")))))
 #+end_src
+
+*** Org Agenda Mode
 
 #+begin_src emacs-lisp
   (with-after-elpaca-init
@@ -4538,6 +4554,8 @@ Make chord charts.
       (("s" rlr/save-web-page-as-org-file "Save Safari page as Org")
        ("e" rlr/open-safari-page-in-eww "Open Safari page in EWW")))))
 #+end_src
+
+*** EWW Mode
 
 #+begin_src emacs-lisp
   (with-after-elpaca-init
@@ -4587,6 +4605,9 @@ Make chord charts.
        ("<SPC>" nil "Quit" :color pink)))))
 #+end_src
 
+
+*** Markdown Mode
+
 #+begin_src emacs-lisp
   (with-after-elpaca-init
    (major-mode-hydra-define markdown-mode
@@ -4602,6 +4623,8 @@ Make chord charts.
        ("c" markdown-complete-buffer "complete")))))
 #+end_src
 
+*** LaTeX Mode
+
 #+begin_src emacs-lisp
   (with-after-elpaca-init
    (major-mode-hydra-define LaTeX-mode
@@ -4609,8 +4632,9 @@ Make chord charts.
      ("Bibtex"
       (("r" citar-insert-citation "citation"))
       "LaTeXmk"
-      (("m" rlr/tex-mkpdf "PDFLaTeX")
-       ("l" rlr/tex-mklua "LuaLaTeX")
+      (
+       ("m" rlr/tex-mklua "LuaLaTeX")
+       ("p" rlr/tex-mkpdf "PDFLaTeX")
        ("w" rlr/tex-mktc "watch PDFLaTeX")
        ("L" rlr/tex-mklua "watch LuaLaTeX")
        ("c" tex-clean "clean aux")
@@ -4618,15 +4642,18 @@ Make chord charts.
        ("n" latex-word-count "word count")))))
 #+end_src
 
+*** Org Mode
+
 #+begin_src emacs-lisp
   (with-after-elpaca-init
    (major-mode-hydra-define org-mode
      (:quit-key "q")
      ("Export"
-      (("m" rlr/org-mkpdf "Make PDF with PDFLaTeX")
-       ("p" rlr/org-open-pdf "View PDF")
+      (
+       ("m" rlr/org-mklua "Make PDF with LuaLaTeX")
+       ("p" rlr/org-mkpdf "Make PDF with PDFLaTeX")
+       ("o" rlr/org-open-pdf "View PDF")
        ("h" make-html "HTML")
-       ("l" rlr/org-mklua "Make PDF with LuaLaTeX")
        ("el" org-latex-export-to-latex "Org to LaTeX")
        ("eb" org-beamer-export-to-pdf "Org to Beamer-PDF")
        ("eB" org-beamer-export-to-latex "Org to Beamer-LaTeX")
@@ -4664,7 +4691,9 @@ Make chord charts.
        ("bd" orgblog-push "Push to Github"))
       "Notes"
       (("1" denote-link "link to note")))))
-#+end_src
+      #+end_src
+
+*** Dired Mode
 
 #+begin_src emacs-lisp
   (with-after-elpaca-init
@@ -4687,6 +4716,8 @@ Make chord charts.
        ("bd" orgblog-push "Push to Github")))))
 #+end_src
 
+*** CSS Mode
+
 #+begin_src emacs-lisp
   (with-after-elpaca-init
    (major-mode-hydra-define css-mode
@@ -4698,6 +4729,9 @@ Make chord charts.
        ("bd" orgblog-push "Push to Github")))))
 #+end_src
 
+
+*** Denote Menu Mode
+
 #+begin_src emacs-lisp
   (with-after-elpaca-init
    (major-mode-hydra-define denote-menu-mode
@@ -4708,6 +4742,9 @@ Make chord charts.
        ("c" denote-menu-clear-filters "Clear filters")
        ("d" denote-menu-export-to-dired "Dired")))))
 #+end_src
+
+
+*** Mu4e Mode
 
 #+begin_src emacs-lisp
   (with-after-elpaca-init
