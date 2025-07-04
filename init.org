@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2025-07-04 15:44:52 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2025-07-04 15:47:12 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -2041,9 +2041,6 @@ Raise the undo limits.
 (setq undo-strong-limit 100663296) ; 96mb.
 (setq undo-outer-limit 1006632960) ; 960mb.
 #+end_src
-
-
-
 
 ** Unfill
 
@@ -4605,7 +4602,6 @@ Make chord charts.
        ("<SPC>" nil "Quit" :color pink)))))
 #+end_src
 
-
 *** Markdown Mode
 
 #+begin_src emacs-lisp
@@ -4729,7 +4725,6 @@ Make chord charts.
        ("bd" orgblog-push "Push to Github")))))
 #+end_src
 
-
 *** Denote Menu Mode
 
 #+begin_src emacs-lisp
@@ -4742,7 +4737,6 @@ Make chord charts.
        ("c" denote-menu-clear-filters "Clear filters")
        ("d" denote-menu-export-to-dired "Dired")))))
 #+end_src
-
 
 *** Mu4e Mode
 
