@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2025-07-04 15:47:12 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2025-07-07 11:14:32 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -447,11 +447,13 @@ Make numeric backup versions
   (setq version-control t)
 #+end_src
 
-Do not automatically save files.
+Auto save files instead of creating copies.
 
 #+begin_src emacs-lisp
-  (setq auto-save-default nil)
-#+end_src
+  (setq auto-save-default nil
+	auto-save-visited-interval 60)
+(auto-save-visited-mode 1)
+  #+end_src
 
 Don't make all those files that look like =#foo.ext=.
 
@@ -597,9 +599,9 @@ Enrich existing commands with completion annotations
     (setq prefix-help-command #'embark-prefix-help-command)
     :config
     (add-to-list 'display-buffer-alist
-	     '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
-	       nil
-	       (window-parameters (mode-line-format . none)))))
+		 '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+		   nil
+		   (window-parameters (mode-line-format . none)))))
 #+end_src
 
 #+begin_src emacs-lisp
@@ -607,7 +609,7 @@ Enrich existing commands with completion annotations
     :after embark
     :hook
     (embark-collect-mode . consult-preview-at-point-mode))
-    #+end_src
+#+end_src
 
 ** Cape
 
@@ -1154,7 +1156,7 @@ Use ~persistent-scratch~ to save scratch file between sessions.
 
 #+begin_src emacs-lisp
   (use-package persistent-scratch
-:defer 10
+    :defer 10
     :init
     (persistent-scratch-setup-default))
 #+end_src
@@ -1391,7 +1393,7 @@ Find non-ascii characters in buffer.
 
 #+begin_src emacs-lisp
   (use-package easy-find
-  :ensure (:type git :host github :repo "emacselements/easy-find"))
+    :ensure (:type git :host github :repo "emacselements/easy-find"))
 #+end_src
 
 *** FZF
@@ -1419,7 +1421,7 @@ Find non-ascii characters in buffer.
     :commands rg
     :config
     (rg-enable-default-bindings))
-    #+end_src
+#+end_src
 
 *** Wgrep
 
@@ -1540,7 +1542,7 @@ Replace spaces in file names with hyphens using "%s" in dired.
 #+begin_src emacs-lisp
   (use-package reveal-in-osx-finder
     :defer 10)
-  #+end_src
+#+end_src
 
 ** Shells
 
@@ -1554,10 +1556,10 @@ Replace spaces in file names with hyphens using "%s" in dired.
     (:host codeberg
 	   :repo "akib/emacs-eat"
 	   :files ("*.el" ("term" "term/*.el") "*.texi"
-	       "*.ti" ("terminfo/e" "terminfo/e/*")
-	       ("terminfo/65" "terminfo/65/*")
-	       ("integration" "integration/*")
-	       (:exclude ".dir-locals.el" "*-tests.el"))))
+		   "*.ti" ("terminfo/e" "terminfo/e/*")
+		   ("terminfo/65" "terminfo/65/*")
+		   ("integration" "integration/*")
+		   (:exclude ".dir-locals.el" "*-tests.el"))))
 #+end_src
 
 *** Term Toggle
@@ -1577,7 +1579,7 @@ https://github.com/amno1/emacs-term-toggle
     ("<f2>" #'term-toggle-eat
      "<S-f2>" #'term-toggle-eshell)
     )
-    #+end_src
+#+end_src
 
 *** Async Shell Command Buffers
 
@@ -1780,15 +1782,15 @@ Make open-line behave like Vim, from [[https://www.reddit.com/r/emacs/comments/1
 Set the mark at a location without highlighting anything with =C-`=. This is useful for marking locations for easy return. From [[https://www.masteringemacs.org/article/fixing-mark-commands-transient-mark-mode][Fixing the mark commands in transient mark mode - Mastering Emacs]]. Use =M-`= to bring up the list of marks with =consult-mark=.
 
 #+begin_src emacs-lisp
-(defun push-mark-no-activate ()
-  "Pushes `point' to `mark-ring' and does not activate the region
-   Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
-  (interactive)
-  (push-mark (point) t nil)
-  (message "Pushed mark to ring"))
+  (defun push-mark-no-activate ()
+    "Pushes `point' to `mark-ring' and does not activate the region
+     Equivalent to \\[set-mark-command] when \\[transient-mark-mode] is disabled"
+    (interactive)
+    (push-mark (point) t nil)
+    (message "Pushed mark to ring"))
 
-(general-define-key "C-`" #'push-mark-no-activate)
-(general-define-key "M-`" #'consult-mark)
+  (general-define-key "C-`" #'push-mark-no-activate)
+  (general-define-key "M-`" #'consult-mark)
 #+end_src
 
 ** Evil Nerd Commenter
@@ -1820,7 +1822,7 @@ Accent allows easy insertion of accented characters. Place the mark on the chara
     :defer 5
     :config
     (global-aggressive-indent-mode 1))
-    #+end_src
+#+end_src
 
 ** Crux
 
@@ -1864,12 +1866,12 @@ Accent allows easy insertion of accented characters. Place the mark on the chara
 [[https://flandrew.srht.site/listful/sw-emacs-fold-and-focus.html#source][Fold and Focus — Focused navigation in Org, Markdown, and Elisp (Emacs package) — Listful Andrew]]
 
 #+begin_src emacs-lisp
-(use-package fold-and-focus
-:ensure (:type git :host sourcehut :repo "flandrew/fold-and-focus")
-:config
-  (global-fold-and-focus-org-mode)
-  (global-fold-and-focus-md-mode)
-  (global-fold-and-focus-el-mode))
+  (use-package fold-and-focus
+    :ensure (:type git :host sourcehut :repo "flandrew/fold-and-focus")
+    :config
+    (global-fold-and-focus-org-mode)
+    (global-fold-and-focus-md-mode)
+    (global-fold-and-focus-el-mode))
 #+end_src
 
 ** Hungry Delete
@@ -1997,22 +1999,6 @@ Display suggestions in grid.
     (:host github :repo "jdtsmith/speedrect")
     :defer 10
     :config (speedrect-mode))
-#+end_src
-
-** Super Save
-
-[[https://github.com/bbatsov/super-save][GitHub - bbatsov/super-save: Save Emacs buffers when they lose focus]]
-
-#+begin_src emacs-lisp
-  (use-package super-save
-    :config
-    (setq super-save-auto-save-when-idle t
-	  auto-save-default nil
-	  super-save-silent t
-	  super-save-all-buffers t)
-    ;; save on find-file
-    (add-to-list 'super-save-hook-triggers 'find-file-hook)
-    (super-save-mode +1))
 #+end_src
 
 ** Titlecase

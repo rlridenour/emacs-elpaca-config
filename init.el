@@ -157,7 +157,9 @@
 
 (setq version-control t)
 
-(setq auto-save-default nil)
+(setq auto-save-default nil
+	auto-save-visited-interval 60)
+(auto-save-visited-mode 1)
 
 (setq create-lockfiles nil)
 
@@ -248,9 +250,9 @@
   (setq prefix-help-command #'embark-prefix-help-command)
   :config
   (add-to-list 'display-buffer-alist
-	     '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
-	       nil
-	       (window-parameters (mode-line-format . none)))))
+		 '("\\`\\*Embark Collect \\(Live\\|Completions\\)\\*"
+		   nil
+		   (window-parameters (mode-line-format . none)))))
 
 (use-package embark-consult
   :after embark
@@ -550,9 +552,9 @@
  "C-M-S-s-s" #'goto-scratch)
 
 (use-package persistent-scratch
-:defer 10
-    :init
-    (persistent-scratch-setup-default))
+  :defer 10
+  :init
+  (persistent-scratch-setup-default))
 
 (use-feature project
   :init
@@ -719,7 +721,7 @@
   ("M-g a" #'casual-avy-tmenu))
 
 (use-package easy-find
-:ensure (:type git :host github :repo "emacselements/easy-find"))
+  :ensure (:type git :host github :repo "emacselements/easy-find"))
 
 (use-package fzf
   :commands (fzf fzf-directory)
@@ -820,10 +822,10 @@
   (:host codeberg
 	   :repo "akib/emacs-eat"
 	   :files ("*.el" ("term" "term/*.el") "*.texi"
-	       "*.ti" ("terminfo/e" "terminfo/e/*")
-	       ("terminfo/65" "terminfo/65/*")
-	       ("integration" "integration/*")
-	       (:exclude ".dir-locals.el" "*-tests.el"))))
+		   "*.ti" ("terminfo/e" "terminfo/e/*")
+		   ("terminfo/65" "terminfo/65/*")
+		   ("integration" "integration/*")
+		   (:exclude ".dir-locals.el" "*-tests.el"))))
 
 (use-package term-toggle
   :ensure
@@ -1011,8 +1013,8 @@
   :general ("C-=" #'er/expand-region))
 
 (use-package fold-and-focus
-:ensure (:type git :host sourcehut :repo "flandrew/fold-and-focus")
-:config
+  :ensure (:type git :host sourcehut :repo "flandrew/fold-and-focus")
+  :config
   (global-fold-and-focus-org-mode)
   (global-fold-and-focus-md-mode)
   (global-fold-and-focus-el-mode))
@@ -1076,16 +1078,6 @@
   (:host github :repo "jdtsmith/speedrect")
   :defer 10
   :config (speedrect-mode))
-
-(use-package super-save
-  :config
-  (setq super-save-auto-save-when-idle t
-	  auto-save-default nil
-	  super-save-silent t
-	  super-save-all-buffers t)
-  ;; save on find-file
-  (add-to-list 'super-save-hook-triggers 'find-file-hook)
-  (super-save-mode +1))
 
 (use-package titlecase
     :config
