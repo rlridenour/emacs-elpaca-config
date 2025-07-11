@@ -26,9 +26,8 @@
 #+LaTeX_HEADER: \setlist[itemize]{noitemsep} % Comment out for wider separation in lists.
 #+LaTeX_HEADER: \setlist[enumerate]{noitemsep}
 #+LaTeX_HEADER: \setlist[description]{noitemsep}
-#+LaTeX_HEADER: \usepackage{helvet}
-#+LaTeX_HEADER: \usepackage[T1]{fontenc}
-#+LaTeX_HEADER: \renewcommand{\familydefault}{\sfdefault}
+#+LaTeX_HEADER: \usepackage{fontspec}
+#+LaTeX_HEADER: \usepackage[default]{heros-otf}
 #+LaTeX_HEADER:\usepackage[unicode=true]{hyperref}
 #+LaTeX_HEADER: \usepackage{sectsty}
 #+LaTeX_HEADER: \sectionfont{\color{OBUGREEN}}

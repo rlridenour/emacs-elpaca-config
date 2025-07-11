@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2025-07-07 11:14:32 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2025-07-11 06:37:03 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -2228,6 +2228,26 @@ Use variable pitch mode in Org and Markdown modes. Toggle with ~C-M-S-s-v~, boun
 		   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
 		   ("\\paragraph{%s}" . "\\paragraph*{%s}")
 		   ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+(add-to-list 'org-latex-classes
+		 '("org-obu-letter"
+		   "\\documentclass{obuletter}
+			      [NO-DEFAULT-PACKAGES]
+			      [NO-PACKAGES]"
+		   ("\\section{%s}" . "\\section*{%s}")
+		   ("\\subsection{%s}" . "\\subsection*{%s}")
+		   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+		   ("\\paragraph{%s}" . "\\paragraph*{%s}")
+		   ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+(add-to-list 'org-latex-classes
+		 '("org-my-letter"
+		   "\\documentclass{myletter}
+			      [NO-DEFAULT-PACKAGES]
+			      [NO-PACKAGES]"
+		   ("\\section{%s}" . "\\section*{%s}")
+		   ("\\subsection{%s}" . "\\subsection*{%s}")
+		   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+		   ("\\paragraph{%s}" . "\\paragraph*{%s}")
+		   ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
     (add-to-list 'org-latex-classes
 		 '("org-beamer"
 		   "\\documentclass{beamer}
@@ -2818,7 +2838,7 @@ Compile handout
     (interactive)
     (save-buffer)
     ;; (find-file "*-handout.org" t)
-    (rlr/org-mkpdf)
+    (rlr/org-mklua)
     ;; (kill-buffer)
     ;; (shell-command "canvas-notes")
     ;; (find-file "canvas.org" t)
@@ -2842,7 +2862,7 @@ Compile syllabus.
     (interactive)
     (save-buffer)
     (find-file "*-syllabus.org" t)
-    (rlr/org-mkpdf)
+    (rlr/org-mklua)
     (kill-buffer)
     (shell-command "canvas-notes")
     (find-file "canvas.org" t)
@@ -2964,7 +2984,7 @@ Create new article.
 
     (find-file (s-concat rlrt-filename "/" rlrt-filename ".org"))
     (insert (s-concat "#+TITLE: " rlrt-title) ?\n)
-    (yas-expand-snippet (yas-lookup-snippet "rlrt-pdf-article")))
+    (yas-expand-snippet (yas-lookup-snippet "rlrt-lua-article")))
 #+end_src
 
 Function for converting Org mode files to QTI file for importing into Canvas using https://www.nyit.edu/its/canvas_exam_converter

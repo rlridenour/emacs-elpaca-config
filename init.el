@@ -1211,8 +1211,8 @@
     )
 
 (require 'ox-beamer)
-(with-eval-after-load 'ox-latex
-  (add-to-list 'org-latex-classes
+  (with-eval-after-load 'ox-latex
+    (add-to-list 'org-latex-classes
 		 '("org-article"
 		   "\\documentclass{article}
 			      [NO-DEFAULT-PACKAGES]
@@ -1222,7 +1222,7 @@
 		   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
 		   ("\\paragraph{%s}" . "\\paragraph*{%s}")
 		   ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
-  (add-to-list 'org-latex-classes
+    (add-to-list 'org-latex-classes
 		 '("org-handout"
 		   "\\documentclass{pdfhandout}
 			      [NO-DEFAULT-PACKAGES]
@@ -1232,7 +1232,27 @@
 		   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
 		   ("\\paragraph{%s}" . "\\paragraph*{%s}")
 		   ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
-  (add-to-list 'org-latex-classes
+(add-to-list 'org-latex-classes
+		 '("org-obu-letter"
+		   "\\documentclass{obuletter}
+			      [NO-DEFAULT-PACKAGES]
+			      [NO-PACKAGES]"
+		   ("\\section{%s}" . "\\section*{%s}")
+		   ("\\subsection{%s}" . "\\subsection*{%s}")
+		   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+		   ("\\paragraph{%s}" . "\\paragraph*{%s}")
+		   ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+(add-to-list 'org-latex-classes
+		 '("org-my-letter"
+		   "\\documentclass{myletter}
+			      [NO-DEFAULT-PACKAGES]
+			      [NO-PACKAGES]"
+		   ("\\section{%s}" . "\\section*{%s}")
+		   ("\\subsection{%s}" . "\\subsection*{%s}")
+		   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+		   ("\\paragraph{%s}" . "\\paragraph*{%s}")
+		   ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+    (add-to-list 'org-latex-classes
 		 '("org-beamer"
 		   "\\documentclass{beamer}
 			      [NO-DEFAULT-PACKAGES]
@@ -1242,9 +1262,9 @@
 		   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
 		   ("\\paragraph{%s}" . "\\paragraph*{%s}")
 		   ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))))
-(setq org-export-with-smart-quotes t)
-(with-eval-after-load 'ox-latex
-  (add-to-list 'org-export-smart-quotes-alist
+  (setq org-export-with-smart-quotes t)
+  (with-eval-after-load 'ox-latex
+    (add-to-list 'org-export-smart-quotes-alist
 		 '("en-us"
 		   (primary-opening   :utf-8 "“" :html "&ldquo;" :latex "\\enquote{"  :texinfo "``")
 		   (primary-closing   :utf-8 "”" :html "&rdquo;" :latex "}"           :texinfo "''")
@@ -1673,7 +1693,7 @@
   (interactive)
   (save-buffer)
   ;; (find-file "*-handout.org" t)
-  (rlr/org-mkpdf)
+  (rlr/org-mklua)
   ;; (kill-buffer)
   ;; (shell-command "canvas-notes")
   ;; (find-file "canvas.org" t)
@@ -1691,7 +1711,7 @@
   (interactive)
   (save-buffer)
   (find-file "*-syllabus.org" t)
-  (rlr/org-mkpdf)
+  (rlr/org-mklua)
   (kill-buffer)
   (shell-command "canvas-notes")
   (find-file "canvas.org" t)
@@ -1799,7 +1819,7 @@
 
   (find-file (s-concat rlrt-filename "/" rlrt-filename ".org"))
   (insert (s-concat "#+TITLE: " rlrt-title) ?\n)
-  (yas-expand-snippet (yas-lookup-snippet "rlrt-pdf-article")))
+  (yas-expand-snippet (yas-lookup-snippet "rlrt-lua-article")))
 
 (defun convert-qti-nyit ()
   (interactive)
