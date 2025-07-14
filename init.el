@@ -2211,6 +2211,10 @@ installed."
 	     '( :name "Fastmail Inbox"
 		:query "maildir:/fastmail/INBOX AND NOT flag:trashed"
 		:key ?f))
+(add-to-list 'mu4e-bookmarks
+	     '( :name "Gmail Inbox"
+		:query "maildir:/gmail/INBOX AND NOT flag:trashed"
+		:key ?g))
     (add-to-list 'mu4e-bookmarks
 	     '(:name "Unread Inboxes"
 		   :query "flag:unread AND NOT flag:trashed"

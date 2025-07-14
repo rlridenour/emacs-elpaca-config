@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2025-07-13 19:31:03 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2025-07-14 11:22:32 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -3486,6 +3486,10 @@ Copy entire buffer then kill. I use this with temporary scratch buffers to write
 	     '( :name "Fastmail Inbox"
 		:query "maildir:/fastmail/INBOX AND NOT flag:trashed"
 		:key ?f))
+(add-to-list 'mu4e-bookmarks
+	     '( :name "Gmail Inbox"
+		:query "maildir:/gmail/INBOX AND NOT flag:trashed"
+		:key ?g))
     (add-to-list 'mu4e-bookmarks
 	     '(:name "Unread Inboxes"
 		   :query "flag:unread AND NOT flag:trashed"
