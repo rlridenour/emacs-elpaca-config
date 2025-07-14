@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2025-07-11 06:37:03 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2025-07-13 19:31:03 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -3382,6 +3382,8 @@ Copy entire buffer then kill. I use this with temporary scratch buffers to write
 
 ** Mu4e
 
+
+
 #+begin_src emacs-lisp
   (use-feature mu4e
     :commands (mu4e mu4e-update-mail-and-index)
@@ -3462,7 +3464,20 @@ Copy entire buffer then kill. I use this with temporary scratch buffers to write
 			   (smtpmail-smtp-user . "randy.ridenour@okbu.edu")
 			   (smtpmail-stream-type . plain)
 			   (smtpmail-smtp-service . 1025)
-			   ))))
+			   ))
+(make-mu4e-context
+          :name "gmail"
+ :name "fastmail"
+		     :match-func
+		     (lambda (msg)
+		       (when msg
+			 (string-prefix-p "/gmail" (mu4e-message-field msg :maildir))))
+          :vars '((user-mail-address . "rlridenour@gmail.com")
+                  (user-full-name . "Randy Ridenour")
+                  (mu4e-drafts-folder . "/gmail/Drafts")
+                  (mu4e-refile-folder . "/gmail/Archive")
+                  (mu4e-sent-folder . "/gmail/Sent")
+                  (mu4e-trash-folder . "/gmail/Trash")))))
     (add-to-list 'mu4e-bookmarks
 	     '( :name "OBU Inbox"
 		:query "maildir:/obu/INBOX AND NOT flag:trashed"
@@ -3492,7 +3507,7 @@ This asks before sending messages without subjects. From [[https://emacs.stackex
 
 Show images from Woot.
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp  :tangle no
     (setq gnus-blocked-images
 	  (lambda(&optional _ignore)
 	(if (mu4e-message-contact-field-matches
@@ -3500,7 +3515,7 @@ Show images from Woot.
 	    nil ".")))
 #+end_src
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package org-mime
     :commands (org-mime-edit-mail-in-org-mode)
     :config

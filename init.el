@@ -2189,7 +2189,20 @@ installed."
 			   (smtpmail-smtp-user . "randy.ridenour@okbu.edu")
 			   (smtpmail-stream-type . plain)
 			   (smtpmail-smtp-service . 1025)
-			   ))))
+			   ))
+(make-mu4e-context
+          :name "gmail"
+ :name "fastmail"
+		     :match-func
+		     (lambda (msg)
+		       (when msg
+			 (string-prefix-p "/gmail" (mu4e-message-field msg :maildir))))
+          :vars '((user-mail-address . "rlridenour@gmail.com")
+                  (user-full-name . "Randy Ridenour")
+                  (mu4e-drafts-folder . "/gmail/Drafts")
+                  (mu4e-refile-folder . "/gmail/Archive")
+                  (mu4e-sent-folder . "/gmail/Sent")
+                  (mu4e-trash-folder . "/gmail/Trash")))))
     (add-to-list 'mu4e-bookmarks
 	     '( :name "OBU Inbox"
 		:query "maildir:/obu/INBOX AND NOT flag:trashed"
@@ -2211,19 +2224,6 @@ installed."
       (keyboard-quit)))
 
 (add-hook 'message-send-hook #'my-confirm-empty-subject)
-
-(setq gnus-blocked-images
-	  (lambda(&optional _ignore)
-	(if (mu4e-message-contact-field-matches
-	     (mu4e-message-at-point) :from "store-news@woot.com")
-	    nil ".")))
-
-(use-package org-mime
-  :commands (org-mime-edit-mail-in-org-mode)
-  :config
-  (setq org-mime-export-options '(:section-numbers nil
-						     :with-author nil
-						     :with-toc nil)))
 
 (defun rlr/quit-mu4e ()
   (interactive)
