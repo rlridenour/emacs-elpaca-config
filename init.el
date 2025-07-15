@@ -2119,49 +2119,49 @@ installed."
  "C-M-S-s-k" #'copy-kill-buffer)
 
 (use-feature mu4e
-    :commands (mu4e mu4e-update-mail-and-index)
-    :general
-    (:keymaps 'mu4e-headers-mode-map
+  :commands (mu4e mu4e-update-mail-and-index)
+  :general
+  (:keymaps 'mu4e-headers-mode-map
 	  "q"  #'kill-current-buffer
 	  "C-<tab>" #'tab-next)
-    (:keymaps 'mu4e-thread-mode-map
+  (:keymaps 'mu4e-thread-mode-map
 	  "C-<tab>" #'tab-next)
-    (:keymaps 'mu4e-main-mode-map
+  (:keymaps 'mu4e-main-mode-map
 	  "q"  #'rlr/quit-mu4e)
-    (:keymaps 'mu4e-view-mode-map
+  (:keymaps 'mu4e-view-mode-map
 	  "," #'link-hint-open-link
 	  "C-," #'mu4e-sexp-at-point)
-    :after org
-    :config
-    (setq mail-user-agent 'mu4e-user-agent)
-    (setq mu4e-maildir "~/.maildir/")
-    (setq mu4e-get-mail-command "mbsync -a")
-    (setq mu4e-update-interval 300) ;; update every 5 minutes
-    (setq mu4e-read-option-use-builtin nil
-	  mu4e-completing-read-function 'completing-read)
-    (setq mu4e-split-view 'horizontal)
-    (setq mu4e-index-update-error-warning nil)
-    (setq mu4e-headers-skip-duplicates  t)
-    (setq mu4e-view-show-images t)
-    (setq mu4e-view-show-addresses t)
-    (setq mu4e-use-fancy-chars t)
-    (setq mu4e-compose-format-flowed t)
-    (setq mu4e-date-format "%y/%m/%d")
-    (setq mu4e-headers-date-format "%Y/%m/%d")
-    (setq mu4e-change-filenames-when-moving t)
-;; customize the reply-quote-string
-    (setq message-citation-line-format "On %a %d %b %Y at %R, %f wrote:\n")
-    ;; choose to use the formatted string
-    (setq message-citation-line-function 'message-insert-formatted-citation-line)
-    (setq mu4e-attachment-dir "~/Downloads")
-    (setq mu4e-context-policy 'pick-first)
-    (setq  mu4e-contexts (list
+  :after org
+  :config
+  (setq mail-user-agent 'mu4e-user-agent)
+  (setq mu4e-maildir "~/.maildir/")
+  (setq mu4e-get-mail-command "mbsync -a")
+  (setq mu4e-update-interval 300) ;; update every 5 minutes
+  (setq mu4e-read-option-use-builtin nil
+        mu4e-completing-read-function 'completing-read)
+  (setq mu4e-split-view 'horizontal)
+  (setq mu4e-index-update-error-warning nil)
+  (setq mu4e-headers-skip-duplicates  t)
+  (setq mu4e-view-show-images t)
+  (setq mu4e-view-show-addresses t)
+  (setq mu4e-use-fancy-chars t)
+  (setq mu4e-compose-format-flowed t)
+  (setq mu4e-date-format "%y/%m/%d")
+  (setq mu4e-headers-date-format "%Y/%m/%d")
+  (setq mu4e-change-filenames-when-moving t)
+  ;; customize the reply-quote-string
+  (setq message-citation-line-format "On %a %d %b %Y at %R, %f wrote:\n")
+  ;; choose to use the formatted string
+  (setq message-citation-line-function 'message-insert-formatted-citation-line)
+  (setq mu4e-attachment-dir "~/Downloads")
+  (setq mu4e-context-policy 'pick-first)
+  (setq  mu4e-contexts (list
 		    (make-mu4e-context
 		     :name "fastmail"
 		     :match-func
 		     (lambda (msg)
 		       (when msg
-			 (string-prefix-p "/fastmail" (mu4e-message-field msg :maildir))))
+		         (string-prefix-p "/fastmail" (mu4e-message-field msg :maildir))))
 		     :vars '((user-mail-address . "rlridenour@fastmail.com")
 			   (user-full-name    . "Randy Ridenour")
 			   (mu4e-drafts-folder  . "/fastmail/Drafts")
@@ -2181,7 +2181,7 @@ installed."
 		     :match-func
 		     (lambda (msg)
 		       (when msg
-			 (string-prefix-p "/obu" (mu4e-message-field msg :maildir))))
+		         (string-prefix-p "/obu" (mu4e-message-field msg :maildir))))
 		     :vars '((user-mail-address . "randy.ridenour@okbu.edu")
 			   (user-full-name    . "Randy Ridenour")
 			   (mu4e-drafts-folder  . "/obu/Drafts")
@@ -2198,36 +2198,36 @@ installed."
 			   (smtpmail-stream-type . plain)
 			   (smtpmail-smtp-service . 1025)
 			   ))
-(make-mu4e-context
-          :name "gmail"
- :name "fastmail"
+		    (make-mu4e-context
+		     :name "gmail"
+		     :name "fastmail"
 		     :match-func
 		     (lambda (msg)
 		       (when msg
-			 (string-prefix-p "/gmail" (mu4e-message-field msg :maildir))))
-          :vars '((user-mail-address . "rlridenour@gmail.com")
-                  (user-full-name . "Randy Ridenour")
-                  (mu4e-drafts-folder . "/gmail/Drafts")
-                  (mu4e-refile-folder . "/gmail/Archive")
-                  (mu4e-sent-folder . "/gmail/Sent")
-                  (mu4e-trash-folder . "/gmail/Trash")))))
-    (add-to-list 'mu4e-bookmarks
+		         (string-prefix-p "/gmail" (mu4e-message-field msg :maildir))))
+		     :vars '((user-mail-address . "rlridenour@gmail.com")
+			   (user-full-name . "Randy Ridenour")
+			   (mu4e-drafts-folder . "/gmail/Drafts")
+			   (mu4e-refile-folder . "/gmail/Archive")
+			   (mu4e-sent-folder . "/gmail/Sent")
+			   (mu4e-trash-folder . "/gmail/Trash")))))
+  (add-to-list 'mu4e-bookmarks
 	     '( :name "OBU Inbox"
-		:query "maildir:/obu/INBOX AND NOT flag:trashed"
-		:key ?o))
-    (add-to-list 'mu4e-bookmarks
+	        :query "maildir:/obu/INBOX AND NOT flag:trashed"
+	        :key ?o))
+  (add-to-list 'mu4e-bookmarks
 	     '( :name "Fastmail Inbox"
-		:query "maildir:/fastmail/INBOX AND NOT flag:trashed"
-		:key ?f))
-(add-to-list 'mu4e-bookmarks
+	        :query "maildir:/fastmail/INBOX AND NOT flag:trashed"
+	        :key ?f))
+  (add-to-list 'mu4e-bookmarks
 	     '( :name "Gmail Inbox"
-		:query "maildir:/gmail/INBOX AND NOT flag:trashed"
-		:key ?g))
-    (add-to-list 'mu4e-bookmarks
+	        :query "maildir:/gmail/INBOX AND NOT flag:trashed"
+	        :key ?g))
+  (add-to-list 'mu4e-bookmarks
 	     '(:name "Unread Inboxes"
 		   :query "flag:unread AND NOT flag:trashed"
 		   :key ?b))
-    (require 'mu4e-transient))
+  (require 'mu4e-transient))
 
 (defun my-confirm-empty-subject ()
   "Allow user to quit when current message subject is empty."
