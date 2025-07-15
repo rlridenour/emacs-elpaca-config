@@ -50,9 +50,6 @@
 (setq-default initial-scratch-message nil)
 (setq use-dialog-box nil)
 
-(setq scroll-conservatively 10
-	scroll-margin 0)
-
 (setq frame-resize-pixelwise t)
 (add-to-list 'default-frame-alist '(fullscreen . maximized))
 

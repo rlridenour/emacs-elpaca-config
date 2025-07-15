@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2025-07-14 11:22:32 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2025-07-15 05:50:21 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -111,13 +111,6 @@ Remove unnecessary GUI elements.
   (setq-default inhibit-startup-message t)
   (setq-default initial-scratch-message nil)
   (setq use-dialog-box nil)
-#+end_src
-
-Make scrolling smoother.
-
-#+begin_src emacs-lisp
-  (setq scroll-conservatively 10
-	scroll-margin 0)
 #+end_src
 
 *** Initial Frame
@@ -917,6 +910,19 @@ Disable changing text size with mouse and trackpad
   (global-set-key (kbd "<C-wheel-up>") 'ignore)
   (global-set-key (kbd "<C-wheel-down>") 'ignore)
 #+end_src
+
+*** Ultra-Scroll
+
+#+begin_src emacs-lisp
+(use-package ultra-scroll
+:ensure (:type git :host github :repo "jdtsmith/ultra-scroll")
+  :init
+  (setq scroll-conservatively 3 ; or whatever value you prefer, since v0.4
+        scroll-margin 0)        ; important: scroll-margin>0 not yet supported
+  :config
+  (ultra-scroll-mode 1))
+#+end_src
+
 
 ** Menus
 

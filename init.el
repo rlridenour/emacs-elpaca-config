@@ -433,6 +433,14 @@
 (global-set-key (kbd "<C-wheel-up>") 'ignore)
 (global-set-key (kbd "<C-wheel-down>") 'ignore)
 
+(use-package ultra-scroll
+:ensure (:type git :host github :repo "jdtsmith/ultra-scroll")
+  :init
+  (setq scroll-conservatively 3 ; or whatever value you prefer, since v0.4
+        scroll-margin 0)        ; important: scroll-margin>0 not yet supported
+  :config
+  (ultra-scroll-mode 1))
+
 (use-feature recentf
   :init
   (recentf-mode)
