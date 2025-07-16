@@ -437,7 +437,7 @@
 :ensure (:type git :host github :repo "jdtsmith/ultra-scroll")
   :init
   (setq scroll-conservatively 3 ; or whatever value you prefer, since v0.4
-        scroll-margin 0)        ; important: scroll-margin>0 not yet supported
+	scroll-margin 0)        ; important: scroll-margin>0 not yet supported
   :config
   (ultra-scroll-mode 1))
 
@@ -2123,7 +2123,8 @@ installed."
   :general
   (:keymaps 'mu4e-headers-mode-map
 	  "q"  #'kill-current-buffer
-	  "C-<tab>" #'tab-next)
+	  "C-<tab>" #'tab-next
+	  "g" #'my-mu4e-mark-add-tag)
   (:keymaps 'mu4e-thread-mode-map
 	  "C-<tab>" #'tab-next)
   (:keymaps 'mu4e-main-mode-map
@@ -2138,7 +2139,7 @@ installed."
   (setq mu4e-get-mail-command "mbsync -a")
   (setq mu4e-update-interval 300) ;; update every 5 minutes
   (setq mu4e-read-option-use-builtin nil
-        mu4e-completing-read-function 'completing-read)
+	  mu4e-completing-read-function 'completing-read)
   (setq mu4e-split-view 'horizontal)
   (setq mu4e-index-update-error-warning nil)
   (setq mu4e-headers-skip-duplicates  t)
@@ -2161,7 +2162,7 @@ installed."
 		     :match-func
 		     (lambda (msg)
 		       (when msg
-		         (string-prefix-p "/fastmail" (mu4e-message-field msg :maildir))))
+			 (string-prefix-p "/fastmail" (mu4e-message-field msg :maildir))))
 		     :vars '((user-mail-address . "rlridenour@fastmail.com")
 			   (user-full-name    . "Randy Ridenour")
 			   (mu4e-drafts-folder  . "/fastmail/Drafts")
@@ -2181,7 +2182,7 @@ installed."
 		     :match-func
 		     (lambda (msg)
 		       (when msg
-		         (string-prefix-p "/obu" (mu4e-message-field msg :maildir))))
+			 (string-prefix-p "/obu" (mu4e-message-field msg :maildir))))
 		     :vars '((user-mail-address . "randy.ridenour@okbu.edu")
 			   (user-full-name    . "Randy Ridenour")
 			   (mu4e-drafts-folder  . "/obu/Drafts")
@@ -2198,13 +2199,13 @@ installed."
 			   (smtpmail-stream-type . plain)
 			   (smtpmail-smtp-service . 1025)
 			   ))
-		    (make-mu4e-context
-		     :name "gmail"
+			    (make-mu4e-context
+			     :name "gmail"
 		     :name "fastmail"
 		     :match-func
 		     (lambda (msg)
 		       (when msg
-		         (string-prefix-p "/gmail" (mu4e-message-field msg :maildir))))
+			 (string-prefix-p "/gmail" (mu4e-message-field msg :maildir))))
 		     :vars '((user-mail-address . "rlridenour@gmail.com")
 			   (user-full-name . "Randy Ridenour")
 			   (mu4e-drafts-folder . "/gmail/Drafts")
@@ -2213,20 +2214,32 @@ installed."
 			   (mu4e-trash-folder . "/gmail/Trash")))))
   (add-to-list 'mu4e-bookmarks
 	     '( :name "OBU Inbox"
-	        :query "maildir:/obu/INBOX AND NOT flag:trashed"
-	        :key ?o))
+		:query "maildir:/obu/INBOX AND NOT flag:trashed"
+		:key ?o))
   (add-to-list 'mu4e-bookmarks
 	     '( :name "Fastmail Inbox"
-	        :query "maildir:/fastmail/INBOX AND NOT flag:trashed"
-	        :key ?f))
+		:query "maildir:/fastmail/INBOX AND NOT flag:trashed"
+		:key ?f))
   (add-to-list 'mu4e-bookmarks
 	     '( :name "Gmail Inbox"
-	        :query "maildir:/gmail/INBOX AND NOT flag:trashed"
-	        :key ?g))
+		:query "maildir:/gmail/INBOX AND NOT flag:trashed"
+		:key ?g))
   (add-to-list 'mu4e-bookmarks
 	     '(:name "Unread Inboxes"
-		   :query "flag:unread AND NOT flag:trashed"
+		   :query "flag:unread AND NOT flag:trashed AND NOT maildir:/gmail/[Gmail]/Trash"
 		   :key ?b))
+  ;; Try adding marks.
+  (add-to-list 'mu4e-marks
+	     '(tag
+	       :char       "g"
+	       :prompt     "gtag"
+	       :ask-target (lambda () (read-string "What tag do you want to add? "))
+	       :action     (lambda (docid msg target)
+			 (mu4e-action-retag-message msg (concat "+" target)))))
+  (defun my-mu4e-mark-add-tag()
+    "Add a tag to the message at point."
+    (interactive)
+    (mu4e-headers-mark-and-next 'tag))
   (require 'mu4e-transient))
 
 (defun my-confirm-empty-subject ()

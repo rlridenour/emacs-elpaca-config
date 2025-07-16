@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2025-07-15 13:54:30 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2025-07-16 14:00:59 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -918,11 +918,10 @@ Disable changing text size with mouse and trackpad
 :ensure (:type git :host github :repo "jdtsmith/ultra-scroll")
   :init
   (setq scroll-conservatively 3 ; or whatever value you prefer, since v0.4
-        scroll-margin 0)        ; important: scroll-margin>0 not yet supported
+	scroll-margin 0)        ; important: scroll-margin>0 not yet supported
   :config
   (ultra-scroll-mode 1))
 #+end_src
-
 
 ** Menus
 
@@ -3388,22 +3387,21 @@ Copy entire buffer then kill. I use this with temporary scratch buffers to write
 
 ** Mu4e
 
-
-
 #+begin_src emacs-lisp
   (use-feature mu4e
     :commands (mu4e mu4e-update-mail-and-index)
     :general
     (:keymaps 'mu4e-headers-mode-map
-  	  "q"  #'kill-current-buffer
-  	  "C-<tab>" #'tab-next)
+	  "q"  #'kill-current-buffer
+	  "C-<tab>" #'tab-next
+	  "g" #'my-mu4e-mark-add-tag)
     (:keymaps 'mu4e-thread-mode-map
-  	  "C-<tab>" #'tab-next)
+	  "C-<tab>" #'tab-next)
     (:keymaps 'mu4e-main-mode-map
-  	  "q"  #'rlr/quit-mu4e)
+	  "q"  #'rlr/quit-mu4e)
     (:keymaps 'mu4e-view-mode-map
-  	  "," #'link-hint-open-link
-  	  "C-," #'mu4e-sexp-at-point)
+	  "," #'link-hint-open-link
+	  "C-," #'mu4e-sexp-at-point)
     :after org
     :config
     (setq mail-user-agent 'mu4e-user-agent)
@@ -3411,7 +3409,7 @@ Copy entire buffer then kill. I use this with temporary scratch buffers to write
     (setq mu4e-get-mail-command "mbsync -a")
     (setq mu4e-update-interval 300) ;; update every 5 minutes
     (setq mu4e-read-option-use-builtin nil
-          mu4e-completing-read-function 'completing-read)
+	  mu4e-completing-read-function 'completing-read)
     (setq mu4e-split-view 'horizontal)
     (setq mu4e-index-update-error-warning nil)
     (setq mu4e-headers-skip-duplicates  t)
@@ -3429,79 +3427,113 @@ Copy entire buffer then kill. I use this with temporary scratch buffers to write
     (setq mu4e-attachment-dir "~/Downloads")
     (setq mu4e-context-policy 'pick-first)
     (setq  mu4e-contexts (list
-  		    (make-mu4e-context
-  		     :name "fastmail"
-  		     :match-func
-  		     (lambda (msg)
-  		       (when msg
-  		         (string-prefix-p "/fastmail" (mu4e-message-field msg :maildir))))
-  		     :vars '((user-mail-address . "rlridenour@fastmail.com")
-  			   (user-full-name    . "Randy Ridenour")
-  			   (mu4e-drafts-folder  . "/fastmail/Drafts")
-  			   (mu4e-sent-folder  . "/fastmail/Sent")
-  			   (mu4e-trash-folder  . "/fastmail/Trash")
-  			   (mu4e-refile-folder  . "/fastmail/Archive")
-  			   (sendmail-program . "msmtp")
-  			   (send-mail-function . smtpmail-send-it)
-  			   (message-sendmail-f-is-evil . t)
-  			   (message-sendmail-extra-arguments . ("--read-envelope-from"))
-  			   (message-send-mail-function . message-send-mail-with-sendmail)
-  			   (smtpmail-default-smtp-server . "smtp.fastmail.com")
-  			   (smtpmail-smtp-server  . "smtp.fastmail.com")
-  			   ))
-  		    (make-mu4e-context
-  		     :name "obu"
-  		     :match-func
-  		     (lambda (msg)
-  		       (when msg
-  		         (string-prefix-p "/obu" (mu4e-message-field msg :maildir))))
-  		     :vars '((user-mail-address . "randy.ridenour@okbu.edu")
-  			   (user-full-name    . "Randy Ridenour")
-  			   (mu4e-drafts-folder  . "/obu/Drafts")
-  			   (mu4e-sent-folder  . "/obu/Sent")
-  			   (mu4e-trash-folder . "/obu/Trash")
-  			   (mu4e-refile-folder  . "/obu/Archive")
-  			   ;; (sendmail-program . "msmtp")
-  			   (send-mail-function . smtpmail-send-it)
-  			   (message-sendmail-f-is-evil . t)
-  			   (message-sendmail-extra-arguments . ("--read-envelope-from"))
-  			   (message-send-mail-function . message-send-mail-with-sendmail)
-  			   (smtpmail-smtp-server  . "localhost")
-  			   (smtpmail-smtp-user . "randy.ridenour@okbu.edu")
-  			   (smtpmail-stream-type . plain)
-  			   (smtpmail-smtp-service . 1025)
-  			   ))
 		    (make-mu4e-context
-		     :name "gmail"
-  		     :name "fastmail"
-  		     :match-func
-  		     (lambda (msg)
-  		       (when msg
-  		         (string-prefix-p "/gmail" (mu4e-message-field msg :maildir))))
-  		     :vars '((user-mail-address . "rlridenour@gmail.com")
-  			   (user-full-name . "Randy Ridenour")
-  			   (mu4e-drafts-folder . "/gmail/Drafts")
-  			   (mu4e-refile-folder . "/gmail/Archive")
-  			   (mu4e-sent-folder . "/gmail/Sent")
-  			   (mu4e-trash-folder . "/gmail/Trash")))))
+		     :name "fastmail"
+		     :match-func
+		     (lambda (msg)
+		       (when msg
+			 (string-prefix-p "/fastmail" (mu4e-message-field msg :maildir))))
+		     :vars '((user-mail-address . "rlridenour@fastmail.com")
+			   (user-full-name    . "Randy Ridenour")
+			   (mu4e-drafts-folder  . "/fastmail/Drafts")
+			   (mu4e-sent-folder  . "/fastmail/Sent")
+			   (mu4e-trash-folder  . "/fastmail/Trash")
+			   (mu4e-refile-folder  . "/fastmail/Archive")
+			   (sendmail-program . "msmtp")
+			   (send-mail-function . smtpmail-send-it)
+			   (message-sendmail-f-is-evil . t)
+			   (message-sendmail-extra-arguments . ("--read-envelope-from"))
+			   (message-send-mail-function . message-send-mail-with-sendmail)
+			   (smtpmail-default-smtp-server . "smtp.fastmail.com")
+			   (smtpmail-smtp-server  . "smtp.fastmail.com")
+			   ))
+		    (make-mu4e-context
+		     :name "obu"
+		     :match-func
+		     (lambda (msg)
+		       (when msg
+			 (string-prefix-p "/obu" (mu4e-message-field msg :maildir))))
+		     :vars '((user-mail-address . "randy.ridenour@okbu.edu")
+			   (user-full-name    . "Randy Ridenour")
+			   (mu4e-drafts-folder  . "/obu/Drafts")
+			   (mu4e-sent-folder  . "/obu/Sent")
+			   (mu4e-trash-folder . "/obu/Trash")
+			   (mu4e-refile-folder  . "/obu/Archive")
+			   ;; (sendmail-program . "msmtp")
+			   (send-mail-function . smtpmail-send-it)
+			   (message-sendmail-f-is-evil . t)
+			   (message-sendmail-extra-arguments . ("--read-envelope-from"))
+			   (message-send-mail-function . message-send-mail-with-sendmail)
+			   (smtpmail-smtp-server  . "localhost")
+			   (smtpmail-smtp-user . "randy.ridenour@okbu.edu")
+			   (smtpmail-stream-type . plain)
+			   (smtpmail-smtp-service . 1025)
+			   ))
+			    (make-mu4e-context
+			     :name "gmail"
+		     :name "fastmail"
+		     :match-func
+		     (lambda (msg)
+		       (when msg
+			 (string-prefix-p "/gmail" (mu4e-message-field msg :maildir))))
+		     :vars '((user-mail-address . "rlridenour@gmail.com")
+			   (user-full-name . "Randy Ridenour")
+			   (mu4e-drafts-folder . "/gmail/Drafts")
+			   (mu4e-refile-folder . "/gmail/Archive")
+			   (mu4e-sent-folder . "/gmail/Sent")
+			   (mu4e-trash-folder . "/gmail/Trash")))))
     (add-to-list 'mu4e-bookmarks
-  	     '( :name "OBU Inbox"
-  	        :query "maildir:/obu/INBOX AND NOT flag:trashed"
-  	        :key ?o))
+	     '( :name "OBU Inbox"
+		:query "maildir:/obu/INBOX AND NOT flag:trashed"
+		:key ?o))
     (add-to-list 'mu4e-bookmarks
-  	     '( :name "Fastmail Inbox"
-  	        :query "maildir:/fastmail/INBOX AND NOT flag:trashed"
-  	        :key ?f))
+	     '( :name "Fastmail Inbox"
+		:query "maildir:/fastmail/INBOX AND NOT flag:trashed"
+		:key ?f))
     (add-to-list 'mu4e-bookmarks
-  	     '( :name "Gmail Inbox"
-  	        :query "maildir:/gmail/INBOX AND NOT flag:trashed"
-  	        :key ?g))
+	     '( :name "Gmail Inbox"
+		:query "maildir:/gmail/INBOX AND NOT flag:trashed"
+		:key ?g))
     (add-to-list 'mu4e-bookmarks
-  	     '(:name "Unread Inboxes"
-  		   :query "flag:unread AND NOT flag:trashed"
-  		   :key ?b))
+	     '(:name "Unread Inboxes"
+		   :query "flag:unread AND NOT flag:trashed AND NOT maildir:/gmail/[Gmail]/Trash"
+		   :key ?b))
+    ;; Try adding marks.
+    (add-to-list 'mu4e-marks
+	     '(tag
+	       :char       "g"
+	       :prompt     "gtag"
+	       :ask-target (lambda () (read-string "What tag do you want to add? "))
+	       :action     (lambda (docid msg target)
+			 (mu4e-action-retag-message msg (concat "+" target)))))
+    (defun my-mu4e-mark-add-tag()
+      "Add a tag to the message at point."
+      (interactive)
+      (mu4e-headers-mark-and-next 'tag))
     (require 'mu4e-transient))
 #+end_src
+
+Try tagging.
+
+#+begin_src emacs-lisp :tangle no
+(add-to-list 'mu4e-marks
+  '(tag
+     :char       "g"
+     :prompt     "gtag"
+     :ask-target (lambda () (read-string "What tag do you want to add? "))
+     :action     (lambda (docid msg target)
+		   (mu4e-action-retag-message msg (concat "+" target)))))
+
+(defun my-mu4e-mark-add-tag()
+  "Add a tag to the message at point."
+  (interactive)
+  (mu4e-headers-mark-and-next 'tag))
+
+(define-key mu4e-headers-mode-map (kbd "g") #'my-mu4e-mark-add-tag)
+#+end_src
+
+
+
 
 This asks before sending messages without subjects. From [[https://emacs.stackexchange.com/questions/41175/how-to-warn-before-sending-email-if-subject-is-empty][message mode - How to warn before sending email if Subject: is empty - Emacs Stack Exchange]]
 
