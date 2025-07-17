@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2025-07-16 14:00:59 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2025-07-16 19:42:06 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -921,6 +921,12 @@ Disable changing text size with mouse and trackpad
 	scroll-margin 0)        ; important: scroll-margin>0 not yet supported
   :config
   (ultra-scroll-mode 1))
+#+end_src
+
+Indent wrapped lines in bulleted lists.
+
+#+begin_src emacs-lisp
+(visual-wrap-prefix-mode)
 #+end_src
 
 ** Menus
@@ -3498,42 +3504,8 @@ Copy entire buffer then kill. I use this with temporary scratch buffers to write
 	     '(:name "Unread Inboxes"
 		   :query "flag:unread AND NOT flag:trashed AND NOT maildir:/gmail/[Gmail]/Trash"
 		   :key ?b))
-    ;; Try adding marks.
-    (add-to-list 'mu4e-marks
-	     '(tag
-	       :char       "g"
-	       :prompt     "gtag"
-	       :ask-target (lambda () (read-string "What tag do you want to add? "))
-	       :action     (lambda (docid msg target)
-			 (mu4e-action-retag-message msg (concat "+" target)))))
-    (defun my-mu4e-mark-add-tag()
-      "Add a tag to the message at point."
-      (interactive)
-      (mu4e-headers-mark-and-next 'tag))
     (require 'mu4e-transient))
 #+end_src
-
-Try tagging.
-
-#+begin_src emacs-lisp :tangle no
-(add-to-list 'mu4e-marks
-  '(tag
-     :char       "g"
-     :prompt     "gtag"
-     :ask-target (lambda () (read-string "What tag do you want to add? "))
-     :action     (lambda (docid msg target)
-		   (mu4e-action-retag-message msg (concat "+" target)))))
-
-(defun my-mu4e-mark-add-tag()
-  "Add a tag to the message at point."
-  (interactive)
-  (mu4e-headers-mark-and-next 'tag))
-
-(define-key mu4e-headers-mode-map (kbd "g") #'my-mu4e-mark-add-tag)
-#+end_src
-
-
-
 
 This asks before sending messages without subjects. From [[https://emacs.stackexchange.com/questions/41175/how-to-warn-before-sending-email-if-subject-is-empty][message mode - How to warn before sending email if Subject: is empty - Emacs Stack Exchange]]
 

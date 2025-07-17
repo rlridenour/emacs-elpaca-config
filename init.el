@@ -441,6 +441,8 @@
   :config
   (ultra-scroll-mode 1))
 
+(visual-wrap-prefix-mode)
+
 (use-feature recentf
   :init
   (recentf-mode)
@@ -2228,18 +2230,6 @@ installed."
 	     '(:name "Unread Inboxes"
 		   :query "flag:unread AND NOT flag:trashed AND NOT maildir:/gmail/[Gmail]/Trash"
 		   :key ?b))
-  ;; Try adding marks.
-  (add-to-list 'mu4e-marks
-	     '(tag
-	       :char       "g"
-	       :prompt     "gtag"
-	       :ask-target (lambda () (read-string "What tag do you want to add? "))
-	       :action     (lambda (docid msg target)
-			 (mu4e-action-retag-message msg (concat "+" target)))))
-  (defun my-mu4e-mark-add-tag()
-    "Add a tag to the message at point."
-    (interactive)
-    (mu4e-headers-mark-and-next 'tag))
   (require 'mu4e-transient))
 
 (defun my-confirm-empty-subject ()
