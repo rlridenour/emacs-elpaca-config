@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2025-07-18 16:33:48 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2025-07-18 16:35:22 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -1399,6 +1399,8 @@ Find non-ascii characters in buffer.
 #+end_src
 
 *** Consult-Omni
+
+I just started using this, but I need to finish configuration.
 
 #+begin_src emacs-lisp
 (defun brave-api ()
