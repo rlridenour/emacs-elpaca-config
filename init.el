@@ -730,6 +730,65 @@
   :general
   ("M-g a" #'casual-avy-tmenu))
 
+(defun brave-api ()
+(f-read-text "~/.config/keys/brave-search"))
+
+(use-package consult-omni
+  :ensure (:type git :host github :repo "armindarvish/consult-omni" :branch "main" :files (:defaults "sources/*.el"))
+  :after consult
+  :custom
+   ;; General settings that apply to all sources
+  (consult-omni-show-preview t) ;;; show previews
+  (consult-omni-preview-key "C-o") ;;; set the preview key to C-o
+  :config
+  ;; Load Sources Core code
+  (require 'consult-omni-sources)
+  ;; Load Embark Actions
+  (require 'consult-omni-embark)
+
+  ;; Either load all source modules or a selected list
+
+  ;;; Select a list of modules you want to aload, otherwise all sources all laoded
+  ; (setq consult-omni-sources-modules-to-load (list 'consult-omni-wkipedia 'consult-omni-notes))
+  (consult-omni-sources-load-modules)
+  ;;; set multiple sources for consult-omni-multi command. Change these lists as needed for different interactive commands. Keep in mind that each source has to be a key in `consult-omni-sources-alist'.
+  (setq consult-omni-multi-sources '("calc"
+                                     ;; "File"
+                                     ;; "Buffer"
+                                     ;; "Bookmark"
+                                     "Apps"
+                                     ;; "gptel"
+                                     "Brave"
+                                     "Dictionary"
+                                     ;; "Google"
+                                     "Wikipedia"
+                                     "elfeed"
+                                     ;; "mu4e"
+                                     ;; "buffers text search"
+                                     "Notes Search"
+                                     "Org Agenda"
+                                     "GitHub"
+                                     ;; "YouTube"
+                                     "Invidious"))
+
+;; Per source customization
+
+  ;;; Set API KEYs. It is recommended to use a function that returns the string for better security.
+  (setq consult-omni-google-customsearch-key "YOUR-GOOGLE-API-KEY-OR-FUNCTION")
+  (setq consult-omni-google-customsearch-cx "YOUR-GOOGLE-CX-NUMBER-OR-FUNCTION")
+  (setq consult-omni-brave-api-key (brave-api))
+  (setq consult-omni-stackexchange-api-key "YOUR-STACKEXCHANGE-API-KEY-OR-FUNCTION")
+  (setq consult-omni-pubmed-api-key "YOUR-PUBMED-API-KEY-OR-FUNCTION")
+  (setq consult-omni-openai-api-key "YOUR-OPENAI-API-KEY-OR-FUNCTION")
+
+;;; Pick you favorite autosuggest command.
+  (setq consult-omni-default-autosuggest-command #'consult-omni-dynamic-brave-autosuggest) ;;or any other autosuggest source you define
+
+ ;;; Set your shorthand favorite interactive command
+  (setq consult-omni-default-interactive-command #'consult-omni-multi)
+:general
+("C-M-S-s-o" #'consult-omni-multi))
+
 (use-package easy-find
   :ensure (:type git :host github :repo "emacselements/easy-find"))
 
