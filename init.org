@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2025-07-18 16:35:22 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2025-07-19 10:16:03 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -1344,8 +1344,7 @@ If more than one window, delete the window; if only one window, delete the tab; 
    "C-x w" #'delete-frame
    ;; "M-o" #'crux-other-window-or-switch-buffer
    "s-\"" #'previous-window-any-frame
-   "s-t" #'tab-new
-   "s-T" #'rlr/find-file-new-tab
+   "s-t" #'rlr/find-file-new-tab
    "s-w" #'rlr/delete-tab-or-frame
    "s-W" #'rlr/kill-buffer-delete-tab-or-frame)
 #+end_src

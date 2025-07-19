@@ -701,8 +701,7 @@
  "C-x w" #'delete-frame
  ;; "M-o" #'crux-other-window-or-switch-buffer
  "s-\"" #'previous-window-any-frame
- "s-t" #'tab-new
- "s-T" #'rlr/find-file-new-tab
+ "s-t" #'rlr/find-file-new-tab
  "s-w" #'rlr/delete-tab-or-frame
  "s-W" #'rlr/kill-buffer-delete-tab-or-frame)
 
