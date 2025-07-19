@@ -1123,6 +1123,10 @@
  (add-to-list 'vertico-multiform-categories
 		'(jinx grid (vertico-grid-annotate . 20))))
 
+(with-eval-after-load 'eglot
+  (add-to-list 'eglot-server-programs
+               '(text-mode . ("harper-ls" "--stdio"))))
+
 (use-package osx-dictionary
   :defer 10)
 

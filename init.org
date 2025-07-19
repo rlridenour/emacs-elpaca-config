@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2025-07-19 10:16:03 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2025-07-19 15:16:14 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -2005,6 +2005,14 @@ Display suggestions in grid.
   (with-after-elpaca-init
    (add-to-list 'vertico-multiform-categories
 		'(jinx grid (vertico-grid-annotate . 20))))
+#+end_src
+
+Try Harper for grammar checking.
+
+#+begin_src emacs-lisp
+(with-eval-after-load 'eglot
+  (add-to-list 'eglot-server-programs
+               '(text-mode . ("harper-ls" "--stdio"))))
 #+end_src
 
 ** OSX Dictionary
