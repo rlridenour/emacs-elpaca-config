@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2025-07-25 05:25:25 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2025-07-25 12:36:43 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -819,6 +819,19 @@ Save minibuffer history.
     :general
     ("<f9>" #'modus-themes-rotate))
 #+end_src
+*** Auto Dark
+
+#+begin_src emacs-lisp
+(use-package auto-dark
+  :ensure t
+  :custom
+  (auto-dark-themes '((modus-vivendi) (modus-operandi)))
+  (auto-dark-polling-interval-seconds 5)
+  (auto-dark-allow-osascript nil)
+  (auto-dark-allow-powershell nil)
+  ;; (auto-dark-detection-method nil) ;; dangerous to be set manually
+  :init (auto-dark-mode))
+#+end_src
 
 *** Doom Modeline
 
@@ -857,9 +870,16 @@ Save minibuffer history.
   (add-hook 'server-after-make-frame-hook #'spacious-padding-mode)
 #+end_src
 
-*** Modern Tab Bar
+*** Tab Bar
 
 #+begin_src emacs-lisp
+  (setq tab-bar-show t)                      ;; hide bar if <= 1 tabs open
+  (setq tab-bar-close-button-show nil
+	tab-bar-new-button-show nil)
+  (setq tab-bar-format '(tab-bar-format-tabs tab-bar-separator))
+#+end_src
+
+#+begin_src emacs-lisp :tangle no
   (use-package modern-tab-bar
     :ensure
     (:host github :repo "aaronjensen/emacs-modern-tab-bar")
@@ -868,6 +888,12 @@ Save minibuffer history.
 	  tab-bar-new-button nil
 	  tab-bar-close-button-show nil)
     (modern-tab-bar-mode))
+#+end_src
+
+#+begin_src emacs-lisp :tangle no
+(use-package vim-tab-bar
+  :config
+  (vim-tab-bar-mode 1))
 #+end_src
 
 I can't imagine wanting the same buffer in two tabs, so this calls consult-buffer when opening a new tab.

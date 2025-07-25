@@ -376,6 +376,16 @@
   :general
   ("<f9>" #'modus-themes-rotate))
 
+(use-package auto-dark
+  :ensure t
+  :custom
+  (auto-dark-themes '((modus-vivendi) (modus-operandi)))
+  (auto-dark-polling-interval-seconds 5)
+  (auto-dark-allow-osascript nil)
+  (auto-dark-allow-powershell nil)
+  ;; (auto-dark-detection-method nil) ;; dangerous to be set manually
+  :init (auto-dark-mode))
+
 (use-package doom-modeline
   :init
   :config
@@ -403,14 +413,10 @@
 
 (add-hook 'server-after-make-frame-hook #'spacious-padding-mode)
 
-(use-package modern-tab-bar
-  :ensure
-  (:host github :repo "aaronjensen/emacs-modern-tab-bar")
-  :init
-  (setq tab-bar-show t
-	  tab-bar-new-button nil
-	  tab-bar-close-button-show nil)
-  (modern-tab-bar-mode))
+(setq tab-bar-show t)                      ;; hide bar if <= 1 tabs open
+(setq tab-bar-close-button-show nil
+	tab-bar-new-button-show nil)
+(setq tab-bar-format '(tab-bar-format-tabs tab-bar-separator))
 
 (defun rlr/find-file-new-tab ()
   "Open new tab and select recent file."
@@ -3418,6 +3424,20 @@ installed."
 
 (setq default-directory "~/")
 
+(custom-set-variables
+ ;; custom-set-variables was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ '(custom-safe-themes
+   '("77f281064ea1c8b14938866e21c4e51e4168e05db98863bd7430f1352cab294a"
+     default)))
+(custom-set-faces
+ ;; custom-set-faces was added by Custom.
+ ;; If you edit it by hand, you could mess it up, so be careful.
+ ;; Your init file should contain only one such instance.
+ ;; If there is more than one, they won't work right.
+ )
 ;; Local Variables:
 ;; no-byte-compile: t
 ;; no-native-compile: t
