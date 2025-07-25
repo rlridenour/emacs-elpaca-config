@@ -752,23 +752,23 @@
   (consult-omni-sources-load-modules)
   ;;; set multiple sources for consult-omni-multi command. Change these lists as needed for different interactive commands. Keep in mind that each source has to be a key in `consult-omni-sources-alist'.
   (setq consult-omni-multi-sources '("calc"
-                                     ;; "File"
-                                     ;; "Buffer"
-                                     ;; "Bookmark"
-                                     "Apps"
-                                     ;; "gptel"
-                                     "Brave"
-                                     "Dictionary"
-                                     ;; "Google"
-                                     "Wikipedia"
-                                     "elfeed"
-                                     ;; "mu4e"
-                                     ;; "buffers text search"
-                                     "Notes Search"
-                                     "Org Agenda"
-                                     "GitHub"
-                                     ;; "YouTube"
-                                     "Invidious"))
+				     ;; "File"
+				     ;; "Buffer"
+				     ;; "Bookmark"
+				     "Apps"
+				     ;; "gptel"
+				     "Brave"
+				     "Dictionary"
+				     ;; "Google"
+				     "Wikipedia"
+				     "elfeed"
+				     ;; "mu4e"
+				     ;; "buffers text search"
+				     "Notes Search"
+				     "Org Agenda"
+				     "GitHub"
+				     ;; "YouTube"
+				     "Invidious"))
 
 ;; Per source customization
 
@@ -816,6 +816,8 @@
 (use-package deadgrep
   :general
   ("<f5>" #'deadgrep))
+
+(use-package zoxide)
 
 (use-package dired+
   :demand
@@ -1125,7 +1127,7 @@
 
 (with-eval-after-load 'eglot
   (add-to-list 'eglot-server-programs
-               '(text-mode . ("harper-ls" "--stdio"))))
+	       '(text-mode . ("harper-ls" "--stdio"))))
 
 (use-package osx-dictionary
   :defer 10)
@@ -1265,6 +1267,32 @@
 
 (general-define-key
  "C-M-S-s-v" #'variable-pitch-mode)
+
+(defun csm/org-word-count ()
+  "Count words in region/buffer, estimate pages, and reading time.
+Excludes lines beginning with * or #. Prints result in echo area."
+  (interactive)
+  (let* ((start (if (use-region-p) (region-beginning) (point-min)))
+	 (end (if (use-region-p) (region-end) (point-max)))
+	 (word-count
+	  (save-excursion
+	    (goto-char start)
+	    (let ((count 0)
+		  (inhibit-field-text-motion t))
+	      (while (< (point) end)
+		(beginning-of-line)
+		(unless (looking-at-p "^[*#<]")
+		  (let ((line-end (line-end-position)))
+		    (while (re-search-forward "\\w+\\W*" line-end t)
+		      (setq count (1+ count)))))
+		(forward-line 1))
+	      count)))
+	 (words-per-page 400)
+	 (reading-speed 215)
+	 (page-count (/ (+ word-count words-per-page -1) words-per-page))
+	 (reading-time (/ (+ word-count reading-speed -1) reading-speed)))
+    (message "%d words, ~%d pages, ~%d min read"
+	     word-count page-count reading-time)))
 
 (use-package org-appear
 :after org
@@ -2263,8 +2291,8 @@ installed."
 			   (smtpmail-stream-type . plain)
 			   (smtpmail-smtp-service . 1025)
 			   ))
-			    (make-mu4e-context
-			     :name "gmail"
+		    (make-mu4e-context
+		     :name "gmail"
 		     :name "fastmail"
 		     :match-func
 		     (lambda (msg)
@@ -2276,22 +2304,28 @@ installed."
 			   (mu4e-refile-folder . "/gmail/Archive")
 			   (mu4e-sent-folder . "/gmail/Sent")
 			   (mu4e-trash-folder . "/gmail/Trash")))))
-  (add-to-list 'mu4e-bookmarks
-	     '( :name "OBU Inbox"
-		:query "maildir:/obu/INBOX AND NOT flag:trashed"
-		:key ?o))
-  (add-to-list 'mu4e-bookmarks
-	     '( :name "Fastmail Inbox"
-		:query "maildir:/fastmail/INBOX AND NOT flag:trashed"
-		:key ?f))
-  (add-to-list 'mu4e-bookmarks
-	     '( :name "Gmail Inbox"
-		:query "maildir:/gmail/INBOX AND NOT flag:trashed"
-		:key ?g))
-  (add-to-list 'mu4e-bookmarks
-	     '(:name "Unread Inboxes"
-		   :query "flag:unread AND NOT flag:trashed AND NOT maildir:/gmail/[Gmail]/Trash"
-		   :key ?b))
+
+  (setq mu4e-bookmarks
+	  '((:name "Unread messages"
+	       :query "flag:unread AND NOT flag:trashed AND NOT maildir:/gmail/[Gmail]/Trash"
+	       :key ?b)
+	( :name "All inboxes"
+	  :query "maildir:/obu/INBOX OR maildir:/fastmail/INBOX OR maildir:/gmail/INBOX AND"
+	  :key ?A)
+	( :name "Today's messages"
+	  :query "date:today..now"
+	  :key ?t)
+	( :name "Last 7 days"
+	  :query "date:7d..now"
+	  :hide-unread t
+	  :key ?w)
+	( :name "Messages with images"
+	  :query "mime:image/*"
+	  :key ?p)))
+  (setq mu4e-maildir-shortcuts
+	  '((:maildir "/obu/INBOX" :key ?u)
+	(:maildir "/fastmail/INBOX" :key ?f)
+	(:maildir "/gmail/INBOX" :key ?g)))
   (require 'mu4e-transient))
 
 (defun my-confirm-empty-subject ()
@@ -3212,6 +3246,7 @@ installed."
      ("ff" org-footnote-action "edit footnote")
      ("fc" citar-insert-citation "citation")
      ("il" org-mac-link-safari-insert-frontmost-url "insert safari link")
+     ("w" csm/org-word-count "word count")
      ("y" yankpad-set-category "set yankpad"))
     "View"
     (("vi" consult-org-heading "iMenu")

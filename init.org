@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2025-07-19 15:16:14 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2025-07-25 05:25:25 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -1427,23 +1427,23 @@ I just started using this, but I need to finish configuration.
   (consult-omni-sources-load-modules)
   ;;; set multiple sources for consult-omni-multi command. Change these lists as needed for different interactive commands. Keep in mind that each source has to be a key in `consult-omni-sources-alist'.
   (setq consult-omni-multi-sources '("calc"
-                                     ;; "File"
-                                     ;; "Buffer"
-                                     ;; "Bookmark"
-                                     "Apps"
-                                     ;; "gptel"
-                                     "Brave"
-                                     "Dictionary"
-                                     ;; "Google"
-                                     "Wikipedia"
-                                     "elfeed"
-                                     ;; "mu4e"
-                                     ;; "buffers text search"
-                                     "Notes Search"
-                                     "Org Agenda"
-                                     "GitHub"
-                                     ;; "YouTube"
-                                     "Invidious"))
+				     ;; "File"
+				     ;; "Buffer"
+				     ;; "Bookmark"
+				     "Apps"
+				     ;; "gptel"
+				     "Brave"
+				     "Dictionary"
+				     ;; "Google"
+				     "Wikipedia"
+				     "elfeed"
+				     ;; "mu4e"
+				     ;; "buffers text search"
+				     "Notes Search"
+				     "Org Agenda"
+				     "GitHub"
+				     ;; "YouTube"
+				     "Invidious"))
 
 ;; Per source customization
 
@@ -1513,6 +1513,12 @@ I just started using this, but I need to finish configuration.
   (use-package deadgrep
     :general
     ("<f5>" #'deadgrep))
+#+end_src
+
+*** Zoxide
+
+#+begin_src emacs-lisp
+(use-package zoxide)
 #+end_src
 
 ** Dired
@@ -2012,7 +2018,7 @@ Try Harper for grammar checking.
 #+begin_src emacs-lisp
 (with-eval-after-load 'eglot
   (add-to-list 'eglot-server-programs
-               '(text-mode . ("harper-ls" "--stdio"))))
+	       '(text-mode . ("harper-ls" "--stdio"))))
 #+end_src
 
 ** OSX Dictionary
@@ -2262,6 +2268,36 @@ Use variable pitch mode in Org and Markdown modes. Toggle with ~C-M-S-s-v~, boun
 
   (general-define-key
    "C-M-S-s-v" #'variable-pitch-mode)
+#+end_src
+
+Word count in Org files, ignoring heading and comment lines. From [[https://chrismaiorana.com/summer-productivity-reset-emacs-functions/][Summer Productivity Reset: Emacs functions to streamline your writing workflow - The Daily Macro]]
+
+#+begin_src emacs-lisp
+(defun csm/org-word-count ()
+  "Count words in region/buffer, estimate pages, and reading time.
+Excludes lines beginning with * or #. Prints result in echo area."
+  (interactive)
+  (let* ((start (if (use-region-p) (region-beginning) (point-min)))
+	 (end (if (use-region-p) (region-end) (point-max)))
+	 (word-count
+	  (save-excursion
+	    (goto-char start)
+	    (let ((count 0)
+		  (inhibit-field-text-motion t))
+	      (while (< (point) end)
+		(beginning-of-line)
+		(unless (looking-at-p "^[*#<]")
+		  (let ((line-end (line-end-position)))
+		    (while (re-search-forward "\\w+\\W*" line-end t)
+		      (setq count (1+ count)))))
+		(forward-line 1))
+	      count)))
+	 (words-per-page 400)
+	 (reading-speed 215)
+	 (page-count (/ (+ word-count words-per-page -1) words-per-page))
+	 (reading-time (/ (+ word-count reading-speed -1) reading-speed)))
+    (message "%d words, ~%d pages, ~%d min read"
+	     word-count page-count reading-time)))
 #+end_src
 
 ** Org Appear
@@ -3549,8 +3585,8 @@ Copy entire buffer then kill. I use this with temporary scratch buffers to write
 			   (smtpmail-stream-type . plain)
 			   (smtpmail-smtp-service . 1025)
 			   ))
-			    (make-mu4e-context
-			     :name "gmail"
+		    (make-mu4e-context
+		     :name "gmail"
 		     :name "fastmail"
 		     :match-func
 		     (lambda (msg)
@@ -3562,22 +3598,28 @@ Copy entire buffer then kill. I use this with temporary scratch buffers to write
 			   (mu4e-refile-folder . "/gmail/Archive")
 			   (mu4e-sent-folder . "/gmail/Sent")
 			   (mu4e-trash-folder . "/gmail/Trash")))))
-    (add-to-list 'mu4e-bookmarks
-	     '( :name "OBU Inbox"
-		:query "maildir:/obu/INBOX AND NOT flag:trashed"
-		:key ?o))
-    (add-to-list 'mu4e-bookmarks
-	     '( :name "Fastmail Inbox"
-		:query "maildir:/fastmail/INBOX AND NOT flag:trashed"
-		:key ?f))
-    (add-to-list 'mu4e-bookmarks
-	     '( :name "Gmail Inbox"
-		:query "maildir:/gmail/INBOX AND NOT flag:trashed"
-		:key ?g))
-    (add-to-list 'mu4e-bookmarks
-	     '(:name "Unread Inboxes"
-		   :query "flag:unread AND NOT flag:trashed AND NOT maildir:/gmail/[Gmail]/Trash"
-		   :key ?b))
+
+    (setq mu4e-bookmarks
+	  '((:name "Unread messages"
+	       :query "flag:unread AND NOT flag:trashed AND NOT maildir:/gmail/[Gmail]/Trash"
+	       :key ?b)
+	( :name "All inboxes"
+	  :query "maildir:/obu/INBOX OR maildir:/fastmail/INBOX OR maildir:/gmail/INBOX AND"
+	  :key ?A)
+	( :name "Today's messages"
+	  :query "date:today..now"
+	  :key ?t)
+	( :name "Last 7 days"
+	  :query "date:7d..now"
+	  :hide-unread t
+	  :key ?w)
+	( :name "Messages with images"
+	  :query "mime:image/*"
+	  :key ?p)))
+    (setq mu4e-maildir-shortcuts
+	  '((:maildir "/obu/INBOX" :key ?u)
+	(:maildir "/fastmail/INBOX" :key ?f)
+	(:maildir "/gmail/INBOX" :key ?g)))
     (require 'mu4e-transient))
 #+end_src
 
@@ -4781,6 +4823,7 @@ Make chord charts.
        ("ff" org-footnote-action "edit footnote")
        ("fc" citar-insert-citation "citation")
        ("il" org-mac-link-safari-insert-frontmost-url "insert safari link")
+       ("w" csm/org-word-count "word count")
        ("y" yankpad-set-category "set yankpad"))
       "View"
       (("vi" consult-org-heading "iMenu")
