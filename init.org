@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2025-07-25 12:36:43 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2025-07-26 08:58:27 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -3561,6 +3561,7 @@ Copy entire buffer then kill. I use this with temporary scratch buffers to write
     (setq mu4e-compose-format-flowed t)
     (setq mu4e-date-format "%y/%m/%d")
     (setq mu4e-headers-date-format "%Y/%m/%d")
+    (setq gnus-article-date-headers '(combined-local-lapsed)) ;; show local time in message header
     (setq mu4e-change-filenames-when-moving t)
     ;; customize the reply-quote-string
     (setq message-citation-line-format "On %a %d %b %Y at %R, %f wrote:\n")
