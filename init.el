@@ -376,16 +376,6 @@
   :general
   ("<f9>" #'modus-themes-rotate))
 
-(use-package auto-dark
-  :ensure t
-  :custom
-  (auto-dark-themes '((modus-vivendi) (modus-operandi)))
-  (auto-dark-polling-interval-seconds 5)
-  (auto-dark-allow-osascript nil)
-  (auto-dark-allow-powershell nil)
-  ;; (auto-dark-detection-method nil) ;; dangerous to be set manually
-  :init (auto-dark-mode))
-
 (use-package doom-modeline
   :init
   :config
@@ -2314,7 +2304,7 @@ installed."
 
   (setq mu4e-bookmarks
 	  '((:name "Unread messages"
-	       :query "flag:unread AND NOT flag:trashed AND NOT maildir:/gmail/[Gmail]/Trash"
+	       :query "flag:unread AND NOT flag:trashed AND NOT maildir:/gmail/[Gmail]/Trash AND NOT maildir:/gmail/[Gmail]/Spam"
 	       :key ?b)
 	( :name "All inboxes"
 	  :query "maildir:/obu/INBOX OR maildir:/fastmail/INBOX OR maildir:/gmail/INBOX AND"

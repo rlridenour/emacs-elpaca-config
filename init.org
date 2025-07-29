@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2025-07-26 08:58:27 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2025-07-28 11:24:11 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -819,9 +819,19 @@ Save minibuffer history.
     :general
     ("<f9>" #'modus-themes-rotate))
 #+end_src
+
+#+begin_src emacs-lisp :tangle no
+(custom-set-variables
+ '(custom-safe-themes (quote ("77f281064ea1c8b14938866e21c4e51e4168e05db98863bd7430f1352cab294a" default))))
+(custom-set-faces
+)
+#+end_src
+
+
+
 *** Auto Dark
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (use-package auto-dark
   :ensure t
   :custom
@@ -3628,7 +3638,7 @@ Copy entire buffer then kill. I use this with temporary scratch buffers to write
 
     (setq mu4e-bookmarks
 	  '((:name "Unread messages"
-	       :query "flag:unread AND NOT flag:trashed AND NOT maildir:/gmail/[Gmail]/Trash"
+	       :query "flag:unread AND NOT flag:trashed AND NOT maildir:/gmail/[Gmail]/Trash AND NOT maildir:/gmail/[Gmail]/Spam"
 	       :key ?b)
 	( :name "All inboxes"
 	  :query "maildir:/obu/INBOX OR maildir:/fastmail/INBOX OR maildir:/gmail/INBOX AND"
