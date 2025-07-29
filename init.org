@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2025-07-28 11:24:11 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2025-07-29 18:45:05 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -318,32 +318,32 @@ Load general before the remaining packages so they can make use of the ~:general
 *** Casual Suite
 
 #+begin_src emacs-lisp
-  (use-package casual
-    :ensure
-    (:type git :host github :repo "kickingvegas/casual")
+  (use-package casual-suite
+    ;; :ensure
+    ;; (:type git :host github :repo "kickingvegas/casual")
     :general
     ("s-." #'casual-editkit-main-tmenu)
+    ("M-g a" #'casual-avy-tmenu)
     (:keymaps 'reb-mode-map
-	      "s-." #'casual-re-builder-tmenu)
+	  "s-." #'casual-re-builder-tmenu)
     (:keymaps 'calc-mode-map
-	      "s-." #'casual-calc-tmenu)
+	  "s-." #'casual-calc-tmenu)
     (:keymaps 'dired-mode-map
-	      "s-." #'casual-dired-tmenu)
+	  "s-." #'casual-dired-tmenu)
     (:keymaps 'isearch-mode-map
-	      "s-." #'casual-isearch-tmenu)
+	  "s-." #'casual-isearch-tmenu)
     (:keymaps 'ibuffer-mode-map
-	      "s-." #'casual-ibuffer-tmenu
-	      "F" #'casual-ibuffer-filter-tmenu
-	      "s" #'casual-ibuffer-sortby-tmenu)
+	  "s-." #'casual-ibuffer-tmenu
+	  "F" #'casual-ibuffer-filter-tmenu
+	  "s" #'casual-ibuffer-sortby-tmenu)
     (:keymaps 'bookmark-bemenu-mode-map
-	      "s-." #'casual-bookmarks-tmenu)
+	  "s-." #'casual-bookmarks-tmenu)
     (:keymaps 'org-agenda-mode-map
-	      "s-." #'casual-agenda-tmenu)
+	  "s-." #'casual-agenda-tmenu)
     (:keymaps 'Info-mode-map
-	      "s-." #'casual-info-tmenu)
+	  "s-." #'casual-info-tmenu)
     (:keymaps 'calendar-mode-map
-	      "s-." #'casual-calendar-tmenu)
-    )
+	  "s-." #'casual-calendar-tmenu))
 #+end_src
 
 *** Discover
@@ -826,8 +826,6 @@ Save minibuffer history.
 (custom-set-faces
 )
 #+end_src
-
-
 
 *** Auto Dark
 
@@ -1425,12 +1423,6 @@ Find non-ascii characters in buffer.
     :general
     ("s-/" #'avy-goto-char-timer)
     ("C-c C-j" #'avy-resume))
-#+end_src
-
-#+begin_src emacs-lisp
-  (use-package casual-avy
-    :general
-    ("M-g a" #'casual-avy-tmenu))
 #+end_src
 
 *** Consult-Omni

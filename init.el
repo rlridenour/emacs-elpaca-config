@@ -85,32 +85,32 @@
   :general
   ("s-m" #'major-mode-hydra))
 
-(use-package casual
-  :ensure
-  (:type git :host github :repo "kickingvegas/casual")
+(use-package casual-suite
+  ;; :ensure
+  ;; (:type git :host github :repo "kickingvegas/casual")
   :general
   ("s-." #'casual-editkit-main-tmenu)
+  ("M-g a" #'casual-avy-tmenu)
   (:keymaps 'reb-mode-map
-	      "s-." #'casual-re-builder-tmenu)
+	  "s-." #'casual-re-builder-tmenu)
   (:keymaps 'calc-mode-map
-	      "s-." #'casual-calc-tmenu)
+	  "s-." #'casual-calc-tmenu)
   (:keymaps 'dired-mode-map
-	      "s-." #'casual-dired-tmenu)
+	  "s-." #'casual-dired-tmenu)
   (:keymaps 'isearch-mode-map
-	      "s-." #'casual-isearch-tmenu)
+	  "s-." #'casual-isearch-tmenu)
   (:keymaps 'ibuffer-mode-map
-	      "s-." #'casual-ibuffer-tmenu
-	      "F" #'casual-ibuffer-filter-tmenu
-	      "s" #'casual-ibuffer-sortby-tmenu)
+	  "s-." #'casual-ibuffer-tmenu
+	  "F" #'casual-ibuffer-filter-tmenu
+	  "s" #'casual-ibuffer-sortby-tmenu)
   (:keymaps 'bookmark-bemenu-mode-map
-	      "s-." #'casual-bookmarks-tmenu)
+	  "s-." #'casual-bookmarks-tmenu)
   (:keymaps 'org-agenda-mode-map
-	      "s-." #'casual-agenda-tmenu)
+	  "s-." #'casual-agenda-tmenu)
   (:keymaps 'Info-mode-map
-	      "s-." #'casual-info-tmenu)
+	  "s-." #'casual-info-tmenu)
   (:keymaps 'calendar-mode-map
-	      "s-." #'casual-calendar-tmenu)
-  )
+	  "s-." #'casual-calendar-tmenu))
 
 (use-package discover
   :defer 10
@@ -720,10 +720,6 @@
   :general
   ("s-/" #'avy-goto-char-timer)
   ("C-c C-j" #'avy-resume))
-
-(use-package casual-avy
-  :general
-  ("M-g a" #'casual-avy-tmenu))
 
 (defun brave-api ()
 (f-read-text "~/.config/keys/brave-search"))
