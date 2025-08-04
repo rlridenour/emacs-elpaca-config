@@ -2522,8 +2522,25 @@ installed."
 (general-define-key
  :keymaps 'elfeed-show-mode-map
  "l" #'rlr/elfeed-show-toggle-readlater
- "m" #'rlr/elfeed-show-toggle-starred
- )
+ "m" #'rlr/elfeed-show-toggle-starred)
+
+(defun ar/elfeed-search-browse-background-url ()
+  "Open current `elfeed' entry (or region entries) in browser without losing focus."
+  (interactive)
+  (let ((entries (elfeed-search-selected)))
+    (mapc (lambda (entry)
+	      (cl-assert (memq system-type '(darwin)) t "open command is macOS only")
+	      (start-process (concat "open " (elfeed-entry-link entry))
+			     nil "open" "--background" (elfeed-entry-link entry))
+	      (elfeed-untag entry 'unread)
+	      (elfeed-search-update-entry entry))
+	    entries)
+    (unless (or elfeed-search-remain-on-entry (use-region-p))
+	(forward-line))))
+
+(general-define-key
+ :keymaps 'elfeed-search-mode-map
+ "B" #'ar/elfeed-search-browse-background-url)
 
 (use-package elfeed-org
   :after elfeed
@@ -3230,8 +3247,7 @@ installed."
      ("c" tex-clean "clean aux")
      ("C" tex-clean-all "clean all"))
     "Edit"
-    (("a" org-appear-mode :toggle t)
-     ("dd" org-deadline "deadline")
+    (("dd" org-deadline "deadline")
      ("ds" org-schedule "schedule")
      ("r" org-refile "refile")
      ("du" rlr/org-date "update date stamp")
@@ -3242,7 +3258,9 @@ installed."
      ("w" csm/org-word-count "word count")
      ("y" yankpad-set-category "set yankpad"))
     "View"
-    (("vi" consult-org-heading "iMenu")
+    (("va" org-appear-mode :toggle t)
+     ("vl" org-toggle-link-display :toggle t)
+     ("vi" consult-org-heading "iMenu")
      ("vu" org-toggle-pretty-entities "org-pretty")
      ("vI" org-toggle-inline-images "Inline images"))
     "Blog"

@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2025-07-29 18:45:05 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2025-08-04 05:48:54 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -3919,9 +3919,30 @@ These functions are for toggling tags when viewing single Elfeed entries. From [
   (general-define-key
    :keymaps 'elfeed-show-mode-map
    "l" #'rlr/elfeed-show-toggle-readlater
-   "m" #'rlr/elfeed-show-toggle-starred
-   )
+   "m" #'rlr/elfeed-show-toggle-starred)
 #+end_src
+
+#+begin_src emacs-lisp
+  (defun ar/elfeed-search-browse-background-url ()
+    "Open current `elfeed' entry (or region entries) in browser without losing focus."
+    (interactive)
+    (let ((entries (elfeed-search-selected)))
+      (mapc (lambda (entry)
+	      (cl-assert (memq system-type '(darwin)) t "open command is macOS only")
+	      (start-process (concat "open " (elfeed-entry-link entry))
+			     nil "open" "--background" (elfeed-entry-link entry))
+	      (elfeed-untag entry 'unread)
+	      (elfeed-search-update-entry entry))
+	    entries)
+      (unless (or elfeed-search-remain-on-entry (use-region-p))
+	(forward-line))))
+
+  (general-define-key
+   :keymaps 'elfeed-search-mode-map
+   "B" #'ar/elfeed-search-browse-background-url)
+#+end_src
+
+
 
 #+begin_src emacs-lisp
   (use-package elfeed-org
@@ -4843,8 +4864,7 @@ Make chord charts.
        ("c" tex-clean "clean aux")
        ("C" tex-clean-all "clean all"))
       "Edit"
-      (("a" org-appear-mode :toggle t)
-       ("dd" org-deadline "deadline")
+      (("dd" org-deadline "deadline")
        ("ds" org-schedule "schedule")
        ("r" org-refile "refile")
        ("du" rlr/org-date "update date stamp")
@@ -4855,7 +4875,9 @@ Make chord charts.
        ("w" csm/org-word-count "word count")
        ("y" yankpad-set-category "set yankpad"))
       "View"
-      (("vi" consult-org-heading "iMenu")
+      (("va" org-appear-mode :toggle t)
+       ("vl" org-toggle-link-display :toggle t)
+       ("vi" consult-org-heading "iMenu")
        ("vu" org-toggle-pretty-entities "org-pretty")
        ("vI" org-toggle-inline-images "Inline images"))
       "Blog"
