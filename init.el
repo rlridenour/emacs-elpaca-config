@@ -2302,6 +2302,9 @@ installed."
 	  '((:name "Unread messages"
 	       :query "flag:unread AND NOT flag:trashed AND NOT maildir:/gmail/[Gmail]/Trash AND NOT maildir:/gmail/[Gmail]/Spam"
 	       :key ?b)
+	    (:name "Flagged messages"
+		   :query "flag:flagged"
+		   :key ?f)
 	( :name "All inboxes"
 	  :query "maildir:/obu/INBOX OR maildir:/fastmail/INBOX OR maildir:/gmail/INBOX AND"
 	  :key ?A)
