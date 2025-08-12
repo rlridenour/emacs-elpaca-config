@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2025-08-06 05:30:39 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2025-08-12 13:44:39 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -3630,7 +3630,7 @@ Copy entire buffer then kill. I use this with temporary scratch buffers to write
 
     (setq mu4e-bookmarks
 	  '((:name "Unread messages"
-	       :query "flag:unread AND NOT flag:trashed AND NOT maildir:/gmail/[Gmail]/Trash AND NOT maildir:/gmail/[Gmail]/Spam"
+	       :query "flag:unread AND NOT flag:trashed AND NOT maildir:/gmail/[Gmail]/Trash AND NOT maildir:/gmail/[Gmail]/Spam AND NOT maildir:/obu/Junk"
 	       :key ?b)
 	    (:name "Flagged messages"
 		   :query "flag:flagged"
@@ -3944,8 +3944,6 @@ These functions are for toggling tags when viewing single Elfeed entries. From [
    :keymaps 'elfeed-search-mode-map
    "B" #'ar/elfeed-search-browse-background-url)
 #+end_src
-
-
 
 #+begin_src emacs-lisp
   (use-package elfeed-org
