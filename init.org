@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2025-08-12 13:44:39 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2025-08-13 13:37:21 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -3630,7 +3630,7 @@ Copy entire buffer then kill. I use this with temporary scratch buffers to write
 
     (setq mu4e-bookmarks
 	  '((:name "Unread messages"
-	       :query "flag:unread AND NOT flag:trashed AND NOT maildir:/gmail/[Gmail]/Trash AND NOT maildir:/gmail/[Gmail]/Spam AND NOT maildir:/obu/Junk"
+	       :query "flag:unread AND NOT flag:trashed AND NOT maildir:/gmail/[Gmail]/Trash AND NOT maildir:/gmail/[Gmail]/Spam AND NOT maildir:/obu/Junk AND NOT maildir:/fastmail/Spam"
 	       :key ?b)
 	    (:name "Flagged messages"
 		   :query "flag:flagged"

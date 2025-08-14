@@ -2300,7 +2300,7 @@ installed."
 
   (setq mu4e-bookmarks
 	  '((:name "Unread messages"
-	       :query "flag:unread AND NOT flag:trashed AND NOT maildir:/gmail/[Gmail]/Trash AND NOT maildir:/gmail/[Gmail]/Spam AND NOT maildir:/obu/Junk"
+	       :query "flag:unread AND NOT flag:trashed AND NOT maildir:/gmail/[Gmail]/Trash AND NOT maildir:/gmail/[Gmail]/Spam AND NOT maildir:/obu/Junk AND NOT maildir:/fastmail/Spam"
 	       :key ?b)
 	    (:name "Flagged messages"
 		   :query "flag:flagged"
