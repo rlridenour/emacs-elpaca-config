@@ -2906,7 +2906,7 @@ installed."
    "C-c l c" #'link-hint-copy-link))
 
 (use-package fish-mode
-  :mode ("\\.fish\\'" . Fish-mode))
+  :mode ("\\.fish\\'" . fish-mode))
 
 (use-package fish-completion
   :ensure (:type git :host github :repo "LemonBreezes/emacs-fish-completion")

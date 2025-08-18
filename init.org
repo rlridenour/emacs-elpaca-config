@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2025-08-13 13:37:21 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2025-08-18 13:26:05 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -4443,7 +4443,7 @@ Shorten URL's with the is.gd service.
 
 #+begin_src emacs-lisp
   (use-package fish-mode
-    :mode ("\\.fish\\'" . Fish-mode))
+    :mode ("\\.fish\\'" . fish-mode))
   #+end_src
 
 *** Emacs Fish Completion
