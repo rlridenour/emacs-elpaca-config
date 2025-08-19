@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2025-08-18 13:26:05 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2025-08-19 07:57:39 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -730,6 +730,12 @@ World clock settings.
 
   (general-define-key
    "<f8>" #'calendar)
+#+end_src
+
+A nice analog clock.
+
+#+begin_src emacs-lisp
+(use-package svg-clock)
 #+end_src
 
 Display line and column numbers in the modeline.

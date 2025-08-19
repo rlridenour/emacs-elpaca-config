@@ -332,6 +332,8 @@
 (general-define-key
  "<f8>" #'calendar)
 
+(use-package svg-clock)
+
 (line-number-mode)
 (column-number-mode)
 
