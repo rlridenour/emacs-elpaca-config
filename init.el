@@ -378,6 +378,21 @@
   :general
   ("<f9>" #'modus-themes-rotate))
 
+(defun rlr/customize-org-headings ()
+"Make Org headings larger."
+    (set-face-attribute 'org-level-1 nil :height 1.3 :weight 'bold :inherit 'fixed-pitch)
+    (set-face-attribute 'org-level-2 nil :height 1.2 :weight 'bold :inherit 'fixed-pitch)
+    (set-face-attribute 'org-level-3 nil :height 1.1 :weight 'bold :inherit 'fixed-pitch)
+    (set-face-attribute 'org-level-4 nil :height 1.0 :weight 'bold :inherit 'fixed-pitch)
+    (set-face-attribute 'org-level-5 nil :height 1.0 :weight 'bold :inherit 'fixed-pitch)
+    (set-face-attribute 'org-level-6 nil :height 1.0 :weight 'bold :inherit 'fixed-pitch)
+    (set-face-attribute 'org-level-7 nil :height 1.0 :weight 'bold :inherit 'fixed-pitch)
+    (set-face-attribute 'org-level-8 nil :height 1.0 :weight 'bold :inherit 'fixed-pitch)
+    ;; Make the document title a bit bigger
+    (set-face-attribute 'org-document-title nil :weight 'bold :height 1.5))
+
+(add-hook 'modus-themes-after-load-theme-hook #'rlr/customize-org-headings)
+
 (use-package doom-modeline
   :init
   :config
