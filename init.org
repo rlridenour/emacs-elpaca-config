@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2025-08-21 05:08:42 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2025-08-27 05:09:40 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -2287,7 +2287,7 @@ https://github.com/joaotavora/yasnippet
     ;; Make LaTeX previews larger.
     (plist-put org-format-latex-options :scale 1.5)
 
-    (setq org-support-shift-select t)
+    ;; (setq org-support-shift-select t)
     (setq org-special-ctrl-a/e t)
     ;; (setq org-footnote-section nil)
     (setq org-html-validation-link nil)
@@ -2673,7 +2673,8 @@ Use space key to show link hints.
 #+begin_src emacs-lisp
   (general-define-key
    :keymaps 'org-agenda-mode-map
-   "<SPC>" #'link-hint-open-link)
+   "<SPC>" #'link-hint-open-link
+   "," #'link-hint-open-link)
 #+end_src
 
 Set agenda links as safe.
@@ -2712,6 +2713,12 @@ Use Emacs appointment system for notifications.
     :ensure
     (:host github :repo "aaronjensen/emacs-orgonomic")
     :hook (org-mode . orgonomic-mode))
+#+end_src
+
+** Org Bulletproof
+
+#+begin_src emacs-lisp
+(use-package org-bulletproof)
 #+end_src
 
 ** Org Toggle Emphasis
@@ -3205,6 +3212,42 @@ Function for converting Org mode files to QTI file for importing into Canvas usi
       )
     (browse-url "https://www.nyit.edu/its/canvas_exam_converter")
     )
+#+end_src
+
+Create attendance sheet.
+
+#+begin_src emacs-lisp
+(defun create-roll-sheet ()
+  (interactive)
+  ;; Append signature cells to each line.
+  (goto-char (point-min))
+  (replace-regexp "$" " |  | ")
+  ;; kill bottom half of buffer and move to top
+  (setq lines (count-lines (point-min) (point-max)))
+  (setq lines (+ lines (% lines 2) ))
+  (setq midpoint (+ (/ lines 2) 1))
+  (goto-line midpoint)
+  (kill-region (point) (point-max))
+  (beginning-of-buffer)
+  ;; Append each line from kill-ring to remaining lines.
+  (dolist (cur-line-to-insert (split-string (current-kill 0) "\n"))
+    (if (eobp)
+        (newline)
+      (move-end-of-line nil))
+    (insert cur-line-to-insert)
+    (forward-line))
+  ;; Prepend pipe character to each line and kill last line.
+  (goto-char (point-min))
+  (replace-regexp "^" "| ")
+  (kill-whole-line)
+  ;; insert LaTeX table format and header lines
+  (goto-char (point-min))
+  (insert "#+ATTR_LATEX: :environment tblr :align hline{3-Z}={solid},row{2-Z}={f,10mm},colspec={XXXX}\n| *Name*              | *Signature* | *Name*              | *Signature* | \n")
+  ;; Clean up table.
+  (org-ctrl-c-ctrl-c)
+  ;; Insert LaTeX header.
+  (goto-char (point-min))
+  (yas-expand-snippet (yas-lookup-snippet "roll-sheet")))
 #+end_src
 
 ** Copy Org Rich Text

@@ -1248,7 +1248,7 @@
   ;; Make LaTeX previews larger.
   (plist-put org-format-latex-options :scale 1.5)
 
-  (setq org-support-shift-select t)
+  ;; (setq org-support-shift-select t)
   (setq org-special-ctrl-a/e t)
   ;; (setq org-footnote-section nil)
   (setq org-html-validation-link nil)
@@ -1562,7 +1562,8 @@ Excludes lines beginning with * or #. Prints result in echo area."
 
 (general-define-key
  :keymaps 'org-agenda-mode-map
- "<SPC>" #'link-hint-open-link)
+ "<SPC>" #'link-hint-open-link
+ "," #'link-hint-open-link)
 
 (setopt org-link-elisp-skip-confirm-regexp "rlr.*")
 
@@ -1585,6 +1586,8 @@ Excludes lines beginning with * or #. Prints result in echo area."
   :ensure
   (:host github :repo "aaronjensen/emacs-orgonomic")
   :hook (org-mode . orgonomic-mode))
+
+(use-package org-bulletproof)
 
 (defun my/org-toggle-emphasis (type)
   "Toggle org emphasis TYPE (a character) at point."
@@ -1973,6 +1976,38 @@ Excludes lines beginning with * or #. Prints result in echo area."
     )
   (browse-url "https://www.nyit.edu/its/canvas_exam_converter")
   )
+
+(defun create-roll-sheet ()
+  (interactive)
+  ;; Append signature cells to each line.
+  (goto-char (point-min))
+  (replace-regexp "$" " |  | ")
+  ;; kill bottom half of buffer and move to top
+  (setq lines (count-lines (point-min) (point-max)))
+  (setq lines (+ lines (% lines 2) ))
+  (setq midpoint (+ (/ lines 2) 1))
+  (goto-line midpoint)
+  (kill-region (point) (point-max))
+  (beginning-of-buffer)
+  ;; Append each line from kill-ring to remaining lines.
+  (dolist (cur-line-to-insert (split-string (current-kill 0) "\n"))
+    (if (eobp)
+        (newline)
+      (move-end-of-line nil))
+    (insert cur-line-to-insert)
+    (forward-line))
+  ;; Prepend pipe character to each line and kill last line.
+  (goto-char (point-min))
+  (replace-regexp "^" "| ")
+  (kill-whole-line)
+  ;; insert LaTeX table format and header lines
+  (goto-char (point-min))
+  (insert "#+ATTR_LATEX: :environment tblr :align hline{3-Z}={solid},row{2-Z}={f,10mm},colspec={XXXX}\n| *Name*              | *Signature* | *Name*              | *Signature* | \n")
+  ;; Clean up table.
+  (org-ctrl-c-ctrl-c)
+  ;; Insert LaTeX header.
+  (goto-char (point-min))
+  (yas-expand-snippet (yas-lookup-snippet "roll-sheet")))
 
 (defun formatted-copy ()
   "Export region to HTML, and copy it to the clipboard."
