@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2025-08-27 05:09:40 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2025-08-30 06:01:01 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -4580,6 +4580,8 @@ Make chord charts.
 
 ** Hydras
 
+*** Hydra Toggle
+
 #+begin_src emacs-lisp
   (with-after-elpaca-init
    (pretty-hydra-define hydra-toggle
@@ -4606,6 +4608,8 @@ Make chord charts.
        ("C" cua-selection-mode "rectangle" :toggle t)))))
        #+end_src
 
+*** Hydra Buffer
+
 #+begin_src emacs-lisp
   (with-after-elpaca-init
    (pretty-hydra-define hydra-buffer
@@ -4631,6 +4635,8 @@ Make chord charts.
       )))
 #+end_src
 
+*** Hydra Locate
+
 #+begin_src emacs-lisp
   (with-after-elpaca-init
    (pretty-hydra-define hydra-locate
@@ -4653,6 +4659,8 @@ Make chord charts.
        ("s" goto-shell-init "Fish functions"))
       )))
 #+end_src
+
+*** Hydra Window
 
 #+begin_src emacs-lisp
   (with-after-elpaca-init
@@ -4679,6 +4687,8 @@ Make chord charts.
        ("M" writeroom-toggle-mode-line "toggle modeline")))))
 #+end_src
 
+*** Hydra New
+
 #+begin_src emacs-lisp
   (with-after-elpaca-init
    (pretty-hydra-define hydra-new
@@ -4699,6 +4709,8 @@ Make chord charts.
        ("s" rlrt-new-syllabus "syllabus"))
       )))
 #+end_src
+
+*** Hydra Logic
 
 #+begin_src emacs-lisp
   (with-after-elpaca-init
@@ -4726,6 +4738,8 @@ Make chord charts.
       (("0" quit-window "quit" :color blue))
       )))
 #+end_src
+
+*** Hydra Math
 
 #+begin_src emacs-lisp
   (with-after-elpaca-init
@@ -4755,6 +4769,8 @@ Make chord charts.
       (("?" quit-window "quit" :color blue))
       )))
 #+end_src
+
+*** Hydra Hydras
 
 #+begin_src emacs-lisp
   (with-after-elpaca-init
