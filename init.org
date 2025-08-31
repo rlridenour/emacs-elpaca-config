@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2025-08-30 06:01:01 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2025-08-31 16:24:21 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -3232,7 +3232,7 @@ Create attendance sheet.
   ;; Append each line from kill-ring to remaining lines.
   (dolist (cur-line-to-insert (split-string (current-kill 0) "\n"))
     (if (eobp)
-        (newline)
+	(newline)
       (move-end-of-line nil))
     (insert cur-line-to-insert)
     (forward-line))
@@ -3774,23 +3774,28 @@ Mu4e-alert
   (defun obu-signature ()
     (interactive)
     (insert (concat
-	     "\n\n"
-	     "--\n"
-	     "Randy Ridenour, Ph.D.\n"
-	     "Professor of Philosophy\n"
-	     "Oklahoma Baptist University\n\n"
-	     "500 W. University St.\n"
-	     "Shawnee, OK  74804\n"
-	     "Office: (405) 585-4432\n")
-	    ))
+	 "\n--\n"
+	 "Randy Ridenour, Ph.D.\n"
+	 "Professor of Philosophy\n"
+	 "Oklahoma Baptist University\n\n"
+	 "500 W. University St.\n"
+	 "Shawnee, OK  74804\n"
+	 "Office: (405) 585-4432\n")))
 
   (defun informal-signature ()
     (interactive)
     (insert (concat
-	     "\n\n"
-	     "--\n"
-	     "Randy"
-	     )))
+	 "\n--\n"
+	 "Randy")))
+
+  (defun home-signature ()
+    (interactive)
+    (insert (concat
+	 "\n--\n"
+	 "Randy Ridenour\n"
+	 "1613 Central Pkwy\n"
+	 "Norman, OK  73071\n"
+	 "(405) 613-7516")))
 #+end_src
 
 Open mu4e in new tab.
@@ -5075,7 +5080,14 @@ Make chord charts.
       (
        ("o" org-mime-edit-mail-in-org-mode "Edit in org")
        ("r" org-mime-htmlize "Org to HTML")
-       ))))
+       )
+      "Signatures"
+      (
+       ("u" obu-signature "OBU")
+       ("h" home-signature "Home")
+       ("p" personal-signature "Personal")
+       )
+      )))
 #+end_src
 
 ** Prefix Keybindings

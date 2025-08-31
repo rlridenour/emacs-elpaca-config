@@ -1992,7 +1992,7 @@ Excludes lines beginning with * or #. Prints result in echo area."
   ;; Append each line from kill-ring to remaining lines.
   (dolist (cur-line-to-insert (split-string (current-kill 0) "\n"))
     (if (eobp)
-        (newline)
+	(newline)
       (move-end-of-line nil))
     (insert cur-line-to-insert)
     (forward-line))
@@ -2397,23 +2397,28 @@ installed."
 (defun obu-signature ()
   (interactive)
   (insert (concat
-	     "\n\n"
-	     "--\n"
-	     "Randy Ridenour, Ph.D.\n"
-	     "Professor of Philosophy\n"
-	     "Oklahoma Baptist University\n\n"
-	     "500 W. University St.\n"
-	     "Shawnee, OK  74804\n"
-	     "Office: (405) 585-4432\n")
-	    ))
+	 "\n--\n"
+	 "Randy Ridenour, Ph.D.\n"
+	 "Professor of Philosophy\n"
+	 "Oklahoma Baptist University\n\n"
+	 "500 W. University St.\n"
+	 "Shawnee, OK  74804\n"
+	 "Office: (405) 585-4432\n")))
 
 (defun informal-signature ()
   (interactive)
   (insert (concat
-	     "\n\n"
-	     "--\n"
-	     "Randy"
-	     )))
+	 "\n--\n"
+	 "Randy")))
+
+(defun home-signature ()
+  (interactive)
+  (insert (concat
+	 "\n--\n"
+	 "Randy Ridenour\n"
+	 "1613 Central Pkwy\n"
+	 "Norman, OK  73071\n"
+	 "(405) 613-7516")))
 
 (defun rlr/open-mu4e-new-tab ()
   (interactive)
@@ -3408,7 +3413,14 @@ installed."
     (
      ("o" org-mime-edit-mail-in-org-mode "Edit in org")
      ("r" org-mime-htmlize "Org to HTML")
-     ))))
+     )
+    "Signatures"
+    (
+     ("u" obu-signature "OBU")
+     ("h" home-signature "Home")
+     ("p" personal-signature "Personal")
+     )
+    )))
 
 (general-define-key
  :prefix "C-c"
