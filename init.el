@@ -1253,8 +1253,6 @@
   ;; (setq org-footnote-section nil)
   (setq org-html-validation-link nil)
   (setq org-time-stamp-rounding-minutes '(0 15))
-  (setq org-agenda-skip-scheduled-if-deadline-is-shown t)
-  (setq org-agenda-skip-scheduled-if-done t)
   (setq org-log-done t)
   (setq org-todo-keyword-faces
 	  '(("DONE" . "green4") ("TODO" . org-warning)))
@@ -1263,10 +1261,10 @@
   (setq org-agenda-window-setup 'current-window)
   (setq org-link-frame-setup
 	  '((vm . vm-visit-folder-other-frame)
-	    (vm-imap . vm-visit-imap-folder-other-frame)
-	    (gnus . org-gnus-no-new-news)
-	    (file . find-file)
-	    (wl . wl-other-frame)))
+	(vm-imap . vm-visit-imap-folder-other-frame)
+	(gnus . org-gnus-no-new-news)
+	(file . find-file)
+	(wl . wl-other-frame)))
   (require 'org-tempo)
   ;; Open directory links in Dired.
   (add-to-list 'org-file-apps '(directory . emacs)))
@@ -1471,20 +1469,21 @@ Excludes lines beginning with * or #. Prints result in echo area."
   :after org
   :config
   (setq org-agenda-skip-scheduled-if-done t
-	  org-agenda-skip-deadline-if-done t
+        org-agenda-skip-deadline-if-done t
+	  setq org-agenda-skip-scheduled-if-deadline-is-shown t
 	  org-agenda-include-deadlines t
-	  org-agenda-block-separator nil
-	  org-agenda-compact-blocks t
-	  org-agenda-start-day nil ;; i.e. today
-	  org-agenda-span 1
-	  org-agenda-window-setup "current-window"
-	  org-agenda-include-diary nil
-	  org-agenda-start-on-weekday nil)
+        org-agenda-block-separator nil
+        org-agenda-compact-blocks t
+        org-agenda-start-day nil ;; i.e. today
+        org-agenda-span 1
+        org-agenda-window-setup "current-window"
+        org-agenda-include-diary nil
+        org-agenda-start-on-weekday nil)
   (setq org-agenda-time-grid
-	  '((daily today require-timed remove-match)
-	    ()
-	    "......"
-	    ""))
+        '((daily today require-timed remove-match)
+	()
+	"......"
+	""))
 
   (org-super-agenda-mode))
 
@@ -2999,6 +2998,11 @@ installed."
 (use-package chordpro-mode
 :mode ("\\.cho\\'" . chordpro-mode))
 
+(use-feature tetris
+:general
+   (:keymaps 'tetris-mode-map
+   "<down>" #'tetris-rotate-next))
+
 (with-after-elpaca-init
  (pretty-hydra-define hydra-toggle
    (:color teal :quit-key "q" :title "Toggle")
@@ -3418,7 +3422,7 @@ installed."
     (
      ("u" obu-signature "OBU")
      ("h" home-signature "Home")
-     ("p" personal-signature "Personal")
+     ("p" informal-signature "Personal")
      )
     )))
 
