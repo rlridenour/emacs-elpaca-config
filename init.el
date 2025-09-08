@@ -1487,7 +1487,6 @@ Excludes lines beginning with * or #. Prints result in echo area."
 	()
 	"......"
 	""))
-
   (org-super-agenda-mode))
 
 (setq org-agenda-custom-commands
@@ -1545,6 +1544,21 @@ Excludes lines beginning with * or #. Prints result in echo area."
   (delete-other-windows))
 
 (add-hook 'server-after-make-frame-hook #'agenda-home)
+
+(defun refresh-agenda-periodic-function ()
+  "Recompute the Org Agenda buffer(s) periodically."
+  (ignore-errors
+    (when (get-buffer "*Org Agenda*")
+	(with-selected-window (get-buffer-window "*Org Agenda*")
+	  (org-agenda-redo-all)))))
+
+;; Refresh agenda every 600 seconds (10 minutes)
+(run-with-timer 60 60 'refresh-agenda-periodic-function)
+
+(setq org-agenda-current-time-string "now - - - - - - -")
+
+(custom-set-faces
+ '(org-agenda-current-time ((t (:foreground "red")))))
 
 (general-define-key
  "s-d" #'agenda-home)

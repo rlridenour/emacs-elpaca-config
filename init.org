@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2025-09-05 07:22:53 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2025-09-07 18:49:43 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -2572,7 +2572,6 @@ Sort org buffer when saving. Add the following to the beginning of the buffer: "
   	()
   	"......"
   	""))
-
     (org-super-agenda-mode))
 #+end_src
 
@@ -2644,6 +2643,34 @@ Set the initial frame. This opens the daily agenda on start-up.
 
 #+begin_src emacs-lisp
   (add-hook 'server-after-make-frame-hook #'agenda-home)
+#+end_src
+
+Refresh the agenda, but suppress the error message when the agenda is not visible.
+
+#+begin_src emacs-lisp
+  (defun refresh-agenda-periodic-function ()
+    "Recompute the Org Agenda buffer(s) periodically."
+    (ignore-errors
+      (when (get-buffer "*Org Agenda*")
+	(with-selected-window (get-buffer-window "*Org Agenda*")
+	  (org-agenda-redo-all)))))
+
+  ;; Refresh agenda every 600 seconds (10 minutes)
+  (run-with-timer 60 60 'refresh-agenda-periodic-function)
+
+#+end_src
+
+Shorten the current time string.
+
+#+begin_src emacs-lisp
+(setq org-agenda-current-time-string "now - - - - - - -")
+#+end_src
+
+Make the current time more visible.
+
+#+begin_src emacs-lisp
+(custom-set-faces
+ '(org-agenda-current-time ((t (:foreground "red")))))
 #+end_src
 
 #+begin_src emacs-lisp
