@@ -3,6 +3,7 @@
 #+LaTeX_HEADER: % arara: latexmk: { engine: pdflatex }
 #+LaTeX_HEADER: \usepackage{beamerarticle}
 #+LaTeX_HEADER: \usepackage{amsmath,amssymb,bm,graphicx,wrapfig,rotating}
+#+LATEX_HEADER: \usepackage{ulem}\usepackage{fixltx2e}
 #+LaTeX_HEADER: \usepackage{url}
 #+LaTeX_HEADER: \usepackage[normalem]{ulem}
 #+LaTeX_HEADER: \usepackage{microtype}

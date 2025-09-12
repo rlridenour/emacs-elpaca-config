@@ -1,7 +1,7 @@
 #+LaTeX_CLASS: org-article
 #+LaTeX_CLASS_OPTIONS: [10pt]
 #+LaTeX_HEADER: \usepackage{amssymb,url,microtype,csquotes,booktabs,longtable,multirow,pdfpages}
-#+LaTeX_HEADER: \usepackage[normalem]{ulem}
+#+LATEX_HEADER: \usepackage{ulem}\usepackage{fixltx2e}
 #+LaTeX_HEADER: \usepackage[american]{babel}
 #+LaTeX_HEADER: \usepackage[letterpaper,centering,headheight=5in]{geometry}
 #+LaTeX_HEADER: \usepackage[absolute]{textpos}
