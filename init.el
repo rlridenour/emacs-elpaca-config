@@ -117,10 +117,6 @@
   :config
   (global-discover-mode 1))
 
-(use-package exec-path-from-shell
-  :config
-  (exec-path-from-shell-initialize))
-
 (defconst rr-emacs-dir (expand-file-name user-emacs-directory)
   "The path to the emacs.d directory.")
 

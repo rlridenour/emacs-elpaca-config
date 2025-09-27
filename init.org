@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2025-09-07 18:49:43 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2025-09-21 05:04:19 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -362,7 +362,7 @@ From [[https://github.com/mickeynp/discover.el][mickeynp/discover.el: Discover m
 
 Use Exec-Path-From-Shell to set path.
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package exec-path-from-shell
     :config
     (exec-path-from-shell-initialize))
