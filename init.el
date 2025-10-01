@@ -1559,7 +1559,7 @@ Excludes lines beginning with * or #. Prints result in echo area."
 (general-define-key
  "s-d" #'agenda-home)
 
-(defun rr/agenda-links ()
+(defun rlr/agenda-links ()
   (end-of-buffer)
   (insert-file-contents "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/agenda-links.org")
   (while (org-activate-links (point-max))
@@ -1568,7 +1568,7 @@ Excludes lines beginning with * or #. Prints result in echo area."
   ;; (insert (concat "\n\n" (get-votd)))
   (beginning-of-buffer))
 
-(add-hook 'org-agenda-finalize-hook #'rr/agenda-links)
+(add-hook 'org-agenda-finalize-hook #'rlr/agenda-links)
 
 (setq org-return-follows-link t)
 
