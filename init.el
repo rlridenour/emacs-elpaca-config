@@ -1377,14 +1377,14 @@ Excludes lines beginning with * or #. Prints result in echo area."
 		   (apostrophe        :utf-8 "’" :html "&rsquo;"))))
 
 ;; (setq org-latex-pdf-process '("arara %f"))
-(setq org-latex-pdf-process '("mkpdf %f"))
+(setq org-latex-pdf-process '("mkl %f"))
 
 (defun rlr/org-mkpdf ()
   "Make PDF with pdf latexmk."
   (interactive)
   (save-buffer)
   (org-latex-export-to-latex)
-  (async-shell-command-no-window (concat "mkpdf " (shell-quote-argument(file-name-nondirectory (file-name-with-extension buffer-file-name "tex"))))))
+  (async-shell-command-no-window (concat "mkp " (shell-quote-argument(file-name-nondirectory (file-name-with-extension buffer-file-name "tex"))))))
 
 (defun rlr/org-open-pdf ()
   "Open PDF in background with default viewer."
@@ -1396,7 +1396,7 @@ Excludes lines beginning with * or #. Prints result in echo area."
   (interactive)
   (save-buffer)
   (org-latex-export-to-latex)
-  (async-shell-command-no-window (concat "mklua " (shell-quote-argument(file-name-nondirectory (file-name-with-extension buffer-file-name "tex"))))))
+  (async-shell-command-no-window (concat "mkl " (shell-quote-argument(file-name-nondirectory (file-name-with-extension buffer-file-name "tex"))))))
 
 (defun rlr/org-arara ()
   "Make PDF with Arara."
@@ -2078,25 +2078,25 @@ Excludes lines beginning with * or #. Prints result in echo area."
   "Compile with pdf latexmk."
   (interactive)
   (save-buffer)
-  (async-shell-command-no-window (concat "mkpdf " (shell-quote-argument(file-name-nondirectory buffer-file-name))))
+  (async-shell-command-no-window (concat "mkp " (shell-quote-argument(file-name-nondirectory buffer-file-name))))
   (TeX-view))
 
 (defun rlr/tex-mktc ()
   "Compile continuously with pdf latexmk."
   (interactive)
-  (async-shell-command-no-window (concat "mkpdfc " (shell-quote-argument(file-name-nondirectory buffer-file-name)))))
+  (async-shell-command-no-window (concat "mkpc " (shell-quote-argument(file-name-nondirectory buffer-file-name)))))
 
 (defun rlr/tex-mklua ()
   "Compile with lua latexmk."
   (interactive)
   (save-buffer)
-  (async-shell-command-no-window (concat "mklua " (shell-quote-argument(file-name-nondirectory buffer-file-name))))
+  (async-shell-command-no-window (concat "mkl " (shell-quote-argument(file-name-nondirectory buffer-file-name))))
   (TeX-view))
 
 (defun rlr/tex-mkluac ()
   "Compile continuously with lua latexmk."
   (interactive)
-  (async-shell-command-no-window (concat "mkluac " (shell-quote-argument(file-name-nondirectory buffer-file-name)))))
+  (async-shell-command-no-window (concat "mklc " (shell-quote-argument(file-name-nondirectory buffer-file-name)))))
 
 (defun latex-word-count ()
   (interactive)
