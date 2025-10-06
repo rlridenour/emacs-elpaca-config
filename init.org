@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2025-10-04 16:14:23 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2025-10-06 05:46:28 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -26,42 +26,7 @@ Set the header and prevent package initialization.
 
 ** Performance
 
-*** Garbage Collection
-
-#+begin_src emacs-lisp
-  (setq gc-cons-threshold most-positive-fixnum
-	gc-cons-percentage 1)
-
-  (defun +gc-after-focus-change ()
-    "Run GC when frame loses focus."
-    (run-with-idle-timer
-     5 nil
-     (lambda () (unless (frame-focus-state) (garbage-collect)))))
-#+end_src
-
-Raise max lisp nesting depth.
-
-#+begin_src emacs-lisp
-  (setq max-lisp-eval-depth 10000)
-#+end_src
-
-#+begin_src emacs-lisp :lexical t
-  (defun +reset-init-values ()
-    (run-with-idle-timer
-     1 nil
-     (lambda ()
-       (setq file-name-handler-alist default-file-name-handler-alist
-	     gc-cons-percentage 0.1
-	     gc-cons-threshold 100000000)
-       (let ((inhibit-message t))
-	 (message "gc-cons-threshold & file-name-handler-alist restored"))
-       (message "ELPACA LOADING COMPLETE: %s" (emacs-init-time))
-       (when (boundp 'after-focus-change-function)
-	 (add-function :after after-focus-change-function #'+gc-after-focus-change)))))
-
-  (with-eval-after-load 'elpaca
-    (add-hook 'elpaca-after-init-hook '+reset-init-values))
-#+end_src
+I had some garbage collection settings here, but changed to the =GCMH= package. The old settings can be found [[file:~/icloud/notes/denote/20251006T054206--emacs-garbage-collection__emacs.org][here]].
 
 *** Native Comp
 
@@ -272,6 +237,16 @@ Use this macro for code that needs to run after Elpaca.
   (defmacro with-after-elpaca-init (&rest body)
     "Adds BODY to `elpaca-after-init-hook`"
     `(add-hook 'elpaca-after-init-hook (lambda () ,@body)))
+#+end_src
+
+*** GCMH
+
+#+begin_src emacs-lisp
+(use-package gcmh
+:ensure (:wait t)
+:demand
+:config
+(gcmh-mode 1))
 #+end_src
 
 ** Keybinding and Menus
@@ -2295,16 +2270,16 @@ https://github.com/joaotavora/yasnippet
     (setq org-time-stamp-rounding-minutes '(0 15))
     (setq org-log-done t)
     (setq org-todo-keyword-faces
-          '(("DONE" . "green4") ("TODO" . org-warning)))
+	  '(("DONE" . "green4") ("TODO" . org-warning)))
     (setq org-agenda-files '("/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/"))
     (setq org-agenda-start-on-weekday nil)
     (setq org-agenda-window-setup 'current-window)
     (setq org-link-frame-setup
-          '((vm . vm-visit-folder-other-frame)
-  	(vm-imap . vm-visit-imap-folder-other-frame)
-  	(gnus . org-gnus-no-new-news)
-  	(file . find-file)
-  	(wl . wl-other-frame)))
+	  '((vm . vm-visit-folder-other-frame)
+	    (vm-imap . vm-visit-imap-folder-other-frame)
+	    (gnus . org-gnus-no-new-news)
+	    (file . find-file)
+	    (wl . wl-other-frame)))
     (require 'org-tempo)
     ;; Open directory links in Dired.
     (add-to-list 'org-file-apps '(directory . emacs)))
@@ -2555,23 +2530,23 @@ Sort org buffer when saving. Add the following to the beginning of the buffer: "
     :after org
     :config
     (setq org-agenda-skip-scheduled-if-done t
-          org-agenda-skip-deadline-if-done t
-          setq org-agenda-skip-scheduled-if-deadline-is-shown t
-          org-agenda-skip-deadline-prewarning-if-scheduled t
-          org-agenda-include-deadlines t
+	  org-agenda-skip-deadline-if-done t
+	  setq org-agenda-skip-scheduled-if-deadline-is-shown t
+	  org-agenda-skip-deadline-prewarning-if-scheduled t
+	  org-agenda-include-deadlines t
 	  org-deadline-warning-days 1
-          org-agenda-block-separator nil
-          org-agenda-compact-blocks t
-          org-agenda-start-day nil ;; i.e. today
-          org-agenda-span 1
-          org-agenda-window-setup "current-window"
-          org-agenda-include-diary nil
-          org-agenda-start-on-weekday nil)
+	  org-agenda-block-separator nil
+	  org-agenda-compact-blocks t
+	  org-agenda-start-day nil ;; i.e. today
+	  org-agenda-span 1
+	  org-agenda-window-setup "current-window"
+	  org-agenda-include-diary nil
+	  org-agenda-start-on-weekday nil)
     (setq org-agenda-time-grid
-          '((daily today require-timed remove-match)
-  	()
-  	"......"
-  	""))
+	  '((daily today require-timed remove-match)
+	()
+	"......"
+	""))
     (org-super-agenda-mode))
 #+end_src
 

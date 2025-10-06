@@ -59,6 +59,12 @@
   "Adds BODY to `elpaca-after-init-hook`"
   `(add-hook 'elpaca-after-init-hook (lambda () ,@body)))
 
+(use-package gcmh
+:ensure (:wait t)
+:demand
+:config
+(gcmh-mode 1))
+
 (use-package general
   :ensure (:wait t)
   :demand
@@ -1252,16 +1258,16 @@
   (setq org-time-stamp-rounding-minutes '(0 15))
   (setq org-log-done t)
   (setq org-todo-keyword-faces
-        '(("DONE" . "green4") ("TODO" . org-warning)))
+	  '(("DONE" . "green4") ("TODO" . org-warning)))
   (setq org-agenda-files '("/Users/rlridenour/Library/Mobile Documents/iCloud~com~appsonthemove~beorg/Documents/org/"))
   (setq org-agenda-start-on-weekday nil)
   (setq org-agenda-window-setup 'current-window)
   (setq org-link-frame-setup
-        '((vm . vm-visit-folder-other-frame)
-	(vm-imap . vm-visit-imap-folder-other-frame)
-	(gnus . org-gnus-no-new-news)
-	(file . find-file)
-	(wl . wl-other-frame)))
+	  '((vm . vm-visit-folder-other-frame)
+	    (vm-imap . vm-visit-imap-folder-other-frame)
+	    (gnus . org-gnus-no-new-news)
+	    (file . find-file)
+	    (wl . wl-other-frame)))
   (require 'org-tempo)
   ;; Open directory links in Dired.
   (add-to-list 'org-file-apps '(directory . emacs)))
@@ -1466,20 +1472,20 @@ Excludes lines beginning with * or #. Prints result in echo area."
   :after org
   :config
   (setq org-agenda-skip-scheduled-if-done t
-        org-agenda-skip-deadline-if-done t
-        setq org-agenda-skip-scheduled-if-deadline-is-shown t
-        org-agenda-skip-deadline-prewarning-if-scheduled t
-        org-agenda-include-deadlines t
+	  org-agenda-skip-deadline-if-done t
+	  setq org-agenda-skip-scheduled-if-deadline-is-shown t
+	  org-agenda-skip-deadline-prewarning-if-scheduled t
+	  org-agenda-include-deadlines t
 	  org-deadline-warning-days 1
-        org-agenda-block-separator nil
-        org-agenda-compact-blocks t
-        org-agenda-start-day nil ;; i.e. today
-        org-agenda-span 1
-        org-agenda-window-setup "current-window"
-        org-agenda-include-diary nil
-        org-agenda-start-on-weekday nil)
+	  org-agenda-block-separator nil
+	  org-agenda-compact-blocks t
+	  org-agenda-start-day nil ;; i.e. today
+	  org-agenda-span 1
+	  org-agenda-window-setup "current-window"
+	  org-agenda-include-diary nil
+	  org-agenda-start-on-weekday nil)
   (setq org-agenda-time-grid
-        '((daily today require-timed remove-match)
+	  '((daily today require-timed remove-match)
 	()
 	"......"
 	""))
