@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2025-10-06 05:46:28 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2025-10-30 19:42:11 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -4617,11 +4617,12 @@ Make chord charts.
        ("f" auto-fill-mode "fill" :toggle t)
        ("l" display-line-numbers-mode "linum" :toggle t)
        ("m" variable-pitch-mode "variable-pitch" :toggle t)
-       ("p" electric-pair-mode "electric-pair" :toggle t)
-       ("t" toggle-truncate-lines "truncate" :toggle t)
-       ("s" whitespace-mode "whitespace" :toggle t))
+       ("p" smartparens-mode "smartparens" :toggle t)
+       ("P" electric-pair-mode "electric-pair" :toggle t))
       " "
-      (("c" cdlatex-mode "cdlatex" :toggle t)
+      (("t" toggle-truncate-lines "truncate" :toggle t)
+       ("s" whitespace-mode "whitespace" :toggle t)
+       ("c" cdlatex-mode "cdlatex" :toggle t)
        ("o" olivetti-mode "olivetti" :toggle t)
        ("r" read-only-mode "read-only" :toggle t)
        ("v" view-mode "view" :toggle t)
