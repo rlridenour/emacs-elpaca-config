@@ -1560,7 +1560,7 @@ Excludes lines beginning with * or #. Prints result in echo area."
 (setq org-agenda-current-time-string "now - - - - - - -")
 
 (custom-set-faces
- '(org-agenda-current-time ((t (:foreground "red")))))
+ '(org-agenda-current-time ((t (:foreground "red3")))))
 
 (general-define-key
  "s-d" #'agenda-home)
