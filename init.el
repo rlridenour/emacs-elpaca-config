@@ -1485,7 +1485,7 @@ Excludes lines beginning with * or #. Prints result in echo area."
 	  org-agenda-include-diary nil
 	  org-agenda-start-on-weekday nil)
   (setq org-agenda-time-grid
-	  '((daily today require-timed remove-match)
+	  '((daily today remove-match)
 	()
 	"......"
 	""))
