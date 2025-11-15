@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2025-11-01 06:33:58 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2025-11-01 07:39:57 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -701,6 +701,7 @@ World clock settings.
 	calendar-mark-holidays-flag t        ;colorize holidays in the calendar
 	holiday-bahai-holidays nil           ;these religions have MANY holidays
 	holiday-islamic-holidays nil         ;... that I don't get off
+	holiday-hebrew-holidays nil         ;... that I don't get off
 	)
 
   (general-define-key

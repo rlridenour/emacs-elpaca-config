@@ -329,6 +329,7 @@
 	calendar-mark-holidays-flag t        ;colorize holidays in the calendar
 	holiday-bahai-holidays nil           ;these religions have MANY holidays
 	holiday-islamic-holidays nil         ;... that I don't get off
+	holiday-hebrew-holidays nil         ;... that I don't get off
 	)
 
 (general-define-key
