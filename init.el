@@ -2299,12 +2299,13 @@ installed."
   (setq mu4e-index-update-error-warning nil)
   (setq mu4e-headers-skip-duplicates  t)
   (setq mu4e-view-show-images t)
+  (setq shr-use-colors nil) ;; Hides the dark backgrounds that are hard to read
   (setq mu4e-view-show-addresses t)
   (setq mu4e-use-fancy-chars t)
   (setq mu4e-compose-format-flowed t)
   (setq mu4e-date-format "%y/%m/%d")
   (setq mu4e-headers-date-format "%Y/%m/%d")
-  (setq gnus-article-date-headers '(combined-local-lapsed)) ;; show local time in message header
+  (setq gnus-article-date-headers '(combined-local-lapsed)) ;; Show local time in message header
   (setq mu4e-change-filenames-when-moving t)
   ;; customize the reply-quote-string
   (setq message-citation-line-format "On %a %d %b %Y at %R, %f wrote:\n")
@@ -2373,9 +2374,9 @@ installed."
 	  '((:name "Unread messages"
 	       :query "flag:unread AND NOT flag:trashed AND NOT maildir:/gmail/[Gmail]/Trash AND NOT maildir:/gmail/[Gmail]/Spam AND NOT maildir:/obu/Junk AND NOT maildir:/fastmail/Spam"
 	       :key ?b)
-	    (:name "Flagged messages"
-		   :query "flag:flagged"
-		   :key ?f)
+	(:name "Flagged messages"
+	       :query "flag:flagged"
+	       :key ?f)
 	( :name "All inboxes"
 	  :query "maildir:/obu/INBOX OR maildir:/fastmail/INBOX OR maildir:/gmail/INBOX AND"
 	  :key ?A)
