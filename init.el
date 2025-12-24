@@ -242,6 +242,12 @@
 	  "C-x C-d" #'consult-dir
 	  "C-x C-j" #'consult-dir-jump-file))
 
+(use-package consult-spotlight
+  :ensure (:type git :host github :repo "guibor/consult-spotlight")
+  :after consult
+  :custom
+  (consult-spotlight-stderr "/dev/null"))
+
 (use-package embark
   :general
   ("C-." #'embark-act
@@ -395,6 +401,42 @@
     (set-face-attribute 'org-document-title nil :weight 'bold :height 1.5))
 
 (add-hook 'modus-themes-after-load-theme-hook #'rlr/customize-org-headings)
+
+(defun rlr/color-scheme:emacs (&optional given-scheme)
+  "Function to load named theme."
+  (let ((scheme
+	 (or given-scheme
+	     (funcall
+	      (intern
+	       (format "rlr/color-scheme-func:%s" system-type))))))
+    (modus-themes-select (plist-get rlr/themes-plist scheme))))
+
+(setq rlr/themes-plist '(:dark modus-vivendi-tinted :light modus-operandi))
+
+(defun rlr/color-scheme-func:darwin ()
+    "Determine MacOS preferred/current theme."
+    (if (equal "Dark"
+	  (substring
+	    (shell-command-to-string
+	      "defaults read -g AppleInterfaceStyle") 0 4))
+      :dark :light))
+
+(defun rlr/color-scheme-system-toggle:darwin ()
+    "Toggle the darwin system scheme."
+    (shell-command
+      (concat "osascript -e 'tell application \"System Events\" "
+	"to tell appearance preferences "
+	"to set dark mode to not dark mode'"))
+    (rlr/color-scheme:emacs))
+
+(defun rlr/color-scheme-system-toggle ()
+    "Toggle system-wide Dark or Light setting."
+    (interactive)
+    (funcall
+      (intern
+	(format "rlr/color-scheme-system-toggle:%s" system-type))))
+
+  (defalias 'rlr/dark 'rlr/color-scheme-system-toggle)
 
 (use-package doom-modeline
   :init
@@ -1265,13 +1307,16 @@
   (setq org-agenda-window-setup 'current-window)
   (setq org-link-frame-setup
 	  '((vm . vm-visit-folder-other-frame)
-	    (vm-imap . vm-visit-imap-folder-other-frame)
-	    (gnus . org-gnus-no-new-news)
-	    (file . find-file)
-	    (wl . wl-other-frame)))
+	(vm-imap . vm-visit-imap-folder-other-frame)
+	(gnus . org-gnus-no-new-news)
+	(file . find-file)
+	(wl . wl-other-frame)))
   (require 'org-tempo)
   ;; Open directory links in Dired.
   (add-to-list 'org-file-apps '(directory . emacs)))
+
+(setq org-export-backends '(ascii html icalendar latex odt md))
+(require `ox-md)
 
 (add-hook 'org-mode-hook #'variable-pitch-mode)
 (add-hook 'markdown-mode-hook #'variable-pitch-mode)
@@ -1304,6 +1349,33 @@ Excludes lines beginning with * or #. Prints result in echo area."
 	 (reading-time (/ (+ word-count reading-speed -1) reading-speed)))
     (message "%d words, ~%d pages, ~%d min read"
 	     word-count page-count reading-time)))
+
+(defun cc/yank-markdown-as-org ()
+  "Yank Markdown text as Org.
+
+This command will convert Markdown text in the top of the `kill-ring'
+and convert it to Org using the pandoc utility."
+  (interactive)
+  (save-excursion
+    (with-temp-buffer
+      (yank)
+      (shell-command-on-region
+       (point-min) (point-max)
+       "pandoc -f markdown -t org --wrap=preserve" t t)
+      (kill-region (point-min) (point-max)))
+    (yank)))
+
+(defun mb/org-copy-region-as-markdown ()
+  "Copy the region (in Org) to the system clipboard as Markdown."
+  (interactive)
+  (if (use-region-p)
+      (let* ((region
+	      (buffer-substring-no-properties
+		      (region-beginning)
+		      (region-end)))
+	     (markdown
+	      (org-export-string-as region 'md t '(:with-toc nil))))
+	(gui-set-selection 'CLIPBOARD markdown))))
 
 (use-package org-appear
 :after org
@@ -3076,7 +3148,7 @@ installed."
  (pretty-hydra-define hydra-locate
    (:color teal :quit-key "q" title: "Search")
    ("Buffer"
-    (("c" pulsar-highlight-dwim "find cursor")
+    (("c" pulsar-highlight-pulse "find cursor")
      ("h" consult-org-heading "org heading")
      ("l" consult-goto-line "goto-line")
      ("i" consult-imenu "imenu")
