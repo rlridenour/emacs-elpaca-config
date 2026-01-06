@@ -1264,6 +1264,7 @@
   ;; (setq org-directory "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/")
   (setq org-directory "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/org/")
   :config
+  (setq org-modules '(org-id org-attach)) ;; Recommended by Boris
   (setq org-list-allow-alphabetical t)
   (setq org-highlight-latex-and-related '(latex script entities))
   (setq org-startup-indented nil)
@@ -1438,6 +1439,16 @@ and convert it to Org using the pandoc utility."
     (add-to-list 'org-latex-classes
 		 '("org-beamer"
 		   "\\documentclass{beamer}
+			      [NO-DEFAULT-PACKAGES]
+			      [NO-PACKAGES]"
+		   ("\\section{%s}" . "\\section*{%s}")
+		   ("\\subsection{%s}" . "\\subsection*{%s}")
+		   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+		   ("\\paragraph{%s}" . "\\paragraph*{%s}")
+		   ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+(add-to-list 'org-latex-classes
+		 '("org-ltx-talk"
+		   "\\documentclass{ltx-talk}
 			      [NO-DEFAULT-PACKAGES]
 			      [NO-PACKAGES]"
 		   ("\\section{%s}" . "\\section*{%s}")
