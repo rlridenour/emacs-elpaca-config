@@ -343,6 +343,9 @@
 
 (use-package svg-clock)
 
+(use-package time-zones
+:ensure (:type git :host github :repo "xenodium/time-zones"))
+
 (line-number-mode)
 (column-number-mode)
 

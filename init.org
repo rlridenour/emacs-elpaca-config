@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2026-01-06 05:39:24 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2026-01-08 11:30:41 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -724,6 +724,13 @@ A nice analog clock.
 
 #+begin_src emacs-lisp
 (use-package svg-clock)
+#+end_src
+
+[[https://github.com/xenodium/time-zones][xenodium/time-zones: An Emacs major mode to view the time at any city across the world]]
+
+#+begin_src emacs-lisp
+(use-package time-zones
+:ensure (:type git :host github :repo "xenodium/time-zones"))
 #+end_src
 
 Display line and column numbers in the modeline.
@@ -2043,14 +2050,14 @@ Accent allows easy insertion of accented characters. Place the mark on the chara
 
 ** Magit
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp 
   (use-package transient)
   (use-package hl-todo
     :ensure (:depth nil)
     :after magit)
 #+end_src
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp 
   (use-package magit
     :init
     (require 'transient)
