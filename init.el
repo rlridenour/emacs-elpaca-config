@@ -1151,21 +1151,13 @@
   :config
   (global-hungry-delete-mode))
 
-(use-package transient)
-(use-package hl-todo
-  :ensure (:depth nil)
-  :after magit)
+(use-package transient
+:ensure t)
 
 (use-package magit
-  :init
-  (require 'transient)
+  :bind ("C-x g" . magit-status)
   :custom
-  (magit-repository-directories (list (cons elpaca-repos-directory 1)))
-  (magit-diff-refine-hunk 'all)
-  (magit-git-executable "/opt/homebrew/bin/git")
-  :config
-  (transient-bind-q-to-quit)
-  :commands magit-status)
+  (magit-git-executable "/opt/homebrew/bin/git"))
 
 (use-package jinx
   :init

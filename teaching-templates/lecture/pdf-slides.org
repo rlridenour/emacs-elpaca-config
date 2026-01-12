@@ -3,7 +3,7 @@
 #+LaTeX_CLASS: beamer
 #+LaTeX_CLASS_options: [aspectratio=169,12pt,ignorenonframetext]
 #+LATEX_HEADER: \usepackage{fancyvrb, graphicx, amsmath, amssymb, bm, here}
-#+LATEX_HEADER: \usepackage{ulem}\usepackage{fixltx2e}
+#+LATEX_HEADER: \usepackage[normalem]{ulem}
 #+LATEX_HEADER: \usepackage{hyperref}
 #+LATEX_HEADER: \setbeameroption{show notes on second screen}
 #+LATEX_HEADER: \setbeamerfont{note page}{size=\footnotesize}
