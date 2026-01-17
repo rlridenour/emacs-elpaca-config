@@ -1218,7 +1218,9 @@
 (setq undo-outer-limit 1006632960) ; 960mb.
 
 (use-package unfill
-:commands unfill-paragraph)
+:commands unfill-paragraph
+:general
+("M-q" #'unfill-toggle))
 
 (use-package ws-butler
 :defer 10)

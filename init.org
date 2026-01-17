@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2026-01-12 13:59:11 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2026-01-13 05:23:00 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -2225,7 +2225,9 @@ Raise the undo limits.
 
 #+begin_src emacs-lisp
   (use-package unfill
-:commands unfill-paragraph)
+:commands unfill-paragraph
+:general
+("M-q" #'unfill-toggle))
 #+end_src
 
 ** WS-Butler
