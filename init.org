@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2026-01-17 15:52:53 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2026-01-18 05:15:59 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -798,7 +798,10 @@ Save minibuffer history.
 #+end_src
 
 ** Appearance
-*** Modus Themes
+
+*** Themes
+
+**** Modus Themes
 
 #+begin_src emacs-lisp
   (use-package modus-themes
@@ -842,6 +845,15 @@ Save minibuffer history.
 (custom-set-variables
  '(custom-safe-themes (quote ("77f281064ea1c8b14938866e21c4e51e4168e05db98863bd7430f1352cab294a" default))))
 (custom-set-faces
+)
+#+end_src
+
+*** Doric
+
+#+begin_src emacs-lisp :tangle no
+(use-package doric-themes
+:ensure (:type git :host github :repo "protesilaos/doric-themes")
+:demand
 )
 #+end_src
 
@@ -1724,7 +1736,11 @@ Replace spaces in file names with hyphens using "%s" in dired.
 		   "*.ti" ("terminfo/e" "terminfo/e/*")
 		   ("terminfo/65" "terminfo/65/*")
 		   ("integration" "integration/*")
-		   (:exclude ".dir-locals.el" "*-tests.el"))))
+		   (:exclude ".dir-locals.el" "*-tests.el")))
+:general
+(:keymaps 'eat-semi-char-mode-map
+"C-h" #'eat-self-input
+"<backspace>" (kbd "C-h")))
 #+end_src
 
 *** Term Toggle
@@ -2083,6 +2099,7 @@ Accent allows easy insertion of accented characters. Place the mark on the chara
 
 #+begin_src emacs-lisp
 (use-package magit
+:after transient
   :bind ("C-x g" . magit-status)
   :custom
   (magit-git-executable "/opt/homebrew/bin/git"))

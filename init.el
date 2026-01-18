@@ -943,16 +943,20 @@
   :defer 10)
 
 (use-package eat
-  :defer 10
-  :demand
-  :ensure
-  (:host codeberg
+    :defer 10
+    :demand
+    :ensure
+    (:host codeberg
 	   :repo "akib/emacs-eat"
 	   :files ("*.el" ("term" "term/*.el") "*.texi"
 		   "*.ti" ("terminfo/e" "terminfo/e/*")
 		   ("terminfo/65" "terminfo/65/*")
 		   ("integration" "integration/*")
-		   (:exclude ".dir-locals.el" "*-tests.el"))))
+		   (:exclude ".dir-locals.el" "*-tests.el")))
+:general
+(:keymaps 'eat-semi-char-mode-map
+"C-h" #'eat-self-input
+"<backspace>" (kbd "C-h")))
 
 (use-package term-toggle
   :ensure
@@ -1155,6 +1159,7 @@
 :ensure t)
 
 (use-package magit
+:after transient
   :bind ("C-x g" . magit-status)
   :custom
   (magit-git-executable "/opt/homebrew/bin/git"))
