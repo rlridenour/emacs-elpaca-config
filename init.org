@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2026-01-18 05:15:59 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2026-01-18 05:22:16 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -848,7 +848,7 @@ Save minibuffer history.
 )
 #+end_src
 
-*** Doric
+**** Doric
 
 #+begin_src emacs-lisp :tangle no
 (use-package doric-themes
