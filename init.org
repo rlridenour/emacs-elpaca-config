@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2026-01-18 05:22:16 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2026-01-23 15:48:05 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -318,7 +318,9 @@ Load general before the remaining packages so they can make use of the ~:general
     (:keymaps 'Info-mode-map
 	  "s-." #'casual-info-tmenu)
     (:keymaps 'calendar-mode-map
-	  "s-." #'casual-calendar-tmenu))
+	  "s-." #'casual-calendar-tmenu)
+(:keymaps 'eww-mode-map
+	  "s-." #'casual-eww-tmenu))
 #+end_src
 
 *** Discover
