@@ -82,6 +82,10 @@
     "s-h"
     "s-,"))
 
+(use-package transient
+:ensure t (:wait t)
+:demand)
+
 (use-package key-chord
   :config
   (key-chord-mode 1))
@@ -1156,9 +1160,6 @@
   :defer 5
   :config
   (global-hungry-delete-mode))
-
-(use-package transient
-:ensure t)
 
 (use-package magit
 :after transient
