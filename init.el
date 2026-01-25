@@ -1168,6 +1168,8 @@
   (magit-git-executable "/opt/homebrew/bin/git")
 :init
 (setq magit-process-connection-type nil)
+:config
+(setq magit-refresh-verbose t)
 )
 
 (use-package jinx
