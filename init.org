@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2026-01-25 09:12:19 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2026-01-25 09:32:48 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -2085,7 +2085,10 @@ Accent allows easy insertion of accented characters. Place the mark on the chara
 :after transient
   :bind ("C-x g" . magit-status)
   :custom
-  (magit-git-executable "/opt/homebrew/bin/git"))
+  (magit-git-executable "/opt/homebrew/bin/git")
+:init
+(setq magit-process-connection-type nil)
+)
 #+end_src
 
 ** Jinx

@@ -1165,7 +1165,10 @@
 :after transient
   :bind ("C-x g" . magit-status)
   :custom
-  (magit-git-executable "/opt/homebrew/bin/git"))
+  (magit-git-executable "/opt/homebrew/bin/git")
+:init
+(setq magit-process-connection-type nil)
+)
 
 (use-package jinx
   :init
