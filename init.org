@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2026-01-26 10:27:27 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2026-01-26 12:40:04 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -2079,7 +2079,10 @@ Accent allows easy insertion of accented characters. Place the mark on the chara
 
 ** Magit
 
-Having problems with an Applescript error. This is to test a commit.
+Solved Applescript error with these default write settings:
+
+=defaults write org.gnu.Emacs NSApplicationUpdateCycleEnabled -bool NO=
+=defaults write org.gnu.Emacs NSEventConcurrentProcessingEnabled -bool NO=
 
 #+begin_src emacs-lisp
 (use-package magit
