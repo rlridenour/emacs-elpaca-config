@@ -2630,7 +2630,8 @@ installed."
 (use-package elfeed
   :demand
   :init
-  (setq elfeed-db-directory "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/elfeed")
+  ;; (setq elfeed-db-directory "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/elfeed")
+  (setq elfeed-db-directory "/Users/rlridenour/elfeed-db")
   :config
   :general
   ("C-M-S-s-e" #'rlr/open-elfeed-new-tab)
@@ -2641,9 +2642,38 @@ installed."
 	  "," #'link-hint-open-link)
   :commands elfeed)
 
+(defvar rlr/elfeed-db-save-timer nil
+  "Timer for debounced elfeed database saves.")
+
+(defun rlr/elfeed-db-save-and-backup ()
+  "Save the elfeed database and commit to git."
+  (when (and (boundp 'elfeed-db) elfeed-db)
+    (elfeed-db-save)
+    (let ((default-directory elfeed-db-directory))
+	(when (file-exists-p ".git")
+	  (call-process "git" nil "*elfeed-db-backup*" nil "add" "-A")
+	  (call-process "git" nil "*elfeed-db-backup*" nil "commit" "-m" "auto-backup")
+	  (call-process "git" nil "*elfeed-db-backup*" nil "push" "origin" "main")))))
+
+(defun rlr/elfeed-db-save-soon ()
+  "Schedule a database save after 10 seconds of idle."
+  (interactive)
+  (when rlr/elfeed-db-save-timer
+    (cancel-timer rlr/elfeed-db-save-timer))
+  (setq rlr/elfeed-db-save-timer
+	  (run-with-idle-timer 10 nil #'rlr/elfeed-db-save-and-backup)))
+
+;; Save and backup when tags change (elfeed-web usage)
+(add-hook 'elfeed-tag-hooks   (lambda (&rest _) (rlr/elfeed-db-save-soon)))
+(add-hook 'elfeed-untag-hooks (lambda (&rest _) (rlr/elfeed-db-save-soon)))
+
+;; Save and backup when new entries are added
+(add-hook 'elfeed-db-update-hook #'rlr/elfeed-db-save-soon)
+
 (defun rlr/elfeed-load-db-and-open ()
   "Load elfeed db before opening"
   (interactive)
+  (shell-command "elfeed-pull")
   (elfeed-db-load)
   (elfeed)
   (elfeed-search-update--force)
@@ -2655,9 +2685,15 @@ installed."
   (rlr/elfeed-load-db-and-open)
   (elfeed-update))
 
+;; (defun rlr/elfeed-save-db-and-quit ()
+;;   (interactive)
+;;   (elfeed-db-save)
+;;   (elfeed-search-quit-window)
+;;   (rlr/delete-tab-or-frame))
+
 (defun rlr/elfeed-save-db-and-quit ()
   (interactive)
-  (elfeed-db-save)
+  (rlr/elfeed-db-save-and-backup)
   (elfeed-search-quit-window)
   (rlr/delete-tab-or-frame))
 
