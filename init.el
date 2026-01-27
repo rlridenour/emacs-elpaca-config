@@ -2631,7 +2631,7 @@ installed."
   :demand
   :init
   ;; (setq elfeed-db-directory "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/elfeed")
-  (setq elfeed-db-directory "/Users/rlridenour/elfeed-db")
+  (setq elfeed-db-directory "~/.elfeed-db")
   :config
   :general
   ("C-M-S-s-e" #'rlr/open-elfeed-new-tab)
@@ -2763,7 +2763,8 @@ installed."
   :after elfeed
   :init
   (elfeed-org)
-  (setq rmh-elfeed-org-files (list "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/elfeed/elfeed.org"))
+  ;; (setq rmh-elfeed-org-files (list "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/elfeed/elfeed.org"))
+  (setq rmh-elfeed-org-files (list "~/.elfeed-db/elfeed.org"))
   :config
   ;; (setq rmh-elfeed-org-auto-ignore-invalid-feeds t)
   )

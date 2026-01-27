@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2026-01-27 07:53:12 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2026-01-27 09:05:52 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -4061,7 +4061,7 @@ Functions for setting default browser,
     :demand
     :init
     ;; (setq elfeed-db-directory "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/elfeed")
-    (setq elfeed-db-directory "/Users/rlridenour/elfeed-db")
+    (setq elfeed-db-directory "~/.elfeed-db")
     :config
     :general
     ("C-M-S-s-e" #'rlr/open-elfeed-new-tab)
@@ -4213,7 +4213,8 @@ These functions are for toggling tags when viewing single Elfeed entries. From [
     :after elfeed
     :init
     (elfeed-org)
-    (setq rmh-elfeed-org-files (list "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/elfeed/elfeed.org"))
+    ;; (setq rmh-elfeed-org-files (list "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/elfeed/elfeed.org"))
+    (setq rmh-elfeed-org-files (list "~/.elfeed-db/elfeed.org"))
     :config
     ;; (setq rmh-elfeed-org-auto-ignore-invalid-feeds t)
     )
