@@ -319,6 +319,7 @@
 (setf use-short-answers t)
 
 (setopt ns-right-command-modifier 'hyper)
+(setopt ns-right-alternate-modifier 'none)
 
 (setq enable-recursive-minibuffers t)
 (minibuffer-depth-indicate-mode 1)

@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2026-01-27 09:05:52 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2026-01-27 09:44:13 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -691,6 +691,7 @@ Set Mac right command key as Emacs hyper key. I was using the fn key, but there 
 
 #+begin_src emacs-lisp
   (setopt ns-right-command-modifier 'hyper)
+  (setopt ns-right-alternate-modifier 'none)
 #+end_src
 
 Allow entering a command when the minibuffer is active.
