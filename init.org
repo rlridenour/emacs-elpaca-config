@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2026-01-27 09:44:13 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2026-02-01 13:17:03 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -1985,6 +1985,12 @@ Set the mark at a location without highlighting anything with =C-`=. This is use
 
   (general-define-key "C-`" #'push-mark-no-activate)
   (general-define-key "M-`" #'consult-mark)
+#+end_src
+
+*** DWIM Shell Command
+
+#+begin_src emacs-lisp
+(use-package dwim-shell-command)
 #+end_src
 
 ** Evil Nerd Commenter

@@ -1110,6 +1110,8 @@
 (general-define-key "C-`" #'push-mark-no-activate)
 (general-define-key "M-`" #'consult-mark)
 
+(use-package dwim-shell-command)
+
 (use-package evil-nerd-commenter
   :general
   ("M-;" #'evilnc-comment-or-uncomment-lines))
