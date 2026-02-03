@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2026-02-01 13:17:03 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2026-02-03 05:07:31 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -331,6 +331,14 @@ Load general before the remaining packages so they can make use of the ~:general
 	  "s-." #'casual-calendar-tmenu)
 (:keymaps 'eww-mode-map
 	  "s-." #'casual-eww-tmenu))
+#+end_src
+
+Quit transient menus with escape. This affects /all/ transient menus, so it might have unexpected consequences.
+
+#+begin_src emacs-lisp
+(general-define-key
+:keymaps 'transient-map
+"<escape>" #'transient-quit-one)
 #+end_src
 
 *** Discover

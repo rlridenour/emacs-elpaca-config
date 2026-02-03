@@ -124,6 +124,10 @@
 (:keymaps 'eww-mode-map
 	  "s-." #'casual-eww-tmenu))
 
+(general-define-key
+:keymaps 'transient-map
+"<escape>" #'transient-quit-one)
+
 (use-package discover
   :defer 10
   :config
