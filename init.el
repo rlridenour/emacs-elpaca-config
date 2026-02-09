@@ -3485,6 +3485,7 @@ installed."
     "View"
     (("va" org-appear-mode :toggle t)
      ("vl" org-toggle-link-display :toggle t)
+     ("vv" visible-mode :toggle t)
      ("vi" consult-org-heading "iMenu")
      ("vu" org-toggle-pretty-entities "org-pretty")
      ("vI" org-toggle-inline-images "Inline images"))
