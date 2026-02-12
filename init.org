@@ -1,7 +1,7 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
 <<<<<<< HEAD
-#+DATE: Time-stamp: <Last changed 2026-02-12 12:48:20 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2026-02-12 13:06:42 by rlridenour>
 =======
 #+DATE: Time-stamp: <Last changed 2026-02-04 13:15:12 by rlridenour>
 >>>>>>> origin/main
@@ -2313,7 +2313,7 @@ https://github.com/joaotavora/yasnippet
 :ensure (:type git :host codeberg :repo "ctietze/quake-frame.el")
 :commands (quake-frame-toggle)
 :general 
-("C-`" quake-frame-toggle))
+("C-`" #'quake-frame-toggle))
 #+end_src
 
 ** Editing Keybindings
@@ -5425,12 +5425,6 @@ Set default directory.
 #+begin_src emacs-lisp
   (setq default-directory "~/")
 #+end_src
-
-#+begin_src emacs-lisp
-(server-start)
-#+end_src
-
-
 
 ** Footer
 
