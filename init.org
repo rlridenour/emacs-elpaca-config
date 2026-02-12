@@ -1,6 +1,10 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
+<<<<<<< HEAD
 #+DATE: Time-stamp: <Last changed 2026-02-12 06:40:53 by rlridenour>
+=======
+#+DATE: Time-stamp: <Last changed 2026-02-04 13:15:12 by rlridenour>
+>>>>>>> origin/main
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -5194,6 +5198,7 @@ Make chord charts.
       "View"
       (("va" org-appear-mode :toggle t)
        ("vl" org-toggle-link-display :toggle t)
+       ("vv" visible-mode :toggle t)
        ("vi" consult-org-heading "iMenu")
        ("vu" org-toggle-pretty-entities "org-pretty")
        ("vI" org-toggle-inline-images "Inline images"))
