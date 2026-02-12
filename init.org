@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2026-02-03 05:07:31 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2026-02-12 06:40:53 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -440,8 +440,8 @@ Auto save files instead of creating copies.
 #+begin_src emacs-lisp
   (setq auto-save-default nil
 	auto-save-visited-interval 60)
-(auto-save-visited-mode 1)
-  #+end_src
+  (auto-save-visited-mode 1)
+#+end_src
 
 Don't make all those files that look like =#foo.ext=.
 
@@ -744,14 +744,14 @@ World clock settings.
 A nice analog clock.
 
 #+begin_src emacs-lisp
-(use-package svg-clock)
+  (use-package svg-clock)
 #+end_src
 
 [[https://github.com/xenodium/time-zones][xenodium/time-zones: An Emacs major mode to view the time at any city across the world]]
 
 #+begin_src emacs-lisp
-(use-package time-zones
-:ensure (:type git :host github :repo "xenodium/time-zones"))
+  (use-package time-zones
+    :ensure (:type git :host github :repo "xenodium/time-zones"))
 #+end_src
 
 Display line and column numbers in the modeline.
@@ -846,8 +846,8 @@ Save minibuffer history.
 #+end_src
 
 #+begin_src emacs-lisp
-(defun rlr/customize-org-headings ()
-"Make Org headings larger."
+  (defun rlr/customize-org-headings ()
+    "Make Org headings larger."
     (set-face-attribute 'org-level-1 nil :height 1.3 :weight 'bold :inherit 'fixed-pitch)
     (set-face-attribute 'org-level-2 nil :height 1.2 :weight 'bold :inherit 'fixed-pitch)
     (set-face-attribute 'org-level-3 nil :height 1.1 :weight 'bold :inherit 'fixed-pitch)
@@ -859,23 +859,23 @@ Save minibuffer history.
     ;; Make the document title a bit bigger
     (set-face-attribute 'org-document-title nil :weight 'bold :height 1.5))
 
-(add-hook 'modus-themes-after-load-theme-hook #'rlr/customize-org-headings)
+  (add-hook 'modus-themes-after-load-theme-hook #'rlr/customize-org-headings)
 #+end_src
 
 #+begin_src emacs-lisp :tangle no
-(custom-set-variables
- '(custom-safe-themes (quote ("77f281064ea1c8b14938866e21c4e51e4168e05db98863bd7430f1352cab294a" default))))
-(custom-set-faces
-)
+  (custom-set-variables
+   '(custom-safe-themes (quote ("77f281064ea1c8b14938866e21c4e51e4168e05db98863bd7430f1352cab294a" default))))
+  (custom-set-faces
+   )
 #+end_src
 
 **** Doric
 
 #+begin_src emacs-lisp :tangle no
-(use-package doric-themes
-:ensure (:type git :host github :repo "protesilaos/doric-themes")
-:demand
-)
+  (use-package doric-themes
+    :ensure (:type git :host github :repo "protesilaos/doric-themes")
+    :demand
+    )
 #+end_src
 
 **** Toggle Dark
@@ -883,47 +883,47 @@ Save minibuffer history.
 Toggle light and dark theme. From [[https://takeonrules.com/2025/12/05/managing-lightdark-scheme-in-macos-and-linux/][Managing Light/Dark Scheme in MacOS and Linux // Take on Rules]]
 
 #+begin_src emacs-lisp
-(defun rlr/color-scheme:emacs (&optional given-scheme)
-  "Function to load named theme."
-  (let ((scheme
-	 (or given-scheme
-	     (funcall
-	      (intern
-	       (format "rlr/color-scheme-func:%s" system-type))))))
-    (modus-themes-select (plist-get rlr/themes-plist scheme))))
+  (defun rlr/color-scheme:emacs (&optional given-scheme)
+    "Function to load named theme."
+    (let ((scheme
+	   (or given-scheme
+	       (funcall
+		(intern
+		 (format "rlr/color-scheme-func:%s" system-type))))))
+      (modus-themes-select (plist-get rlr/themes-plist scheme))))
 #+end_src
 
 #+begin_src emacs-lisp
-(setq rlr/themes-plist '(:dark modus-vivendi-tinted :light modus-operandi))
+  (setq rlr/themes-plist '(:dark modus-vivendi-tinted :light modus-operandi))
 #+end_src
 
 #+begin_src emacs-lisp
-(defun rlr/color-scheme-func:darwin ()
+  (defun rlr/color-scheme-func:darwin ()
     "Determine MacOS preferred/current theme."
     (if (equal "Dark"
-	  (substring
-	    (shell-command-to-string
-	      "defaults read -g AppleInterfaceStyle") 0 4))
-      :dark :light))
+	       (substring
+		(shell-command-to-string
+		 "defaults read -g AppleInterfaceStyle") 0 4))
+	:dark :light))
 #+end_src
 
 #+begin_src emacs-lisp
-(defun rlr/color-scheme-system-toggle:darwin ()
+  (defun rlr/color-scheme-system-toggle:darwin ()
     "Toggle the darwin system scheme."
     (shell-command
-      (concat "osascript -e 'tell application \"System Events\" "
-	"to tell appearance preferences "
-	"to set dark mode to not dark mode'"))
+     (concat "osascript -e 'tell application \"System Events\" "
+	 "to tell appearance preferences "
+	 "to set dark mode to not dark mode'"))
     (rlr/color-scheme:emacs))
 #+end_src
 
 #+begin_src emacs-lisp
-(defun rlr/color-scheme-system-toggle ()
+  (defun rlr/color-scheme-system-toggle ()
     "Toggle system-wide Dark or Light setting."
     (interactive)
     (funcall
-      (intern
-	(format "rlr/color-scheme-system-toggle:%s" system-type))))
+     (intern
+      (format "rlr/color-scheme-system-toggle:%s" system-type))))
 
   (defalias 'rlr/dark 'rlr/color-scheme-system-toggle)
 #+end_src

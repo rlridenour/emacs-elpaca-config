@@ -355,7 +355,7 @@
 (use-package svg-clock)
 
 (use-package time-zones
-:ensure (:type git :host github :repo "xenodium/time-zones"))
+  :ensure (:type git :host github :repo "xenodium/time-zones"))
 
 (line-number-mode)
 (column-number-mode)
@@ -402,55 +402,55 @@
   ("<f9>" #'modus-themes-rotate))
 
 (defun rlr/customize-org-headings ()
-"Make Org headings larger."
-    (set-face-attribute 'org-level-1 nil :height 1.3 :weight 'bold :inherit 'fixed-pitch)
-    (set-face-attribute 'org-level-2 nil :height 1.2 :weight 'bold :inherit 'fixed-pitch)
-    (set-face-attribute 'org-level-3 nil :height 1.1 :weight 'bold :inherit 'fixed-pitch)
-    (set-face-attribute 'org-level-4 nil :height 1.0 :weight 'bold :inherit 'fixed-pitch)
-    (set-face-attribute 'org-level-5 nil :height 1.0 :weight 'bold :inherit 'fixed-pitch)
-    (set-face-attribute 'org-level-6 nil :height 1.0 :weight 'bold :inherit 'fixed-pitch)
-    (set-face-attribute 'org-level-7 nil :height 1.0 :weight 'bold :inherit 'fixed-pitch)
-    (set-face-attribute 'org-level-8 nil :height 1.0 :weight 'bold :inherit 'fixed-pitch)
-    ;; Make the document title a bit bigger
-    (set-face-attribute 'org-document-title nil :weight 'bold :height 1.5))
+  "Make Org headings larger."
+  (set-face-attribute 'org-level-1 nil :height 1.3 :weight 'bold :inherit 'fixed-pitch)
+  (set-face-attribute 'org-level-2 nil :height 1.2 :weight 'bold :inherit 'fixed-pitch)
+  (set-face-attribute 'org-level-3 nil :height 1.1 :weight 'bold :inherit 'fixed-pitch)
+  (set-face-attribute 'org-level-4 nil :height 1.0 :weight 'bold :inherit 'fixed-pitch)
+  (set-face-attribute 'org-level-5 nil :height 1.0 :weight 'bold :inherit 'fixed-pitch)
+  (set-face-attribute 'org-level-6 nil :height 1.0 :weight 'bold :inherit 'fixed-pitch)
+  (set-face-attribute 'org-level-7 nil :height 1.0 :weight 'bold :inherit 'fixed-pitch)
+  (set-face-attribute 'org-level-8 nil :height 1.0 :weight 'bold :inherit 'fixed-pitch)
+  ;; Make the document title a bit bigger
+  (set-face-attribute 'org-document-title nil :weight 'bold :height 1.5))
 
 (add-hook 'modus-themes-after-load-theme-hook #'rlr/customize-org-headings)
 
 (defun rlr/color-scheme:emacs (&optional given-scheme)
   "Function to load named theme."
   (let ((scheme
-	 (or given-scheme
-	     (funcall
-	      (intern
-	       (format "rlr/color-scheme-func:%s" system-type))))))
+	   (or given-scheme
+	       (funcall
+		(intern
+		 (format "rlr/color-scheme-func:%s" system-type))))))
     (modus-themes-select (plist-get rlr/themes-plist scheme))))
 
 (setq rlr/themes-plist '(:dark modus-vivendi-tinted :light modus-operandi))
 
 (defun rlr/color-scheme-func:darwin ()
-    "Determine MacOS preferred/current theme."
-    (if (equal "Dark"
-	  (substring
-	    (shell-command-to-string
-	      "defaults read -g AppleInterfaceStyle") 0 4))
-      :dark :light))
+  "Determine MacOS preferred/current theme."
+  (if (equal "Dark"
+	       (substring
+		(shell-command-to-string
+		 "defaults read -g AppleInterfaceStyle") 0 4))
+	:dark :light))
 
 (defun rlr/color-scheme-system-toggle:darwin ()
-    "Toggle the darwin system scheme."
-    (shell-command
-      (concat "osascript -e 'tell application \"System Events\" "
-	"to tell appearance preferences "
-	"to set dark mode to not dark mode'"))
-    (rlr/color-scheme:emacs))
+  "Toggle the darwin system scheme."
+  (shell-command
+   (concat "osascript -e 'tell application \"System Events\" "
+	 "to tell appearance preferences "
+	 "to set dark mode to not dark mode'"))
+  (rlr/color-scheme:emacs))
 
 (defun rlr/color-scheme-system-toggle ()
-    "Toggle system-wide Dark or Light setting."
-    (interactive)
-    (funcall
-      (intern
-	(format "rlr/color-scheme-system-toggle:%s" system-type))))
+  "Toggle system-wide Dark or Light setting."
+  (interactive)
+  (funcall
+   (intern
+    (format "rlr/color-scheme-system-toggle:%s" system-type))))
 
-  (defalias 'rlr/dark 'rlr/color-scheme-system-toggle)
+(defalias 'rlr/dark 'rlr/color-scheme-system-toggle)
 
 (use-package doom-modeline
   :init
