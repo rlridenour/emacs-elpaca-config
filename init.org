@@ -1,7 +1,11 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
 <<<<<<< HEAD
+<<<<<<< HEAD
 #+DATE: Time-stamp: <Last changed 2026-02-13 16:13:38 by rlridenour>
+=======
+#+DATE: Time-stamp: <Last changed 2026-02-12 13:06:42 by rlridenour>
+>>>>>>> 87034b78990812e10891a17478ea03ba9de62cb1
 =======
 #+DATE: Time-stamp: <Last changed 2026-02-04 13:15:12 by rlridenour>
 >>>>>>> origin/main
@@ -2304,6 +2308,16 @@ https://github.com/joaotavora/yasnippet
     :after auctex
     :hook
     (LaTeX-mode . laas-mode))
+#+end_src
+
+** Quake Frame
+
+#+begin_src emacs-lisp
+(use-package quake-frame
+:ensure (:type git :host codeberg :repo "ctietze/quake-frame.el")
+:commands (quake-frame-toggle)
+:general 
+("C-`" #'quake-frame-toggle))
 #+end_src
 
 ** Editing Keybindings

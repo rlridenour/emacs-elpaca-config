@@ -1258,6 +1258,12 @@
   :general
   ( "<f6>" #'yankpad-insert))
 
+(use-package quake-frame
+:ensure (:type git :host codeberg :repo "ctietze/quake-frame.el")
+:commands (quake-frame-toggle)
+:general 
+("C-`" #'quake-frame-toggle))
+
 (general-define-key
  "<s-up>" #'beginning-of-buffer
  "<s-down>" #'end-of-buffer
