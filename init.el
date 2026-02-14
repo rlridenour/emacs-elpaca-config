@@ -2392,7 +2392,7 @@ installed."
 	  "C-," #'mu4e-sexp-at-point)
     :after org
     :init
-    (add-to-list 'load-path "/opt/homebrew/Cellar/mu/1.12.14/share/emacs/site-lisp/mu/mu4e/")
+    (add-to-list 'load-path "/opt/homebrew/Cellar/mu/1.12.15/share/emacs/site-lisp/mu/mu4e/")
     :config
     (setq mail-user-agent 'mu4e-user-agent)
     (setq mu4e-maildir "~/.maildir/")
