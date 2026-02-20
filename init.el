@@ -3152,10 +3152,16 @@ installed."
 (use-package yaml-mode
   :mode ("\\.yml\\'" . YAML-mode))
 
-(use-package reader
-  :ensure (:type git :host codeberg :repo "divyaranjan/emacs-reader"
-		   :files ("*.el" "render-core.dylib")
-		   :pre-build ("make" "all")))
+(use-package pdf-tools
+  :hook (pdf-view-mode . (lambda () (display-line-numbers-mode -1)))
+  :init
+  (pdf-loader-install)
+  :config
+  (setq-default pdf-view-display-size 'fit-width)
+  :general
+  (:keymaps 'pdf-view-mode-map
+	      "C-s" #'isearch-forward)
+  )
 
 (use-feature calc
 :general
