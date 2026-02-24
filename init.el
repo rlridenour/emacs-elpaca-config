@@ -99,7 +99,7 @@
     ;; :ensure
     ;; (:type git :host github :repo "kickingvegas/casual")
     :general
-    ("s-." #'casual-editkit-main-tmenu)
+    ("H-." #'casual-editkit-main-tmenu)
     ("M-g a" #'casual-avy-tmenu)
     (:keymaps 'reb-mode-map
 	  "s-." #'casual-re-builder-tmenu)
@@ -122,7 +122,9 @@
     (:keymaps 'calendar-mode-map
 	  "s-." #'casual-calendar-tmenu)
 (:keymaps 'eww-mode-map
-	  "s-." #'casual-eww-tmenu))
+	  "s-." #'casual-eww-tmenu)
+(:keymaps 'org-mode-map
+	  "s-." #'casual-org-tmenu))
 
 (general-define-key
 :keymaps 'transient-map

@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2026-02-20 06:50:55 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2026-02-23 19:41:37 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -307,7 +307,7 @@ Load general before the remaining packages so they can make use of the ~:general
     ;; :ensure
     ;; (:type git :host github :repo "kickingvegas/casual")
     :general
-    ("s-." #'casual-editkit-main-tmenu)
+    ("H-." #'casual-editkit-main-tmenu)
     ("M-g a" #'casual-avy-tmenu)
     (:keymaps 'reb-mode-map
 	  "s-." #'casual-re-builder-tmenu)
@@ -330,7 +330,9 @@ Load general before the remaining packages so they can make use of the ~:general
     (:keymaps 'calendar-mode-map
 	  "s-." #'casual-calendar-tmenu)
 (:keymaps 'eww-mode-map
-	  "s-." #'casual-eww-tmenu))
+	  "s-." #'casual-eww-tmenu)
+(:keymaps 'org-mode-map
+	  "s-." #'casual-org-tmenu))
 #+end_src
 
 Quit transient menus with escape. This affects /all/ transient menus, so it might have unexpected consequences.
