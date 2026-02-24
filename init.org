@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2026-02-23 19:41:37 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2026-02-24 05:52:06 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -439,10 +439,21 @@ Make numeric backup versions
 
 Auto save files instead of creating copies.
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (setq auto-save-default nil
-	auto-save-visited-interval 60)
+	auto-save-visited-interval 10)
   (auto-save-visited-mode 1)
+#+end_src
+
+Try Real Auto Save
+
+#+begin_src emacs-lisp
+  (use-package real-auto-save
+    :config
+    (setq real-auto-save-interval 5)
+    :hook
+    (prog-mode . real-auto-save-mode)
+    (org-mode . real-auto-save-mode))
 #+end_src
 
 Don't make all those files that look like =#foo.ext=.
@@ -2310,7 +2321,7 @@ https://github.com/joaotavora/yasnippet
 (use-package quake-frame
 :ensure (:type git :host codeberg :repo "ctietze/quake-frame.el")
 :commands (quake-frame-toggle)
-:general 
+:general
 ("C-`" #'quake-frame-toggle))
 #+end_src
 

@@ -171,9 +171,12 @@
 
 (setq version-control t)
 
-(setq auto-save-default nil
-	auto-save-visited-interval 60)
-(auto-save-visited-mode 1)
+(use-package real-auto-save
+  :config
+  (setq real-auto-save-interval 5)
+  :hook
+  (prog-mode . real-auto-save-mode)
+  (org-mode . real-auto-save-mode))
 
 (setq create-lockfiles nil)
 
@@ -1263,7 +1266,7 @@
 (use-package quake-frame
 :ensure (:type git :host codeberg :repo "ctietze/quake-frame.el")
 :commands (quake-frame-toggle)
-:general 
+:general
 ("C-`" #'quake-frame-toggle))
 
 (general-define-key
