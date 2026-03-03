@@ -2243,6 +2243,33 @@ and convert it to Org using the pandoc utility."
 			  (define-key map (kbd "$")  #'math-delimiters-insert)
 			  map))))
 
+(defalias 'mcq-item
+   (kmacro "C-a C-k \\ c h o i c e SPC { C-y <down>"))
+
+(defun mcq-wrap-line ()
+  "Wrap the current line in \choice{}"
+  (interactive)
+  (save-excursion
+    (beginning-of-line)
+    (skip-chars-forward " \t")
+    (insert "\\choice{")
+    (end-of-line)
+    (insert "}")))
+
+(defun mcq-wrap-selection ()
+  "Wrap the selected text in \choice{}"
+  (interactive)
+  (if (use-region-p)
+      (let ((begin (region-beginning))
+            (end (region-end)))
+        (save-excursion
+          (goto-char end)
+          (insert "}")
+          (goto-char begin)
+          (insert "\\choice{")))
+    (insert "\\choice{}")
+    (backward-char)))
+
 (use-package markdown-mode
   :mode (("README\\.md\\'" . gfm-mode)
 	   ("\\.md\\'" . markdown-mode)
@@ -3529,7 +3556,9 @@ installed."
     (("d" crux-open-with "Open in default program")
      ("." dired-omit-mode "Show hidden files")
      ("p" diredp-copy-abs-filenames-as-kill "Copy filename and path")
-     ("n" dired-toggle-read-only "edit Filenames"))
+     ("n" dired-toggle-read-only "edit Filenames")
+     ("c" tex-clean "clean aux")
+     ("C" tex-clean-all "clean all"))
     "Blog"
     (("bn" rlrt-new-post "New draft")
      ("bb" orgblog-build "Build Site")

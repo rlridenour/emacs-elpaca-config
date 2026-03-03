@@ -4,8 +4,6 @@
 # group: skeleton
 # name: \documentclass{exam} ...
 # --
-% arara: pdflatex: { interaction: nonstopmode, synctex: yes }
-
 \documentclass{examdesign}
 \Fullpages
 \NumberOfVersions{1}
@@ -13,10 +11,16 @@
 \examname{${2:Exam Name}}
 
 \usepackage{enumitem}
-\setlist{nosep}
-\usepackage{libertinus-type1}
-\usepackage{libertinust1math}
-\usepackage[T1]{fontenc}
+%\setlist{nosep}
+%\usepackage{libertinus-type1}
+%\usepackage{libertinust1math}
+%\usepackage[T1]{fontenc}
+
+\usepackage{fontspec}
+\usepackage[math-style=upright]{unicode-math}
+\setmainfont{Libertinus Serif}
+\setmathfont[AutoFakeBold]{Libertinus Math}
+\setsansfont{Libertinus Sans}
 
 \begin{document}
 

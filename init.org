@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2026-02-24 05:52:06 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2026-03-02 19:58:41 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -3551,6 +3551,46 @@ From [[https://kitchingroup.cheme.cmu.edu/blog/2016/06/16/Copy-formatted-org-mod
 			  map))))
 #+end_src
 
+
+** Exams
+
+Wrap current line in 
+
+#+begin_src emacs-lisp
+(defalias 'mcq-item
+   (kmacro "C-a C-k \\ c h o i c e SPC { C-y <down>"))
+#+end_src
+
+#+begin_src emacs-lisp
+(defun mcq-wrap-line ()
+  "Wrap the current line in \choice{}"
+  (interactive)
+  (save-excursion
+    (beginning-of-line)
+    (skip-chars-forward " \t")
+    (insert "\\choice{")
+    (end-of-line)
+    (insert "}")))
+#+end_src
+
+#+begin_src emacs-lisp
+(defun mcq-wrap-selection ()
+  "Wrap the selected text in \choice{}"
+  (interactive)
+  (if (use-region-p)
+      (let ((begin (region-beginning))
+            (end (region-end)))
+        (save-excursion
+          (goto-char end)
+          (insert "}")
+          (goto-char begin)
+          (insert "\\choice{")))
+    (insert "\\choice{}")
+    (backward-char)))
+#+end_src
+
+
+
 * Markdown Mode
 
 #+begin_src emacs-lisp
@@ -5248,7 +5288,9 @@ Make chord charts.
       (("d" crux-open-with "Open in default program")
        ("." dired-omit-mode "Show hidden files")
        ("p" diredp-copy-abs-filenames-as-kill "Copy filename and path")
-       ("n" dired-toggle-read-only "edit Filenames"))
+       ("n" dired-toggle-read-only "edit Filenames")
+       ("c" tex-clean "clean aux")
+       ("C" tex-clean-all "clean all"))
       "Blog"
       (("bn" rlrt-new-post "New draft")
        ("bb" orgblog-build "Build Site")
