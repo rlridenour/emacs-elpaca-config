@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2026-03-02 19:58:41 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2026-03-02 20:07:55 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -3554,7 +3554,7 @@ From [[https://kitchingroup.cheme.cmu.edu/blog/2016/06/16/Copy-formatted-org-mod
 
 ** Exams
 
-Wrap current line in 
+Wrap current line in
 
 #+begin_src emacs-lisp
 (defalias 'mcq-item
@@ -3562,15 +3562,14 @@ Wrap current line in
 #+end_src
 
 #+begin_src emacs-lisp
-(defun mcq-wrap-line ()
-  "Wrap the current line in \choice{}"
-  (interactive)
-  (save-excursion
+  (defun mcq-wrap-line ()
+    "Wrap the current line in \choice{}"
+    (interactive)
     (beginning-of-line)
     (skip-chars-forward " \t")
     (insert "\\choice{")
     (end-of-line)
-    (insert "}")))
+    (insert "}"))
 #+end_src
 
 #+begin_src emacs-lisp
@@ -3579,12 +3578,12 @@ Wrap current line in
   (interactive)
   (if (use-region-p)
       (let ((begin (region-beginning))
-            (end (region-end)))
-        (save-excursion
-          (goto-char end)
-          (insert "}")
-          (goto-char begin)
-          (insert "\\choice{")))
+	    (end (region-end)))
+	(save-excursion
+	  (goto-char end)
+	  (insert "}")
+	  (goto-char begin)
+	  (insert "\\choice{")))
     (insert "\\choice{}")
     (backward-char)))
 #+end_src

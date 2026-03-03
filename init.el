@@ -2249,24 +2249,23 @@ and convert it to Org using the pandoc utility."
 (defun mcq-wrap-line ()
   "Wrap the current line in \choice{}"
   (interactive)
-  (save-excursion
-    (beginning-of-line)
-    (skip-chars-forward " \t")
-    (insert "\\choice{")
-    (end-of-line)
-    (insert "}")))
+  (beginning-of-line)
+  (skip-chars-forward " \t")
+  (insert "\\choice{")
+  (end-of-line)
+  (insert "}"))
 
 (defun mcq-wrap-selection ()
   "Wrap the selected text in \choice{}"
   (interactive)
   (if (use-region-p)
       (let ((begin (region-beginning))
-            (end (region-end)))
-        (save-excursion
-          (goto-char end)
-          (insert "}")
-          (goto-char begin)
-          (insert "\\choice{")))
+	    (end (region-end)))
+	(save-excursion
+	  (goto-char end)
+	  (insert "}")
+	  (goto-char begin)
+	  (insert "\\choice{")))
     (insert "\\choice{}")
     (backward-char)))
 
