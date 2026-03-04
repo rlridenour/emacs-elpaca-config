@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2026-03-02 20:07:55 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2026-03-03 18:23:32 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -3588,6 +3588,38 @@ Wrap current line in
     (backward-char)))
 #+end_src
 
+Convert Claude multiple choice quizzes to Org mode.
+
+#+begin_src emacs-lisp
+(defun convert-quiz-claude-to-org ()
+  "Convert markdown-style quiz questions to numbered format.
+   Operates on the current buffer or active region."
+  (interactive)
+  (let ((start (if (use-region-p) (region-beginning) (point-min)))
+        (end   (if (use-region-p) (region-end)       (point-max)))
+        (question-num 0))
+    (save-excursion
+      ;; Remove '---' separator lines
+      (goto-char start)
+      (while (re-search-forward "^---\n?" end t)
+        (replace-match ""))
+
+      ;; Convert **Question N:** to "N."
+      (goto-char start)
+      (while (re-search-forward "^\\*\\*Question [0-9]+:\\*\\* " end t)
+        (setq question-num (1+ question-num))
+        (replace-match (format "%d. " question-num)))
+
+      ;; Convert "- A)" / "- B)" etc. to "     a)" / "     b)" etc.
+      (goto-char start)
+      (while (re-search-forward "^- \\([A-D]\\))" end t)
+        (replace-match (format "     %s)" (downcase (match-string 1)))))
+
+      ;; Remove blank lines
+      (goto-char start)
+      (while (re-search-forward "^[[:blank:]]*\n" end t)
+        (replace-match "")))))
+#+end_src
 
 
 * Markdown Mode
