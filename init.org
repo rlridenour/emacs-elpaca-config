@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2026-03-03 18:23:32 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2026-03-04 07:20:05 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -4340,14 +4340,15 @@ This uses webkit to display HTML in Elfeed.
 
 ** Mastodon
 
-#+begin_src emacs-lisp :tangle no
+#+begin_src emacs-lisp
   (use-package mastodon
     :config
     (mastodon-discover)
     (setq mastodon-instance-url "https://zirk.us/"
 	  mastodon-active-user "randyridenour"
-	  ;; mastodon-auth-use-auth-source nil
-	  epa-file-encrypt-to "677C0F5EA5535058"))
+	  mastodon-auth-use-auth-source nil
+	  ;; epa-file-encrypt-to "677C0F5EA5535058"
+))
 #+end_src
 
 Open Mastodon in a new tab

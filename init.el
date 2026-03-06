@@ -2847,6 +2847,15 @@ installed."
   (:keymaps 'elfeed-show-mode-map
 	      "%"  #'elfeed-webkit-toggle))
 
+(use-package mastodon
+    :config
+    (mastodon-discover)
+    (setq mastodon-instance-url "https://zirk.us/"
+	  mastodon-active-user "randyridenour"
+	  mastodon-auth-use-auth-source nil
+	  ;; epa-file-encrypt-to "677C0F5EA5535058"
+))
+
 (defvar orgblog-directory "~/sites/orgblog/" "Path to the Org mode blog.")
 (defvar orgblog-public-directory "~/sites/orgblog/docs/" "Path to the blog public directory.")
 (defvar orgblog-posts-directory "~/sites/orgblog/posts/" "Path to the blog public directory.")
