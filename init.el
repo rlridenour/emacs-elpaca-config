@@ -1,6 +1,6 @@
 ;;; init.el --- Personal Emacs configuration file -*- lexical-binding: t; -*-
 
-(defvar elpaca-installer-version 0.11)
+(defvar elpaca-installer-version 0.12)
 (defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
 (defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
 (defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
@@ -860,9 +860,6 @@
   (setq consult-omni-default-interactive-command #'consult-omni-multi)
 :general
 ("C-M-S-s-o" #'consult-omni-multi))
-
-(use-package easy-find
-  :ensure (:type git :host github :repo "emacselements/easy-find"))
 
 (use-package fzf
   :commands (fzf fzf-directory)

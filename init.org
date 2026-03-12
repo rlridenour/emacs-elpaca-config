@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2026-03-12 06:49:37 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2026-03-12 13:00:18 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -161,7 +161,7 @@ Add some space between lines.
 ** Elpaca Install
 
 #+begin_src emacs-lisp
-  (defvar elpaca-installer-version 0.11)
+  (defvar elpaca-installer-version 0.12)
   (defvar elpaca-directory (expand-file-name "elpaca/" user-emacs-directory))
   (defvar elpaca-builds-directory (expand-file-name "builds/" elpaca-directory))
   (defvar elpaca-repos-directory (expand-file-name "repos/" elpaca-directory))
@@ -1596,7 +1596,7 @@ I just started using this, but I need to finish configuration.
 
 [[https://github.com/emacselements/easy-find][emacselements/easy-find: My Easy-Find Emacs Package]]
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package easy-find
     :ensure (:type git :host github :repo "emacselements/easy-find"))
 #+end_src
