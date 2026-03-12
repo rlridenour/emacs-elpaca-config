@@ -2274,29 +2274,29 @@ and convert it to Org using the pandoc utility."
    Operates on the current buffer or active region."
   (interactive)
   (let ((start (if (use-region-p) (region-beginning) (point-min)))
-        (end   (if (use-region-p) (region-end)       (point-max)))
-        (question-num 0))
+	(end   (if (use-region-p) (region-end)       (point-max)))
+	(question-num 0))
     (save-excursion
       ;; Remove '---' separator lines
       (goto-char start)
       (while (re-search-forward "^---\n?" end t)
-        (replace-match ""))
+	(replace-match ""))
 
       ;; Convert **Question N:** to "N."
       (goto-char start)
       (while (re-search-forward "^\\*\\*Question [0-9]+:\\*\\* " end t)
-        (setq question-num (1+ question-num))
-        (replace-match (format "%d. " question-num)))
+	(setq question-num (1+ question-num))
+	(replace-match (format "%d. " question-num)))
 
       ;; Convert "- A)" / "- B)" etc. to "     a)" / "     b)" etc.
       (goto-char start)
       (while (re-search-forward "^- \\([A-D]\\))" end t)
-        (replace-match (format "     %s)" (downcase (match-string 1)))))
+	(replace-match (format "     %s)" (downcase (match-string 1)))))
 
       ;; Remove blank lines
       (goto-char start)
       (while (re-search-forward "^[[:blank:]]*\n" end t)
-        (replace-match "")))))
+	(replace-match "")))))
 
 (use-package markdown-mode
   :mode (("README\\.md\\'" . gfm-mode)
@@ -2591,7 +2591,8 @@ installed."
 	 "\n--\n"
 	 "Randy Ridenour, Ph.D.\n"
 	 "Professor of Philosophy\n"
-	 "Oklahoma Baptist University\n\n"
+	 "Oklahoma Baptist University\n"
+	 "220 Montgomery Hall\n"
 	 "500 W. University St.\n"
 	 "Shawnee, OK  74804\n"
 	 "Office: (405) 585-4432\n")))
