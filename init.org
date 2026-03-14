@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2026-03-14 06:52:33 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2026-03-14 17:26:45 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -201,7 +201,6 @@ Add some space between lines.
 (elpaca `(,@elpaca-order))
 #+end_src
 
-
 ** Elpaca Use-Package Support
 
 Load org first to avoid version mismatch problems.
@@ -273,15 +272,16 @@ Load general before the remaining packages so they can make use of the ~:general
       "s-m"
       "s-n"
       "s-h"
+      "s-S"
       "s-,"))
 #+end_src
 
 *** Transient
 
 #+begin_src emacs-lisp
-(use-package transient
-:ensure t (:wait t)
-:demand)
+  (use-package transient
+    :ensure t (:wait t)
+    :demand)
 #+end_src
 
 *** Key Chord
@@ -311,37 +311,37 @@ Load general before the remaining packages so they can make use of the ~:general
     ("H-." #'casual-editkit-main-tmenu)
     ("M-g a" #'casual-avy-tmenu)
     (:keymaps 'reb-mode-map
-	  "s-." #'casual-re-builder-tmenu)
+	      "s-." #'casual-re-builder-tmenu)
     (:keymaps 'calc-mode-map
-	  "s-." #'casual-calc-tmenu)
+	      "s-." #'casual-calc-tmenu)
     (:keymaps 'dired-mode-map
-	  "s-." #'casual-dired-tmenu)
+	      "s-." #'casual-dired-tmenu)
     (:keymaps 'isearch-mode-map
-	  "s-." #'casual-isearch-tmenu)
+	      "s-." #'casual-isearch-tmenu)
     (:keymaps 'ibuffer-mode-map
-	  "s-." #'casual-ibuffer-tmenu
-	  "F" #'casual-ibuffer-filter-tmenu
-	  "s" #'casual-ibuffer-sortby-tmenu)
+	      "s-." #'casual-ibuffer-tmenu
+	      "F" #'casual-ibuffer-filter-tmenu
+	      "s" #'casual-ibuffer-sortby-tmenu)
     (:keymaps 'bookmark-bemenu-mode-map
-	  "s-." #'casual-bookmarks-tmenu)
+	      "s-." #'casual-bookmarks-tmenu)
     (:keymaps 'org-agenda-mode-map
-	  "s-." #'casual-agenda-tmenu)
+	      "s-." #'casual-agenda-tmenu)
     (:keymaps 'Info-mode-map
-	  "s-." #'casual-info-tmenu)
+	      "s-." #'casual-info-tmenu)
     (:keymaps 'calendar-mode-map
-	  "s-." #'casual-calendar-tmenu)
-(:keymaps 'eww-mode-map
-	  "s-." #'casual-eww-tmenu)
-(:keymaps 'org-mode-map
-	  "s-." #'casual-org-tmenu))
+	      "s-." #'casual-calendar-tmenu)
+    (:keymaps 'eww-mode-map
+	      "s-." #'casual-eww-tmenu)
+    (:keymaps 'org-mode-map
+	      "s-." #'casual-org-tmenu))
 #+end_src
 
 Quit transient menus with escape. This affects /all/ transient menus, so it might have unexpected consequences.
 
 #+begin_src emacs-lisp
-(general-define-key
-:keymaps 'transient-map
-"<escape>" #'transient-quit-one)
+  (general-define-key
+   :keymaps 'transient-map
+   "<escape>" #'transient-quit-one)
 #+end_src
 
 *** Discover
@@ -1001,9 +1001,9 @@ Toggle light and dark theme. From [[https://takeonrules.com/2025/12/05/managing-
 #+end_src
 
 #+begin_src emacs-lisp :tangle no
-(use-package vim-tab-bar
-  :config
-  (vim-tab-bar-mode 1))
+  (use-package vim-tab-bar
+    :config
+    (vim-tab-bar-mode 1))
 #+end_src
 
 I can't imagine wanting the same buffer in two tabs, so this calls consult-buffer when opening a new tab.
@@ -1050,19 +1050,19 @@ Disable changing text size with mouse and trackpad
 *** Ultra-Scroll
 
 #+begin_src emacs-lisp
-(use-package ultra-scroll
-:ensure (:type git :host github :repo "jdtsmith/ultra-scroll")
-  :init
-  (setq scroll-conservatively 3 ; or whatever value you prefer, since v0.4
-	scroll-margin 0)        ; important: scroll-margin>0 not yet supported
-  :config
-  (ultra-scroll-mode 1))
+  (use-package ultra-scroll
+    :ensure (:type git :host github :repo "jdtsmith/ultra-scroll")
+    :init
+    (setq scroll-conservatively 3 ; or whatever value you prefer, since v0.4
+	  scroll-margin 0)        ; important: scroll-margin>0 not yet supported
+    :config
+    (ultra-scroll-mode 1))
 #+end_src
 
 Indent wrapped lines in bulleted lists.
 
 #+begin_src emacs-lisp
-(visual-wrap-prefix-mode)
+  (visual-wrap-prefix-mode)
 #+end_src
 
 ** Menus
@@ -1532,66 +1532,66 @@ Find non-ascii characters in buffer.
 I just started using this, but I need to finish configuration.
 
 #+begin_src emacs-lisp
-(defun brave-api ()
-(f-read-text "~/.config/keys/brave-search"))
+  (defun brave-api ()
+    (f-read-text "~/.config/keys/brave-search"))
 #+end_src
 
 #+begin_src emacs-lisp
-(use-package consult-omni
-  :ensure (:type git :host github :repo "armindarvish/consult-omni" :branch "main" :files (:defaults "sources/*.el"))
-  :after consult
-  :custom
-   ;; General settings that apply to all sources
-  (consult-omni-show-preview t) ;;; show previews
-  (consult-omni-preview-key "C-o") ;;; set the preview key to C-o
-  :config
-  ;; Load Sources Core code
-  (require 'consult-omni-sources)
-  ;; Load Embark Actions
-  (require 'consult-omni-embark)
+  (use-package consult-omni
+    :ensure (:type git :host github :repo "armindarvish/consult-omni" :branch "main" :files (:defaults "sources/*.el"))
+    :after consult
+    :custom
+    ;; General settings that apply to all sources
+    (consult-omni-show-preview t) ;;; show previews
+    (consult-omni-preview-key "C-o") ;;; set the preview key to C-o
+    :config
+    ;; Load Sources Core code
+    (require 'consult-omni-sources)
+    ;; Load Embark Actions
+    (require 'consult-omni-embark)
 
-  ;; Either load all source modules or a selected list
+    ;; Either load all source modules or a selected list
 
-  ;;; Select a list of modules you want to aload, otherwise all sources all laoded
-  ; (setq consult-omni-sources-modules-to-load (list 'consult-omni-wkipedia 'consult-omni-notes))
-  (consult-omni-sources-load-modules)
-  ;;; set multiple sources for consult-omni-multi command. Change these lists as needed for different interactive commands. Keep in mind that each source has to be a key in `consult-omni-sources-alist'.
-  (setq consult-omni-multi-sources '("calc"
-				     ;; "File"
-				     ;; "Buffer"
-				     ;; "Bookmark"
-				     "Apps"
-				     ;; "gptel"
-				     "Brave"
-				     "Dictionary"
-				     ;; "Google"
-				     "Wikipedia"
-				     "elfeed"
-				     ;; "mu4e"
-				     ;; "buffers text search"
-				     "Notes Search"
-				     "Org Agenda"
-				     "GitHub"
-				     ;; "YouTube"
-				     "Invidious"))
+    ;;; Select a list of modules you want to aload, otherwise all sources all laoded
+				; (setq consult-omni-sources-modules-to-load (list 'consult-omni-wkipedia 'consult-omni-notes))
+    (consult-omni-sources-load-modules)
+    ;;; set multiple sources for consult-omni-multi command. Change these lists as needed for different interactive commands. Keep in mind that each source has to be a key in `consult-omni-sources-alist'.
+    (setq consult-omni-multi-sources '("calc"
+				       ;; "File"
+				       ;; "Buffer"
+				       ;; "Bookmark"
+				       "Apps"
+				       ;; "gptel"
+				       "Brave"
+				       "Dictionary"
+				       ;; "Google"
+				       "Wikipedia"
+				       "elfeed"
+				       ;; "mu4e"
+				       ;; "buffers text search"
+				       "Notes Search"
+				       "Org Agenda"
+				       "GitHub"
+				       ;; "YouTube"
+				       "Invidious"))
 
-;; Per source customization
+    ;; Per source customization
 
-  ;;; Set API KEYs. It is recommended to use a function that returns the string for better security.
-  (setq consult-omni-google-customsearch-key "YOUR-GOOGLE-API-KEY-OR-FUNCTION")
-  (setq consult-omni-google-customsearch-cx "YOUR-GOOGLE-CX-NUMBER-OR-FUNCTION")
-  (setq consult-omni-brave-api-key (brave-api))
-  (setq consult-omni-stackexchange-api-key "YOUR-STACKEXCHANGE-API-KEY-OR-FUNCTION")
-  (setq consult-omni-pubmed-api-key "YOUR-PUBMED-API-KEY-OR-FUNCTION")
-  (setq consult-omni-openai-api-key "YOUR-OPENAI-API-KEY-OR-FUNCTION")
+    ;;; Set API KEYs. It is recommended to use a function that returns the string for better security.
+    (setq consult-omni-google-customsearch-key "YOUR-GOOGLE-API-KEY-OR-FUNCTION")
+    (setq consult-omni-google-customsearch-cx "YOUR-GOOGLE-CX-NUMBER-OR-FUNCTION")
+    (setq consult-omni-brave-api-key (brave-api))
+    (setq consult-omni-stackexchange-api-key "YOUR-STACKEXCHANGE-API-KEY-OR-FUNCTION")
+    (setq consult-omni-pubmed-api-key "YOUR-PUBMED-API-KEY-OR-FUNCTION")
+    (setq consult-omni-openai-api-key "YOUR-OPENAI-API-KEY-OR-FUNCTION")
 
-;;; Pick you favorite autosuggest command.
-  (setq consult-omni-default-autosuggest-command #'consult-omni-dynamic-brave-autosuggest) ;;or any other autosuggest source you define
+  ;;; Pick you favorite autosuggest command.
+    (setq consult-omni-default-autosuggest-command #'consult-omni-dynamic-brave-autosuggest) ;;or any other autosuggest source you define
 
- ;;; Set your shorthand favorite interactive command
-  (setq consult-omni-default-interactive-command #'consult-omni-multi)
-:general
-("C-M-S-s-o" #'consult-omni-multi))
+   ;;; Set your shorthand favorite interactive command
+    (setq consult-omni-default-interactive-command #'consult-omni-multi)
+    :general
+    ("C-M-S-s-o" #'consult-omni-multi))
 #+end_src
 
 *** Easy-Find
@@ -1648,7 +1648,7 @@ I just started using this, but I need to finish configuration.
 *** Zoxide
 
 #+begin_src emacs-lisp
-(use-package zoxide)
+  (use-package zoxide)
 #+end_src
 
 ** Dired
@@ -1773,10 +1773,10 @@ Replace spaces in file names with hyphens using "%s" in dired.
 		   ("terminfo/65" "terminfo/65/*")
 		   ("integration" "integration/*")
 		   (:exclude ".dir-locals.el" "*-tests.el")))
-:general
-(:keymaps 'eat-semi-char-mode-map
-"C-h" #'eat-self-input
-"<backspace>" (kbd "C-h")))
+    :general
+    (:keymaps 'eat-semi-char-mode-map
+	  "C-h" #'eat-self-input
+	  "<backspace>" (kbd "C-h")))
 #+end_src
 
 *** Term Toggle
@@ -2013,7 +2013,7 @@ Set the mark at a location without highlighting anything with =C-`=. This is use
 *** DWIM Shell Command
 
 #+begin_src emacs-lisp
-(use-package dwim-shell-command)
+  (use-package dwim-shell-command)
 #+end_src
 
 ** Evil Nerd Commenter
@@ -2052,7 +2052,7 @@ Accent allows easy insertion of accented characters. Place the mark on the chara
 #+begin_src emacs-lisp
   (use-package crux
     :general
-    ("s-p" #'crux-create-scratch-buffer
+    ("s-S" #'crux-create-scratch-buffer
      "s-j" #'crux-top-join-line
      "<S-return>" #'crux-smart-open-line
      "<C-S-return>" #'crux-smart-open-line-above
@@ -2219,7 +2219,6 @@ Try Harper for grammar checking.
     ;; load default config
     (require 'smartparens-config))
 #+end_src
-
 
 ** Paredit
 
@@ -3569,7 +3568,6 @@ From [[https://kitchingroup.cheme.cmu.edu/blog/2016/06/16/Copy-formatted-org-mod
 			  map))))
 #+end_src
 
-
 ** Exams
 
 Wrap current line in
@@ -3610,8 +3608,7 @@ Convert Claude multiple choice quizzes to Org mode.
 
 #+begin_src emacs-lisp
 (defun convert-quiz-claude-to-org ()
-  "Convert markdown-style quiz questions to numbered format.
-   Operates on the current buffer or active region."
+"Convert markdown-style quiz questions from Claude to Org mode format. Operates on the current buffer or active region."
   (interactive)
   (let ((start (if (use-region-p) (region-beginning) (point-min)))
 	(end   (if (use-region-p) (region-end)       (point-max)))
@@ -3628,7 +3625,7 @@ Convert Claude multiple choice quizzes to Org mode.
 	(setq question-num (1+ question-num))
 	(replace-match (format "%d. " question-num)))
 
-      ;; Convert "- A)" / "- B)" etc. to "     a)" / "     b)" etc.
+      ;; Convert "- A)" "- B)" etc. to "     a)" "     b)" etc.
       (goto-char start)
       (while (re-search-forward "^- \\([A-D]\\))" end t)
 	(replace-match (format "     %s)" (downcase (match-string 1)))))
@@ -3638,7 +3635,6 @@ Convert Claude multiple choice quizzes to Org mode.
       (while (re-search-forward "^[[:blank:]]*\n" end t)
 	(replace-match "")))))
 #+end_src
-
 
 * Markdown Mode
 

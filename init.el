@@ -80,11 +80,12 @@
     "s-m"
     "s-n"
     "s-h"
+    "s-S"
     "s-,"))
 
 (use-package transient
-:ensure t (:wait t)
-:demand)
+  :ensure t (:wait t)
+  :demand)
 
 (use-package key-chord
   :config
@@ -96,39 +97,39 @@
   ("s-m" #'major-mode-hydra))
 
 (use-package casual-suite
-    ;; :ensure
-    ;; (:type git :host github :repo "kickingvegas/casual")
-    :general
-    ("H-." #'casual-editkit-main-tmenu)
-    ("M-g a" #'casual-avy-tmenu)
-    (:keymaps 'reb-mode-map
-	  "s-." #'casual-re-builder-tmenu)
-    (:keymaps 'calc-mode-map
-	  "s-." #'casual-calc-tmenu)
-    (:keymaps 'dired-mode-map
-	  "s-." #'casual-dired-tmenu)
-    (:keymaps 'isearch-mode-map
-	  "s-." #'casual-isearch-tmenu)
-    (:keymaps 'ibuffer-mode-map
-	  "s-." #'casual-ibuffer-tmenu
-	  "F" #'casual-ibuffer-filter-tmenu
-	  "s" #'casual-ibuffer-sortby-tmenu)
-    (:keymaps 'bookmark-bemenu-mode-map
-	  "s-." #'casual-bookmarks-tmenu)
-    (:keymaps 'org-agenda-mode-map
-	  "s-." #'casual-agenda-tmenu)
-    (:keymaps 'Info-mode-map
-	  "s-." #'casual-info-tmenu)
-    (:keymaps 'calendar-mode-map
-	  "s-." #'casual-calendar-tmenu)
-(:keymaps 'eww-mode-map
-	  "s-." #'casual-eww-tmenu)
-(:keymaps 'org-mode-map
-	  "s-." #'casual-org-tmenu))
+  ;; :ensure
+  ;; (:type git :host github :repo "kickingvegas/casual")
+  :general
+  ("H-." #'casual-editkit-main-tmenu)
+  ("M-g a" #'casual-avy-tmenu)
+  (:keymaps 'reb-mode-map
+	      "s-." #'casual-re-builder-tmenu)
+  (:keymaps 'calc-mode-map
+	      "s-." #'casual-calc-tmenu)
+  (:keymaps 'dired-mode-map
+	      "s-." #'casual-dired-tmenu)
+  (:keymaps 'isearch-mode-map
+	      "s-." #'casual-isearch-tmenu)
+  (:keymaps 'ibuffer-mode-map
+	      "s-." #'casual-ibuffer-tmenu
+	      "F" #'casual-ibuffer-filter-tmenu
+	      "s" #'casual-ibuffer-sortby-tmenu)
+  (:keymaps 'bookmark-bemenu-mode-map
+	      "s-." #'casual-bookmarks-tmenu)
+  (:keymaps 'org-agenda-mode-map
+	      "s-." #'casual-agenda-tmenu)
+  (:keymaps 'Info-mode-map
+	      "s-." #'casual-info-tmenu)
+  (:keymaps 'calendar-mode-map
+	      "s-." #'casual-calendar-tmenu)
+  (:keymaps 'eww-mode-map
+	      "s-." #'casual-eww-tmenu)
+  (:keymaps 'org-mode-map
+	      "s-." #'casual-org-tmenu))
 
 (general-define-key
-:keymaps 'transient-map
-"<escape>" #'transient-quit-one)
+ :keymaps 'transient-map
+ "<escape>" #'transient-quit-one)
 
 (use-package discover
   :defer 10
@@ -512,10 +513,10 @@
 (global-set-key (kbd "<C-wheel-down>") 'ignore)
 
 (use-package ultra-scroll
-:ensure (:type git :host github :repo "jdtsmith/ultra-scroll")
+  :ensure (:type git :host github :repo "jdtsmith/ultra-scroll")
   :init
   (setq scroll-conservatively 3 ; or whatever value you prefer, since v0.4
-	scroll-margin 0)        ; important: scroll-margin>0 not yet supported
+	  scroll-margin 0)        ; important: scroll-margin>0 not yet supported
   :config
   (ultra-scroll-mode 1))
 
@@ -804,13 +805,13 @@
   ("C-c C-j" #'avy-resume))
 
 (defun brave-api ()
-(f-read-text "~/.config/keys/brave-search"))
+  (f-read-text "~/.config/keys/brave-search"))
 
 (use-package consult-omni
   :ensure (:type git :host github :repo "armindarvish/consult-omni" :branch "main" :files (:defaults "sources/*.el"))
   :after consult
   :custom
-   ;; General settings that apply to all sources
+  ;; General settings that apply to all sources
   (consult-omni-show-preview t) ;;; show previews
   (consult-omni-preview-key "C-o") ;;; set the preview key to C-o
   :config
@@ -822,29 +823,29 @@
   ;; Either load all source modules or a selected list
 
   ;;; Select a list of modules you want to aload, otherwise all sources all laoded
-  ; (setq consult-omni-sources-modules-to-load (list 'consult-omni-wkipedia 'consult-omni-notes))
+				; (setq consult-omni-sources-modules-to-load (list 'consult-omni-wkipedia 'consult-omni-notes))
   (consult-omni-sources-load-modules)
   ;;; set multiple sources for consult-omni-multi command. Change these lists as needed for different interactive commands. Keep in mind that each source has to be a key in `consult-omni-sources-alist'.
   (setq consult-omni-multi-sources '("calc"
-				     ;; "File"
-				     ;; "Buffer"
-				     ;; "Bookmark"
-				     "Apps"
-				     ;; "gptel"
-				     "Brave"
-				     "Dictionary"
-				     ;; "Google"
-				     "Wikipedia"
-				     "elfeed"
-				     ;; "mu4e"
-				     ;; "buffers text search"
-				     "Notes Search"
-				     "Org Agenda"
-				     "GitHub"
-				     ;; "YouTube"
-				     "Invidious"))
+				       ;; "File"
+				       ;; "Buffer"
+				       ;; "Bookmark"
+				       "Apps"
+				       ;; "gptel"
+				       "Brave"
+				       "Dictionary"
+				       ;; "Google"
+				       "Wikipedia"
+				       "elfeed"
+				       ;; "mu4e"
+				       ;; "buffers text search"
+				       "Notes Search"
+				       "Org Agenda"
+				       "GitHub"
+				       ;; "YouTube"
+				       "Invidious"))
 
-;; Per source customization
+  ;; Per source customization
 
   ;;; Set API KEYs. It is recommended to use a function that returns the string for better security.
   (setq consult-omni-google-customsearch-key "YOUR-GOOGLE-API-KEY-OR-FUNCTION")
@@ -859,8 +860,8 @@
 
  ;;; Set your shorthand favorite interactive command
   (setq consult-omni-default-interactive-command #'consult-omni-multi)
-:general
-("C-M-S-s-o" #'consult-omni-multi))
+  :general
+  ("C-M-S-s-o" #'consult-omni-multi))
 
 (use-package fzf
   :commands (fzf fzf-directory)
@@ -957,20 +958,20 @@
   :defer 10)
 
 (use-package eat
-    :defer 10
-    :demand
-    :ensure
-    (:host codeberg
+  :defer 10
+  :demand
+  :ensure
+  (:host codeberg
 	   :repo "akib/emacs-eat"
 	   :files ("*.el" ("term" "term/*.el") "*.texi"
 		   "*.ti" ("terminfo/e" "terminfo/e/*")
 		   ("terminfo/65" "terminfo/65/*")
 		   ("integration" "integration/*")
 		   (:exclude ".dir-locals.el" "*-tests.el")))
-:general
-(:keymaps 'eat-semi-char-mode-map
-"C-h" #'eat-self-input
-"<backspace>" (kbd "C-h")))
+  :general
+  (:keymaps 'eat-semi-char-mode-map
+	  "C-h" #'eat-self-input
+	  "<backspace>" (kbd "C-h")))
 
 (use-package term-toggle
   :ensure
@@ -1136,7 +1137,7 @@
 
 (use-package crux
   :general
-  ("s-p" #'crux-create-scratch-buffer
+  ("s-S" #'crux-create-scratch-buffer
    "s-j" #'crux-top-join-line
    "<S-return>" #'crux-smart-open-line
    "<C-S-return>" #'crux-smart-open-line-above
@@ -2269,8 +2270,7 @@ and convert it to Org using the pandoc utility."
     (backward-char)))
 
 (defun convert-quiz-claude-to-org ()
-  "Convert markdown-style quiz questions to numbered format.
-   Operates on the current buffer or active region."
+"Convert markdown-style quiz questions from Claude to Org mode format. Operates on the current buffer or active region."
   (interactive)
   (let ((start (if (use-region-p) (region-beginning) (point-min)))
 	(end   (if (use-region-p) (region-end)       (point-max)))
@@ -2287,7 +2287,7 @@ and convert it to Org using the pandoc utility."
 	(setq question-num (1+ question-num))
 	(replace-match (format "%d. " question-num)))
 
-      ;; Convert "- A)" / "- B)" etc. to "     a)" / "     b)" etc.
+      ;; Convert "- A)" "- B)" etc. to "     a)" "     b)" etc.
       (goto-char start)
       (while (re-search-forward "^- \\([A-D]\\))" end t)
 	(replace-match (format "     %s)" (downcase (match-string 1)))))
