@@ -1212,11 +1212,8 @@
   ("C-c r" #'vr/replace)
   ("C-c q" #'vr/query-replace))
 
-(use-package smartparens
-  :hook (prog-mode text-mode markdown-mode) ;; add `smartparens-mode` to these hooks
-  :config
-  ;; load default config
-  (require 'smartparens-config))
+(use-package paredit
+  :hook (emacs-lisp-mode . paredit-mode))
 
 (use-package speedrect
   :ensure

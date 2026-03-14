@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2026-03-12 18:20:09 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2026-03-14 06:21:04 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -2211,12 +2211,20 @@ Try Harper for grammar checking.
 
 ** Smartparens
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package smartparens
     :hook (prog-mode text-mode markdown-mode) ;; add `smartparens-mode` to these hooks
     :config
     ;; load default config
     (require 'smartparens-config))
+#+end_src
+
+
+** Paredit
+
+#+begin_src emacs-lisp
+  (use-package paredit
+    :hook (emacs-lisp-mode . paredit-mode))
 #+end_src
 
 ** Speedrect
