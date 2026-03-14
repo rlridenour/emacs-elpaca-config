@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2026-03-14 06:37:34 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2026-03-14 06:52:33 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -824,8 +824,6 @@ Auto-insert and immediately highlight matching pairs of parentheses and quotes.
   (show-paren-mode)
   (setq show-paren-delay 0)
 #+end_src
-
-
 
 Save minibuffer history.
 
@@ -2228,6 +2226,14 @@ Try Harper for grammar checking.
 #+begin_src emacs-lisp
   (use-package paredit
     :hook (emacs-lisp-mode . paredit-mode))
+#+end_src
+
+** Rainbow Delimiters
+
+#+begin_src emacs-lisp
+(use-package rainbow-delimiters
+:hook
+(prog-mode . rainbow-delimiters-mode))
 #+end_src
 
 ** Speedrect

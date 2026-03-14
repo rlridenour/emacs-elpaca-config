@@ -1216,6 +1216,10 @@
 (use-package paredit
   :hook (emacs-lisp-mode . paredit-mode))
 
+(use-package rainbow-delimiters
+:hook
+(prog-mode . rainbow-delimiters-mode))
+
 (use-package speedrect
   :ensure
   (:host github :repo "jdtsmith/speedrect")
