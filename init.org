@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2026-03-14 17:26:45 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2026-03-15 15:45:53 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -2010,6 +2010,35 @@ Set the mark at a location without highlighting anything with =C-`=. This is use
   (general-define-key "M-`" #'consult-mark)
 #+end_src
 
+From [[https://emacsredux.com/blog/2026/03/14/removing-paired-delimiters-in-emacs/][Removing Paired Delimiters in Emacs | Emacs Redux]]
+
+#+begin_src emacs-lisp
+(defun delete-surrounding-pair (char)
+  "Delete the nearest surrounding pair of CHAR.
+CHAR should be an opening delimiter like (, [, {, or \".
+Works by searching backward for the opener and forward for the closer."
+  (interactive "cDelete surrounding pair: ")
+  (let* ((pairs '((?( . ?))
+		  (?[ . ?])
+		  (?{ . ?})
+		  (?\" . ?\")
+		  (?\' . ?\')
+		  (?\` . ?\`)))
+	 (closer (or (alist-get char pairs)
+		     (error "Unknown pair character: %c" char))))
+    (save-excursion
+      (let ((orig (point)))
+	;; Find and delete the opener
+	(when (search-backward (char-to-string char) nil t)
+	  (let ((open-pos (point)))
+	    (delete-char 1)
+	    ;; Find and delete the closer (adjust for removed char)
+	    (goto-char (1- orig))
+	    (when (search-forward (char-to-string closer) nil t)
+	      (delete-char -1))))))))
+#+end_src
+
+
 *** DWIM Shell Command
 
 #+begin_src emacs-lisp
@@ -2360,6 +2389,7 @@ https://github.com/joaotavora/yasnippet
    "<s-backspace>" #'kill-whole-line
    "<C-d d>" #'insert-standard-date
    "M-q" #'reformat-paragraph
+   "M-s-d" #'delete-surrounding-pair
    "M-#" #'dictionary-lookup-definition)
 #+end_src
 

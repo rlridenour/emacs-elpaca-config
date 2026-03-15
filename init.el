@@ -1118,6 +1118,30 @@
 (general-define-key "C-`" #'push-mark-no-activate)
 (general-define-key "M-`" #'consult-mark)
 
+(defun delete-surrounding-pair (char)
+  "Delete the nearest surrounding pair of CHAR.
+CHAR should be an opening delimiter like (, [, {, or \".
+Works by searching backward for the opener and forward for the closer."
+  (interactive "cDelete surrounding pair: ")
+  (let* ((pairs '((?( . ?))
+		  (?[ . ?])
+		  (?{ . ?})
+		  (?\" . ?\")
+		  (?\' . ?\')
+		  (?\` . ?\`)))
+	 (closer (or (alist-get char pairs)
+		     (error "Unknown pair character: %c" char))))
+    (save-excursion
+      (let ((orig (point)))
+	;; Find and delete the opener
+	(when (search-backward (char-to-string char) nil t)
+	  (let ((open-pos (point)))
+	    (delete-char 1)
+	    ;; Find and delete the closer (adjust for removed char)
+	    (goto-char (1- orig))
+	    (when (search-forward (char-to-string closer) nil t)
+	      (delete-char -1))))))))
+
 (use-package dwim-shell-command)
 
 (use-package evil-nerd-commenter
@@ -1284,6 +1308,7 @@
  "<s-backspace>" #'kill-whole-line
  "<C-d d>" #'insert-standard-date
  "M-q" #'reformat-paragraph
+ "M-s-d" #'delete-surrounding-pair
  "M-#" #'dictionary-lookup-definition)
 
 (use-package org
