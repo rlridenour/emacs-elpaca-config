@@ -172,12 +172,22 @@
 
 (setq version-control t)
 
-(use-package real-auto-save
-  :config
-  (setq real-auto-save-interval 5)
+(use-package buffer-guardian
+  :ensure (:type git :host github :repo "jamescherti/buffer-guardian.el")
+
+  :custom
+  ;; When non-nil, include remote files in the auto-save process
+  (buffer-guardian-inhibit-saving-remote-files t)
+  ;; When non-nil, buffers visiting nonexistent files are not saved
+  (buffer-guardian-inhibit-saving-nonexistent-files nil)
+  ;; Save the buffer even if the window change results in the same buffer
+  (buffer-guardian-save-on-same-buffer-window-change t)
+  ;; Non-nil to enable verbose mode to log when a buffer is automatically saved
+  (buffer-guardian-verbose nil)
+  ;; Save all buffers after N seconds of user idle time. (Disabled by default)
+  ;; (buffer-guardian-save-all-buffers-idle 30)
   :hook
-  (prog-mode . real-auto-save-mode)
-  (org-mode . real-auto-save-mode))
+  (elpaca-after-init . buffer-guardian-mode))
 
 (setq create-lockfiles nil)
 
@@ -1737,10 +1747,8 @@ and convert it to Org using the pandoc utility."
     ;; (require 'ox-rss)
 )
 
-(use-package orgonomic
-  :ensure
-  (:host github :repo "aaronjensen/emacs-orgonomic")
-  :hook (org-mode . orgonomic-mode))
+(use-package org-autolist
+  :hook (org-mode . org-autolist-mode))
 
 (use-package org-bulletproof)
 

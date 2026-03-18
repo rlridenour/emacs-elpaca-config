@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2026-03-17 07:35:06 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2026-03-18 10:07:49 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -448,13 +448,34 @@ Auto save files instead of creating copies.
 
 Try Real Auto Save
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package real-auto-save
     :config
     (setq real-auto-save-interval 5)
     :hook
     (prog-mode . real-auto-save-mode)
     (org-mode . real-auto-save-mode))
+#+end_src
+
+Use [[https://github.com/jamescherti/buffer-guardian.el\]][Buffer Guardian]] for auto-saving.
+
+#+begin_src emacs-lisp
+  (use-package buffer-guardian
+    :ensure (:type git :host github :repo "jamescherti/buffer-guardian.el")
+
+    :custom
+    ;; When non-nil, include remote files in the auto-save process
+    (buffer-guardian-inhibit-saving-remote-files t)
+    ;; When non-nil, buffers visiting nonexistent files are not saved
+    (buffer-guardian-inhibit-saving-nonexistent-files nil)
+    ;; Save the buffer even if the window change results in the same buffer
+    (buffer-guardian-save-on-same-buffer-window-change t)
+    ;; Non-nil to enable verbose mode to log when a buffer is automatically saved
+    (buffer-guardian-verbose nil)
+    ;; Save all buffers after N seconds of user idle time. (Disabled by default)
+    ;; (buffer-guardian-save-all-buffers-idle 30)
+    :hook
+    (elpaca-after-init . buffer-guardian-mode))
 #+end_src
 
 Don't make all those files that look like =#foo.ext=.
@@ -2038,7 +2059,6 @@ Works by searching backward for the opener and forward for the closer."
 	      (delete-char -1))))))))
 #+end_src
 
-
 *** DWIM Shell Command
 
 #+begin_src emacs-lisp
@@ -2934,12 +2954,22 @@ Use Emacs appointment system for notifications.
 
 ** Orgonomic
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package orgonomic
     :ensure
     (:host github :repo "aaronjensen/emacs-orgonomic")
     :hook (org-mode . orgonomic-mode))
 #+end_src
+
+
+** Org Autolist
+
+#+begin_src emacs-lisp
+(use-package org-autolist
+  :hook (org-mode . org-autolist-mode))
+#+end_src
+
+
 
 ** Org Bulletproof
 
@@ -4409,7 +4439,6 @@ Open Mastodon in a new tab
 
 ** Blog
 
-
 #+begin_src emacs-lisp :tangle no
   (use-package org-publish-rss
   :ensure (:type git :host sourcehut :repo "taingram/org-publish-rss")
@@ -4421,9 +4450,6 @@ Open Mastodon in a new tab
   (require 'org-publish-rss)
   (setq org-publish-rss-publish-immediately t)
 #+end_src
-
-
-
 
 Define directory variables.
 
