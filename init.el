@@ -2881,6 +2881,10 @@ installed."
 	  ;; epa-file-encrypt-to "677C0F5EA5535058"
 ))
 
+(add-to-list 'load-path "~/.config/emacs/elisp/org-publish-rss/")
+(require 'org-publish-rss)
+(setq org-publish-rss-publish-immediately t)
+
 (defvar orgblog-directory "~/sites/orgblog/" "Path to the Org mode blog.")
 (defvar orgblog-public-directory "~/sites/orgblog/docs/" "Path to the blog public directory.")
 (defvar orgblog-posts-directory "~/sites/orgblog/posts/" "Path to the blog public directory.")
@@ -2919,15 +2923,15 @@ installed."
     (find-file "~/sites/orgblog/publish.el")
     (eval-buffer)
     (org-publish-all)
-    (webfeeder-build "atom.xml"
-		       "./docs"
-		       "https://randyridenour.net/"
-		       (let ((default-directory (expand-file-name "./docs")))
-			 (remove "posts/index.html"
-				 (directory-files-recursively "posts"
-							      ".*\\.html$")))
-		       :title "Randy Ridenour"
-		       :description "Blog posts by Randy Ridenour")
+    ;; (webfeeder-build "atom.xml"
+    ;;		       "./docs"
+    ;;		       "https://randyridenour.net/"
+    ;;		       (let ((default-directory (expand-file-name "./docs")))
+    ;;			 (remove "posts/index.html"
+    ;;				 (directory-files-recursively "posts"
+    ;;							      ".*\\.html$")))
+    ;;		       :title "Randy Ridenour"
+    ;;		       :description "Blog posts by Randy Ridenour")
     (kill-buffer))
   (message "Build complete!"))
 
@@ -2969,9 +2973,6 @@ installed."
 		     path (or desc "")))
      (latex (format "\href{%s}{%s}"
 		      path (or desc "video"))))))
-
-(use-package webfeeder
-  :defer 30)
 
 (defun orgblog-all-tag-lines ()
   "Get filetag lines from all posts."

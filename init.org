@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2026-03-15 15:45:53 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2026-03-17 07:35:06 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -4409,6 +4409,22 @@ Open Mastodon in a new tab
 
 ** Blog
 
+
+#+begin_src emacs-lisp :tangle no
+  (use-package org-publish-rss
+  :ensure (:type git :host sourcehut :repo "taingram/org-publish-rss")
+  )
+#+end_src
+
+#+begin_src emacs-lisp
+  (add-to-list 'load-path "~/.config/emacs/elisp/org-publish-rss/")
+  (require 'org-publish-rss)
+  (setq org-publish-rss-publish-immediately t)
+#+end_src
+
+
+
+
 Define directory variables.
 
 #+begin_src emacs-lisp
@@ -4467,15 +4483,15 @@ Publish source to public directory.
       (find-file "~/sites/orgblog/publish.el")
       (eval-buffer)
       (org-publish-all)
-      (webfeeder-build "atom.xml"
-		       "./docs"
-		       "https://randyridenour.net/"
-		       (let ((default-directory (expand-file-name "./docs")))
-			 (remove "posts/index.html"
-				 (directory-files-recursively "posts"
-							      ".*\\.html$")))
-		       :title "Randy Ridenour"
-		       :description "Blog posts by Randy Ridenour")
+      ;; (webfeeder-build "atom.xml"
+      ;;		       "./docs"
+      ;;		       "https://randyridenour.net/"
+      ;;		       (let ((default-directory (expand-file-name "./docs")))
+      ;;			 (remove "posts/index.html"
+      ;;				 (directory-files-recursively "posts"
+      ;;							      ".*\\.html$")))
+      ;;		       :title "Randy Ridenour"
+      ;;		       :description "Blog posts by Randy Ridenour")
       (kill-buffer))
     (message "Build complete!"))
 #+end_src
@@ -4539,7 +4555,7 @@ Embed YouTube videos, from [[https://endlessparentheses.com/embedding-youtube-vi
 
 This builds the RSS feed for the blog.
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package webfeeder
     :defer 30)
   #+end_src
