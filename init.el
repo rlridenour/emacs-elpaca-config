@@ -1128,7 +1128,9 @@
 (general-define-key "C-`" #'push-mark-no-activate)
 (general-define-key "M-`" #'consult-mark)
 
-(use-package surround)
+(use-package surround
+:ensure t
+:bind-keymap ("H-'" . surround-keymap))
 
 (use-package dwim-shell-command)
 
@@ -3459,7 +3461,7 @@ installed."
  "H-t" #'hydra-toggle/body
  "H-w" #'hydra-window/body
  "H-b" #'hydra-buffer/body
- "H-'" #'hydra-surround/body
+ ;; "H-'" #'hydra-surround/body
  "C-x 9" #'hydra-logic/body)
 
 (with-after-elpaca-init

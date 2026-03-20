@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2026-03-20 05:03:32 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2026-03-20 05:51:35 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -2061,8 +2061,12 @@ Works by searching backward for the opener and forward for the closer."
 
 ** Surround
 
+From [[https://github.com/mkleehammer/surround][Michael Kleehammer]]. [[https://emacsredux.com/blog/2026/03/17/surround-el-vim-style-pair-editing-comes-to-emacs/][Bozhidar Batsov]] has an excellent usage guide.
+
 #+begin_src emacs-lisp
-  (use-package surround)
+  (use-package surround
+  :ensure t
+  :bind-keymap ("H-'" . surround-keymap))
 #+end_src
 
 ** DWIM Shell Command
@@ -5246,7 +5250,7 @@ Make chord charts.
    "H-t" #'hydra-toggle/body
    "H-w" #'hydra-window/body
    "H-b" #'hydra-buffer/body
-   "H-'" #'hydra-surround/body
+   ;; "H-'" #'hydra-surround/body
    "C-x 9" #'hydra-logic/body)
 #+end_src
 
