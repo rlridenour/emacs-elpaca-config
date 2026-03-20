@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2026-03-19 20:31:11 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2026-03-20 05:03:32 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -2059,14 +2059,11 @@ Works by searching backward for the opener and forward for the closer."
 	      (delete-char -1))))))))
 #+end_src
 
-
 ** Surround
 
 #+begin_src emacs-lisp
   (use-package surround)
 #+end_src
-
-
 
 ** DWIM Shell Command
 
@@ -2970,15 +2967,12 @@ Use Emacs appointment system for notifications.
     :hook (org-mode . orgonomic-mode))
 #+end_src
 
-
 ** Org Autolist
 
 #+begin_src emacs-lisp
 (use-package org-autolist
   :hook (org-mode . org-autolist-mode))
 #+end_src
-
-
 
 ** Org Bulletproof
 
@@ -3047,7 +3041,6 @@ Use Emacs appointment system for notifications.
    "C-c e _" (lambda () (interactive) (my/org-toggle-emphasis ?_))
    "C-c e +" (lambda () (interactive) (my/org-toggle-emphasis ?+)))
 #+end_src
-
 
 ** Org Upcoming Modeline
 
@@ -5230,7 +5223,6 @@ Make chord charts.
        ("m" hydra-math/body)))))
 #+end_src
 
-
 #+begin_src emacs-lisp
   (with-after-elpaca-init
    (pretty-hydra-define hydra-surround
@@ -5245,9 +5237,6 @@ Make chord charts.
        ("d" surround-delete "surround delete")
        ))))
 #+end_src
-
-
-
 
 #+begin_src emacs-lisp
   (general-define-key
