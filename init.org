@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2026-03-18 10:07:49 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2026-03-19 20:31:11 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -2033,7 +2033,7 @@ Set the mark at a location without highlighting anything with =C-`=. This is use
 
 From [[https://emacsredux.com/blog/2026/03/14/removing-paired-delimiters-in-emacs/][Removing Paired Delimiters in Emacs | Emacs Redux]]
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (defun delete-surrounding-pair (char)
   "Delete the nearest surrounding pair of CHAR.
 CHAR should be an opening delimiter like (, [, {, or \".
@@ -2059,7 +2059,16 @@ Works by searching backward for the opener and forward for the closer."
 	      (delete-char -1))))))))
 #+end_src
 
-*** DWIM Shell Command
+
+** Surround
+
+#+begin_src emacs-lisp
+  (use-package surround)
+#+end_src
+
+
+
+** DWIM Shell Command
 
 #+begin_src emacs-lisp
   (use-package dwim-shell-command)
@@ -3037,6 +3046,25 @@ Use Emacs appointment system for notifications.
    "C-c e =" (lambda () (interactive) (my/org-toggle-emphasis ?=))
    "C-c e _" (lambda () (interactive) (my/org-toggle-emphasis ?_))
    "C-c e +" (lambda () (interactive) (my/org-toggle-emphasis ?+)))
+#+end_src
+
+
+** Org Upcoming Modeline
+
+[[https://github.com/unhammer/org-upcoming-modeline][unhammer/org-upcoming-modeline: 📅 Show upcoming org event in modeline]]
+
+#+begin_src emacs-lisp
+(use-package org-upcoming-modeline
+  :after org                               ; if you don't want it to start until org has been loaded
+  :config
+  (org-upcoming-modeline-mode))
+#+end_src
+
+** Org People
+
+#+begin_src emacs-lisp
+(use-package org-people
+  :after org)
 #+end_src
 
 ** Org Mac Link
@@ -5202,6 +5230,25 @@ Make chord charts.
        ("m" hydra-math/body)))))
 #+end_src
 
+
+#+begin_src emacs-lisp
+  (with-after-elpaca-init
+   (pretty-hydra-define hydra-surround
+     (:color teal :quit-key "q" :title "Surround")
+     ("Surround"
+      (("s" surround-insert "surround insert")
+       ("c" surround-change "surround change")
+       ("k" surround-kill "kill inner")
+       ("K" surround-kill-outer "kill outer")
+       ("M" surround-mark-outer "mark outer")
+       ("m" surround-mark "mark inner")
+       ("d" surround-delete "surround delete")
+       ))))
+#+end_src
+
+
+
+
 #+begin_src emacs-lisp
   (general-define-key
    "H-h" #'hydra-hydras/body
@@ -5210,6 +5257,7 @@ Make chord charts.
    "H-t" #'hydra-toggle/body
    "H-w" #'hydra-window/body
    "H-b" #'hydra-buffer/body
+   "H-'" #'hydra-surround/body
    "C-x 9" #'hydra-logic/body)
 #+end_src
 

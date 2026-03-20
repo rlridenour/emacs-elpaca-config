@@ -1128,29 +1128,7 @@
 (general-define-key "C-`" #'push-mark-no-activate)
 (general-define-key "M-`" #'consult-mark)
 
-(defun delete-surrounding-pair (char)
-  "Delete the nearest surrounding pair of CHAR.
-CHAR should be an opening delimiter like (, [, {, or \".
-Works by searching backward for the opener and forward for the closer."
-  (interactive "cDelete surrounding pair: ")
-  (let* ((pairs '((?( . ?))
-		  (?[ . ?])
-		  (?{ . ?})
-		  (?\" . ?\")
-		  (?\' . ?\')
-		  (?\` . ?\`)))
-	 (closer (or (alist-get char pairs)
-		     (error "Unknown pair character: %c" char))))
-    (save-excursion
-      (let ((orig (point)))
-	;; Find and delete the opener
-	(when (search-backward (char-to-string char) nil t)
-	  (let ((open-pos (point)))
-	    (delete-char 1)
-	    ;; Find and delete the closer (adjust for removed char)
-	    (goto-char (1- orig))
-	    (when (search-forward (char-to-string closer) nil t)
-	      (delete-char -1))))))))
+(use-package surround)
 
 (use-package dwim-shell-command)
 
@@ -1807,6 +1785,14 @@ and convert it to Org using the pandoc utility."
  "C-c e =" (lambda () (interactive) (my/org-toggle-emphasis ?=))
  "C-c e _" (lambda () (interactive) (my/org-toggle-emphasis ?_))
  "C-c e +" (lambda () (interactive) (my/org-toggle-emphasis ?+)))
+
+(use-package org-upcoming-modeline
+  :after org                               ; if you don't want it to start until org has been loaded
+  :config
+  (org-upcoming-modeline-mode))
+
+(use-package org-people
+  :after org)
 
 (use-package org-mac-link
 :defer 1)
@@ -3453,6 +3439,19 @@ installed."
     (("l" hydra-logic/body "logic")
      ("m" hydra-math/body)))))
 
+(with-after-elpaca-init
+ (pretty-hydra-define hydra-surround
+   (:color teal :quit-key "q" :title "Surround")
+   ("Surround"
+    (("s" surround-insert "surround insert")
+     ("c" surround-change "surround change")
+     ("k" surround-kill "kill inner")
+     ("K" surround-kill-outer "kill outer")
+     ("M" surround-mark-outer "mark outer")
+     ("m" surround-mark "mark inner")
+     ("d" surround-delete "surround delete")
+     ))))
+
 (general-define-key
  "H-h" #'hydra-hydras/body
  "s-l" #'hydra-locate/body
@@ -3460,6 +3459,7 @@ installed."
  "H-t" #'hydra-toggle/body
  "H-w" #'hydra-window/body
  "H-b" #'hydra-buffer/body
+ "H-'" #'hydra-surround/body
  "C-x 9" #'hydra-logic/body)
 
 (with-after-elpaca-init
