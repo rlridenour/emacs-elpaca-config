@@ -3254,6 +3254,17 @@ installed."
 	      "C-s" #'isearch-forward)
   )
 
+(use-package appine
+  :ensure (:type git :host github :repo "chaoswork/appine")
+  :defer 10
+  :custom
+  ;; enables opening URLs and files with Appine, default is nil
+  (appine-use-for-org-links t)
+  ;; bind any prefix you like
+  :bind (("C-x a a" . appine)
+         ("C-x a u" . appine-open-url)
+         ("C-x a o" . appine-open-file)))
+
 (use-feature calc
 :general
 ("C-M-S-s-c" #'calc))

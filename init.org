@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2026-03-20 05:51:35 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2026-03-23 19:57:12 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -4984,6 +4984,23 @@ SLY is Sylvester the Cat's Common Lisp IDE for Emacs.
     :ensure (:type git :host codeberg :repo "divyaranjan/emacs-reader"
 		   :files ("*.el" "render-core.dylib")
 		   :pre-build ("make" "all")))
+#+end_src
+
+* Appine
+
+[[https://github.com/chaoswork/appine][Appine]] for native MacOS webkit, PDFkit, etc.
+
+#+begin_src emacs-lisp
+  (use-package appine
+    :ensure (:type git :host github :repo "chaoswork/appine")
+    :defer 10
+    :custom
+    ;; enables opening URLs and files with Appine, default is nil
+    (appine-use-for-org-links t)
+    ;; bind any prefix you like
+    :bind (("C-x a a" . appine)
+           ("C-x a u" . appine-open-url)
+           ("C-x a o" . appine-open-file)))
 #+end_src
 
 * Calc
