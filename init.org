@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2026-03-23 19:57:12 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2026-04-02 09:57:51 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -3966,7 +3966,7 @@ Copy entire buffer then kill. I use this with temporary scratch buffers to write
 	  "C-," #'mu4e-sexp-at-point)
     :after org
     :init
-    (add-to-list 'load-path "/opt/homebrew/Cellar/mu/1.12.15/share/emacs/site-lisp/mu/mu4e/")
+    (add-to-list 'load-path "/opt/homebrew/Cellar/mu/1.14.0/share/emacs/site-lisp/mu/mu4e/")
     :config
     (setq mail-user-agent 'mu4e-user-agent)
     (setq mu4e-maildir "~/.maildir/")
