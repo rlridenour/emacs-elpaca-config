@@ -1084,14 +1084,49 @@
   (goto-char (point-min))
   (while (search-forward (string ?\C-m) nil t) (replace-match "\n")))
 
-(defun rr/stretchlink-cc ()
+(defun strip-url-tracking (url)
+  "Strip common tracking parameters from URL."
+  (let* ((tracking-params '("utm_source" "utm_medium" "utm_campaign"
+			      "utm_term" "utm_content" "utm_id"
+			      "fbclid" "gclid" "gad_source"
+			      "mc_cid" "mc_eid" "ref" "source"
+			      "_ga" "_gl" "msclkid" "twclid"))
+	   (parsed (url-generic-parse-url url))
+	   (query (url-filename parsed)))
+    (if (string-match "\\?" query)
+	  (let* ((path (substring query 0 (match-beginning 0)))
+		 (qs (substring query (match-end 0)))
+		 (params (split-string qs "&"))
+		 (clean (seq-filter
+			 (lambda (p)
+			   (not (member (car (split-string p "="))
+					tracking-params)))
+			 params))
+		 (new-qs (string-join clean "&"))
+		 (new-file (if (string-empty-p new-qs)
+			       path
+			     (concat path "?" new-qs))))
+	    (setf (url-filename parsed) new-file)
+	    (url-recreate-url parsed))
+	url)))
+
+(defun strip-url-tracking-at-point ()
+  "Strip tracking params from URL at point or read from minibuffer."
   (interactive)
-  (progn
-    (setq current-safari-url (do-applescript "tell application \"Safari\" to return URL of document 1"))
-    (shell-command
-     (concat "curl " "\"https://stretchlink.cc/api/1?u=" current-safari-url "&t=1&c=1&o=text\" | pbcopy"))
-    (setq myurl (yank))
-    (message myurl)))
+  (let* ((url (or (thing-at-point 'url t)
+		    (read-string "URL: ")))
+	   (clean (strip-url-tracking url)))
+    (message "Clean URL: %s" clean)
+    (kill-new clean)))
+
+(defun strip-url-tracking-region (beg end)
+  "Strip tracking params from all URLs in region."
+  (interactive "r")
+  (let ((text (buffer-substring-no-properties beg end)))
+    (replace-regexp-in-region
+     "https?://[^\s\n\"]+"
+     (lambda (url) (strip-url-tracking url))
+     beg end)))
 
 (defun delete-extra-blank-lines ()
   (interactive)
@@ -2873,21 +2908,21 @@ installed."
 Works from both the search buffer and the entry show buffer."
   (interactive)
   (let* ((entry (cond
-                 ((derived-mode-p 'elfeed-show-mode)
-                  elfeed-show-entry)
-                 ((derived-mode-p 'elfeed-search-mode)
-                  (elfeed-search-selected :ignore-region))
-                 (t (error "Not in an elfeed buffer"))))
-         (url (and entry (elfeed-entry-link entry))))
+		   ((derived-mode-p 'elfeed-show-mode)
+		    elfeed-show-entry)
+		   ((derived-mode-p 'elfeed-search-mode)
+		    (elfeed-search-selected :ignore-region))
+		   (t (error "Not in an elfeed buffer"))))
+	   (url (and entry (elfeed-entry-link entry))))
     (if url
-        (progn
-        (tab-new)
-        (let ((eww-buffer (generate-new-buffer (format "*eww: %s*" url))))
-          (with-current-buffer eww-buffer
-            (eww-mode)
-            (eww url))
-          (switch-to-buffer eww-buffer)))
-      (message "No URL found for this entry"))))
+	  (progn
+	  (tab-new)
+	  (let ((eww-buffer (generate-new-buffer (format "*eww: %s*" url))))
+	    (with-current-buffer eww-buffer
+	      (eww-mode)
+	      (eww url))
+	    (switch-to-buffer eww-buffer)))
+	(message "No URL found for this entry"))))
 
   (general-define-key
      :keymaps 'elfeed-show-mode-map
@@ -3291,8 +3326,8 @@ Works from both the search buffer and the entry show buffer."
   (appine-use-for-org-links t)
   ;; bind any prefix you like
   :bind (("C-x a a" . appine)
-         ("C-x a u" . appine-open-url)
-         ("C-x a o" . appine-open-file)))
+	   ("C-x a u" . appine-open-url)
+	   ("C-x a o" . appine-open-file)))
 
 (use-feature calc
 :general
