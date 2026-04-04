@@ -2868,6 +2868,35 @@ installed."
   (:keymaps 'elfeed-show-mode-map
 	      "%"  #'elfeed-webkit-toggle))
 
+(defun rlr/elfeed-open-in-eww ()
+  "Open the current elfeed entry's link in a new EWW buffer.
+Works from both the search buffer and the entry show buffer."
+  (interactive)
+  (let* ((entry (cond
+                 ((derived-mode-p 'elfeed-show-mode)
+                  elfeed-show-entry)
+                 ((derived-mode-p 'elfeed-search-mode)
+                  (elfeed-search-selected :ignore-region))
+                 (t (error "Not in an elfeed buffer"))))
+         (url (and entry (elfeed-entry-link entry))))
+    (if url
+        (progn
+        (tab-new)
+        (let ((eww-buffer (generate-new-buffer (format "*eww: %s*" url))))
+          (with-current-buffer eww-buffer
+            (eww-mode)
+            (eww url))
+          (switch-to-buffer eww-buffer)))
+      (message "No URL found for this entry"))))
+
+  (general-define-key
+     :keymaps 'elfeed-show-mode-map
+     "e" #'rlr/elfeed-open-in-eww)
+
+  (general-define-key
+   :keymaps 'elfeed-search-mode-map
+   "e" #'rlr/elfeed-open-in-eww)
+
 (use-package mastodon
     :config
     (mastodon-discover)
