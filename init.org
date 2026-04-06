@@ -1,6 +1,6 @@
 q#+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2026-04-04 16:29:33 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2026-04-06 05:39:50 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -852,6 +852,13 @@ Save minibuffer history.
   (use-feature savehist
     :config
     (savehist-mode 1))
+#+end_src
+
+Make M-x not offer options that don't apply to the current buffer.
+
+#+begin_src emacs-lisp
+(setq read-extended-command-predicate
+      #'command-completion-default-include-p)
 #+end_src
 
 ** Appearance
@@ -1967,7 +1974,6 @@ Convert DOS line-endings to UNIX.
     (goto-char (point-min))
     (while (search-forward (string ?\C-m) nil t) (replace-match "\n")))
 #+end_src
-
 
 Strip tracking info from URL's.
 

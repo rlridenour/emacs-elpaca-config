@@ -399,6 +399,9 @@
   :config
   (savehist-mode 1))
 
+(setq read-extended-command-predicate
+      #'command-completion-default-include-p)
+
 (use-package modus-themes
   :demand
   :config
