@@ -1,6 +1,6 @@
 q#+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2026-04-06 05:39:50 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2026-04-06 18:06:00 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -2100,6 +2100,18 @@ Works by searching backward for the opener and forward for the closer."
 	    (when (search-forward (char-to-string closer) nil t)
 	      (delete-char -1))))))))
 #+end_src
+
+Ediff settings.
+
+#+begin_src emacs-lisp
+; Don't break out a separate frame for ediff
+(setq ediff-window-setup-function 'ediff-setup-windows-plain)
+
+; Horizontal splitting really ought to be the default, honestly.
+(setq ediff-split-window-function 'split-window-horizontally)
+#+end_src
+
+
 
 ** Surround
 

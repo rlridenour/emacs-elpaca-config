@@ -1166,6 +1166,12 @@
 (general-define-key "C-`" #'push-mark-no-activate)
 (general-define-key "M-`" #'consult-mark)
 
+; Don't break out a separate frame for ediff
+(setq ediff-window-setup-function 'ediff-setup-windows-plain)
+
+; Horizontal splitting really ought to be the default, honestly.
+(setq ediff-split-window-function 'split-window-horizontally)
+
 (use-package surround
 :ensure t
 :bind-keymap ("H-'" . surround-keymap))
