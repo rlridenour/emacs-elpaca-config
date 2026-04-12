@@ -402,6 +402,33 @@
 (setq read-extended-command-predicate
       #'command-completion-default-include-p)
 
+(setq-default bidi-display-reordering 'left-to-right
+              bidi-paragraph-direction 'left-to-right)
+(setq bidi-inhibit-bpa t)
+
+(setq redisplay-skip-fontification-on-input t)
+
+(setq read-process-output-max (* 4 1024 1024)) ; 4MB
+
+(setq kill-do-not-save-duplicates t)
+
+(setq savehist-additional-variables
+      '(search-ring regexp-search-ring kill-ring))
+
+(add-hook 'savehist-save-hook
+          (lambda ()
+            (setq kill-ring
+                  (mapcar #'substring-no-properties
+                          (cl-remove-if-not #'stringp kill-ring)))))
+
+(setq reb-re-syntax 'string)
+
+(setq ffap-machine-p-known 'reject)
+
+(setq window-combination-resize t)
+
+(setq set-mark-command-repeat-pop t)
+
 (use-package modus-themes
   :demand
   :config
@@ -544,6 +571,10 @@
 
 (setq save-place-file (expand-file-name "saveplaces" rr-cache-dir))
 (save-place-mode)
+;; Center the page after the restore.
+(advice-add 'save-place-find-file-hook :after
+          (lambda (&rest _)
+            (when buffer-file-name (ignore-errors (recenter)))))
 
 (require 'uniquify)
 
@@ -777,6 +808,19 @@
     (condition-case nil
 	  (tab-close)
 	(error (delete-frame)))))
+
+(winner-mode +1)
+(setq winner-dont-bind-my-keys t)
+(defun toggle-delete-other-windows ()
+  "Delete other windows in frame if any, or restore previous window config."
+  (interactive)
+  (if (and winner-mode
+           (equal (selected-window) (next-window)))
+      (winner-undo)
+    (delete-other-windows)))
+
+(general-define-key
+ "C-x 1" #'toggle-delete-other-windows)
 
 (general-define-key
  "s-0" #'delete-window

@@ -1,6 +1,6 @@
-q#+title: Emacs Configuration
+#+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2026-04-12 05:50:11 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2026-04-12 16:52:15 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -861,6 +861,80 @@ Make M-x not offer options that don't apply to the current buffer.
       #'command-completion-default-include-p)
 #+end_src
 
+These are from [[https://emacsredux.com/blog/2026/04/07/stealing-from-the-best-emacs-configs/][Stealing from the Best Emacs Configs | Emacs Redux]]
+
+Disable Bidirectional Text Scanning
+
+#+begin_src emacs-lisp
+(setq-default bidi-display-reordering 'left-to-right
+              bidi-paragraph-direction 'left-to-right)
+(setq bidi-inhibit-bpa t)
+#+end_src
+
+Skip Fontification During Input
+
+#+begin_src emacs-lisp
+(setq redisplay-skip-fontification-on-input t)
+#+end_src
+
+Increase Process Output Buffer for LSP
+
+#+begin_src emacs-lisp
+(setq read-process-output-max (* 4 1024 1024)) ; 4MB
+#+end_src
+
+No Duplicates in the Kill Ring
+
+#+begin_src emacs-lisp
+(setq kill-do-not-save-duplicates t)
+#+end_src
+
+Persist the Kill Ring Across Sessions (Doom, Prot)
+
+Most configs that use savehist-mode only persist search rings. But savehist can save any variable – including the kill ring. Add it and you get clipboard history that survives restarts:
+
+#+begin_src emacs-lisp
+(setq savehist-additional-variables
+      '(search-ring regexp-search-ring kill-ring))
+#+end_src
+
+One thing to watch out for: the kill ring can accumulate text properties (fonts, overlays, etc.) that bloat the savehist file. Doom strips them before saving:
+
+#+begin_src emacs-lisp
+(add-hook 'savehist-save-hook
+          (lambda ()
+            (setq kill-ring
+                  (mapcar #'substring-no-properties
+                          (cl-remove-if-not #'stringp kill-ring)))))
+#+end_src
+
+Sane Syntax in re-builder
+
+#+begin_src emacs-lisp
+(setq reb-re-syntax 'string)
+#+end_src
+
+Prevent ffap from Pinging Hostnames (Centaur Emacs)
+
+#+begin_src emacs-elisp
+(setq ffap-machine-p-known 'reject)
+#+end_src
+
+Proportional Window Resizing
+
+#+begin_src emacs-lisp
+(setq window-combination-resize t)
+#+end_src
+
+Faster Mark Popping
+
+#+begin_src emacs-lisp
+(setq set-mark-command-repeat-pop t)
+#+end_src
+
+
+
+
 ** Appearance
 
 *** Themes
@@ -1115,6 +1189,10 @@ Open files to the last edited position.
 #+begin_src emacs-lisp
   (setq save-place-file (expand-file-name "saveplaces" rr-cache-dir))
   (save-place-mode)
+  ;; Center the page after the restore.
+  (advice-add 'save-place-find-file-hook :after
+            (lambda (&rest _)
+              (when buffer-file-name (ignore-errors (recenter)))))
 #+end_src
 
 Give buffers uniquely numbered names.
@@ -1489,6 +1567,26 @@ If more than one window, delete the window; if only one window, delete the tab; 
 	  (tab-close)
 	(error (delete-frame)))))
 #+end_src
+
+
+Reversible C-x 1
+
+#+begin_src emacs-lisp
+  (winner-mode +1)
+  (setq winner-dont-bind-my-keys t)
+  (defun toggle-delete-other-windows ()
+    "Delete other windows in frame if any, or restore previous window config."
+    (interactive)
+    (if (and winner-mode
+             (equal (selected-window) (next-window)))
+        (winner-undo)
+      (delete-other-windows)))
+
+  (general-define-key
+   "C-x 1" #'toggle-delete-other-windows)
+#+end_src
+
+
 
 *** Window and Tab Keybindings
 
