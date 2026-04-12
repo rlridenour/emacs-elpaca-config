@@ -1,6 +1,6 @@
 q#+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2026-04-06 18:06:00 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2026-04-12 05:50:11 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -4395,7 +4395,9 @@ Functions for syncing the database between machines.
   (defun rlr/elfeed-save-db-and-quit ()
     (interactive)
     (rlr/elfeed-db-save-and-backup)
-    (elfeed-search-quit-window)
+    ;; (elfeed-search-quit-window)
+    (kill-buffer "*elfeed-search*")
+    (kill-buffer "*elfeed-log*")
     (rlr/delete-tab-or-frame))
 #+end_src
 

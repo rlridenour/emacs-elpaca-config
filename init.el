@@ -2832,7 +2832,9 @@ installed."
 (defun rlr/elfeed-save-db-and-quit ()
   (interactive)
   (rlr/elfeed-db-save-and-backup)
-  (elfeed-search-quit-window)
+  ;; (elfeed-search-quit-window)
+  (kill-buffer "*elfeed-search*")
+  (kill-buffer "*elfeed-log*")
   (rlr/delete-tab-or-frame))
 
 (defmacro elfeed-tag-selection-as (mytag)
