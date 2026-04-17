@@ -3874,6 +3874,8 @@ Works from both the search buffer and the entry show buffer."
 
  "k" #'rlr/kill-other-buffers
 
+ "l l" #'org-store-link
+
  "m" #'consult-mark
  "n b" #'hugo-draft-post
  "o" #'consult-outline

@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2026-04-12 16:52:15 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2026-04-17 16:33:11 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -5789,6 +5789,8 @@ Make chord charts.
    "H k" #'helpful-key
 
    "k" #'rlr/kill-other-buffers
+
+   "l l" #'org-store-link
 
    "m" #'consult-mark
    "n b" #'hugo-draft-post
