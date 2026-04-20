@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2026-04-17 16:33:11 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2026-04-17 16:54:41 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -932,9 +932,6 @@ Faster Mark Popping
 (setq set-mark-command-repeat-pop t)
 #+end_src
 
-
-
-
 ** Appearance
 
 *** Themes
@@ -1568,7 +1565,6 @@ If more than one window, delete the window; if only one window, delete the tab; 
 	(error (delete-frame)))))
 #+end_src
 
-
 Reversible C-x 1
 
 #+begin_src emacs-lisp
@@ -1585,8 +1581,6 @@ Reversible C-x 1
   (general-define-key
    "C-x 1" #'toggle-delete-other-windows)
 #+end_src
-
-
 
 *** Window and Tab Keybindings
 
@@ -2171,34 +2165,6 @@ Set the mark at a location without highlighting anything with =C-`=. This is use
   (general-define-key "M-`" #'consult-mark)
 #+end_src
 
-From [[https://emacsredux.com/blog/2026/03/14/removing-paired-delimiters-in-emacs/][Removing Paired Delimiters in Emacs | Emacs Redux]]
-
-#+begin_src emacs-lisp :tangle no
-(defun delete-surrounding-pair (char)
-  "Delete the nearest surrounding pair of CHAR.
-CHAR should be an opening delimiter like (, [, {, or \".
-Works by searching backward for the opener and forward for the closer."
-  (interactive "cDelete surrounding pair: ")
-  (let* ((pairs '((?( . ?))
-		  (?[ . ?])
-		  (?{ . ?})
-		  (?\" . ?\")
-		  (?\' . ?\')
-		  (?\` . ?\`)))
-	 (closer (or (alist-get char pairs)
-		     (error "Unknown pair character: %c" char))))
-    (save-excursion
-      (let ((orig (point)))
-	;; Find and delete the opener
-	(when (search-backward (char-to-string char) nil t)
-	  (let ((open-pos (point)))
-	    (delete-char 1)
-	    ;; Find and delete the closer (adjust for removed char)
-	    (goto-char (1- orig))
-	    (when (search-forward (char-to-string closer) nil t)
-	      (delete-char -1))))))))
-#+end_src
-
 Ediff settings.
 
 #+begin_src emacs-lisp
@@ -2208,8 +2174,6 @@ Ediff settings.
 ; Horizontal splitting really ought to be the default, honestly.
 (setq ediff-split-window-function 'split-window-horizontally)
 #+end_src
-
-
 
 ** Surround
 
@@ -2571,7 +2535,7 @@ https://github.com/joaotavora/yasnippet
    "<s-backspace>" #'kill-whole-line
    "<C-d d>" #'insert-standard-date
    "M-q" #'reformat-paragraph
-   "M-s-d" #'delete-surrounding-pair
+   "M-s-d" #'surround-delete
    "M-#" #'dictionary-lookup-definition)
 #+end_src
 

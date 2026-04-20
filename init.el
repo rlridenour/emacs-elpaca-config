@@ -1386,7 +1386,7 @@
  "<s-backspace>" #'kill-whole-line
  "<C-d d>" #'insert-standard-date
  "M-q" #'reformat-paragraph
- "M-s-d" #'delete-surrounding-pair
+ "M-s-d" #'surround-delete
  "M-#" #'dictionary-lookup-definition)
 
 (use-package org
