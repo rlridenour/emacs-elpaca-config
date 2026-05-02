@@ -223,6 +223,7 @@
   (setq vertico-cycle t) ;; enable cycling for 'vertico-next' and 'vertico-prev'
   (add-hook 'rfn-eshadow-update-overlay-hook #'vertico-directory-tidy)
   :general
+  ("C-z" #'vertico-suspend)
   (:keymaps 'vertico-map
 	  ;; keybindings to cycle through vertico results.
 	  "C-h" #'+minibuffer-up-dir
@@ -2406,6 +2407,37 @@ and convert it to Org using the pandoc utility."
       (while (re-search-forward "^[[:blank:]]*\n" end t)
 	(replace-match "")))))
 
+(defun rlr/org-mc-to-latex-questions (beg end)
+  "Convert org-mode multiple choice questions in region to LaTeX format.
+Questions are numbered lines followed by lettered choices (a-z).
+Correct answers are marked with * after the choice text."
+  (interactive "r")
+  (let* ((text (buffer-substring-no-properties beg end))
+         (lines (split-string text "\n"))
+         (result '())
+         (in-question nil))
+    (dolist (line lines)
+      (cond
+       ;; Numbered question line: "2. Question text"
+       ((string-match "^[[:space:]]*[0-9]+\\.[[:space:]]+\\(.+\\)$" line)
+        (when in-question
+          (push "  \\end{question}" result))
+        (push "  \\begin{question}" result)
+        (push (format "    %s" (match-string 1 line)) result)
+        (setq in-question t))
+       ;; Choice line: "  a) Choice text" or "  a) Choice text*"
+       ((string-match "^[[:space:]]*[a-z])[[:space:]]+\\(.+?\\)\\(*\\)?[[:space:]]*$" line)
+        (let* ((text (match-string 1 line))
+               (correct (match-string 2 line))
+               (tag (if correct "\\choice[!]" "\\choice")))
+          (push (format "    %s {%s}" tag text) result)))))
+    (when in-question
+      (push "  \\end{question}" result))
+    (let ((output (mapconcat #'identity (nreverse result) "\n")))
+      (goto-char beg)
+      (delete-region beg end)
+      (insert output))))
+
 (use-package markdown-mode
   :mode (("README\\.md\\'" . gfm-mode)
 	   ("\\.md\\'" . markdown-mode)
@@ -2566,7 +2598,7 @@ installed."
 	  "C-," #'mu4e-sexp-at-point)
     :after org
     :init
-    (add-to-list 'load-path "/opt/homebrew/Cellar/mu/1.14.0/share/emacs/site-lisp/mu/mu4e/")
+    (add-to-list 'load-path "/opt/homebrew/Cellar/mu/1.14.1/share/emacs/site-lisp/mu/mu4e/")
     :config
     (setq mail-user-agent 'mu4e-user-agent)
     (setq mu4e-maildir "~/.maildir/")
@@ -3683,19 +3715,22 @@ Works from both the search buffer and the entry show buffer."
      ("c" markdown-complete-buffer "complete")))))
 
 (with-after-elpaca-init
- (major-mode-hydra-define LaTeX-mode
-   (:quit-key "q")
-   ("Bibtex"
-    (("r" citar-insert-citation "citation"))
-    "LaTeXmk"
-    (
-     ("m" rlr/tex-mklua "LuaLaTeX")
-     ("p" rlr/tex-mkpdf "PDFLaTeX")
-     ("w" rlr/tex-mktc "watch PDFLaTeX")
-     ("L" rlr/tex-mklua "watch LuaLaTeX")
-     ("c" tex-clean "clean aux")
-     ("C" tex-clean-all "clean all")
-     ("n" latex-word-count "word count")))))
+   (major-mode-hydra-define LaTeX-mode
+     (:quit-key "q")
+     ("Bibtex"
+      (("r" citar-insert-citation "citation"))
+      "LaTeXmk"
+      (
+       ("m" rlr/tex-mklua "LuaLaTeX")
+       ("p" rlr/tex-mkpdf "PDFLaTeX")
+       ("w" rlr/tex-mktc "watch PDFLaTeX")
+       ("L" rlr/tex-mklua "watch LuaLaTeX")
+       ("c" tex-clean "clean aux")
+       ("C" tex-clean-all "clean all")
+       ("n" latex-word-count "word count"))
+"Exams"
+(("eo" rlr/org-mc-to-latex-questions "Convert mc question"))
+      )))
 
 (with-after-elpaca-init
  (major-mode-hydra-define org-mode

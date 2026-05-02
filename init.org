@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2026-04-17 16:54:41 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2026-05-02 05:27:41 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -539,17 +539,18 @@ Open fish functions directory.
     (vertico-mode)
     (vertico-multiform-mode 1)
     (setq vertico-multiform-categories
-	  '((file grid)
-	(jinx grid (vertico-grid-annotate . 20))
-	(citar buffer)))
+  	  '((file grid)
+  	(jinx grid (vertico-grid-annotate . 20))
+  	(citar buffer)))
     (setq vertico-cycle t) ;; enable cycling for 'vertico-next' and 'vertico-prev'
     (add-hook 'rfn-eshadow-update-overlay-hook #'vertico-directory-tidy)
     :general
+    ("C-z" #'vertico-suspend)
     (:keymaps 'vertico-map
-	  ;; keybindings to cycle through vertico results.
-	  "C-h" #'+minibuffer-up-dir
-	  "<backspace>" 'vertico-directory-delete-char
-	  "RET" 'vertico-directory-enter))
+  	  ;; keybindings to cycle through vertico results.
+  	  "C-h" #'+minibuffer-up-dir
+  	  "<backspace>" 'vertico-directory-delete-char
+  	  "RET" 'vertico-directory-enter))
 #+end_src
 
 ** Orderless
@@ -3837,6 +3838,48 @@ Convert Claude multiple choice quizzes to Org mode.
 	(replace-match "")))))
 #+end_src
 
+
+Convert Org mode quiz questions to exam-design latex format.
+
+#+begin_src emacs-lisp
+(defun rlr/org-mc-to-latex-questions (beg end)
+  "Convert org-mode multiple choice questions in region to LaTeX format.
+Questions are numbered lines followed by lettered choices (a-z).
+Correct answers are marked with * after the choice text."
+  (interactive "r")
+  (let* ((text (buffer-substring-no-properties beg end))
+         (lines (split-string text "\n"))
+         (result '())
+         (in-question nil))
+    (dolist (line lines)
+      (cond
+       ;; Numbered question line: "2. Question text"
+       ((string-match "^[[:space:]]*[0-9]+\\.[[:space:]]+\\(.+\\)$" line)
+        (when in-question
+          (push "  \\end{question}" result))
+        (push "  \\begin{question}" result)
+        (push (format "    %s" (match-string 1 line)) result)
+        (setq in-question t))
+       ;; Choice line: "  a) Choice text" or "  a) Choice text*"
+       ((string-match "^[[:space:]]*[a-z])[[:space:]]+\\(.+?\\)\\(*\\)?[[:space:]]*$" line)
+        (let* ((text (match-string 1 line))
+               (correct (match-string 2 line))
+               (tag (if correct "\\choice[!]" "\\choice")))
+          (push (format "    %s {%s}" tag text) result)))))
+    (when in-question
+      (push "  \\end{question}" result))
+    (let ((output (mapconcat #'identity (nreverse result) "\n")))
+      (goto-char beg)
+      (delete-region beg end)
+      (insert output))))
+#+end_src
+
+
+
+
+
+
+
 * Markdown Mode
 
 #+begin_src emacs-lisp
@@ -4082,7 +4125,7 @@ Copy entire buffer then kill. I use this with temporary scratch buffers to write
 	  "C-," #'mu4e-sexp-at-point)
     :after org
     :init
-    (add-to-list 'load-path "/opt/homebrew/Cellar/mu/1.14.0/share/emacs/site-lisp/mu/mu4e/")
+    (add-to-list 'load-path "/opt/homebrew/Cellar/mu/1.14.1/share/emacs/site-lisp/mu/mu4e/")
     :config
     (setq mail-user-agent 'mu4e-user-agent)
     (setq mu4e-maildir "~/.maildir/")
@@ -5532,20 +5575,23 @@ Make chord charts.
 *** LaTeX Mode
 
 #+begin_src emacs-lisp
-  (with-after-elpaca-init
-   (major-mode-hydra-define LaTeX-mode
-     (:quit-key "q")
-     ("Bibtex"
-      (("r" citar-insert-citation "citation"))
-      "LaTeXmk"
-      (
-       ("m" rlr/tex-mklua "LuaLaTeX")
-       ("p" rlr/tex-mkpdf "PDFLaTeX")
-       ("w" rlr/tex-mktc "watch PDFLaTeX")
-       ("L" rlr/tex-mklua "watch LuaLaTeX")
-       ("c" tex-clean "clean aux")
-       ("C" tex-clean-all "clean all")
-       ("n" latex-word-count "word count")))))
+    (with-after-elpaca-init
+     (major-mode-hydra-define LaTeX-mode
+       (:quit-key "q")
+       ("Bibtex"
+        (("r" citar-insert-citation "citation"))
+        "LaTeXmk"
+        (
+         ("m" rlr/tex-mklua "LuaLaTeX")
+         ("p" rlr/tex-mkpdf "PDFLaTeX")
+         ("w" rlr/tex-mktc "watch PDFLaTeX")
+         ("L" rlr/tex-mklua "watch LuaLaTeX")
+         ("c" tex-clean "clean aux")
+         ("C" tex-clean-all "clean all")
+         ("n" latex-word-count "word count"))
+  "Exams"
+  (("eo" rlr/org-mc-to-latex-questions "Convert mc question"))
+        )))
 #+end_src
 
 *** Org Mode
