@@ -2408,9 +2408,7 @@ and convert it to Org using the pandoc utility."
 	(replace-match "")))))
 
 (defun rlr/org-mc-to-latex-questions (beg end)
-  "Convert org-mode multiple choice questions in region to LaTeX format.
-Questions are numbered lines followed by lettered choices (a-z).
-Correct answers are marked with * after the choice text."
+  "Convert org-mode multiple choice questions in region to LaTeX format. Questions are numbered lines followed by lettered choices (a-z). Correct answers are marked with * after the choice text."
   (interactive "r")
   (let* ((text (buffer-substring-no-properties beg end))
          (lines (split-string text "\n"))
@@ -2421,7 +2419,8 @@ Correct answers are marked with * after the choice text."
        ;; Numbered question line: "2. Question text"
        ((string-match "^[[:space:]]*[0-9]+\\.[[:space:]]+\\(.+\\)$" line)
         (when in-question
-          (push "  \\end{question}" result))
+          (push "  \\end{question}" result)
+	(push "" result))
         (push "  \\begin{question}" result)
         (push (format "    %s" (match-string 1 line)) result)
         (setq in-question t))
@@ -2437,6 +2436,28 @@ Correct answers are marked with * after the choice text."
       (goto-char beg)
       (delete-region beg end)
       (insert output))))
+
+(defun rlr/copy-mcq-to-scratch ()
+  "Copy the multiple choice question at point to the *scratch* buffer."
+  (interactive)
+  (save-excursion
+    (let* ((question-start
+            (progn
+              (end-of-line)
+              (if (re-search-backward "^[0-9]+\\." nil t)
+                  (point)
+                (error "No question found at point"))))
+           (question-end
+            (progn
+              (goto-char question-start)
+              (forward-line 1)
+              (if (re-search-forward "^[0-9]+\\." nil t)
+                  (match-beginning 0)
+                (point-max))))
+           (text (buffer-substring-no-properties question-start question-end)))
+      (with-current-buffer (get-buffer-create "*scratch*")
+        (goto-char (point-max))
+        (insert text)))))
 
 (use-package markdown-mode
   :mode (("README\\.md\\'" . gfm-mode)
@@ -3410,7 +3431,7 @@ Works from both the search buffer and the entry show buffer."
   :defer 10
   :custom
   ;; enables opening URLs and files with Appine, default is nil
-  (appine-use-for-org-links t)
+  (appine-use-for-org-links nil)
   ;; bind any prefix you like
   :bind (("C-x a a" . appine)
 	   ("C-x a u" . appine-open-url)
