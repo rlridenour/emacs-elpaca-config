@@ -2459,6 +2459,23 @@ and convert it to Org using the pandoc utility."
         (goto-char (point-max))
         (insert text)))))
 
+(defun rlr/delete-mcq-at-point ()
+  "Delete the multiple choice question at point, including all its choices."
+  (interactive)
+  (save-excursion
+    (beginning-of-line)
+    ;; If on a choice line, move up to the question line first
+    (unless (looking-at "[[:space:]]*[0-9]+\\.")
+	(re-search-backward "^[[:space:]]*[0-9]+\\." nil t))
+    (let ((start (line-beginning-position))
+	    (end (progn
+		   (forward-line 1)
+		   (if (re-search-forward "^[[:space:]]*[0-9]+\\." nil t)
+		       (match-beginning 0)
+		     (point-max)))))
+	(kill-region start end)))
+  (org-list-repair))
+
 (use-package markdown-mode
   :mode (("README\\.md\\'" . gfm-mode)
 	   ("\\.md\\'" . markdown-mode)

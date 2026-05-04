@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2026-05-03 16:30:40 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2026-05-04 15:15:12 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -3896,6 +3896,27 @@ Copy multiple choice questions to the scratch buffer.
       (with-current-buffer (get-buffer-create "*scratch*")
         (goto-char (point-max))
         (insert text)))))
+#+end_src
+
+Remove multiple choice questions and save them to the kill ring.
+
+#+begin_src emacs-lisp
+  (defun rlr/delete-mcq-at-point ()
+    "Delete the multiple choice question at point, including all its choices."
+    (interactive)
+    (save-excursion
+      (beginning-of-line)
+      ;; If on a choice line, move up to the question line first
+      (unless (looking-at "[[:space:]]*[0-9]+\\.")
+	(re-search-backward "^[[:space:]]*[0-9]+\\." nil t))
+      (let ((start (line-beginning-position))
+	    (end (progn
+		   (forward-line 1)
+		   (if (re-search-forward "^[[:space:]]*[0-9]+\\." nil t)
+		       (match-beginning 0)
+		     (point-max)))))
+	(kill-region start end)))
+    (org-list-repair))
 #+end_src
 
 * Markdown Mode
