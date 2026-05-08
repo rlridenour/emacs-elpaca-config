@@ -2589,6 +2589,14 @@ installed."
     ;; Display keywords in results buffer
     (denote-search-format-heading-function #'denote-search-format-heading-with-keywords))
 
+(use-package grove
+  :ensure (:type git :host github :repo "https://github.com/jonathanchu/grove")
+  :bind-keymap ("C-c v" . grove-command-map)
+  :custom
+  (grove-directory "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/Documents/notes/grove/")
+  :config
+  (global-grove-mode 1))
+
 (general-define-key
  :keymaps 'notepad-mode-map
  "C-c C-c" #'copy-kill-buffer)

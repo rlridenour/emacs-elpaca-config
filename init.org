@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2026-05-04 15:15:12 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2026-05-08 17:58:29 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -1898,6 +1898,15 @@ Replace spaces in file names with hyphens using "%s" in dired.
     (:keymaps 'eat-semi-char-mode-map
 	  "C-h" #'eat-self-input
 	  "<backspace>" (kbd "C-h")))
+#+end_src
+
+*** Ghost.el
+
+I use Ghostty on Mac OS. Not sure if I like this better than Eat, though.
+
+#+begin_src emacs-lisp :tangle no
+  (use-package ghostel
+    :ensure (:type git :host github :repo "dakra/ghostel"))
 #+end_src
 
 *** Term Toggle
@@ -4094,6 +4103,18 @@ I don't need to use Pandoc much since everything stays in Org. It might come in 
     ;; (denote-search-help-string "")
     ;; Display keywords in results buffer
     (denote-search-format-heading-function #'denote-search-format-heading-with-keywords))
+#+end_src
+
+** Grove
+
+#+begin_src emacs-lisp
+  (use-package grove
+    :ensure (:type git :host github :repo "https://github.com/jonathanchu/grove")
+    :bind-keymap ("C-c v" . grove-command-map)
+    :custom
+    (grove-directory "/Users/rlridenour/Library/Mobile Documents/com~apple~CloudDocs/Documents/notes/grove/")
+    :config
+    (global-grove-mode 1))
 #+end_src
 
 ** Notepad
