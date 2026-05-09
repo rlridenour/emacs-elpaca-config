@@ -217,18 +217,18 @@
   (vertico-mode)
   (vertico-multiform-mode 1)
   (setq vertico-multiform-categories
-	  '((file grid)
-	(jinx grid (vertico-grid-annotate . 20))
-	(citar buffer)))
+	      '((file grid)
+	    (jinx grid (vertico-grid-annotate . 20))
+	    (citar buffer)))
   (setq vertico-cycle t) ;; enable cycling for 'vertico-next' and 'vertico-prev'
   (add-hook 'rfn-eshadow-update-overlay-hook #'vertico-directory-tidy)
   :general
   ("C-z" #'vertico-suspend)
   (:keymaps 'vertico-map
-	  ;; keybindings to cycle through vertico results.
-	  "C-h" #'+minibuffer-up-dir
-	  "<backspace>" 'vertico-directory-delete-char
-	  "RET" 'vertico-directory-enter))
+	      ;; keybindings to cycle through vertico results.
+	      "C-h" #'+minibuffer-up-dir
+	      "<backspace>" 'vertico-directory-delete-char
+	      "RET" 'vertico-directory-enter))
 
 (use-package orderless
   :defer 1
@@ -404,7 +404,7 @@
       #'command-completion-default-include-p)
 
 (setq-default bidi-display-reordering 'left-to-right
-              bidi-paragraph-direction 'left-to-right)
+	      bidi-paragraph-direction 'left-to-right)
 (setq bidi-inhibit-bpa t)
 
 (setq redisplay-skip-fontification-on-input t)
@@ -417,10 +417,10 @@
       '(search-ring regexp-search-ring kill-ring))
 
 (add-hook 'savehist-save-hook
-          (lambda ()
-            (setq kill-ring
-                  (mapcar #'substring-no-properties
-                          (cl-remove-if-not #'stringp kill-ring)))))
+	  (lambda ()
+	    (setq kill-ring
+		  (mapcar #'substring-no-properties
+			  (cl-remove-if-not #'stringp kill-ring)))))
 
 (setq reb-re-syntax 'string)
 
@@ -574,8 +574,8 @@
 (save-place-mode)
 ;; Center the page after the restore.
 (advice-add 'save-place-find-file-hook :after
-          (lambda (&rest _)
-            (when buffer-file-name (ignore-errors (recenter)))))
+	    (lambda (&rest _)
+	      (when buffer-file-name (ignore-errors (recenter)))))
 
 (require 'uniquify)
 
@@ -816,8 +816,8 @@
   "Delete other windows in frame if any, or restore previous window config."
   (interactive)
   (if (and winner-mode
-           (equal (selected-window) (next-window)))
-      (winner-undo)
+	     (equal (selected-window) (next-window)))
+	(winner-undo)
     (delete-other-windows)))
 
 (general-define-key
@@ -1031,6 +1031,9 @@
 	  "C-h" #'eat-self-input
 	  "<backspace>" (kbd "C-h")))
 
+(use-package ghostel
+  :ensure (:type git :host github :repo "dakra/ghostel"))
+
 (use-package term-toggle
   :ensure
   (:host github :repo "amno1/emacs-term-toggle")
@@ -1040,10 +1043,12 @@
   (defun term-toggle-eat ()
     "Toggle `term'."
     (interactive) (term-toggle 'eat))
+  ;; (defun term-toggle-ghostel ()
+  ;;   "Toggle `term'."
+  ;;   (interactive) (term-toggle 'ghostel))
   :general
   ("<f2>" #'term-toggle-eat
-   "<S-f2>" #'term-toggle-eshell)
-  )
+   "<S-f2>" #'term-toggle-eshell))
 
 (setq async-shell-command-buffer "new-buffer")
 
@@ -1214,12 +1219,12 @@
 ; Don't break out a separate frame for ediff
 (setq ediff-window-setup-function 'ediff-setup-windows-plain)
 
-; Horizontal splitting really ought to be the default, honestly.
+				; Horizontal splitting really ought to be the default, honestly.
 (setq ediff-split-window-function 'split-window-horizontally)
 
 (use-package surround
-:ensure t
-:bind-keymap ("H-'" . surround-keymap))
+  :ensure t
+  :bind-keymap ("H-'" . surround-keymap))
 
 (use-package dwim-shell-command)
 
@@ -1276,15 +1281,15 @@
   (global-hungry-delete-mode))
 
 (use-package magit
-:after transient
+  :after transient
   :bind ("C-x g" . magit-status)
   :custom
   (magit-git-executable "/opt/homebrew/bin/git")
-:init
-(setq magit-process-connection-type nil)
-:config
-(setq magit-refresh-verbose t)
-)
+  :init
+  (setq magit-process-connection-type nil)
+  :config
+  (setq magit-refresh-verbose t)
+  )
 
 (use-package jinx
   :init
@@ -1303,7 +1308,7 @@
 
 (with-eval-after-load 'eglot
   (add-to-list 'eglot-server-programs
-	       '(text-mode . ("harper-ls" "--stdio"))))
+		 '(text-mode . ("harper-ls" "--stdio"))))
 
 (use-package osx-dictionary
   :defer 10)
@@ -1321,8 +1326,8 @@
   :hook (emacs-lisp-mode . paredit-mode))
 
 (use-package rainbow-delimiters
-:hook
-(prog-mode . rainbow-delimiters-mode))
+  :hook
+  (prog-mode . rainbow-delimiters-mode))
 
 (use-package speedrect
   :ensure
@@ -1331,9 +1336,9 @@
   :config (speedrect-mode))
 
 (use-package titlecase
-    :config
-    (setq titlecase-style "chicago")
-:commands titlecase-dwim)
+  :config
+  (setq titlecase-style "chicago")
+  :commands titlecase-dwim)
 
 (use-package vundo
   :custom
@@ -1346,12 +1351,12 @@
 (setq undo-outer-limit 1006632960) ; 960mb.
 
 (use-package unfill
-:commands unfill-paragraph
-:general
-("M-q" #'unfill-toggle))
+  :commands unfill-paragraph
+  :general
+  ("M-q" #'unfill-toggle))
 
 (use-package ws-butler
-:defer 10)
+  :defer 10)
 
 (use-package yasnippet
   :config
@@ -1367,10 +1372,10 @@
   ( "<f6>" #'yankpad-insert))
 
 (use-package quake-frame
-:ensure (:type git :host codeberg :repo "ctietze/quake-frame.el")
-:commands (quake-frame-toggle)
-:general
-("C-`" #'quake-frame-toggle))
+  :ensure (:type git :host codeberg :repo "ctietze/quake-frame.el")
+  :commands (quake-frame-toggle)
+  :general
+  ("C-`" #'quake-frame-toggle))
 
 (general-define-key
  "<s-up>" #'beginning-of-buffer
@@ -1462,26 +1467,26 @@
 Excludes lines beginning with * or #. Prints result in echo area."
   (interactive)
   (let* ((start (if (use-region-p) (region-beginning) (point-min)))
-	 (end (if (use-region-p) (region-end) (point-max)))
-	 (word-count
-	  (save-excursion
-	    (goto-char start)
-	    (let ((count 0)
-		  (inhibit-field-text-motion t))
-	      (while (< (point) end)
-		(beginning-of-line)
-		(unless (looking-at-p "^[*#<]")
-		  (let ((line-end (line-end-position)))
-		    (while (re-search-forward "\\w+\\W*" line-end t)
-		      (setq count (1+ count)))))
-		(forward-line 1))
-	      count)))
-	 (words-per-page 400)
-	 (reading-speed 215)
-	 (page-count (/ (+ word-count words-per-page -1) words-per-page))
-	 (reading-time (/ (+ word-count reading-speed -1) reading-speed)))
+	   (end (if (use-region-p) (region-end) (point-max)))
+	   (word-count
+	    (save-excursion
+	      (goto-char start)
+	      (let ((count 0)
+		    (inhibit-field-text-motion t))
+		(while (< (point) end)
+		  (beginning-of-line)
+		  (unless (looking-at-p "^[*#<]")
+		    (let ((line-end (line-end-position)))
+		      (while (re-search-forward "\\w+\\W*" line-end t)
+			(setq count (1+ count)))))
+		  (forward-line 1))
+		count)))
+	   (words-per-page 400)
+	   (reading-speed 215)
+	   (page-count (/ (+ word-count words-per-page -1) words-per-page))
+	   (reading-time (/ (+ word-count reading-speed -1) reading-speed)))
     (message "%d words, ~%d pages, ~%d min read"
-	     word-count page-count reading-time)))
+	       word-count page-count reading-time)))
 
 (defun cc/yank-markdown-as-org ()
   "Yank Markdown text as Org.
@@ -1491,112 +1496,112 @@ and convert it to Org using the pandoc utility."
   (interactive)
   (save-excursion
     (with-temp-buffer
-      (yank)
-      (shell-command-on-region
-       (point-min) (point-max)
-       "pandoc -f markdown -t org --wrap=preserve" t t)
-      (kill-region (point-min) (point-max)))
+	(yank)
+	(shell-command-on-region
+	 (point-min) (point-max)
+	 "pandoc -f markdown -t org --wrap=preserve" t t)
+	(kill-region (point-min) (point-max)))
     (yank)))
 
 (defun mb/org-copy-region-as-markdown ()
   "Copy the region (in Org) to the system clipboard as Markdown."
   (interactive)
   (if (use-region-p)
-      (let* ((region
-	      (buffer-substring-no-properties
-		      (region-beginning)
-		      (region-end)))
-	     (markdown
-	      (org-export-string-as region 'md t '(:with-toc nil))))
-	(gui-set-selection 'CLIPBOARD markdown))))
+	(let* ((region
+		(buffer-substring-no-properties
+		 (region-beginning)
+		 (region-end)))
+	       (markdown
+		(org-export-string-as region 'md t '(:with-toc nil))))
+	  (gui-set-selection 'CLIPBOARD markdown))))
 
 (use-package org-appear
-:after org
-    :commands (org-appear-mode)
-    ;; :hook     (org-mode . org-appear-mode)
-    :config
-    (setq org-hide-emphasis-markers t)  ; Must be activated for org-appear to work
-    (setq org-appear-autoemphasis   t   ; Show bold, italics, verbatim, etc.
+  :after org
+  :commands (org-appear-mode)
+  ;; :hook     (org-mode . org-appear-mode)
+  :config
+  (setq org-hide-emphasis-markers t)  ; Must be activated for org-appear to work
+  (setq org-appear-autoemphasis   t   ; Show bold, italics, verbatim, etc.
 	  org-appear-autolinks      t   ; Show links
 	  org-appear-autosubmarkers t)) ; Show sub and superscripts
 
 (use-package org-modern
-:after org
-    :config
-    (add-hook 'org-agenda-finalize-hook #'org-modern-agenda)
-    )
+  :after org
+  :config
+  (add-hook 'org-agenda-finalize-hook #'org-modern-agenda)
+  )
 
 (require 'ox-beamer)
-  (with-eval-after-load 'ox-latex
-    (add-to-list 'org-latex-classes
+(with-eval-after-load 'ox-latex
+  (add-to-list 'org-latex-classes
 		 '("org-article"
 		   "\\documentclass{article}
 			      [NO-DEFAULT-PACKAGES]
 			      [NO-PACKAGES]"
-		   ("\\section{%s}" . "\\section*{%s}")
-		   ("\\subsection{%s}" . "\\subsection*{%s}")
-		   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-		   ("\\paragraph{%s}" . "\\paragraph*{%s}")
-		   ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
-    (add-to-list 'org-latex-classes
-		 '("org-handout"
-		   "\\documentclass{pdfhandout}
+	       ("\\section{%s}" . "\\section*{%s}")
+	       ("\\subsection{%s}" . "\\subsection*{%s}")
+	       ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+	       ("\\paragraph{%s}" . "\\paragraph*{%s}")
+	       ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+  (add-to-list 'org-latex-classes
+	     '("org-handout"
+	       "\\documentclass{pdfhandout}
 			      [NO-DEFAULT-PACKAGES]
 			      [NO-PACKAGES]"
-		   ("\\section{%s}" . "\\section*{%s}")
-		   ("\\subsection{%s}" . "\\subsection*{%s}")
-		   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-		   ("\\paragraph{%s}" . "\\paragraph*{%s}")
-		   ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
-(add-to-list 'org-latex-classes
-		 '("org-obu-letter"
-		   "\\documentclass{obuletter}
+	       ("\\section{%s}" . "\\section*{%s}")
+	       ("\\subsection{%s}" . "\\subsection*{%s}")
+	       ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+	       ("\\paragraph{%s}" . "\\paragraph*{%s}")
+	       ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+  (add-to-list 'org-latex-classes
+	     '("org-obu-letter"
+	       "\\documentclass{obuletter}
 			      [NO-DEFAULT-PACKAGES]
 			      [NO-PACKAGES]"
-		   ("\\section{%s}" . "\\section*{%s}")
-		   ("\\subsection{%s}" . "\\subsection*{%s}")
-		   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-		   ("\\paragraph{%s}" . "\\paragraph*{%s}")
-		   ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
-(add-to-list 'org-latex-classes
-		 '("org-my-letter"
-		   "\\documentclass{myletter}
+	       ("\\section{%s}" . "\\section*{%s}")
+	       ("\\subsection{%s}" . "\\subsection*{%s}")
+	       ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+	       ("\\paragraph{%s}" . "\\paragraph*{%s}")
+	       ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+  (add-to-list 'org-latex-classes
+	     '("org-my-letter"
+	       "\\documentclass{myletter}
 			      [NO-DEFAULT-PACKAGES]
 			      [NO-PACKAGES]"
-		   ("\\section{%s}" . "\\section*{%s}")
-		   ("\\subsection{%s}" . "\\subsection*{%s}")
-		   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-		   ("\\paragraph{%s}" . "\\paragraph*{%s}")
-		   ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
-    (add-to-list 'org-latex-classes
-		 '("org-beamer"
-		   "\\documentclass{beamer}
+	       ("\\section{%s}" . "\\section*{%s}")
+	       ("\\subsection{%s}" . "\\subsection*{%s}")
+	       ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+	       ("\\paragraph{%s}" . "\\paragraph*{%s}")
+	       ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+  (add-to-list 'org-latex-classes
+	     '("org-beamer"
+	       "\\documentclass{beamer}
 			      [NO-DEFAULT-PACKAGES]
 			      [NO-PACKAGES]"
-		   ("\\section{%s}" . "\\section*{%s}")
-		   ("\\subsection{%s}" . "\\subsection*{%s}")
-		   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-		   ("\\paragraph{%s}" . "\\paragraph*{%s}")
-		   ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
-(add-to-list 'org-latex-classes
-		 '("org-ltx-talk"
-		   "\\documentclass{ltx-talk}
+	       ("\\section{%s}" . "\\section*{%s}")
+	       ("\\subsection{%s}" . "\\subsection*{%s}")
+	       ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+	       ("\\paragraph{%s}" . "\\paragraph*{%s}")
+	       ("\\subparagraph{%s}" . "\\subparagraph*{%s}")))
+  (add-to-list 'org-latex-classes
+	     '("org-ltx-talk"
+	       "\\documentclass{ltx-talk}
 			      [NO-DEFAULT-PACKAGES]
 			      [NO-PACKAGES]"
-		   ("\\section{%s}" . "\\section*{%s}")
-		   ("\\subsection{%s}" . "\\subsection*{%s}")
-		   ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
-		   ("\\paragraph{%s}" . "\\paragraph*{%s}")
-		   ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))))
-  (setq org-export-with-smart-quotes t)
-  (with-eval-after-load 'ox-latex
-    (add-to-list 'org-export-smart-quotes-alist
-		 '("en-us"
-		   (primary-opening   :utf-8 "“" :html "&ldquo;" :latex "\\enquote{"  :texinfo "``")
-		   (primary-closing   :utf-8 "”" :html "&rdquo;" :latex "}"           :texinfo "''")
-		   (secondary-opening :utf-8 "‘" :html "&lsquo;" :latex "\\enquote*{" :texinfo "`")
-		   (secondary-closing :utf-8 "’" :html "&rsquo;" :latex "}"           :texinfo "'")
-		   (apostrophe        :utf-8 "’" :html "&rsquo;"))))
+	       ("\\section{%s}" . "\\section*{%s}")
+	       ("\\subsection{%s}" . "\\subsection*{%s}")
+	       ("\\subsubsection{%s}" . "\\subsubsection*{%s}")
+	       ("\\paragraph{%s}" . "\\paragraph*{%s}")
+	       ("\\subparagraph{%s}" . "\\subparagraph*{%s}"))))
+(setq org-export-with-smart-quotes t)
+(with-eval-after-load 'ox-latex
+  (add-to-list 'org-export-smart-quotes-alist
+	     '("en-us"
+	       (primary-opening   :utf-8 "“" :html "&ldquo;" :latex "\\enquote{"  :texinfo "``")
+	       (primary-closing   :utf-8 "”" :html "&rdquo;" :latex "}"           :texinfo "''")
+	       (secondary-opening :utf-8 "‘" :html "&lsquo;" :latex "\\enquote*{" :texinfo "`")
+	       (secondary-closing :utf-8 "’" :html "&rsquo;" :latex "}"           :texinfo "'")
+	       (apostrophe        :utf-8 "’" :html "&rsquo;"))))
 
 ;; (setq org-latex-pdf-process '("arara %f"))
 (setq org-latex-pdf-process '("mkl %f"))
@@ -2411,53 +2416,53 @@ and convert it to Org using the pandoc utility."
   "Convert org-mode multiple choice questions in region to LaTeX format. Questions are numbered lines followed by lettered choices (a-z). Correct answers are marked with * after the choice text."
   (interactive "r")
   (let* ((text (buffer-substring-no-properties beg end))
-         (lines (split-string text "\n"))
-         (result '())
-         (in-question nil))
+	   (lines (split-string text "\n"))
+	   (result '())
+	   (in-question nil))
     (dolist (line lines)
-      (cond
-       ;; Numbered question line: "2. Question text"
-       ((string-match "^[[:space:]]*[0-9]+\\.[[:space:]]+\\(.+\\)$" line)
-        (when in-question
-          (push "  \\end{question}" result)
+	(cond
+	 ;; Numbered question line: "2. Question text"
+	 ((string-match "^[[:space:]]*[0-9]+\\.[[:space:]]+\\(.+\\)$" line)
+	  (when in-question
+	    (push "  \\end{question}" result)
 	(push "" result))
-        (push "  \\begin{question}" result)
-        (push (format "    %s" (match-string 1 line)) result)
-        (setq in-question t))
-       ;; Choice line: "  a) Choice text" or "  a) Choice text*"
-       ((string-match "^[[:space:]]*[a-z])[[:space:]]+\\(.+?\\)\\(*\\)?[[:space:]]*$" line)
-        (let* ((text (match-string 1 line))
-               (correct (match-string 2 line))
-               (tag (if correct "\\choice[!]" "\\choice")))
-          (push (format "    %s {%s}" tag text) result)))))
+	  (push "  \\begin{question}" result)
+	  (push (format "    %s" (match-string 1 line)) result)
+	  (setq in-question t))
+	 ;; Choice line: "  a) Choice text" or "  a) Choice text*"
+	 ((string-match "^[[:space:]]*[a-z])[[:space:]]+\\(.+?\\)\\(*\\)?[[:space:]]*$" line)
+	  (let* ((text (match-string 1 line))
+		 (correct (match-string 2 line))
+		 (tag (if correct "\\choice[!]" "\\choice")))
+	    (push (format "    %s {%s}" tag text) result)))))
     (when in-question
-      (push "  \\end{question}" result))
+	(push "  \\end{question}" result))
     (let ((output (mapconcat #'identity (nreverse result) "\n")))
-      (goto-char beg)
-      (delete-region beg end)
-      (insert output))))
+	(goto-char beg)
+	(delete-region beg end)
+	(insert output))))
 
 (defun rlr/copy-mcq-to-scratch ()
   "Copy the multiple choice question at point to the *scratch* buffer."
   (interactive)
   (save-excursion
     (let* ((question-start
-            (progn
-              (end-of-line)
-              (if (re-search-backward "^[0-9]+\\." nil t)
-                  (point)
-                (error "No question found at point"))))
-           (question-end
-            (progn
-              (goto-char question-start)
-              (forward-line 1)
-              (if (re-search-forward "^[0-9]+\\." nil t)
-                  (match-beginning 0)
-                (point-max))))
-           (text (buffer-substring-no-properties question-start question-end)))
+	    (progn
+	      (end-of-line)
+	      (if (re-search-backward "^[0-9]+\\." nil t)
+		  (point)
+		(error "No question found at point"))))
+	   (question-end
+	    (progn
+	      (goto-char question-start)
+	      (forward-line 1)
+	      (if (re-search-forward "^[0-9]+\\." nil t)
+		  (match-beginning 0)
+		(point-max))))
+	   (text (buffer-substring-no-properties question-start question-end)))
       (with-current-buffer (get-buffer-create "*scratch*")
-        (goto-char (point-max))
-        (insert text)))))
+	(goto-char (point-max))
+	(insert text)))))
 
 (defun rlr/delete-mcq-at-point ()
   "Delete the multiple choice question at point, including all its choices."
@@ -3764,19 +3769,19 @@ Works from both the search buffer and the entry show buffer."
    (major-mode-hydra-define LaTeX-mode
      (:quit-key "q")
      ("Bibtex"
-      (("r" citar-insert-citation "citation"))
-      "LaTeXmk"
-      (
-       ("m" rlr/tex-mklua "LuaLaTeX")
-       ("p" rlr/tex-mkpdf "PDFLaTeX")
-       ("w" rlr/tex-mktc "watch PDFLaTeX")
-       ("L" rlr/tex-mklua "watch LuaLaTeX")
-       ("c" tex-clean "clean aux")
-       ("C" tex-clean-all "clean all")
-       ("n" latex-word-count "word count"))
+	(("r" citar-insert-citation "citation"))
+	"LaTeXmk"
+	(
+	 ("m" rlr/tex-mklua "LuaLaTeX")
+	 ("p" rlr/tex-mkpdf "PDFLaTeX")
+	 ("w" rlr/tex-mktc "watch PDFLaTeX")
+	 ("L" rlr/tex-mklua "watch LuaLaTeX")
+	 ("c" tex-clean "clean aux")
+	 ("C" tex-clean-all "clean all")
+	 ("n" latex-word-count "word count"))
 "Exams"
 (("eo" rlr/org-mc-to-latex-questions "Convert mc question"))
-      )))
+	)))
 
 (with-after-elpaca-init
  (major-mode-hydra-define org-mode
