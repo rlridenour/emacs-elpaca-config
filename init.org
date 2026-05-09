@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2026-05-08 19:24:52 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2026-05-08 19:37:21 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -1904,7 +1904,7 @@ Replace spaces in file names with hyphens using "%s" in dired.
 
 I use Ghostty on Mac OS. Not sure if I like this better than Eat, though.
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package ghostel
     :ensure (:type git :host github :repo "dakra/ghostel"))
 #+end_src

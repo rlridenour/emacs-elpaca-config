@@ -1031,9 +1031,6 @@
 	  "C-h" #'eat-self-input
 	  "<backspace>" (kbd "C-h")))
 
-(use-package ghostel
-  :ensure (:type git :host github :repo "dakra/ghostel"))
-
 (use-package term-toggle
   :ensure
   (:host github :repo "amno1/emacs-term-toggle")
