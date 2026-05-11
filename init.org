@@ -1,6 +1,6 @@
 #+title: Emacs Configuration
 #+author: Randy Ridenour
-#+DATE: Time-stamp: <Last changed 2026-05-08 19:37:21 by rlridenour>
+#+DATE: Time-stamp: <Last changed 2026-05-11 07:27:40 by rlridenour>
 #+email: rlridenour@fastmail.com
 #+STARTUP: overview
 #+PROPERTY: header-args :tangle init.el
@@ -1349,7 +1349,7 @@ Add automatic time stamps to files, from [[https://olddeuteronomy.github.io/post
   ;; (Borrowed from http://home.thep.lu.se/~karlf/emacs.html)
   (setq time-stamp-active t          ; Do enable time-stamps.
 	time-stamp-line-limit 10     ; Check first 10 buffer lines for Time-stamp: <>
-	time-stamp-format "Last changed %Y-%02m-%02d %02H:%02M:%02S by %u")
+	time-stamp-format "Last changed %Y-%02m-%02d %02H:%02M:%02S by %l")
   (add-hook 'write-file-hooks 'time-stamp) ; Update when saving.
 #+end_src
 
